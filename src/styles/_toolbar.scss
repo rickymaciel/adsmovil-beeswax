@@ -1,0 +1,34 @@
+.v-toolbar__content,
+.v-toolbar__extension {
+    padding: 1rem 2rem !important;
+}
+
+.toolbar {
+
+    //background: transparent linear-gradient(87deg, $gradient-secondary 0%, $gradient-primary 67%) 0% 0% no-repeat padding-box;
+
+    background: rgb(133,44,113);
+    background: linear-gradient(87deg, rgba(133,44,113,1) 0%, rgba(98,58,112,1) 13%, rgba(61,73,111,1) 46%, rgba(61,73,111,1) 100%);
+
+    &.gradient-secondary {
+        background: rgba(0, 0, 0, 0.26) !important;
+    }
+
+    .logo {
+        img {
+            height: 1.8rem;
+
+            &.sm {
+                height: 1rem !important;
+            }
+        }
+    }
+}
+
+.v-application--is-ltr .v-list-item__avatar:first-child {
+    margin-right: 0.5rem !important;
+}
+
+.v-application--is-ltr .v-list-item__action:last-of-type:not(:only-child), .v-application--is-ltr .v-list-item__avatar:last-of-type:not(:only-child), .v-application--is-ltr .v-list-item__icon:last-of-type:not(:only-child) {
+    margin-left: 0.5rem !important;
+}

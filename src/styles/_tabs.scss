@@ -1,0 +1,17 @@
+.v-tab {
+    text-align: left;
+    font: normal normal medium 18px/21px Gotham;
+    letter-spacing: 0.36px;
+    color: #CBC5D4;
+    opacity: 0.7;
+
+    &.v-tab--active {
+        color: white !important;
+        background: transparent linear-gradient(180deg, #AD007500 0%, #AD07754D 100%) 0% 0% no-repeat padding-box;
+        opacity: 1;
+    }
+}
+
+// .v-tabs-slider-wrapper {
+//     bottom: 3px !important;
+// }

@@ -1,0 +1,15 @@
+.v-breadcrumbs {
+    &.theme--light {
+        .v-breadcrumbs__item {
+            font-weight: bold !important;
+            font-family: Gotham !important;
+            font-size: 0.7rem;
+            color: $primary;
+            letter-spacing: 0.28px;
+
+            &.v-breadcrumbs__item--disabled {
+                color: $secondary !important;
+            }
+        }
+    }
+}

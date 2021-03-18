@@ -1,0 +1,104 @@
+
+
+.v-text-field {
+    margin: 1rem 0 0 0 !important;
+    &.searcher {
+
+        // .v-input__control {}
+
+        .v-text-field__details {
+            display: none;
+        }
+
+        .v-input__slot {
+            background: #e8e7e77d 0% 0% no-repeat padding-box !important;
+            border-radius: 20px !important;
+            //opacity: 0.35 !important;
+            color: $secondary !important;
+            opacity: 1;
+            box-shadow: none !important;
+            &::before {
+                border-color: transparent !important;
+                border-width: 0 !important;
+            }
+        }
+
+        .v-label {
+            font: normal normal bold 16px/19px Gotham !important;
+            letter-spacing: 0;
+            color: $secondary !important;
+            text-align: left;
+            letter-spacing: 0px;
+            &.error--text {
+                color: $error !important;
+            }
+
+            .v-label--active {
+
+            }
+        }
+
+        input {
+            background: transparent !important;
+            color: $primary !important;
+            border-radius: 0px;
+        }
+
+    }
+	&.label-fixed {
+		&.error--text {
+			.v-input__slot {
+				background: #EA34641A 0% 0% no-repeat padding-box !important;
+				border: 1px solid $error;
+				border-radius: 5px;
+				color: $error !important;
+				opacity: 1;
+				box-shadow: none !important;
+				&::before {
+					border-color: transparent !important;
+					border-width: 0 !important;
+				}
+			}
+			.v-counter, input {
+				color: $error !important;
+			}
+		}
+		.v-label {
+			font: normal normal normal 16px/19px Gotham !important;
+			letter-spacing: 0;
+			color: $secondary !important;
+			text-align: left;
+			letter-spacing: 0px;
+			transform: translateY(-30px) scale(0.85) !important;
+			&.error--text {
+				color: $error !important;
+			}
+		}
+		.v-input__slot {
+			background: #00A2D81A !important;
+			border: 1px solid #47A0D380;
+			border-radius: 5px;
+			color: $secondary !important;
+			opacity: 1;
+			box-shadow: none !important;
+			&::before {
+				border-color: transparent !important;
+				border-width: 0 !important;
+			}
+		}
+		input {
+			background: transparent !important;
+			color: $secondary;
+			padding: 0.5rem;
+			border-radius: 5px;
+		}
+	}
+}
+
+.v-input--selection-controls .v-input__slot > .v-label, .v-input--selection-controls .v-radio > .v-label, .v-btn__content {
+	text-align: center;
+	font: normal normal bold 14px/16px Gotham;
+	letter-spacing: 0px;
+	color: $secondary;
+    text-transform: capitalize;
+}
