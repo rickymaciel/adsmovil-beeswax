@@ -103,6 +103,12 @@ export interface AdvertiserList {
   value: string;
 }
 
+export interface Category {
+  id: number;
+  key: string;
+  name: string;
+}
+
 export interface AdvertiserFilters {// name, category_id, domain, app_bundle, external_id, active
   name?: string;
   category_id?: number;

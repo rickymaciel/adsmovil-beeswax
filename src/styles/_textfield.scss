@@ -10,13 +10,18 @@
             display: none;
         }
 
+        .v-input__append-outer {
+            margin-top: 0px !important;
+        }
+
         .v-input__slot {
             background: #e8e7e77d 0% 0% no-repeat padding-box !important;
-            border-radius: 20px !important;
+            //border-radius: 20px !important;
             //opacity: 0.35 !important;
             color: $secondary !important;
             opacity: 1;
             box-shadow: none !important;
+            padding: 0 0.5rem !important;
             &::before {
                 border-color: transparent !important;
                 border-width: 0 !important;
@@ -24,7 +29,9 @@
         }
 
         .v-label {
-            font: normal normal bold 16px/19px Gotham !important;
+            font-weight: 600;
+            font-size: 16px !important;
+            font-family: Gotham !important;
             letter-spacing: 0;
             color: $secondary !important;
             text-align: left;
@@ -33,9 +40,9 @@
                 color: $error !important;
             }
 
-            .v-label--active {
+            // .v-label--active {
 
-            }
+            // }
         }
 
         input {

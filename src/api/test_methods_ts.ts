@@ -1,6 +1,8 @@
 import { initialize, login, logout, permissions, profile } from './auth/AuthApi'
 // import { create, update, remove, show, all, list, paginated, resendEmail } from './user/UserApi'
-import { create, update, changeStatus, show, all, list, paginated } from './advertiser/AdvertiserApi'
+//import { create, update, changeStatus, show, all, list, paginated, categories } from './advertiser/AdvertiserApi'
+//import { list } from './timezone/timezoneAPI'
+import { list } from './currency/CurrencyAPI'
 import { UserInit } from '@/interfaces/user'
 
 /* -------- BEGIN AUTH -------- */
@@ -197,7 +199,7 @@ const test_remove_user = {
 /* -------- END USER -------- */
 
 /* -------- BEGIN ADVERTISER -------- */
-const test_create_advertiser = {
+/*const test_create_advertiser = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
@@ -284,6 +286,64 @@ const test_get_advertisers = {
     })
   }
 }
+
+const test_categories = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_categories = await categories(value)
+
+      console.log('CATEGORIES', data_categories)
+
+      return data_categories
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}*/
 /* -------- END ADVERTISER -------- */
 
-export default test_get_advertisers
+/* -------- BEGIN TIMEZONE -------- */
+/*const test_timezone = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_timezones = await list(value)
+
+      console.log('TIMEZONE', data_timezones)
+
+      return data_timezones
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}*/
+/* -------- END TIMEZONE -------- */
+
+/* -------- BEGIN CURRENCY -------- */
+const test_currency = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_currency = await list(value)
+
+      console.log('CURRENCIES', data_currency)
+
+      return data_currency
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+/* -------- END CURRENCY -------- */
+
+export default test_currency

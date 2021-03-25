@@ -1,4 +1,10 @@
-import { ADVERTISER_ROUTE, AxiosPost, AxiosGet, AxiosPatch } from '@/api/AxiosService'
+import {
+  ADVERTISER_ROUTE,
+  AxiosPost,
+  AxiosGet,
+  AxiosPatch,
+  ADVERTISER_CATEGORIES_ROUTE
+} from '@/api/AxiosService'
 import { forEach, isEmpty, isUndefined, replace } from 'lodash'
 import {
   Advertiser_Scheme_1,
@@ -9,8 +15,10 @@ import {
   AdvertiserList,
   AdvertiserPaginated,
   AdvertiserFilters,
-  AdvertiserOptions
+  AdvertiserOptions,
+  Category
 } from '@/interfaces/advertiser'
+import { Timezone } from '@/interfaces/timezone'
 
 export async function create (advertiser: AdvertiserDataCreate, token: string) {
   try {
@@ -328,6 +336,32 @@ export async function list (token: string, filters?: AdvertiserFilters, options?
     }
 
     console.log('ERROR: ', response.message)
+
+    return null
+  } catch (error) {
+    console.log('EXCEPTION: ', error)
+    return null
+  }
+}
+
+export async function categories (token: string) {
+  try {
+    const response = await AxiosGet(ADVERTISER_CATEGORIES_ROUTE, token)
+
+    const categories = [] as any
+
+    if (!isEmpty(response) && response.length > 0) {
+      forEach(response, function (value, key) {
+        const category = {
+          id: value.id,
+          name: value.name
+        } as Category
+
+        categories.push(category)
+      })
+
+      return categories
+    }
 
     return null
   } catch (error) {

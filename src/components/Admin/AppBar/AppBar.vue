@@ -165,11 +165,13 @@
 						></v-tabs-slider>
 						<v-tab
 							class="text-capitalize"
-							v-for="item in items"
-							:key="item"
-							:href="'#tab-' + item"
+							:disabled="item.disabled"
+							v-for="(item, index) in items"
+							@click="changeItem(item)"
+							:key="index"
+							:href="'#tab-' + item.href"
 						>
-							{{ item }}
+							{{ item.text }}
 						</v-tab>
 					</v-tabs>
 				</v-toolbar>
@@ -179,74 +181,89 @@
 </template>
 
 <script lang="ts">
-import { mapActions } from 'vuex'
-import { isNull, isUndefined } from 'lodash'
+	import { mapActions } from "vuex";
+	import { isNull, isUndefined } from "lodash";
 
-export default {
-	name: 'AppBar',
-
-	data: function () {
-		return {
-			links: ['Dashboard', 'Profile'],
-			currentItem: 'tab-Dashboard',
-			items: [
-				'Dashboard',
-				'Adsvertiser',
-				'Campaigns',
-				'Line Item',
-				'Creatives',
-				'Reporting',
-				'Tools'
-			]
-		}
-	},
-
-	mounted () {},
-
-	computed: {
-		getProfile () {
-			return this.$store.state.profile.profile
+	export default {
+		name: "AppBar",
+		props: {
+			items: {
+				type: Array,
+				default: function () {
+					return [];
+				},
+			},
 		},
 
-		getFirstName () {
-			return !isNull(this.$store.state.profile.profile)
-				? this.$store.state.profile.profile.first_name
-				: ''
+		data: function () {
+			return {
+				links: ["Dashboard", "Profile"],
+				currentItem: "tab-dashboard",
+			};
 		},
 
-		hasImage () {
-			return this.hasElement(this.$store.state.profile.profile, 'avatar')
+		async mounted() {
+			await this.fetchProfile();
 		},
 
-		getImage (): string {
-			return this.$store.state.profile.profile.avatar
-		},
+		computed: {
+			getProfile() {
+				return this.$store.state.profile.profile;
+			},
 
-		nameFL (): string {
-			return this.getFirtsLetter(
-				this.$store.state.profile.profile,
-				'first_name'
-			)
-		}
-	},
-	methods: {
-		getFirtsLetter (data: any, element: string): string {
-			if (isNull(data) || isUndefined(data) || isUndefined(data[element])) { return 'A' }
-			return data[element].charAt()
+			getFirstName() {
+				return !isNull(this.$store.state.profile.profile)
+					? this.$store.state.profile.profile.first_name
+					: "";
+			},
+
+			hasImage() {
+				return this.hasElement(this.$store.state.profile.profile, "avatar");
+			},
+
+			getImage(): string {
+				return this.$store.state.profile.profile.avatar;
+			},
+
+			nameFL(): string {
+				return this.getFirtsLetter(
+					this.$store.state.profile.profile,
+					"first_name"
+				);
+			},
 		},
-		hasElement (data: any, element: string): boolean {
-			return (
-				!isNull(data) &&
+		methods: {
+			changeItem(item: { href: any }) {
+				this.currentItem = `tab-${item.href}`;
+				console.log("changeItem", {
+					currentItem: this.currentItem,
+					item: item,
+				});
+			},
+			getFirtsLetter(data: any, element: string): string {
+				if (
+					isNull(data) ||
+					isUndefined(data) ||
+					isUndefined(data[element])
+				) {
+					return "A";
+				}
+				return data[element].charAt();
+			},
+			hasElement(data: any, element: string): boolean {
+				return (
+					!isNull(data) &&
 					!isUndefined(data) &&
 					!isUndefined(data[element])
-			)
+				);
+			},
+			async dispatchLogout() {
+				await this.signOff();
+			},
+			...mapActions({
+				signOff: "auth/signOff",
+				fetchProfile: "profile/fetchProfile",
+			}),
 		},
-		async dispatchLogout () {
-			await this.signOff()
-		},
-		...mapActions({
-			signOff: 'auth/signOff'
-		})
-	}
-}
+	};
 </script>

@@ -1,75 +1,9 @@
 <template>
 	<v-app id="app">
 		<v-main class="white">
-			<AppBar />
-
+			<AppBar :items="navSecundaryItems" />
 			<v-layout class="white">
-				<v-container class="my-0 py-0" fluid bg grid-list-md>
-					<v-layout
-						class="justify-center align-center"
-						row
-						align-center
-						justify-center
-					>
-						<v-flex align-self-center>
-							<v-card
-								class="transparent d-lg-flex my-auto justify-center align-center"
-								flat
-								tile
-							>
-								<v-card
-									class="transparent mr-auto justify-center align-center"
-									flat
-									tile
-								>
-									<BreadCrumbs :items="items" />
-								</v-card>
-								<v-card
-									class="transparent justify-center align-center"
-									flat
-									tile
-								>
-									<Searcher />
-								</v-card>
-							</v-card>
-						</v-flex>
-					</v-layout>
-				</v-container>
-			</v-layout>
-
-			<v-layout class="white lighten-3">
-				<v-container class="my-0 py-0" fluid bg grid-list-md>
-					<v-layout
-						class="justify-center align-center"
-						row
-						align-center
-						justify-center
-					>
-						<v-flex align-self-center>
-							<v-card
-								class="transparent d-lg-flex my-auto justify-center align-center"
-								flat
-								tile
-							>
-								<v-card
-									class="transparent mr-auto justify-center align-center"
-									flat
-									tile
-								>
-									<v-subheader class="my-4">
-										Advertisers
-									</v-subheader>
-								</v-card>
-							</v-card>
-						</v-flex>
-					</v-layout>
-				</v-container>
-			</v-layout>
-
-			<v-layout class="grey lighten-3">
-				<v-container>
-					<router-view></router-view>
-				</v-container>
+				<router-view></router-view>
 			</v-layout>
 		</v-main>
 	</v-app>
@@ -78,8 +12,6 @@
 <script lang="ts">
 	import Vue from "vue";
 	import AppBar from "../../components/Admin/AppBar/AppBar.vue";
-	import BreadCrumbs from "../../components/Content/BreadCrumbs.vue";
-	import Searcher from "../../components/Content/Searcher.vue";
 
 	export default Vue.extend({
 		name: "LayoutAdmin",
@@ -89,25 +21,62 @@
 				default: "Create New Campaign",
 			},
 		},
-		components: { AppBar, BreadCrumbs, Searcher },
+		components: { AppBar },
 		data: () => ({
-			items: [
+			navSecundaryItems: [
 				{
-					text: "Advertiser: Name",
+					text: "Dashboard",
 					disabled: false,
-					href: "advertiser_name",
+					href: "dashboard",
 				},
 				{
-					text: "Campaign: Name",
+					text: "Adsvertiser",
 					disabled: false,
-					href: "campaign_name",
+					href: "adsvertiser",
 				},
 				{
-					text: "Line: Name",
-					disabled: true,
-					href: "line_name",
+					text: "Campaigns",
+					disabled: false,
+					href: "campaigns",
+				},
+				{
+					text: "Line Item",
+					disabled: false,
+					href: "line-item",
+				},
+				{
+					text: "Creatives",
+					disabled: false,
+					href: "creatives",
+				},
+				{
+					text: "Reporting",
+					disabled: false,
+					href: "reporting",
+				},
+				{
+					text: "Tools",
+					disabled: false,
+					href: "tools",
 				},
 			],
+			// items: [
+			// 	{
+			// 		text: "Advertiser: Name",
+			// 		disabled: false,
+			// 		href: "advertiser_name",
+			// 	},
+			// 	{
+			// 		text: "Campaign: Name",
+			// 		disabled: false,
+			// 		href: "campaign_name",
+			// 	},
+			// 	{
+			// 		text: "Line: Name",
+			// 		disabled: true,
+			// 		href: "line_name",
+			// 	},
+			// ],
 		}),
 		created() {
 			console.log("Using LayoutAdmin", {

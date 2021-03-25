@@ -80,7 +80,7 @@ typings/
 
 # Nuxt.js build / generate output
 .nuxt
-# dist
+dist
 
 # Gatsby files
 .cache/
@@ -105,7 +105,7 @@ typings/
 
 .DS_Store
 node_modules
-#/dist
+/dist
 
 /tests/e2e/videos/
 /tests/e2e/screenshots/
