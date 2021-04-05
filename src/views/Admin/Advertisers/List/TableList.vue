@@ -3,7 +3,7 @@
 		<v-data-table
 			v-model="selected"
 			:headers="headers"
-			:items="desserts"
+			:items="items"
 			:single-select="singleSelect"
 			item-key="name"
 			show-select
@@ -224,7 +224,7 @@
 				</v-card-actions>
 			</template>
 		</v-data-table>
-		<div class="text-center pt-2">
+		<div v-if="items.length" class="text-center py-8">
 			<v-pagination
 				v-model="current_page"
 				:length="getLength"
@@ -264,7 +264,7 @@
 				type: Array,
 				default: [],
 			},
-			desserts: {
+			items: {
 				type: Array,
 				default: [],
 			},
@@ -282,7 +282,7 @@
 
 		computed: {
 			getLength() {
-				return Math.ceil(this.total / 15);
+				return Math.ceil(this.total / this.per_page);
 			},
 		},
 

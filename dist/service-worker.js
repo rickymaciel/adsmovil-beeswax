@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.6fc97625ffd3be47049db89b06f2da00.js"
+  "/precache-manifest.164858360f595b395667385789a3b264.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "adsmovil-beeswax"});

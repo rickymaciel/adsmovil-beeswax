@@ -2,10 +2,11 @@
 	<div class="d-lg-flex justify-lg-space-between">
 		<div class="mb-2">
 			<v-btn
-				class="me-4"
+				class="me-4 mb-1"
 				color="secondary"
-				elevation="2"
-				medium
+				elevation="0"
+				:medium="!$vuetify.breakpoint.mobile"
+				:small="$vuetify.breakpoint.mobile"
 				raised
 				rounded
 				>Create New</v-btn
@@ -13,24 +14,26 @@
 
 			<v-btn
 				color="secondary"
-				elevation="2"
+				elevation="0"
 				icon
-				medium
+				:medium="!$vuetify.breakpoint.mobile"
+				:small="$vuetify.breakpoint.mobile"
 				raised
 				rounded
-				class="me-4"
+				class="me-4 mb-1"
 			>
 				<img src="@/assets/icons/download_btn.png" alt="Tools" />
 			</v-btn>
 
 			<v-btn
 				color="secondary"
-				elevation="2"
+				elevation="0"
 				icon
-				medium
+				:medium="!$vuetify.breakpoint.mobile"
+				:small="$vuetify.breakpoint.mobile"
 				raised
 				rounded
-				class="me-4"
+				class="me-4 mb-1"
 			>
 				<img src="@/assets/icons/bulk_btn.png" alt="Tools" />
 			</v-btn>
@@ -38,31 +41,34 @@
 
 		<div class="mb-2">
 			<v-btn
-				class="me-4"
+				class="me-4 mb-1"
 				color="secondary"
 				outlined
-				elevation="2"
-				medium
+				elevation="0"
+				:medium="!$vuetify.breakpoint.mobile"
+				:small="$vuetify.breakpoint.mobile"
 				raised
 				rounded
 				>Custime View</v-btn
 			>
 			<v-btn
-				class="me-4"
+				class="me-4 mb-1"
 				color="secondary"
 				outlined
-				elevation="2"
-				medium
+				elevation="0"
+				:medium="!$vuetify.breakpoint.mobile"
+				:small="$vuetify.breakpoint.mobile"
 				raised
 				rounded
 				>Show 40</v-btn
 			>
 			<v-btn
-				class="me-4"
+				class="me-4 mb-1"
 				color="secondary"
 				outlined
-				elevation="2"
-				medium
+				elevation="0"
+				:medium="!$vuetify.breakpoint.mobile"
+				:small="$vuetify.breakpoint.mobile"
 				raised
 				rounded
 				>Show Last 30 days</v-btn

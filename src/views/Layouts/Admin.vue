@@ -60,23 +60,6 @@
 					href: "/admin/tools",
 				},
 			],
-			// items: [
-			// 	{
-			// 		text: "Advertiser: Name",
-			// 		disabled: false,
-			// 		href: "advertiser_name",
-			// 	},
-			// 	{
-			// 		text: "Campaign: Name",
-			// 		disabled: false,
-			// 		href: "campaign_name",
-			// 	},
-			// 	{
-			// 		text: "Line: Name",
-			// 		disabled: true,
-			// 		href: "line_name",
-			// 	},
-			// ],
 		}),
 		created() {
 			console.log("Using LayoutAdmin", {

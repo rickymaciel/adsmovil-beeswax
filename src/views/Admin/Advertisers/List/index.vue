@@ -16,14 +16,14 @@
 				<v-layout column>
 					<TableList
 						:current_page="Number(getResultPaginate.current_page)"
-						:next_page_url="getResultPaginate.next_page_url"
-						:path="getResultPaginate.path"
+						:next_page_url="String(getResultPaginate.next_page_url)"
+						:path="String(getResultPaginate.path)"
 						:per_page="Number(getResultPaginate.per_page)"
-						:prev_page_url="getResultPaginate.prev_page_url"
+						:prev_page_url="String(getResultPaginate.prev_page_url)"
 						:to="Number(getResultPaginate.to)"
 						:total="Number(getResultPaginate.total)"
 						:headers="prepareTableHeaders"
-						:desserts="prepareTableContent"
+						:items="prepareTableContent"
 					></TableList>
 				</v-layout>
 			</v-container>
@@ -75,17 +75,16 @@
 				return this.$store.state.advertiser.result_paginate;
 			},
 			getAdvertisers(): Advertiser[] {
+				const result: ResultPaginate = this.getResultPaginate;
 				if (
-					isUndefined(this.$store.state.advertiser.result_paginate) ||
-					isNull(this.$store.state.advertiser.result_paginate) ||
-					isUndefined(
-						this.$store.state.advertiser.result_paginate.data
-					) ||
-					isNull(this.$store.state.advertiser.result_paginate.data)
+					isUndefined(result) ||
+					isNull(result) ||
+					isUndefined(result.data) ||
+					isNull(result.data)
 				) {
 					return [];
 				}
-				return this.$store.state.advertiser.result_paginate.data;
+				return result.data;
 			},
 			prepareTableHeaders() {
 				return [
