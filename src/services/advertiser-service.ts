@@ -1,0 +1,83 @@
+import { AdvertiserFilters, AdvertiserOptions, AdvertiserPaginated } from '@/interfaces/advertiser'
+import { AxiosGet } from '@/services/axios-service'
+import { isEmpty, isUndefined } from 'lodash'
+
+export const ADVERTISER_ROUTE = '/api/advertisers'
+
+class AdvertiserService {
+
+    async all(filters?: AdvertiserFilters, options?: AdvertiserOptions) {
+        try {
+            let filter = ''
+            let option = ''
+
+            if (!isUndefined(filters)) {
+                filter = getFilters(filters)
+            }
+
+            if (!isUndefined(options)) {
+                option += getOptions(options, 'all')
+            }
+
+            const url = getURL(filter, option)
+            const response = await AxiosGet(ADVERTISER_ROUTE + url)
+            console.log('AxiosGet: ', { url: url, response: response })
+
+            if (response.status < 200 && response.status > 300) {
+                return null;
+            }
+
+            return response.data.response;
+
+        } catch (error) {
+            console.error('AdvertiserService:all', { error: error })
+        }
+    }
+
+}
+
+function getFilters(filters: AdvertiserFilters): string {
+    let filter = ''
+
+    const name = (isUndefined(filters.name)) ? '' : filters.name
+    const category_id = (isUndefined(filters.category_id)) ? '' : filters.category_id
+    const domain = (isUndefined(filters.domain)) ? '' : filters.domain
+    const app_bundle = (isUndefined(filters.app_bundle)) ? '' : filters.app_bundle
+    const external_id = (isUndefined(filters.external_id)) ? '' : filters.external_id
+    const active = (isUndefined(filters.active)) ? '' : filters.active
+
+    filter += 'filters[name]=' + name + '&filters[category_id]=' + category_id + '&filters[domain]=' + domain + '&filters[app_bundle]=' + app_bundle + '&filters[external_id]=' + external_id + '&filters[active]=' + active
+
+    return filter
+}
+
+function getOptions(options: AdvertiserOptions, mode: string, paginated?: AdvertiserPaginated): string {
+    let option = ''
+
+    const sort = (isUndefined(options.sort)) ? '' : options.sort
+    const order = (isUndefined(options.order)) ? '' : options.order
+
+    option += 'sort=' + sort + '&order=' + order + '&mode=' + mode
+
+    if (mode == 'paginated') {
+        option += '&page=' + paginated?.page + '&limit=' + paginated?.limit
+    }
+
+    return option
+}
+
+function getURL(filters: string, options: string): string {
+    let url = ''
+
+    if (!isEmpty(filters) && !isEmpty(options)) {
+        url = '?' + filters + '&' + options
+    } else if (!isEmpty(filters)) {
+        url = '?' + filters
+    } else if (!isEmpty(options)) {
+        url = '?' + options
+    }
+
+    return url
+}
+
+export default new AdvertiserService()

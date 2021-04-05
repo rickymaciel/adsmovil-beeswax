@@ -4,7 +4,10 @@ import Vuex from 'vuex'
 import AuthService, { ProviderToken } from '@/services/auth-service'
 import ProfileService, { ProviderProfile } from '@/services/profile-service'
 import PermissionService, { PermissionProfile } from '@/services/permission-service'
+import AdvertiserService from '@/services/advertiser-service'
 import { Credential } from '@/interfaces/credential'
+import { Advertiser, AdvertiserFilters, AdvertiserOptions, ResultPaginate } from '@/interfaces/advertiser'
+import { isNull, isUndefined } from 'lodash'
 
 const token = localStorage.getItem('token') || ''
 
@@ -127,6 +130,43 @@ export default new Vuex.Store({
                         return await Promise.reject(message_2)
                     }
                 }
+            }
+        },
+        advertiser: {
+            namespaced: true,
+            state: () => ({
+                result_paginate: {} as ResultPaginate
+            }),
+            mutations: {
+                SET_RESULT_PAGINATED(state, _result_paginate: ResultPaginate) {
+                    state.result_paginate = _result_paginate
+                },
+                DEL_RESULT_PAGINATED(state) {
+                    state.result_paginate = {} as ResultPaginate
+                },
+            },
+            getters: {
+                result_paginate(state): ResultPaginate {
+                    return state.result_paginate
+                },
+            },
+            actions: {
+                async getAll({ commit }, filters?: AdvertiserFilters, options?: AdvertiserOptions) {
+                    try {
+                        const response = await AdvertiserService.all(filters, options)
+                        console.log('@Action:getAll', { response: response })
+                        if (!isUndefined(response) && !isNull(response)) {
+                            commit('SET_RESULT_PAGINATED', response)
+                        }
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        console.error('@Action:getAll.catch', { error: error })
+                        commit('DEL_RESULT_PAGINATED')
+                        const message_2 = typeof undefined !== typeof error.response.data.message ? error.response.data.message : error.toString()
+                        console.error('@Action:getAll.catch', { message: message_2 })
+                        return await Promise.reject(message_2)
+                    }
+                },
             }
         },
     }
