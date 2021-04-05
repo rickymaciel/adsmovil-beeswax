@@ -15,7 +15,10 @@ module.exports = {
 		"no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
 		"no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
 		indent: [2, "tab"],
-		"no-tabs": 0
+        "no-tabs": 0,
+        'vue/valid-v-slot': ['error', {
+            allowModifiers: true
+        }]
 	},
 	overrides: [
 		{

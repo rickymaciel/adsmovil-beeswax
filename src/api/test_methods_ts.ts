@@ -1,8 +1,11 @@
 import { initialize, login, logout, permissions, profile } from './auth/AuthApi'
-// import { create, update, remove, show, all, list, paginated, resendEmail } from './user/UserApi'
+//import { create, update, remove, show, all, list, paginated, resendEmail } from './user/UserApi'
 //import { create, update, changeStatus, show, all, list, paginated, categories } from './advertiser/AdvertiserApi'
+import { create, update, changeStatus, show } from './custom_list/CustomListAPI'
 //import { list } from './timezone/timezoneAPI'
-import { list } from './currency/CurrencyAPI'
+//import { list } from './currency/CurrencyAPI'
+//import { list } from './custom_list/ExchangesAPI'
+//import { list } from './custom_list/TypeAPI'
 import { UserInit } from '@/interfaces/user'
 
 /* -------- BEGIN AUTH -------- */
@@ -206,11 +209,11 @@ const test_remove_user = {
       resolve(token)
     }).then(async value => {
       const data_advertiser = await create({
-        name: 'test_advertiser_3',
-        category_id: 3,
-        domain: 'test-advertiser-3.com',
+        name: 'test_advertiser_6',
+        category_id: 5,
+        domain: 'test-advertiser-6.com',
         app_bundle: 'com.adsmovil.PicoPlaca',
-        active: false
+        active: true
       }, value)
 
       console.log('ADVERTISER', data_advertiser)
@@ -230,11 +233,11 @@ const test_update_advertiser = {
       resolve(token)
     }).then(async value => {
       const data_advertiser = await update({
-        id: 12,
-        name: 'test_advertiser_4',
-        category_id: 246,
-        domain: 'domain.com',
-        app_bundle: 'com.domainadvertiser.AdvTest',
+        id: 65,
+        name: 'test_advertiser_6',
+        category_id: 3,
+        domain: 'test-advertiser-6.com',
+        app_bundle: 'com.test-advertiser.test',
         active: false
       }, value)
 
@@ -254,7 +257,7 @@ const test_change_status_advertiser = {
       const token = test_login.data()
       resolve(token)
     }).then(async value => {
-      const change = await changeStatus(12, true, value)
+      const change = await changeStatus(12, false, value)
 
       console.log('CHANGE STATUS', change)
 
@@ -275,7 +278,7 @@ const test_get_advertisers = {
       // const data_advertiser = await all(value, {}, { sort: 'name', order: 'asc' })
       // const data_advertiser = await paginated(value, { page: 1, limit: 15 }, { name: 'advertiser' }, { sort: 'name', order: 'asc' })
       // const data_advertiser = await list(value, {}, { sort: 'name', order: 'asc' })
-      const data_advertiser = await show(12, value)
+      const data_advertiser = await show(59, value)
 
       console.log('ADVERTISERS', data_advertiser)
 
@@ -327,7 +330,7 @@ const test_categories = {
 /* -------- END TIMEZONE -------- */
 
 /* -------- BEGIN CURRENCY -------- */
-const test_currency = {
+/*const test_currency = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
@@ -343,7 +346,127 @@ const test_currency = {
       return null
     })
   }
-}
+}*/
 /* -------- END CURRENCY -------- */
 
-export default test_currency
+/* -------- BEGIN CUSTOM LIST -------- */
+/*const test_custom_list_exchanges = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_exchange = await list(value)
+
+      console.log('EXCHANGES', data_exchange)
+
+      return data_exchange
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_custom_list_types = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_types = await list(value)
+
+      console.log('TYPES', data_types)
+
+      return data_types
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}*/
+
+const test_custom_list_create = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_custom_list = await create({
+        name: 'CUSTOM LIST APP BUNDLE',
+        custom_list_type_id: 1
+      }, value)
+
+      console.log('CUSTOM LIST', data_custom_list)
+
+      return data_custom_list
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_custom_list_update = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_custom_list = await update({
+        id: 2,
+        name: 'CUSTOM LIST TEST_1',
+        custom_list_type_id: 3
+      }, value)
+
+      console.log('CUSTOM LIST', data_custom_list)
+
+      return data_custom_list
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_custom_list_change_status = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const change = await changeStatus(2, true, value)
+
+      console.log('CHANGE STATUS', change)
+
+      return change
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_get_custom_list = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      // const data_custom_list = await all(value, {}, { sort: 'name', order: 'asc' })
+      // const data_custom_list = await paginated(value, { page: 1, limit: 15 }, { name: 'advertiser' }, { sort: 'name', order: 'asc' })
+      // const data_custom_list = await list(value, {}, { sort: 'name', order: 'asc' })
+      const data_custom_list = await show(2, value)
+
+      console.log('CUSTOM LIST', data_custom_list)
+
+      return data_custom_list
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+/* -------- END CUSTOM LIST -------- */
+
+export default test_get_custom_list

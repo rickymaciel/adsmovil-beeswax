@@ -1,0 +1,74 @@
+.theme--light {
+    &.v-data-table {
+        background: #FFFFFF 0% 0% no-repeat padding-box !important;
+        box-shadow: 0px 0px 5px #0000001A !important;
+        border: 1px solid #E3E3E3 !important;
+        border-radius: 10px !important;
+    }
+}
+
+// .v-data-table {
+//     overflow-x: scroll !important;
+// }
+
+.v-data-table__wrapper {
+    // overflow-x: scroll !important;
+    border-radius: 10px !important;
+}
+
+td {
+    text-align: left !important;
+    font-family: Gotham !important;
+    font-weight: 500 !important;
+    font-style: normal !important;
+    //font-size: 1rem !important;
+    letter-spacing: 0.32px;
+    color: $primary;
+}
+
+ .no-top {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+
+.v-subheader {
+    text-align: left !important;
+    font-family: Gotham !important;
+    font-weight: bold !important;
+    font-style: normal !important;
+    font-size: 1rem !important;
+    letter-spacing: 0.28px !important;
+    color: #BCBCBC !important;
+}
+
+.v-data-table-header {
+    tr {
+        background: #FFFFFF 0% 0% no-repeat padding-box !important;
+        height: 5rem !important;
+    }
+}
+
+.theme--light.v-data-table > .v-data-table__wrapper > table > thead > tr > th {
+    border-bottom: 1px solid $tertiary !important;
+    text-align: left;
+    font-family: Gotham;
+    font-weight: bold;
+    font-style: normal;
+    font-size: 0.80rem;
+    letter-spacing: 0.28px;
+    color: $tertiary !important;
+
+    .v-icon {
+        color: $secondary !important;
+    }
+
+    .v-simple-checkbox {
+        .v-icon {
+            color: $tertiary !important;
+        }
+    }
+}
+
+.tertiary--color {
+    color: $tertiary !important;
+}

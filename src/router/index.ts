@@ -87,6 +87,11 @@ const routes: Array<RouteConfig> = [
                 path: 'dashboard',
                 name: 'Dashboard',
                 component: () => import('@/views/Admin/Dashboard/Dashboard.vue')
+            },
+            {
+                path: 'advertisers/index',
+                name: 'Advertisers',
+                component: () => import('@/views/Admin/Advertisers/List/index.vue')
             }
         ]
     }

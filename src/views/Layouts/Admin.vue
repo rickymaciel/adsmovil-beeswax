@@ -1,8 +1,8 @@
 <template>
 	<v-app id="app">
-		<v-main class="white">
+		<v-main class="grey lighten-3">
 			<AppBar :items="navSecundaryItems" />
-			<v-layout class="white">
+			<v-layout>
 				<router-view></router-view>
 			</v-layout>
 		</v-main>
@@ -27,37 +27,37 @@
 				{
 					text: "Dashboard",
 					disabled: false,
-					href: "dashboard",
+					href: "/admin/dashboard",
 				},
 				{
 					text: "Adsvertiser",
 					disabled: false,
-					href: "adsvertiser",
+					href: "/admin/advertisers/index",
 				},
 				{
 					text: "Campaigns",
 					disabled: false,
-					href: "campaigns",
+					href: "/admin/campaigns",
 				},
 				{
 					text: "Line Item",
 					disabled: false,
-					href: "line-item",
+					href: "/admin/line-item",
 				},
 				{
 					text: "Creatives",
 					disabled: false,
-					href: "creatives",
+					href: "/admin/creatives",
 				},
 				{
 					text: "Reporting",
 					disabled: false,
-					href: "reporting",
+					href: "/admin/reporting",
 				},
 				{
 					text: "Tools",
 					disabled: false,
-					href: "tools",
+					href: "/admin/tools",
 				},
 			],
 			// items: [

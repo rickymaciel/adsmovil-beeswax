@@ -1,0 +1,91 @@
+<template>
+	<div class="d-lg-flex justify-lg-space-between">
+		<div class="mb-2">
+			<v-btn
+				class="me-4"
+				color="secondary"
+				elevation="2"
+				medium
+				raised
+				rounded
+				>Create New</v-btn
+			>
+
+			<v-btn
+				color="secondary"
+				elevation="2"
+				icon
+				medium
+				raised
+				rounded
+				class="me-4"
+			>
+				<img src="@/assets/icons/download_btn.png" alt="Tools" />
+			</v-btn>
+
+			<v-btn
+				color="secondary"
+				elevation="2"
+				icon
+				medium
+				raised
+				rounded
+				class="me-4"
+			>
+				<img src="@/assets/icons/bulk_btn.png" alt="Tools" />
+			</v-btn>
+		</div>
+
+		<div class="mb-2">
+			<v-btn
+				class="me-4"
+				color="secondary"
+				outlined
+				elevation="2"
+				medium
+				raised
+				rounded
+				>Custime View</v-btn
+			>
+			<v-btn
+				class="me-4"
+				color="secondary"
+				outlined
+				elevation="2"
+				medium
+				raised
+				rounded
+				>Show 40</v-btn
+			>
+			<v-btn
+				class="me-4"
+				color="secondary"
+				outlined
+				elevation="2"
+				medium
+				raised
+				rounded
+				>Show Last 30 days</v-btn
+			>
+		</div>
+	</div>
+</template>
+
+<script lang="ts">
+	import Vue from "vue";
+
+	export default Vue.extend({
+		name: "Buttons",
+		props: {},
+		components: {},
+		data: () => ({}),
+
+		created() {},
+
+		mounted() {},
+
+		computed: {},
+
+		methods: {},
+	});
+</script>

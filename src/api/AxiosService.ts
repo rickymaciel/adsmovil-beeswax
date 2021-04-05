@@ -32,6 +32,9 @@ export const ADVERTISER_ROUTE = '/api/advertisers'
 export const ADVERTISER_CATEGORIES_ROUTE = '/api/list/advertiser_categories'
 export const TIMEZONE_ROUTE = '/api/list/timezones'
 export const CURRENCY_ROUTE = '/api/list/currencies'
+export const CUSTOM_LIST_ROUTE = '/api/custom_lists'
+export const CUSTOM_LIST_EXCHANGE_ROUTE = '/api/list/custom_list_exchanges'
+export const CUSTOM_LIST_TYPES_ROUTE = '/api/list/custom_list_types'
 
 export function AxiosPost (url: string, payload: any, token: string) {
   return axios.post(url, payload, {

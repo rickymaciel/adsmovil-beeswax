@@ -38,11 +38,7 @@
 							/> </v-btn
 					></v-badge>
 
-					<v-menu
-						transition="scale-transition"
-						offset-y
-						max-width="200"
-					>
+					<v-menu offset-y max-width="200" :rounded="true">
 						<template v-slot:activator="{ on, attrs }">
 							<v-list flat color="transparent">
 								<v-list-item
@@ -74,10 +70,10 @@
 											{{ getFirstName }}
 										</v-list-item-title>
 										<!-- <v-list-item-subtitle
-										class="subtitle white--text"
-									>
-										Logged In
-									</v-list-item-subtitle> -->
+											class="subtitle white--text"
+										>
+											{{ getRoutePath }}
+										</v-list-item-subtitle> -->
 									</v-list-item-content>
 
 									<v-list-item-action>
@@ -90,7 +86,7 @@
 						</template>
 						<v-list v-if="getProfile">
 							<v-list-item>
-								<v-list-item-content>
+								<v-list-item-content class="pa-2">
 									<v-list-item-title class="title"
 										>Profile</v-list-item-title
 									>
@@ -117,7 +113,7 @@
 							</v-list-item>
 							<v-divider></v-divider>
 							<v-list-item>
-								<v-list-item-content>
+								<v-list-item-content class="pa-2">
 									<v-list-item-title class="title"
 										>Other Accounts</v-list-item-title
 									>
@@ -169,7 +165,7 @@
 							v-for="(item, index) in items"
 							@click="changeItem(item)"
 							:key="index"
-							:href="'#tab-' + item.href"
+							:href="item.href"
 						>
 							{{ item.text }}
 						</v-tab>
@@ -198,8 +194,12 @@
 		data: function () {
 			return {
 				links: ["Dashboard", "Profile"],
-				currentItem: "tab-dashboard",
+				currentItem: "",
 			};
+		},
+
+		created() {
+			this.currentItem = this.getRoutePath;
 		},
 
 		async mounted() {
@@ -207,6 +207,11 @@
 		},
 
 		computed: {
+			getRoutePath() {
+				console.log("getRoutePath", this.$route.path);
+				return this.$route.path;
+			},
+
 			getProfile() {
 				return this.$store.state.profile.profile;
 			},

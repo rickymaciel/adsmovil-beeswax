@@ -7,9 +7,7 @@ import {
 } from '@/api/AxiosService'
 import { forEach, isEmpty, isUndefined, replace } from 'lodash'
 import {
-  Advertiser_Scheme_1,
-  Advertiser_Scheme_2,
-  Advertiser_Scheme_3,
+  Advertiser,
   AdvertiserDataCreate,
   AdvertiserDataUpdate,
   AdvertiserList,
@@ -18,7 +16,6 @@ import {
   AdvertiserOptions,
   Category
 } from '@/interfaces/advertiser'
-import { Timezone } from '@/interfaces/timezone'
 
 export async function create (advertiser: AdvertiserDataCreate, token: string) {
   try {
@@ -29,16 +26,35 @@ export async function create (advertiser: AdvertiserDataCreate, token: string) {
         id: response.id,
         external_id: response.external_id,
         account_id: response.account_id,
-        category_id: response.category_id,
-        currency_id: response.currency_id,
         name: response.name,
         domain: response.domain,
         app_bundle: response.app_bundle,
-        created_by: response.created_by,
-        updated_by: response.updated_by,
         active: response.active,
+        created_by: {
+          id: response.created_by.id,
+          first_name: response.created_by.name,
+          last_name: response.created_by.last_name,
+          email: response.created_by.email
+        },
+        updated_by: {
+          id: response.updated_by.id,
+          first_name: response.updated_by.name,
+          last_name: response.updated_by.last_name,
+          email: response.updated_by.email
+        },
+        deleted_by: {
+          id: (isEmpty(response.deleted_by)) ? null : response.deleted_by.id,
+          first_name: (isEmpty(response.deleted_by)) ? null : response.deleted_by.name,
+          last_name: (isEmpty(response.deleted_by)) ? null : response.deleted_by.last_name,
+          email: (isEmpty(response.deleted_by)) ? null : response.deleted_by.email
+        },
         created_at: response.created_at,
         updated_at: response.updated_at,
+        category: {
+          id: response.category.id,
+          key: response.category.key,
+          name: response.category.name
+        },
         currency: {
           id: response.currency.id,
           key: response.currency.key,
@@ -46,7 +62,7 @@ export async function create (advertiser: AdvertiserDataCreate, token: string) {
           glyph: response.currency.glyph,
           emoji_flag: response.currency.emoji_flag
         }
-      } as Advertiser_Scheme_1
+      } as Advertiser
     }
 
     console.log('ERROR: ', response)
@@ -67,16 +83,35 @@ export async function update (advertiser: AdvertiserDataUpdate, token: string) {
         id: response.id,
         external_id: response.external_id,
         account_id: response.account_id,
-        category_id: response.category_id,
-        currency_id: response.currency_id,
         name: response.name,
         domain: response.domain,
         app_bundle: response.app_bundle,
-        created_by: response.created_by,
-        updated_by: response.updated_by,
         active: response.active,
+        created_by: {
+          id: response.created_by.id,
+          first_name: response.created_by.name,
+          last_name: response.created_by.last_name,
+          email: response.created_by.email
+        },
+        updated_by: {
+          id: response.updated_by.id,
+          first_name: response.updated_by.name,
+          last_name: response.updated_by.last_name,
+          email: response.updated_by.email
+        },
+        deleted_by: {
+          id: (isEmpty(response.deleted_by)) ? null : response.deleted_by.id,
+          first_name: (isEmpty(response.deleted_by)) ? null : response.deleted_by.name,
+          last_name: (isEmpty(response.deleted_by)) ? null : response.deleted_by.last_name,
+          email: (isEmpty(response.deleted_by)) ? null : response.deleted_by.email
+        },
         created_at: response.created_at,
         updated_at: response.updated_at,
+        category: {
+          id: response.category.id,
+          key: response.category.key,
+          name: response.category.name
+        },
         currency: {
           id: response.currency.id,
           key: response.currency.key,
@@ -84,7 +119,7 @@ export async function update (advertiser: AdvertiserDataUpdate, token: string) {
           glyph: response.currency.glyph,
           emoji_flag: response.currency.emoji_flag
         }
-      } as Advertiser_Scheme_1
+      } as Advertiser
     }
 
     console.log('ERROR: ', response.message)
@@ -125,16 +160,41 @@ export async function show (id: number, token: string) {
         account_id: response.account_id,
         name: response.name,
         domain: response.domain,
-        category_id: response.category_id,
         app_bundle: response.app_bundle,
-        currency_id: response.currency_id,
         active: response.active,
-        created_by: response.created_by,
-        updated_by: response.updated_by,
-        deleted_by: response.deleted_by,
+        created_by: {
+          id: response.created_by.id,
+          first_name: response.created_by.name,
+          last_name: response.created_by.last_name,
+          email: response.created_by.email
+        },
+        updated_by: {
+          id: response.updated_by.id,
+          first_name: response.updated_by.name,
+          last_name: response.updated_by.last_name,
+          email: response.updated_by.email
+        },
+        deleted_by: {
+          id: (isEmpty(response.deleted_by)) ? null : response.deleted_by.id,
+          first_name: (isEmpty(response.deleted_by)) ? null : response.deleted_by.name,
+          last_name: (isEmpty(response.deleted_by)) ? null : response.deleted_by.last_name,
+          email: (isEmpty(response.deleted_by)) ? null : response.deleted_by.email
+        },
         created_at: response.created_at,
-        updated_at: response.updated_at
-      } as Advertiser_Scheme_3
+        updated_at: response.updated_at,
+        category: {
+          id: response.category.id,
+          key: response.category.key,
+          name: response.category.name
+        },
+        currency: {
+          id: response.currency.id,
+          key: response.currency.key,
+          name: response.currency.name,
+          glyph: response.currency.glyph,
+          emoji_flag: response.currency.emoji_flag
+        }
+      } as Advertiser
     }
 
     console.log('ERROR: ', response.message)
@@ -206,7 +266,7 @@ export async function all (token: string, filters?: AdvertiserFilters, options?:
               glyph: value.currency.glyph,
               emoji_flag: value.currency.emoji_flag
             }
-          } as Advertiser_Scheme_2
+          } as Advertiser
 
           advertisers.push(advertiser)
         }
@@ -284,7 +344,7 @@ export async function paginated (token: string, paginated: AdvertiserPaginated, 
             glyph: value.currency.glyph,
             emoji_flag: value.currency.emoji_flag
           }
-        } as Advertiser_Scheme_2
+        } as Advertiser
 
         advertisers.push(advertiser)
       })

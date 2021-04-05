@@ -1,114 +1,168 @@
 <template>
-	<v-main class="main shadow">
-		<v-container
-			class="justify-center align-center align-self-center"
-			justify="center"
-		>
-			<div class="imag d-none d-lg-block"></div>
-			<div
-				class="text-container bg-white pa-16"
-				justify="center"
-				no-gutters
-			>
-				<v-card-title class="form-title text-capitalize">
-					{{ $t("login") }}
-				</v-card-title>
+	<v-main class="main" :class="{ mobile: $vuetify.breakpoint.mobile }">
+		<v-container class="pa-8 fill-height">
+			<v-row>
+				<v-col>
+					<v-flex class="d-flex flex-row justify-center align-center">
+						<div
+							v-if="!$vuetify.breakpoint.mobile"
+							class="image-container"
+						></div>
+						<div
+							class="form-container d-flex"
+							justify="center"
+							align="center"
+						>
+							<v-card elevation="0" width="100%">
+								<v-card-title
+									class="form-title text-capitalize"
+								>
+									{{ $t("login") }}
+								</v-card-title>
 
-				<v-form
-					ref="form"
-					class="pa-8"
-					justify="center"
-					no-gutters
-					v-model="valid"
-					lazy-validation
-				>
-					<v-alert
-						v-if="message.length"
-						dismissible
-						color="error"
-						outlined
-						class="mx-3"
-						icon="mdi-alert-circle-outline"
-					>
-						{{ $t(message) }}
-					</v-alert>
-
-					<v-container>
-						<v-row>
-							<v-col cols="12" sm="12">
-								<v-text-field
-									v-model="email"
-									ref="email"
-									class="label-fixed"
-									value=""
-									:label="$t('enterEmail')"
-									:rules="emailRules"
-									:disabled="loading"
-								></v-text-field>
-							</v-col>
-							<v-col cols="12" sm="12">
-								<v-text-field
-									v-model="password"
-									ref="password"
-									class="label-fixed"
-									value=""
-									:label="$t('enterPassword')"
-									:rules="passwordRules"
-									clearable
-									:disabled="loading"
-								></v-text-field>
-							</v-col>
-							<v-col cols="12" sm="12">
-								<v-card-actions>
-									<v-row
+								<v-card-text>
+									<v-form
+										ref="form"
+										justify="center"
 										align="center"
-										justify="space-between"
+										v-model="valid"
+										lazy-validation
 									>
-										<v-btn
-											:block="$vuetify.breakpoint.xs"
-											rounded
-											text
-											color="secondary"
-											class="text-capitalize"
-											:disabled="loading"
-											href="/auth/forgot-password"
+										<v-alert
+											v-if="message.length"
+											dismissible
+											color="error"
+											outlined
+											icon="mdi-alert-circle-outline"
 										>
-											{{ $t("forgotPassword") }}
-										</v-btn>
-										<v-switch
-											inset
-											v-model="rememberMe"
-											:label="$t('rememberMe')"
-											color="secondary"
-											class="secondary--text"
-											:disabled="loading"
-										></v-switch>
-									</v-row>
-								</v-card-actions>
-								<v-card-actions class="mt-8">
-									<v-row align="end" justify="end">
-										<v-btn
-											:block="$vuetify.breakpoint.xs"
-											color="secondary"
-											class="px-16"
-											rounded
-											:disabled="loading"
-											@click="handleLogin"
-										>
-											{{ $t("login") }}
-										</v-btn>
-									</v-row>
-								</v-card-actions>
-							</v-col>
-						</v-row>
-					</v-container>
-				</v-form>
-			</div>
+											{{ $t(message) }}
+										</v-alert>
+
+										<v-container>
+											<v-row>
+												<v-col cols="12" sm="12">
+													<v-text-field
+														v-model="email"
+														ref="email"
+														class="label-fixed"
+														value=""
+														:label="
+															$t('enterEmail')
+														"
+														:rules="emailRules"
+														:disabled="loading"
+													></v-text-field>
+												</v-col>
+												<v-col cols="12" sm="12">
+													<v-text-field
+														v-model="password"
+														ref="password"
+														class="label-fixed"
+														value=""
+														:label="
+															$t('enterPassword')
+														"
+														:rules="passwordRules"
+														clearable
+														:disabled="loading"
+													></v-text-field>
+												</v-col>
+												<v-col cols="12" sm="12">
+													<v-card-actions
+														class="mt-8"
+													>
+														<v-row
+															align="center"
+															justify="space-between"
+														>
+															<v-btn
+																:block="
+																	$vuetify
+																		.breakpoint
+																		.xs
+																"
+																rounded
+																text
+																color="secondary"
+																class="text-capitalize"
+																:disabled="
+																	loading
+																"
+																href="/auth/forgot-password"
+															>
+																{{
+																	$t(
+																		"forgotPassword"
+																	)
+																}}
+															</v-btn>
+															<v-switch
+																inset
+																v-model="
+																	rememberMe
+																"
+																:label="
+																	$t(
+																		'rememberMe'
+																	)
+																"
+																color="secondary"
+																class="secondary--text"
+																:disabled="
+																	loading
+																"
+															></v-switch>
+														</v-row>
+													</v-card-actions>
+												</v-col>
+												<v-col cols="12" sm="12">
+													<v-card-actions
+														class="mt-8"
+													>
+														<v-row
+															align="end"
+															justify="end"
+														>
+															<v-btn
+																:block="
+																	$vuetify
+																		.breakpoint
+																		.xs
+																"
+																color="secondary"
+																class="px-16"
+																rounded
+																:disabled="
+																	loading
+																"
+																@click="
+																	handleLogin
+																"
+															>
+																{{
+																	$t("login")
+																}}
+															</v-btn>
+														</v-row>
+													</v-card-actions>
+												</v-col>
+											</v-row>
+										</v-container>
+									</v-form>
+								</v-card-text>
+							</v-card>
+						</div>
+					</v-flex>
+				</v-col>
+				<v-overlay :value="loading">
+					<v-progress-circular
+						indeterminate
+						size="64"
+					></v-progress-circular>
+					<p class="mt-8">{{ $t("loading") }}</p>
+				</v-overlay>
+			</v-row>
 		</v-container>
-		<v-overlay :value="loading">
-			<v-progress-circular indeterminate size="64"></v-progress-circular>
-			<p class="mt-8">{{ $t("loading") }}</p>
-		</v-overlay>
 	</v-main>
 </template>
 

@@ -1,5 +1,5 @@
 <template>
-	<section class="white" :style="width">
+	<section :style="width">
 		<v-text-field
 			v-model="term"
 			ref="term"
@@ -66,7 +66,7 @@
 					case "lg":
 						return "width: 40%";
 					case "xl":
-						return "width: 40%";
+						return "width: 30%";
 				}
 			},
 		},

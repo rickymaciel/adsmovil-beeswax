@@ -1,5 +1,5 @@
 <template>
-	<v-container fluid>
+	<v-container class="mt-8">
 		<v-row no-gutters>
 			<v-col cols="12">
 				<TitleWelcome

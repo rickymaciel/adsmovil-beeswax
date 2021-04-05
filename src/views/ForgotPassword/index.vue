@@ -1,94 +1,111 @@
 <template>
-	<v-main class="main shadow">
-		<v-container
-			class="justify-center align-center align-self-center"
-			justify="center"
-		>
-			<div class="imag d-none d-lg-block"></div>
-			<div
-				class="text-container bg-white pa-16"
-				justify="center"
-				no-gutters
-			>
-				<v-card-title class="form-title text-capitalize">
-					{{ $t("forgotPassword") }}
-				</v-card-title>
-
-				<v-form
-					ref="form"
-					class="pa-8"
-					justify="center"
-					no-gutters
-					v-model="valid"
-					lazy-validation
-				>
-					<v-alert
-						v-if="message.length"
-						dismissible
-						color="error"
-						outlined
-						class="mx-3"
-						icon="mdi-alert-circle-outline"
-					>
-						{{ $t(message) }}
-					</v-alert>
-
-					<v-container>
-						<v-row>
-							<v-col cols="12" sm="12">
-								<v-text-field
-									v-model="email"
-									ref="email"
-									class="label-fixed"
-									value=""
-									:label="$t('enterEmail')"
-									:rules="emailRules"
-									:disabled="loading"
-								></v-text-field>
-							</v-col>
-							<v-col cols="12" sm="12">
-								<v-card-actions>
-									<v-row
-										align="center"
-										justify="space-between"
+	<v-main class="main" :class="{ mobile: $vuetify.breakpoint.mobile }">
+		<v-responsive :min-width="$vuetify.breakpoint.mobile ? 100 : 1200">
+			<v-container class="pa-8 fill-height">
+				<v-row>
+					<v-col>
+						<v-flex
+							class="d-flex flex-row justify-center align-center"
+						>
+							<div
+								v-if="!$vuetify.breakpoint.mobile"
+								class="image-container"
+							></div>
+							<div
+								class="form-container d-flex flex-row justify-center align-center"
+							>
+								<v-card width="100%" elevation="0">
+									<v-card-title
+										class="form-title text-capitalize mb-16"
 									>
-										<v-btn
-											:block="$vuetify.breakpoint.xs"
-											rounded
-											text
-											color="secondary"
-											class="text-capitalize"
-											:disabled="loading"
-											href="/auth/login"
+										{{ $t("forgotPassword") }}
+									</v-card-title>
+
+									<v-card-text>
+										<v-form
+											ref="form"
+											v-model="valid"
+											lazy-validation
 										>
-											{{ $t("backLogin") }}
-										</v-btn>
-									</v-row>
-								</v-card-actions>
-								<v-card-actions class="mt-8">
-									<v-row align="end" justify="end">
-										<v-btn
-											:block="$vuetify.breakpoint.xs"
-											color="secondary"
-											class="px-16"
-											rounded
-											:disabled="loading"
-											@click="handleAction"
-										>
-											{{ $t("resetPassword") }}
-										</v-btn>
-									</v-row>
-								</v-card-actions>
-							</v-col>
-						</v-row>
-					</v-container>
-				</v-form>
-			</div>
-		</v-container>
-		<v-overlay :value="loading">
-			<v-progress-circular indeterminate size="64"></v-progress-circular>
-			<p class="mt-8">{{ $t("loading") }}</p>
-		</v-overlay>
+											<v-alert
+												v-if="message.length"
+												dismissible
+												color="error"
+												outlined
+												icon="mdi-alert-circle-outline"
+											>
+												{{ $t(message) }}
+											</v-alert>
+
+											<v-text-field
+												v-model="email"
+												ref="email"
+												class="label-fixed"
+												value=""
+												:label="$t('enterEmail')"
+												:rules="emailRules"
+												:disabled="loading"
+											></v-text-field>
+
+											<v-card-actions class="mt-8">
+												<v-row
+													align="center"
+													justify="space-between"
+												>
+													<v-btn
+														:block="
+															$vuetify.breakpoint
+																.xs
+														"
+														rounded
+														text
+														color="secondary"
+														class="text-capitalize"
+														:disabled="loading"
+														href="/auth/login"
+													>
+														{{ $t("backLogin") }}
+													</v-btn>
+												</v-row>
+											</v-card-actions>
+											<v-card-actions class="mt-8">
+												<v-row
+													align="end"
+													justify="end"
+												>
+													<v-btn
+														:block="
+															$vuetify.breakpoint
+																.xs
+														"
+														color="secondary"
+														class="px-16 float-end"
+														rounded
+														:disabled="loading"
+														@click="handleLogin"
+													>
+														{{
+															$t("resetPassword")
+														}}
+													</v-btn>
+												</v-row>
+											</v-card-actions>
+										</v-form>
+									</v-card-text>
+								</v-card>
+							</div>
+						</v-flex>
+					</v-col>
+					<v-overlay :value="loading">
+						<v-progress-circular
+							indeterminate
+							size="64"
+						></v-progress-circular>
+						<p class="mt-8">{{ $t("loading") }}</p>
+					</v-overlay>
+				</v-row>
+			</v-container>
+		</v-responsive>
 	</v-main>
 </template>
 

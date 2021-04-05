@@ -5,17 +5,18 @@ import colors from 'vuetify/lib/util/colors'
 Vue.use(Vuetify)
 
 export default new Vuetify({
-	theme: {
-		dark: false,
-		options: { customProperties: true },
-		themes: {
-			light: {
-				primary: '#3A4972',
-				secondary: '#9E2272'
-			},
-			dark: {
-				primary: colors.grey.base
-			}
-		}
-	}
+    theme: {
+        dark: false,
+        options: { customProperties: true },
+        themes: {
+            light: {
+                primary: '#3A4972',
+                secondary: '#9E2272',
+                accent: '#00A2D8'
+            },
+            dark: {
+                primary: colors.grey.base
+            }
+        }
+    }
 })
