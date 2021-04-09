@@ -49,7 +49,7 @@
 				:small="$vuetify.breakpoint.mobile"
 				raised
 				rounded
-				>Custime View</v-btn
+				>Customize View</v-btn
 			>
 			<v-btn
 				class="me-4 mb-1"

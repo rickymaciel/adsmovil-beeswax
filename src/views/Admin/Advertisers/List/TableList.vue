@@ -1,45 +1,29 @@
 <template>
 	<section>
+		<!-- <div class="pa-4 white--text red darken-2">
+			Total: {{ getTotalFiltered }}
+		</div> -->
+		<!-- <div class="pa-4 white--text grey darken-3">
+			<div>filtered:</div>
+			{{ filtered }}
+		</div>
+		<div class="pa-4 white--text grey darken-3">
+			<div>filteredData:</div>
+			{{ filteredData }}
+		</div> -->
 		<v-data-table
-			v-model="selected"
 			:headers="headers"
-			:items="items"
-			:single-select="singleSelect"
-			item-key="name"
-			show-select
+			:items="filteredData"
+			item-key="advertiser"
 			class="elevation-1"
 			hide-default-footer
-			:footer-props="{
-				showFirstLastPage: true,
-				firstIcon: 'mdi-arrow-collapse-left',
-				lastIcon: 'mdi-arrow-collapse-right',
-				prevIcon: 'mdi-minus',
-				nextIcon: 'mdi-plus',
-			}"
+			:mobile-breakpoint="null"
 		>
-			<template v-slot:[`header.data-table-select`]="{ props, on }">
-				<v-simple-checkbox
-					color="accent"
-					v-if="props.indeterminate"
-					v-ripple
-					v-bind="props"
-					:value="props.indeterminate"
-					v-on="on"
-				></v-simple-checkbox>
-				<v-simple-checkbox
-					color="accent"
-					v-if="!props.indeterminate"
-					v-ripple
-					v-bind="props"
-					v-on="on"
-				></v-simple-checkbox>
-			</template>
-
 			<!-- LABEL -->
 
 			<!-- id -->
 			<template v-slot:[`header.id`]="{ header }">
-				<v-menu min-width="100" :close-on-content-click="false">
+				<v-menu :close-on-content-click="false">
 					<template v-slot:activator="{ on, attrs }">
 						<div v-bind="attrs" v-on="on">
 							{{ header.text.toUpperCase() }}
@@ -47,14 +31,14 @@
 						</div>
 					</template>
 
-					<v-list subheader two-line flat>
+					<v-list subheader>
 						<v-subheader>Sort</v-subheader>
 
 						<v-list-item>
 							<v-text-field
 								class="label-fixed no-top"
 								ref="id"
-								v-model="header.id"
+								v-model="filter.id.value"
 								type="number"
 								:placeholder="header.text"
 								clearable
@@ -64,7 +48,7 @@
 						<v-divider></v-divider>
 
 						<v-list-item>
-							<v-radio-group v-model="radios">
+							<v-radio-group v-model="filter.id.order">
 								<v-radio color="secondary" value="asc">
 									<template v-slot:label>
 										<div>Ascending</div>
@@ -83,7 +67,7 @@
 
 			<!-- name -->
 			<template v-slot:[`header.name`]="{ header }">
-				<v-menu min-width="100" :close-on-content-click="false">
+				<v-menu :close-on-content-click="false">
 					<template v-slot:activator="{ on, attrs }">
 						<div v-bind="attrs" v-on="on">
 							{{ header.text }}
@@ -91,14 +75,14 @@
 						</div>
 					</template>
 
-					<v-list subheader two-line flat>
+					<v-list subheader>
 						<v-subheader>Filter</v-subheader>
 
 						<v-list-item>
 							<v-text-field
 								class="label-fixed no-top"
 								ref="id"
-								v-model="header.name"
+								v-model="filter.name.value"
 								type="text"
 								:placeholder="header.text"
 								clearable
@@ -114,6 +98,7 @@
 								block
 								outlined
 								rounded
+								@click="removeFilterName()"
 							>
 								Remove filter
 							</v-btn>
@@ -124,7 +109,7 @@
 
 			<!-- active -->
 			<template v-slot:[`header.active`]="{ header }">
-				<v-menu min-width="100" :close-on-content-click="false">
+				<v-menu :close-on-content-click="false">
 					<template v-slot:activator="{ on, attrs }">
 						<div v-bind="attrs" v-on="on">
 							{{ header.text }}
@@ -155,7 +140,7 @@
 
 			<!-- category -->
 			<template v-slot:[`header.category`]="{ header }">
-				<v-menu min-width="100" :close-on-content-click="false">
+				<v-menu :close-on-content-click="false">
 					<template v-slot:activator="{ on, attrs }">
 						<div v-bind="attrs" v-on="on">
 							{{ header.text }}
@@ -234,6 +219,7 @@
 </template>
 
 <script lang="ts">
+	import { isNull, orderBy, sortBy } from "lodash";
 	import Vue from "vue";
 
 	export default Vue.extend({
@@ -272,8 +258,17 @@
 		components: {},
 		data: () => ({
 			radios: false,
-			singleSelect: false,
-			selected: [],
+			filter: {
+				id: {
+					value: "",
+					order: "asc",
+				},
+				name: {
+					value: "",
+					order: "asc",
+				},
+			},
+			filtered: [],
 		}),
 
 		created() {},
@@ -284,15 +279,71 @@
 			getLength() {
 				return Math.ceil(this.total / this.per_page);
 			},
+
+			getTotalFiltered() {
+				return this.filtered.length;
+			},
+
+			filteredData() {
+				this.filtered = this.items;
+				// filter by id
+				if (!isNull(this.filter.id.value)) {
+					this.filtered = this.filtered.filter((item: { id: string }) => {
+						return String(item.id)
+							.toLowerCase()
+							.includes(this.filter.id.value.toLowerCase());
+					});
+				}
+
+				// filter by name
+				if (!isNull(this.filter.name.value)) {
+					this.filtered = this.filtered.filter(
+						(item: { name: string }) => {
+							return item.name
+								.toLowerCase()
+								.includes(this.filter.name.value.toLowerCase());
+						}
+					);
+				}
+				this.sorteredData();
+				return this.filtered;
+			},
 		},
 
 		methods: {
+			sorteredData() {
+				this.filtered = orderBy(
+					this.filtered,
+					["name"],
+					[this.filter.name.order]
+				);
+
+				this.filtered = orderBy(
+					this.filtered,
+					["id"],
+					[this.filter.id.order]
+				);
+			},
 			getColor(active: Boolean) {
 				return active ? "green--text" : "red--text";
 			},
 			getActiveText(active: Boolean) {
 				return active ? "Active" : "Inactive";
 			},
+			removeFilterName() {
+				this.filter.name.value = "";
+			},
 		},
+
+		// watch: {
+		// 	"filter.id.order": function (data) {
+		// 		this.filtered = this.filteredData;
+		// 		console.log("watch:id:order", {
+		// 			data: data,
+		// 			list: this.filtered,
+		// 			filter: this.filter,
+		// 		});
+		// 	},
+		// },
 	});
 </script>

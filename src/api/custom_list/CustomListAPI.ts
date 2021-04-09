@@ -1,6 +1,14 @@
 import { forEach, isEmpty, isUndefined } from 'lodash'
-import { CUSTOM_LIST_ROUTE, AxiosPost, AxiosGet, AxiosPatch, ADVERTISER_ROUTE } from '@/api/AxiosService'
-import { CustomList, CustomListDataCreate, CustomListDataUpdate } from '@/interfaces/custom_list'
+import { CUSTOM_LIST_ROUTE, AxiosPost, AxiosGet, AxiosPatch } from '@/api/AxiosService'
+import {
+  CustomList,
+  CustomListDataCreate,
+  CustomListDataUpdate,
+  CustomListFilters,
+  CustomListOptions,
+  CustomListPaginated,
+  List
+} from '@/interfaces/custom_list'
 
 export async function create (customList: CustomListDataCreate, token: string) {
   try {
@@ -114,4 +122,193 @@ export async function show (id: number, token: string) {
     console.log('EXCEPTION: ', error)
     return null
   }
+}
+
+export async function all (token: string, filters?: CustomListFilters, options?: CustomListOptions) {
+  try {
+    let filter = ''
+    let option = ''
+
+    if (!isUndefined(filters)) {
+      filter = getFilters(filters)
+    }
+
+    if (!isUndefined(options)) {
+      option += getOptions(options, 'all')
+    }
+
+    const url = getURL(filter, option)
+    const response = await AxiosGet(CUSTOM_LIST_ROUTE + url, token)
+
+    const customs_lists = [] as any
+
+    if (!isEmpty(response) && response.length > 0) {
+      forEach(response, function (value, key) {
+        const custom_list = {
+          id: value.id,
+          account_id: value.account_id,
+          external_id: value.external_id,
+          name: value.name,
+          custom_list_type_id: value.custom_list_type_id,
+          delimiter: value.delimiter,
+          default_radius_km: value.default_radius_km,
+          notes: value.notes,
+          active: value.active,
+          created_by: value.created_by,
+          updated_by: value.updated_by,
+          deleted_by: value.deleted_by,
+          created_at: value.created_at,
+          updated_at: value.updated_at
+        } as CustomList
+
+        customs_lists.push(custom_list)
+      })
+
+      return customs_lists
+    }
+
+    console.log('ERROR: ', response.message)
+
+    return null
+  } catch (error) {
+    console.log('EXCEPTION: ', error)
+    return null
+  }
+}
+
+export async function paginated (token: string, paginated: CustomListPaginated, filters?: CustomListFilters, options?: CustomListOptions) {
+  try {
+    let filter = ''
+    let option = ''
+
+    if (!isUndefined(filters)) {
+      filter = getFilters(filters)
+    }
+
+    if (!isUndefined(options)) {
+      option += getOptions(options, 'paginated', paginated)
+    }
+
+    const url = getURL(filter, option)
+    const response = await AxiosGet(CUSTOM_LIST_ROUTE + url, token)
+
+    const customs_lists = [] as any
+
+    if (!isEmpty(response) && !isUndefined(response.data) && response.data.length > 0) {
+      forEach(response.data, function (value, key) {
+        const custom_list = {
+          id: value.id,
+          account_id: value.account_id,
+          external_id: value.external_id,
+          name: value.name,
+          custom_list_type_id: value.custom_list_type_id,
+          delimiter: value.delimiter,
+          default_radius_km: value.default_radius_km,
+          notes: value.notes,
+          active: value.active,
+          created_by: value.created_by,
+          updated_by: value.updated_by,
+          deleted_by: value.deleted_by,
+          created_at: value.created_at,
+          updated_at: value.updated_at
+        } as CustomList
+
+        customs_lists.push(custom_list)
+      })
+
+      return {
+        page: paginated.page,
+        customs_lists
+      }
+    }
+
+    console.log('ERROR: ', response.message)
+
+    return null
+  } catch (error) {
+    console.log('EXCEPTION: ', error)
+    return null
+  }
+}
+
+export async function list (token: string, filters?: CustomListFilters, options?: CustomListOptions) {
+  try {
+    let filter = ''
+    let option = ''
+
+    if (!isUndefined(filters)) {
+      filter = getFilters(filters)
+    }
+
+    if (!isUndefined(options)) {
+      option += getOptions(options, 'list')
+    }
+
+    const url = getURL(filter, option)
+    const response = await AxiosGet(CUSTOM_LIST_ROUTE + url, token)
+
+    const list = [] as any
+
+    if (!isEmpty(response)) {
+      forEach(response, function (value, key) {
+        const item = {
+          id: parseInt(key),
+          value: value
+        } as List
+
+        list.push(item)
+      })
+
+      return list
+    }
+
+    console.log('ERROR: ', response.message)
+
+    return null
+  } catch (error) {
+    console.log('EXCEPTION: ', error)
+    return null
+  }
+}
+
+function getFilters (filters: CustomListFilters): string {
+  let filter = ''
+
+  const name = (isUndefined(filters.name)) ? '' : filters.name
+  const external_id = (isUndefined(filters.external_id)) ? '' : filters.external_id
+  const type_id = (isUndefined(filters.custom_list_type_id)) ? '' : filters.custom_list_type_id
+  const active = (isUndefined(filters.active)) ? '' : filters.active
+
+  filter += 'filters[name]=' + name + '&filters[external_id]=' + external_id + '&filters[custom_list_type_id]=' + type_id + '&filters[active]=' + active
+
+  return filter
+}
+
+function getOptions (options: CustomListOptions, mode: string, paginated?: CustomListPaginated): string {
+  let option = ''
+
+  const sort = (isUndefined(options.sort)) ? '' : options.sort
+  const order = (isUndefined(options.order)) ? '' : options.order
+
+  option += 'sort=' + sort + '&order=' + order + '&mode=' + mode
+
+  if (mode == 'paginated') {
+    option += '&page=' + paginated?.page + '&limit=' + paginated?.limit
+  }
+
+  return option
+}
+
+function getURL (filters: string, options: string): string {
+  let url = ''
+
+  if (!isEmpty(filters) && !isEmpty(options)) {
+    url = '?' + filters + '&' + options
+  } else if (!isEmpty(filters)) {
+    url = '?' + filters
+  } else if (!isEmpty(options)) {
+    url = '?' + options
+  }
+
+  return url
 }

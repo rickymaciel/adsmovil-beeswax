@@ -6,7 +6,7 @@
 					color="transparent"
 					flat
 					tile
-					height="100px"
+					height="80px"
 					align-center
 					justify-center
 				>
@@ -157,15 +157,14 @@
 						<v-tabs-slider
 							color="secondary"
 							size="8"
-							class="mb-2"
+							class="mb-2 pa-0 ma-0"
 						></v-tabs-slider>
 						<v-tab
 							class="text-capitalize"
 							:disabled="item.disabled"
 							v-for="(item, index) in items"
-							@click="changeItem(item)"
 							:key="index"
-							:href="item.href"
+							:to="item.href"
 						>
 							{{ item.text }}
 						</v-tab>
@@ -193,7 +192,6 @@
 
 		data: function () {
 			return {
-				links: ["Dashboard", "Profile"],
 				currentItem: "",
 			};
 		},
@@ -238,13 +236,6 @@
 			},
 		},
 		methods: {
-			changeItem(item: { href: any }) {
-				this.currentItem = `tab-${item.href}`;
-				console.log("changeItem", {
-					currentItem: this.currentItem,
-					item: item,
-				});
-			},
 			getFirtsLetter(data: any, element: string): string {
 				if (
 					isNull(data) ||

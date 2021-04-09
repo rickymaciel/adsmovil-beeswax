@@ -24,6 +24,8 @@ axios.interceptors.response.use(function (response) {
 export const LOGIN_ROUTE = '/api/auth/login'
 export const LOGOUT_ROUTE = '/api/auth/logout'
 export const PROFILE_ROUTE = '/api/auth/me'
+export const FORGOT_ROUTE = '/api/auth/password/forgot'
+export const RESET_ROUTE = '/api/auth/password/reset'
 export const PERMISSION_ROUTE = '/api/auth/permissions'
 export const INITIALIZE_ROUTE = '/api/auth/init'
 export const USER_ROUTE = '/api/users'

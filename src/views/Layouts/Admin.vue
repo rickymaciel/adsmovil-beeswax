@@ -30,7 +30,7 @@
 					href: "/admin/dashboard",
 				},
 				{
-					text: "Adsvertiser",
+					text: "Adsvertisers",
 					disabled: false,
 					href: "/admin/advertisers/index",
 				},

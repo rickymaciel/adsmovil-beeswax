@@ -1,7 +1,7 @@
-import { initialize, login, logout, permissions, profile } from './auth/AuthApi'
+import { login, logout, initialize, profile, forgot, reset, permissions } from './auth/AuthApi'
 //import { create, update, remove, show, all, list, paginated, resendEmail } from './user/UserApi'
 //import { create, update, changeStatus, show, all, list, paginated, categories } from './advertiser/AdvertiserApi'
-import { create, update, changeStatus, show } from './custom_list/CustomListAPI'
+//import { create, update, changeStatus, show, all, paginated, list } from './custom_list/CustomListAPI'
 //import { list } from './timezone/timezoneAPI'
 //import { list } from './currency/CurrencyAPI'
 //import { list } from './custom_list/ExchangesAPI'
@@ -65,6 +65,43 @@ const test_initialize = {
       } as UserInit, '62eeb259c56a3600e87a36f50811e25f053938f5fb4dbd23b11e61fd1bf50494', value)
 
       return data_profile
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_forgot_password = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_forgot = await forgot('mef_l@hotmail.com', value)
+      console.log('DATA FORGOT', data_forgot)
+      return data_forgot
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_reset_password = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_reset = await reset({
+        email: 'mef_l@hotmail.com',
+        password: '12345678',
+        password_confirmation: '12345678',
+        token: '60dabfb8cc7abcb5859eba2f41d4cf52d91d9137c1be6f96121cdc31d7672653'
+      }, value)
+      console.log('DATA RESET', data_reset)
+      return data_reset
     }).catch(error => {
       console.log('EXCEPTION: ', error)
       return null
@@ -384,7 +421,7 @@ const test_custom_list_types = {
       return null
     })
   }
-}*/
+}
 
 const test_custom_list_create = {
   data: function () {
@@ -454,9 +491,9 @@ const test_get_custom_list = {
       resolve(token)
     }).then(async value => {
       // const data_custom_list = await all(value, {}, { sort: 'name', order: 'asc' })
-      // const data_custom_list = await paginated(value, { page: 1, limit: 15 }, { name: 'advertiser' }, { sort: 'name', order: 'asc' })
+      // const data_custom_list = await paginated(value, { page: 3, limit: 25 }, { name: 'test' }, { sort: 'name', order: 'asc' })
       // const data_custom_list = await list(value, {}, { sort: 'name', order: 'asc' })
-      const data_custom_list = await show(2, value)
+      const data_custom_list = await show(63, value)
 
       console.log('CUSTOM LIST', data_custom_list)
 
@@ -466,7 +503,7 @@ const test_get_custom_list = {
       return null
     })
   }
-}
+}*/
 /* -------- END CUSTOM LIST -------- */
 
-export default test_get_custom_list
+export default test_reset_password

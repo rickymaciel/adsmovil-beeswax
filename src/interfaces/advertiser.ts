@@ -105,7 +105,7 @@ export interface Category {
     name: string;
 }
 
-export interface AdvertiserFilters {// name, category_id, domain, app_bundle, external_id, active
+export interface AdvertiserFilters {
     name?: string;
     category_id?: number;
     external_id?: number;
