@@ -191,7 +191,7 @@
 				</strong>
 			</template>
 
-			<template v-slot:[`item.actions`]="{}">
+			<template v-slot:[`item.actions`]="{ item }">
 				<v-card-actions>
 					<v-btn
 						color="secondary"
@@ -201,6 +201,10 @@
 						rounded
 						text
 						icon
+						:to="{
+							name: 'AdvertiserEdit',
+							params: { id: item.id },
+						}"
 					>
 						<v-icon small class="secondary--text">
 							mdi-pencil
@@ -219,7 +223,7 @@
 </template>
 
 <script lang="ts">
-	import { isNull, orderBy, sortBy } from "lodash";
+	import { isNull, orderBy } from "lodash";
 	import Vue from "vue";
 
 	export default Vue.extend({

@@ -1,0 +1,35 @@
+{
+    "welcomeMsg": "Hello {name}",
+    "welcomeMsgDashboard": "Welcome to your Dashboard",
+    "menu": {
+        "item1": "Dashboard",
+        "item2": "Advertiser",
+        "item3": "Campaigns",
+        "item4": "Line Item",
+        "item5": "Creative",
+        "item6": "Reporting",
+        "item7": "Tools"
+    },
+    "Unauthorized": "Please enter a valid credential",
+    "login": "Login",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot Password",
+    "resetPassword": "Reset Password",
+    "rememberMe": "Keep me Logged in",
+    "enterEmail": "Enter email",
+    "enterPassword": "Enter password",
+    "loading": "Loading...",
+    "fieldRequired": "This field is required",
+    "minLength": "This field must be at least {min} characters",
+    "maxLength": "This field may not be greater than {max} characters.",
+    "invalidEmail": "E-mail must be valid",
+    "backLogin": "Back to login",
+    "Search": "Search",
+    "advertisers": {
+        "created": "Your changes have been saved successfully",
+        "failed": "Your changes weren’t saved"
+    },
+    "success": "Your changes have been saved successfully",
+    "failed": "Your changes weren’t saved"
+}

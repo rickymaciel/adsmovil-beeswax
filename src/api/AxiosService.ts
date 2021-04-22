@@ -37,6 +37,7 @@ export const CURRENCY_ROUTE = '/api/list/currencies'
 export const CUSTOM_LIST_ROUTE = '/api/custom_lists'
 export const CUSTOM_LIST_EXCHANGE_ROUTE = '/api/list/custom_list_exchanges'
 export const CUSTOM_LIST_TYPES_ROUTE = '/api/list/custom_list_types'
+export const LIST_ITEM_ROUTE = '/api/custom_list_items'
 
 export function AxiosPost (url: string, payload: any, token: string) {
   return axios.post(url, payload, {

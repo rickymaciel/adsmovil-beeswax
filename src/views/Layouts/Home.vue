@@ -13,15 +13,15 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+	import Vue from "vue";
 
-export default Vue.extend({
-	name: 'LayoutHome',
-	data: () => ({}),
-	created () {
-		console.log('Using LayoutHome')
-	},
-	computed: {},
-	methods: {}
-})
+	export default Vue.extend({
+		name: "LayoutHome",
+		data: () => ({}),
+		created() {
+			//console.log('Using LayoutHome')
+		},
+		computed: {},
+		methods: {},
+	});
 </script>

@@ -1,0 +1,317 @@
+import { forEach, isEmpty, isUndefined } from 'lodash'
+import { LIST_ITEM_ROUTE, AxiosPost, AxiosGet, AxiosPatch, AxiosDelete } from '@/api/AxiosService'
+import {
+  ListItem,
+  ListItemDataCreate,
+  ListItemFilters,
+  ListItemOptions,
+  ListItemPaginated,
+  List, ListItemDataUpdate
+} from '@/interfaces/list_items'
+
+export async function create (listItem: ListItemDataCreate, customListType: string, token: string) {
+  try {
+    if (customListType == 'lat_long') {
+      if (isUndefined(listItem.list_item.lat) || isUndefined(listItem.list_item.long) || isUndefined(listItem.list_item.radius_km)) {
+        return 'Field list_item invalid format.'//{'lat':number,'long':number,'radius_km':number}
+      }
+    }
+
+    const response = await AxiosPost(LIST_ITEM_ROUTE, listItem, token)
+
+    if (!isEmpty(response) && !isUndefined(response.id)) {
+      return {
+        id: response.id,
+        external_id: response.external_id,
+        list_item: response.list_item,
+        value: response.value,
+        name: response.name,
+        active: response.active,
+        custom_list_id: response.custom_list_id,
+        created_by: response.created_by,
+        updated_by: response.updated_by,
+        deleted_by: response.deleted_by,
+        created_at: response.created_at,
+        updated_at: response.updated_at,
+        deleted_at: response.deleted_at
+      } as ListItem
+    }
+
+    console.log('ERROR: ', response)
+
+    return null
+  } catch (error) {
+    console.log('EXCEPTION: ', error)
+    return null
+  }
+}
+
+export async function update (listItem: ListItemDataUpdate, token: string) {
+  try {
+    const response = await AxiosPatch(LIST_ITEM_ROUTE + '/' + listItem.id, listItem, token)
+
+    if (!isEmpty(response) && !isUndefined(response.id)) {
+      return {
+        id: response.id,
+        external_id: response.external_id,
+        list_item: response.list_item,
+        value: response.value,
+        name: response.name,
+        active: response.active,
+        custom_list_id: response.custom_list_id,
+        created_by: response.created_by,
+        updated_by: response.updated_by,
+        deleted_by: response.deleted_by,
+        created_at: response.created_at,
+        updated_at: response.updated_at,
+        deleted_at: response.deleted_at
+      } as ListItem
+    }
+
+    console.log('ERROR: ', response)
+
+    return null
+  } catch (error) {
+    console.log('EXCEPTION: ', error)
+    return null
+  }
+}
+
+export async function changeStatus (id: number, status: boolean, token: string) {
+  try {
+    const active = status ? 1 : 0
+    const response = await AxiosPatch(LIST_ITEM_ROUTE + '/' + id + '/set/' + active, {}, token)
+
+    if (!isEmpty(response) && !isUndefined(response.id)) {
+      return true
+    }
+
+    console.log('ERROR: ', response.message)
+
+    return false
+  } catch (error) {
+    console.log('EXCEPTION: ', error)
+    return false
+  }
+}
+
+export async function deleted (id: number, token: string) {
+  try {
+    const response = await AxiosDelete(LIST_ITEM_ROUTE + '/' + id, token)
+
+    if (response.length == 0) {
+      return true
+    }
+
+    console.log('ERROR: ', response.message)
+
+    return false
+  } catch (error) {
+    console.log('EXCEPTION: ', error)
+    return false
+  }
+}
+
+export async function clear (id: number, token: string) {
+  try {
+    const response = await AxiosDelete(LIST_ITEM_ROUTE + '/clear/' + id, token)
+
+    if (response.length == 0) {
+      return true
+    }
+
+    console.log('ERROR: ', response.message)
+
+    return false
+  } catch (error) {
+    console.log('EXCEPTION: ', error)
+    return false
+  }
+}
+
+export async function all (token: string, filters?: ListItemFilters, options?: ListItemOptions) {
+  try {
+    let filter = ''
+    let option = ''
+
+    if (!isUndefined(filters)) {
+      filter = getFilters(filters)
+    }
+
+    if (!isUndefined(options)) {
+      option += getOptions(options, 'all')
+    }
+
+    const url = getURL(filter, option)
+    const response = await AxiosGet(LIST_ITEM_ROUTE + url, token)
+
+    const list_items = [] as any
+
+    if (!isEmpty(response) && response.length > 0) {
+      forEach(response, function (value, key) {
+        const list_item = {
+          id: value.id,
+          external_id: value.external_id,
+          list_item: value.list_item,
+          value: value.value,
+          name: value.name,
+          active: value.active,
+          custom_list_id: value.custom_list_id,
+          created_by: value.created_by,
+          updated_by: value.updated_by,
+          deleted_by: value.deleted_by,
+          created_at: value.created_at,
+          updated_at: value.updated_at,
+          deleted_at: value.deleted_at
+        } as ListItem
+
+        list_items.push(list_item)
+      })
+
+      return list_items
+    }
+
+    console.log('ERROR: ', response.message)
+
+    return null
+  } catch (error) {
+    console.log('EXCEPTION: ', error)
+    return null
+  }
+}
+
+export async function paginated (token: string, paginated: ListItemPaginated, filters?: ListItemFilters, options?: ListItemOptions) {
+  try {
+    let filter = ''
+    let option = ''
+
+    if (!isUndefined(filters)) {
+      filter = getFilters(filters)
+    }
+
+    if (!isUndefined(options)) {
+      option += getOptions(options, 'paginated', paginated)
+    }
+
+    const url = getURL(filter, option)
+    const response = await AxiosGet(LIST_ITEM_ROUTE + url, token)
+
+    const list_items = [] as any
+
+    if (!isEmpty(response) && !isUndefined(response.data) && response.data.length > 0) {
+      forEach(response.data, function (value, key) {
+        const list_item = {
+          id: value.id,
+          external_id: value.external_id,
+          list_item: value.list_item,
+          value: value.value,
+          name: value.name,
+          active: value.active,
+          custom_list_id: value.custom_list_id,
+          created_by: value.created_by,
+          updated_by: value.updated_by,
+          deleted_by: value.deleted_by,
+          created_at: value.created_at,
+          updated_at: value.updated_at,
+          deleted_at: value.deleted_at
+        } as ListItem
+
+        list_items.push(list_item)
+      })
+
+      return {
+        page: paginated.page,
+        list_items
+      }
+    }
+
+    console.log('ERROR: ', response.message)
+
+    return null
+  } catch (error) {
+    console.log('EXCEPTION: ', error)
+    return null
+  }
+}
+
+export async function list (token: string, filters?: ListItemFilters, options?: ListItemOptions) {
+  try {
+    let filter = ''
+    let option = ''
+
+    if (!isUndefined(filters)) {
+      filter = getFilters(filters)
+    }
+
+    if (!isUndefined(options)) {
+      option += getOptions(options, 'list')
+    }
+
+    const url = getURL(filter, option)
+    const response = await AxiosGet(LIST_ITEM_ROUTE + url, token)
+
+    const list_items = [] as any
+
+    if (!isEmpty(response)) {
+      forEach(response, function (value, key) {
+        const item = {
+          id: parseInt(key),
+          value: value
+        } as List
+
+        list_items.push(item)
+      })
+
+      return list_items
+    }
+
+    console.log('ERROR: ', response.message)
+
+    return null
+  } catch (error) {
+    console.log('EXCEPTION: ', error)
+    return null
+  }
+}
+
+function getFilters (filters: ListItemFilters): string {
+  let filter = ''
+
+  const name = (isUndefined(filters.name)) ? '' : filters.name
+  const external_id = (isUndefined(filters.external_id)) ? '' : filters.external_id
+  const list_item = (isUndefined(filters.list_item)) ? '' : filters.list_item
+  const active = (isUndefined(filters.active)) ? '' : filters.active
+
+  filter += 'filters[name]=' + name + '&filters[external_id]=' + external_id + '&filters[list_item]=' + list_item + '&filters[active]=' + active
+
+  return filter
+}
+
+function getOptions (options: ListItemOptions, mode: string, paginated?: ListItemPaginated): string {
+  let option = ''
+
+  const sort = (isUndefined(options.sort)) ? '' : options.sort
+  const order = (isUndefined(options.order)) ? '' : options.order
+
+  option += 'sort=' + sort + '&order=' + order + '&mode=' + mode
+
+  if (mode == 'paginated') {
+    option += '&page=' + paginated?.page + '&limit=' + paginated?.limit
+  }
+
+  return option
+}
+
+function getURL (filters: string, options: string): string {
+  let url = ''
+
+  if (!isEmpty(filters) && !isEmpty(options)) {
+    url = '?' + filters + '&' + options
+  } else if (!isEmpty(filters)) {
+    url = '?' + filters
+  } else if (!isEmpty(options)) {
+    url = '?' + options
+  }
+
+  return url
+}

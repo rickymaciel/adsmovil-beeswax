@@ -1,0 +1,35 @@
+{
+    "welcomeMsg": "Olá {name}",
+    "welcomeMsgDashboard": "Bem vindo ao seu painel",
+    "menu": {
+        "item1": "Painel",
+        "item2": "Anunciante",
+        "item3": "Campanhas",
+        "item4": "Item da linha",
+        "item5": "Criativo",
+        "item6": "Relatórios",
+        "item7": "Ferramentas"
+    },
+    "Unauthorized": "Por favor, insira uma credencial válida",
+    "login": "Iniciar sessão",
+    "email": "Correio eletrônico",
+    "password": "Senha",
+    "forgotPassword": "Esqueceu sua senha?",
+    "resetPassword": "Redefina sua senha",
+    "rememberMe": "Mantenha-me conectado",
+    "enterEmail": "Digite o e-mail",
+    "enterPassword": "Digite a senha",
+    "loading": "Carregando...",
+    "fieldRequired": "Este campo é obrigatório",
+    "minLength": "A senha deve ter pelo menos {min} caracteres",
+    "maxLength": "Este campo não pode ter mais de {max} caracteres.",
+    "invalidEmail": "E-mail deve ser válido",
+    "backLogin": "Volte ao login",
+    "Search": "Procurar",
+    "advertisers": {
+        "created": "Suas alterações foram salvas corretamente",
+        "failed": "Suas alterações não foram salvas"
+    },
+    "success": "Suas alterações foram salvas corretamente",
+    "failed": "Suas alterações não foram salvas"
+}

@@ -185,7 +185,7 @@
 		created() {},
 
 		mounted() {
-			console.log("mounted", { lang: this.$vuetify.lang });
+			//console.log("mounted", { lang: this.$vuetify.lang });
 		},
 
 		computed: {

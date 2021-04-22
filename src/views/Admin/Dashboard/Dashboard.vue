@@ -30,7 +30,9 @@
 
 		async created() {},
 
-		mounted() {},
+		mounted() {
+			console.log(this.$t("welcomeMsg"));
+		},
 
 		computed: {
 			getTitle() {

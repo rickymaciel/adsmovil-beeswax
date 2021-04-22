@@ -20,7 +20,7 @@
 		name: "LayoutAuth",
 		data: () => ({}),
 		created() {
-			console.log("Using LayoutAuth");
+			//console.log("Using LayoutAuth");
 		},
 		computed: {},
 		methods: {},

@@ -62,9 +62,9 @@
 			],
 		}),
 		created() {
-			console.log("Using LayoutAdmin", {
-				profile: this.$store.state.profile.profile,
-			});
+			// console.log("Using LayoutAdmin", {
+			// 	profile: this.$store.state.profile.profile,
+			// });
 		},
 		computed: {},
 		methods: {},

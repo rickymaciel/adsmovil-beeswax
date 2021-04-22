@@ -1,40 +1,27 @@
 <template>
-	<v-layout class="d-block ma-0 pa-0">
-		<v-layout class="white d-block ma-0 pa-0">
-			<AdvertiserHeader
-				:title="title"
-				:breadCrumbItems="breadCrumbItems"
-			></AdvertiserHeader>
+	<v-container class="my-0">
+		<v-layout column>
+			<Buttons></Buttons>
 		</v-layout>
-		<v-layout class="d-block ma-0 pa-0 pt-lg-4">
-			<v-container class="my-0">
-				<v-layout column>
-					<Buttons></Buttons>
-				</v-layout>
-			</v-container>
-			<v-container class="my-0">
-				<v-layout column>
-					<TableList
-						:current_page="Number(getResultPaginate.current_page)"
-						:next_page_url="String(getResultPaginate.next_page_url)"
-						:path="String(getResultPaginate.path)"
-						:per_page="Number(getResultPaginate.per_page)"
-						:prev_page_url="String(getResultPaginate.prev_page_url)"
-						:to="Number(getResultPaginate.to)"
-						:total="Number(getResultPaginate.total)"
-						:headers="prepareTableHeaders"
-						:items="prepareTableContent"
-					></TableList>
-				</v-layout>
-			</v-container>
+		<v-layout column>
+			<TableList
+				:current_page="Number(getResultPaginate.current_page)"
+				:next_page_url="String(getResultPaginate.next_page_url)"
+				:path="String(getResultPaginate.path)"
+				:per_page="Number(getResultPaginate.per_page)"
+				:prev_page_url="String(getResultPaginate.prev_page_url)"
+				:to="Number(getResultPaginate.to)"
+				:total="Number(getResultPaginate.total)"
+				:headers="prepareTableHeaders"
+				:items="prepareTableContent"
+			></TableList>
 		</v-layout>
-	</v-layout>
+	</v-container>
 </template>
 
 <script lang="ts">
-	import AdvertiserHeader from "./AdvertiserHeader.vue";
 	import TableList from "./TableList.vue";
-	import Buttons from "./Buttons.vue";
+	import Buttons from "../List/Buttons.vue";
 	import Vue from "vue";
 	import {
 		Advertiser,
@@ -47,28 +34,15 @@
 	export default Vue.extend({
 		name: "AdvertiserList",
 		props: {},
-		components: { AdvertiserHeader, TableList, Buttons },
+		components: { TableList, Buttons },
 		data: () => ({
-			title: "Advertiser",
-			breadCrumbItems: [],
+			title: "List",
 		}),
-		created() {
-			this.breadCrumbItems = [
-				{
-					text: "Dashboard",
-					disabled: false,
-					href: "/admin/dashboard",
-				},
-				{
-					text: "Adsvertiser",
-					disabled: true,
-					href: "/admin/advertisers/index",
-				},
-			];
-		},
+		created() {},
 		async mounted() {
+			this.setLoading(true);
 			const result = await this.dispatchAll();
-			console.log("mounted:dispatchAll", { result: result });
+			this.setLoading(false);
 		},
 		computed: {
 			getResultPaginate(): ResultPaginate {
@@ -94,7 +68,7 @@
 						sortable: false,
 						filterable: true,
 						value: "id",
-						width: "5%",
+						//width: "5%",
 					},
 					{
 						text: "Advertiser Name",
@@ -102,7 +76,7 @@
 						sortable: false,
 						filterable: true,
 						value: "name",
-						width: "20%",
+						//width: "20%",
 					},
 					{
 						text: "Active",
@@ -168,6 +142,9 @@
 			},
 		},
 		methods: {
+			setLoading(_loading: Boolean) {
+				this.$store.state.proccess.loading = _loading;
+			},
 			async dispatchAll(
 				filters?: AdvertiserFilters,
 				options?: AdvertiserOptions

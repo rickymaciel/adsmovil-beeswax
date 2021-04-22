@@ -68,14 +68,11 @@ const routes: Array<RouteConfig> = [
         path: '/admin',
         name: 'Admin',
         component: () => import('@/views/Layouts/Admin.vue'),
-        meta: { requiresAuth: true },
+        meta: {
+            requiresAuth: true,
+            breadcrumb: "Dashboard"
+        },
         beforeEnter(to, from, next) {
-            console.log('admin:beforeEnter', {
-                to: to,
-                from: from,
-                state: store.state,
-                logguedin: store.state['auth'].loggedIn
-            })
             if (store.state['auth'].loggedIn) {
                 next()
             } else {
@@ -86,13 +83,50 @@ const routes: Array<RouteConfig> = [
             {
                 path: 'dashboard',
                 name: 'Dashboard',
-                component: () => import('@/views/Admin/Dashboard/Dashboard.vue')
+                component: () => import('@/views/Admin/Dashboard/Dashboard.vue'),
+                meta: {
+                    requiresAuth: true,
+                    breadcrumb: "Dashboard"
+                },
             },
             {
-                path: 'advertisers/index',
+                path: 'advertisers',
                 name: 'Advertisers',
-                component: () => import('@/views/Admin/Advertisers/List/index.vue')
-            }
+                component: () => import('@/views/Admin/Advertisers/index.vue'),
+                meta: {
+                    requiresAuth: true,
+                    breadcrumb: "Advertisers"
+                },
+                children: [
+                    {
+                        path: 'index',
+                        name: 'AdvertisersList',
+                        component: () => import('@/views/Admin/Advertisers/List/index.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: "Advertisers List"
+                        },
+                    },
+                    {
+                        path: 'create',
+                        name: 'AdvertiserCreate',
+                        component: () => import('@/views/Admin/Advertisers/Create/create.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: "Create new advertiser"
+                        },
+                    },
+                    {
+                        path: 'edit/:id',
+                        name: 'AdvertiserEdit',
+                        component: () => import('@/views/Admin/Advertisers/Edit/edit.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: "Edit advertiser"
+                        },
+                    }
+                ]
+            },
         ]
     }
 ]

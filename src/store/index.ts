@@ -6,7 +6,7 @@ import ProfileService, { ProviderProfile } from '@/services/profile-service'
 import PermissionService, { PermissionProfile } from '@/services/permission-service'
 import AdvertiserService from '@/services/advertiser-service'
 import { Credential } from '@/interfaces/credential'
-import { Advertiser, AdvertiserFilters, AdvertiserOptions, ResultPaginate } from '@/interfaces/advertiser'
+import { Advertiser, AdvertiserDataCreate, AdvertiserDataUpdate, AdvertiserFilters, AdvertiserOptions, Category, ResultPaginate } from '@/interfaces/advertiser'
 import { isNull, isUndefined } from 'lodash'
 
 const token = localStorage.getItem('token') || ''
@@ -18,6 +18,34 @@ export default new Vuex.Store({
     mutations: {},
     actions: {},
     modules: {
+        proccess: {
+            namespaced: true,
+            state: () => ({
+                loading: false,
+            }),
+            mutations: {
+                SET_LOADING(state, _loading = false) {
+                    state.loading = _loading;
+                },
+            },
+            getters: {
+                loading(state) {
+                    return state.loading
+                },
+            },
+            actions: {
+                async setLoading({ commit }, loading: Boolean) {
+                    try {
+                        commit('SET_LOADING', loading)
+                        return await Promise.resolve()
+                    } catch (error) {
+                        console.error('@Action:setLoading.catch', { error: error })
+                        commit('SET_TOKEN')
+                        return await Promise.reject()
+                    }
+                },
+            }
+        },
         auth: {
             namespaced: true,
             state: () => ({
@@ -135,7 +163,9 @@ export default new Vuex.Store({
         advertiser: {
             namespaced: true,
             state: () => ({
-                result_paginate: {} as ResultPaginate
+                result_paginate: {} as ResultPaginate,
+                categories: [] as Category[],
+                advertiser: {} as Advertiser
             }),
             mutations: {
                 SET_RESULT_PAGINATED(state, _result_paginate: ResultPaginate) {
@@ -144,6 +174,12 @@ export default new Vuex.Store({
                 DEL_RESULT_PAGINATED(state) {
                     state.result_paginate = {} as ResultPaginate
                 },
+                SET_CATEGORIES(state, _categories: Category[]) {
+                    state.categories = _categories
+                },
+                SET_ADVERTISER(state, _advertiser: Advertiser = {} as Advertiser) {
+                    state.advertiser = _advertiser
+                }
             },
             getters: {
                 result_paginate(state): ResultPaginate {
@@ -167,6 +203,77 @@ export default new Vuex.Store({
                         return await Promise.reject(message_2)
                     }
                 },
+
+                async getCategories({ commit }) {
+                    try {
+                        const response = await AdvertiserService.categories()
+                        console.log('@Action:getCategories', { response: response })
+                        if (!isUndefined(response) && !isNull(response)) {
+                            commit('SET_CATEGORIES', response.data.response)
+                        }
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        console.error('@Action:getCategories.catch', { error: error })
+                        commit('DEL_CATEGORIES')
+                        const message_2 = typeof undefined !== typeof error.response.data.message ? error.response.data.message : error.toString()
+                        console.error('@Action:getCategories.catch', { message: message_2 })
+                        return await Promise.reject(message_2)
+                    }
+                },
+
+                async createAdvertiser({ commit }, advertiser: AdvertiserDataCreate) {
+                    try {
+                        console.log('@Action:createAdvertiser', { advertiser: advertiser })
+                        const response = await AdvertiserService.create(advertiser)
+                        console.log('@Action:createAdvertiser', { response: response })
+                        if (!isUndefined(response) && !isNull(response)) {
+                            commit('SET_ADVERTISER', response);
+                        }
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        console.error('@Action:createAdvertiser.catch', { error: error })
+                        commit('SET_ADVERTISER');
+                        const message_2 = typeof undefined !== typeof error.response.data.message ? error.response.data.message : error.toString()
+                        console.error('@Action:createAdvertiser.catch', { message: message_2 })
+                        return await Promise.reject(message_2)
+                    }
+                },
+
+                async showAdvertiser({ commit }, id: number) {
+                    try {
+                        console.log('@Action:showAdvertiser', { id: id })
+                        const response = await AdvertiserService.show(id);
+                        console.log('@Action:showAdvertiser', { response: response })
+                        if (!isUndefined(response) && !isNull(response)) {
+                            commit('SET_ADVERTISER', response);
+                        }
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        console.error('@Action:showAdvertiser.catch', { error: error })
+                        commit('SET_ADVERTISER');
+                        const message_2 = typeof undefined !== typeof error.response.data.message ? error.response.data.message : error.toString()
+                        console.error('@Action:showAdvertiser.catch', { message: message_2 })
+                        return await Promise.reject(message_2)
+                    }
+                },
+
+                async updateAdvertiser({ commit }, params: { advertiser: AdvertiserDataUpdate, id: number }) {
+                    try {
+                        console.log('@Action:updateAdvertiser', { advertiser: params.advertiser })
+                        const response = await AdvertiserService.update(params.advertiser, params.id);
+                        console.log('@Action:updateAdvertiser', { response: response })
+                        if (!isUndefined(response) && !isNull(response)) {
+                            commit('SET_ADVERTISER', response);
+                        }
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        console.error('@Action:updateAdvertiser.catch', { error: error })
+                        commit('SET_ADVERTISER');
+                        const message_2 = typeof undefined !== typeof error.response.data.message ? error.response.data.message : error.toString()
+                        console.error('@Action:updateAdvertiser.catch', { message: message_2 })
+                        return await Promise.reject(message_2)
+                    }
+                }
             }
         },
     }

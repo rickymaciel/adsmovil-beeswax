@@ -1,6 +1,7 @@
 <template>
 	<div class="toolbar gradient-primary">
 		<v-card class="align-self-center" color="transparent" flat tile>
+			<Loader></Loader>
 			<v-container class="my-0 py-0">
 				<v-toolbar
 					color="transparent"
@@ -178,6 +179,7 @@
 <script lang="ts">
 	import { mapActions } from "vuex";
 	import { isNull, isUndefined } from "lodash";
+	import Loader from "../../Loader.vue";
 
 	export default {
 		name: "AppBar",
@@ -195,6 +197,8 @@
 				currentItem: "",
 			};
 		},
+
+		components: { Loader },
 
 		created() {
 			this.currentItem = this.getRoutePath;

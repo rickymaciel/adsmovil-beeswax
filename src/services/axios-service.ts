@@ -65,6 +65,14 @@ export function AxiosGet(url: string) {
 }
 
 /**
+ * GET
+ * @param url
+ */
+export function AxiosPatch(url: string, payload: any) {
+    return axios.patch(url, payload);
+}
+
+/**
  * HasSuccess
  * @param response AxiosResponse<any>
  */

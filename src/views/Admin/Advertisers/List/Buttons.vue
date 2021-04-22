@@ -2,6 +2,7 @@
 	<div class="d-lg-flex justify-lg-space-between">
 		<div class="mb-2">
 			<v-btn
+				to="/admin/advertisers/create"
 				class="me-4 mb-1"
 				color="secondary"
 				elevation="0"

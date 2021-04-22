@@ -2,6 +2,7 @@ import { login, logout, initialize, profile, forgot, reset, permissions } from '
 //import { create, update, remove, show, all, list, paginated, resendEmail } from './user/UserApi'
 //import { create, update, changeStatus, show, all, list, paginated, categories } from './advertiser/AdvertiserApi'
 //import { create, update, changeStatus, show, all, paginated, list } from './custom_list/CustomListAPI'
+import { create, update, changeStatus, all, paginated, list, deleted, clear } from './custom_list/items/ListItemsAPI'
 //import { list } from './timezone/timezoneAPI'
 //import { list } from './currency/CurrencyAPI'
 //import { list } from './custom_list/ExchangesAPI'
@@ -506,4 +507,133 @@ const test_get_custom_list = {
 }*/
 /* -------- END CUSTOM LIST -------- */
 
-export default test_reset_password
+/* -------- BEGIN LIST ITEM -------- */
+const test_list_item_create = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      // const data_list_item = await create({custom_list_id: 44, list_item: 'ttx/list_item_6', name: 'name_app_id'}, 'app_id', value)
+      const data_list_item = await create({
+        custom_list_id: 386,
+        list_item: {
+          'lat': -29.4169856,
+          'long': -59.9623159,
+          'radius_km': 0.5
+        },
+        name: 'name_lat_long'
+      }, 'lat_long', value)
+
+      console.log('CUSTOM LIST', data_list_item)
+
+      return data_list_item
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_list_item_update = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_list_item = await update({
+        id: 12,
+        name: 'update_name',
+        value: 5,
+        active: false
+      }, value)
+
+      console.log('CUSTOM LIST', data_list_item)
+
+      return data_list_item
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_list_item_change_status = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const change = await changeStatus(7, false, value)
+
+      console.log('CHANGE STATUS ITEM', change)
+
+      return change
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_list_item_delete = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const eliminar = await deleted(11, value)
+
+      console.log('DELETE ITEM', eliminar)
+
+      return eliminar
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_list_item_clear = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const eliminar = await clear(13, value)
+
+      console.log('CLEAR ITEM', eliminar)
+
+      return eliminar
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_get_list_item = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_list_item = await all(value, {}, {
+        sort: 'name',
+        order: 'asc'
+      })
+      // const data_list_item = await paginated(value, { page: 1, limit: 25 }, { list_item: 'item' }, { sort: 'name', order: 'asc' })
+      // const data_list_item = await list(value, {}, { sort: 'name', order: 'asc' })
+
+      console.log('LIST ITEM', data_list_item)
+
+      return data_list_item
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+/* -------- END LIST ITEM -------- */
+
+export default test_list_item_clear

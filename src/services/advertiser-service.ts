@@ -1,8 +1,9 @@
-import { AdvertiserFilters, AdvertiserOptions, AdvertiserPaginated } from '@/interfaces/advertiser'
-import { AxiosGet } from '@/services/axios-service'
+import { Advertiser, AdvertiserDataCreate, AdvertiserDataUpdate, AdvertiserFilters, AdvertiserOptions, AdvertiserPaginated } from '@/interfaces/advertiser'
+import { AxiosGet, AxiosPost, AxiosPatch } from '@/services/axios-service'
 import { isEmpty, isUndefined } from 'lodash'
 
 export const ADVERTISER_ROUTE = '/api/advertisers'
+export const ADVERTISER_CATEGORIES_ROUTE = '/api/list/advertiser_categories'
 
 class AdvertiserService {
 
@@ -31,6 +32,59 @@ class AdvertiserService {
 
         } catch (error) {
             console.error('AdvertiserService:all', { error: error })
+        }
+    }
+
+    async categories() {
+        try {
+            return AxiosGet(ADVERTISER_CATEGORIES_ROUTE)
+        } catch (error) {
+            console.error('AdvertiserService:categories', { error: error })
+        }
+    }
+
+    async create(advertiser: AdvertiserDataCreate) {
+        try {
+            const response = await AxiosPost(ADVERTISER_ROUTE, advertiser);
+            console.log('AdvertiserService:create: ', { response: response });
+
+            if (response.status < 200 && response.status > 300) {
+                return null;
+            }
+
+            return response.data.response;
+        } catch (error) {
+            console.error('AdvertiserService:create', { error: error })
+        }
+    }
+
+    async show(id: number) {
+        try {
+            const response = await AxiosGet(`${ADVERTISER_ROUTE}/${id}`);
+            console.log('AdvertiserService:show: ', { response: response });
+
+            if (response.status < 200 && response.status > 300) {
+                return null;
+            }
+
+            return response.data.response;
+        } catch (error) {
+            console.error('AdvertiserService:show', { error: error })
+        }
+    }
+
+    async update(advertiser: AdvertiserDataUpdate, id: number) {
+        try {
+            const response = await AxiosPatch(`${ADVERTISER_ROUTE}/${id}`, advertiser);
+            console.log('AdvertiserService:update: ', { response: response });
+
+            if (response.status < 200 && response.status > 300) {
+                return null;
+            }
+
+            return response.data.response;
+        } catch (error) {
+            console.error('AdvertiserService:update', { error: error })
         }
     }
 
