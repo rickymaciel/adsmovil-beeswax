@@ -26,10 +26,10 @@
     "invalidEmail": "E-mail must be valid",
     "backLogin": "Back to login",
     "Search": "Search",
-    "advertisers": {
-        "created": "Your changes have been saved successfully",
-        "failed": "Your changes weren’t saved"
-    },
     "success": "Your changes have been saved successfully",
-    "failed": "Your changes weren’t saved"
+    "failed": "Your changes weren’t saved",
+    "title-success": "Congratulations!",
+    "title-failed": "Error!",
+    "continue": "Continue",
+    "try-again": "Try again"
 }

@@ -1,4 +1,4 @@
-import { Advertiser, AdvertiserDataCreate, AdvertiserDataUpdate, AdvertiserFilters, AdvertiserOptions, AdvertiserPaginated } from '@/interfaces/advertiser'
+import { AdvertiserDataCreate, AdvertiserDataUpdate, AdvertiserFilters, AdvertiserOptions, AdvertiserPaginated } from '@/interfaces/advertiser'
 import { AxiosGet, AxiosPost, AxiosPatch } from '@/services/axios-service'
 import { isEmpty, isUndefined } from 'lodash'
 

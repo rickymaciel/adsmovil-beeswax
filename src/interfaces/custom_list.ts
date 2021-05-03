@@ -4,13 +4,33 @@ export interface CustomList {
   external_id: number,
   name: string,
   custom_list_type_id: number,
+  type?: {
+    id: number,
+    key: string,
+    name: string
+  },
   delimiter: string,
   default_radius_km: number,
   notes: string,
   active: boolean,
-  created_by: number,
-  updated_by: number,
-  deleted_by: number,
+  created_by: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+  },
+  updated_by: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+  },
+  deleted_by: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+  },
   created_at: string,
   updated_at: string,
   clicks?: number,

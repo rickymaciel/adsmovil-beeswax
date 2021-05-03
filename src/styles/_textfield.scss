@@ -58,6 +58,17 @@
 
     }
 	&.label-fixed {
+
+        &.disabled {
+            .v-input__slot {
+                background: #8d8d8d1a !important;
+                border: 1px solid #8b8b8b1a;
+            }
+			.v-counter, input {
+				color: #646464b9 !important;
+			}
+        }
+
 		&.error--text {
 			.v-input__slot {
 				background: #EA34641A 0% 0% no-repeat padding-box !important;
@@ -78,7 +89,7 @@
 		.v-label {
 			font: normal normal normal 16px/19px Gotham !important;
 			letter-spacing: 0;
-			color: $secondary !important;
+			color: #3A4972 !important;
 			text-align: left;
             left: 0px !important;
 			letter-spacing: 0px;

@@ -160,15 +160,61 @@
 							size="8"
 							class="mb-2 pa-0 ma-0"
 						></v-tabs-slider>
-						<v-tab
-							class="text-capitalize"
-							:disabled="item.disabled"
-							v-for="(item, index) in items"
-							:key="index"
-							:to="item.href"
-						>
-							{{ item.text }}
-						</v-tab>
+						<template v-for="(item, index) in items">
+							<template v-if="item.children">
+								<v-menu
+									color="primary"
+									offset-y
+									:key="index"
+									rounded="b-lg"
+								>
+									<template v-slot:activator="{ on, attrs }">
+										<v-tab
+											class="text-capitalize"
+											:disabled="item.disabled"
+											:key="index"
+											v-bind="attrs"
+											v-on="on"
+										>
+											{{ item.text }}
+											<v-icon right>
+												mdi-menu-down
+											</v-icon>
+										</v-tab>
+									</template>
+
+									<v-list
+										class="v-tools"
+										color="primary"
+										tile
+									>
+										<v-list-item
+											v-for="(
+												subitem, _index
+											) in item.children"
+											:key="_index"
+											link
+											:to="subitem.href"
+										>
+											<v-list-item-subtitle
+												class="white--text"
+												v-text="subitem.text"
+											></v-list-item-subtitle>
+										</v-list-item>
+									</v-list>
+								</v-menu>
+							</template>
+							<template v-else>
+								<v-tab
+									class="text-capitalize"
+									:disabled="item.disabled"
+									:key="index"
+									:to="item.href"
+								>
+									{{ item.text }}
+								</v-tab>
+							</template>
+						</template>
 					</v-tabs>
 				</v-toolbar>
 			</v-container>

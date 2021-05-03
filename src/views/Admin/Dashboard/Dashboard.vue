@@ -10,6 +10,19 @@
 				></TitleWelcome>
 			</v-col>
 		</v-row>
+
+		<v-row no-gutters>
+			<label
+				>File
+				<input
+					type="file"
+					id="file"
+					ref="file"
+					v-on:change="handleFileUpload()"
+				/>
+			</label>
+			<button v-on:click="submitFile()">Submit</button>
+		</v-row>
 	</v-container>
 </template>
 
@@ -45,6 +58,20 @@
 			},
 		},
 
-		methods: {},
+		methods: {
+			handleFileUpload() {
+				this.file = this.$refs.file.files[0];
+			},
+
+			submitFile() {
+				let formData = new FormData();
+				formData.append("custom_list_id", "10");
+				formData.append("file", this.file);
+
+				return this.$store.dispatch("listItem/uploadFile", formData, {
+					root: true,
+				});
+			},
+		},
 	});
 </script>

@@ -1,6 +1,6 @@
 <template>
 	<v-container class="my-0">
-		<Alertize :message="message" :type="type"></Alertize>
+		<Alertize @return-alertize="redirectTo"></Alertize>
 		<v-layout column>
 			<v-form
 				ref="form"
@@ -10,6 +10,30 @@
 				lazy-validation
 			>
 				<v-container>
+					<v-row no-gutters>
+						<!-- Advertiser ID -->
+						<v-col cols="12" sm="12" md="6" lg="3">
+							<v-card
+								elevation="0"
+								class="pa-2"
+								outlined
+								tile
+								color="rgb(0, 0, 0, 0.0)"
+							>
+								<v-text-field
+									v-model="id"
+									:rules="idRules"
+									hint="Advertiser ID"
+									ref="name"
+									placeholder="Advertiser ID"
+									label="Advertiser ID*"
+									class="label-fixed disabled"
+									disabled
+								></v-text-field>
+							</v-card>
+						</v-col>
+					</v-row>
+
 					<v-row no-gutters>
 						<!-- Advertiser Name -->
 						<v-col cols="12" sm="12" md="6" lg="3">
@@ -199,7 +223,7 @@
 										rounded
 										color="secondary"
 										class="mx-2 px-8"
-										@click="handleCancel"
+										@click="redirectTo"
 									>
 										{{ $t("cancel") }}
 									</v-btn>
@@ -224,6 +248,7 @@
 	import { isEmpty, isNull, isUndefined, isNaN, last } from "lodash";
 
 	import Alertize from "../../../../components/Alertize.vue";
+	import { Notification, MessageTypes } from "../../../../interfaces/proccess";
 
 	export default Vue.extend({
 		name: "AdvertiserCreate",
@@ -269,6 +294,9 @@
 			getCategories(): Category[] {
 				return this.$store.state.advertiser.categories;
 			},
+			idRules() {
+				return [(v: number) => (v && !isNaN(v)) || this.$t("numeric")];
+			},
 			nameRules() {
 				return [
 					(v: string) =>
@@ -311,6 +339,9 @@
 			getAdvertiser(): Advertiser {
 				return this.advertiser;
 			},
+			isAlertize(): Boolean {
+				return this.$store.state.proccess.alertize;
+			},
 		},
 		methods: {
 			async validate() {
@@ -318,27 +349,46 @@
 				const valid = await form.validate();
 				return await valid;
 			},
+			setNotification(notification: Notification) {
+				return this.$store.dispatch(
+					"proccess/setNotification",
+					notification,
+					{ root: true }
+				);
+			},
 			async handleSubmit() {
 				if (!(await this.validate())) return;
+
 				this.setLoading(true);
+
 				const result = await this.dispatchUpdateAdvertiser();
 
 				if (isUndefined(result) || isNull(result) || isEmpty(result)) {
-					return;
-				}
-				this.setLoading(false);
-				this.message = this.$t("success");
-				this.type = "success";
+					this.setLoading(false);
 
-				setTimeout(() => {
-					this.$router.push({ name: "AdvertisersList" });
-				}, 1500);
+					this.setNotification({
+						title: this.$t("title-failed"),
+						message: this.$t("failed"),
+						type: MessageTypes.ERROR,
+					});
+
+					return;
+				} else {
+					this.setNotification({
+						title: this.$t("title-success"),
+						message: this.$t("success"),
+						type: MessageTypes.SUCCESS,
+					});
+				}
+
+				this.setLoading(false);
+			},
+			redirectTo() {
+				this.setNotification({ title: "", message: "", type: "" });
+				this.$router.push({ name: "AdvertisersList" });
 			},
 			setLoading(_loading: Boolean) {
 				this.$store.state.proccess.loading = _loading;
-			},
-			handleCancel() {
-				this.$router.push({ name: "AdvertisersList" });
 			},
 			toggleTooltipAppBundle() {
 				this.show_tooltip_app_bundle = !this.show_tooltip_app_bundle;
@@ -347,7 +397,6 @@
 				this.show_tooltip_domain = !this.show_tooltip_domain;
 			},
 			toggleStatus(status: boolean) {
-				console.log(status);
 				this.active = Boolean(status);
 			},
 			async dispatchCategories() {

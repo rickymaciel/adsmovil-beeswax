@@ -1,8 +1,8 @@
 import { login, logout, initialize, profile, forgot, reset, permissions } from './auth/AuthApi'
 //import { create, update, remove, show, all, list, paginated, resendEmail } from './user/UserApi'
 //import { create, update, changeStatus, show, all, list, paginated, categories } from './advertiser/AdvertiserApi'
-//import { create, update, changeStatus, show, all, paginated, list } from './custom_list/CustomListAPI'
-import { create, update, changeStatus, all, paginated, list, deleted, clear } from './custom_list/items/ListItemsAPI'
+import { create, update, changeStatus, show, all, paginated, list } from './custom_list/CustomListAPI'
+//import { create, update, changeStatus, all, paginated, list, deleted, clear } from './custom_list/items/ListItemsAPI'
 //import { list } from './timezone/timezoneAPI'
 //import { list } from './currency/CurrencyAPI'
 //import { list } from './custom_list/ExchangesAPI'
@@ -388,7 +388,7 @@ const test_categories = {
 /* -------- END CURRENCY -------- */
 
 /* -------- BEGIN CUSTOM LIST -------- */
-/*const test_custom_list_exchanges = {
+const test_custom_list_exchanges = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
@@ -431,11 +431,11 @@ const test_custom_list_create = {
       resolve(token)
     }).then(async value => {
       const data_custom_list = await create({
-        name: 'CUSTOM LIST APP BUNDLE',
+        name: 'CUSTOM LIST APP BUNDLE 1',
         custom_list_type_id: 1
       }, value)
 
-      console.log('CUSTOM LIST', data_custom_list)
+      console.log('CUSTOM LIST CREATE', data_custom_list)
 
       return data_custom_list
     }).catch(error => {
@@ -452,12 +452,12 @@ const test_custom_list_update = {
       resolve(token)
     }).then(async value => {
       const data_custom_list = await update({
-        id: 2,
+        id: 13,
         name: 'CUSTOM LIST TEST_1',
         custom_list_type_id: 3
       }, value)
 
-      console.log('CUSTOM LIST', data_custom_list)
+      console.log('CUSTOM LIST UPDATE', data_custom_list)
 
       return data_custom_list
     }).catch(error => {
@@ -492,9 +492,9 @@ const test_get_custom_list = {
       resolve(token)
     }).then(async value => {
       // const data_custom_list = await all(value, {}, { sort: 'name', order: 'asc' })
-      // const data_custom_list = await paginated(value, { page: 3, limit: 25 }, { name: 'test' }, { sort: 'name', order: 'asc' })
+      // const data_custom_list = await paginated(value, { page: 1, limit: 25 }, { name: 'test' }, { sort: 'name', order: 'asc' })
       // const data_custom_list = await list(value, {}, { sort: 'name', order: 'asc' })
-      const data_custom_list = await show(63, value)
+      const data_custom_list = await show(13, value)
 
       console.log('CUSTOM LIST', data_custom_list)
 
@@ -504,11 +504,11 @@ const test_get_custom_list = {
       return null
     })
   }
-}*/
+}
 /* -------- END CUSTOM LIST -------- */
 
 /* -------- BEGIN LIST ITEM -------- */
-const test_list_item_create = {
+/*const test_list_item_create = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
@@ -633,7 +633,7 @@ const test_get_list_item = {
       return null
     })
   }
-}
+}*/
 /* -------- END LIST ITEM -------- */
 
-export default test_list_item_clear
+export default test_get_custom_list

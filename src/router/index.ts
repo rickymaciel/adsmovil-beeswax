@@ -104,7 +104,7 @@ const routes: Array<RouteConfig> = [
                         component: () => import('@/views/Admin/Advertisers/List/index.vue'),
                         meta: {
                             requiresAuth: true,
-                            breadcrumb: "Advertisers List"
+                            breadcrumb: ""
                         },
                     },
                     {
@@ -123,6 +123,44 @@ const routes: Array<RouteConfig> = [
                         meta: {
                             requiresAuth: true,
                             breadcrumb: "Edit advertiser"
+                        },
+                    }
+                ]
+            },
+            {
+                path: 'custom_lists',
+                name: 'CustomList',
+                component: () => import('@/views/Admin/CustomList/index.vue'),
+                meta: {
+                    requiresAuth: true,
+                    breadcrumb: "Custom List"
+                },
+                children: [
+                    {
+                        path: 'index',
+                        name: 'CustomListIndex',
+                        component: () => import('@/views/Admin/CustomList/List/index.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: ""
+                        },
+                    },
+                    {
+                        path: 'create',
+                        name: 'CustomListCreate',
+                        component: () => import('@/views/Admin/CustomList/Create/create.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: "Create new custom list"
+                        },
+                    },
+                    {
+                        path: 'edit/:id',
+                        name: 'ListsEdit',
+                        //component: () => import('@/views/Admin/Lists/Edit/edit.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: "Edit custom list"
                         },
                     }
                 ]

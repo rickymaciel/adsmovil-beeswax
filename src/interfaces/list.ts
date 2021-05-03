@@ -1,37 +1,35 @@
-export interface Advertiser {
+export interface List {
     id: number;
-    external_id: number;
-    account_id: number;
+    external_id?: number;
+    account_id?: number;
     name: string;
-    domain: string;
-    app_bundle: string;
+    items: string[];
+    actions: string[];
+    domain?: string;
+    app_bundle?: string;
     active: boolean;
-    created_by: {
+    created_by?: {
         id: number;
         first_name: string;
         last_name: string;
         email: string;
     },
-    updated_by: {
+    updated_by?: {
         id: number;
         first_name: string;
         last_name: string;
         email: string;
     },
-    deleted_by: {
+    deleted_by?: {
         id: number;
         first_name: string;
         last_name: string;
         email: string;
     },
-    created_at: string;
-    updated_at: string;
-    category: {
-        id: number;
-        key: string;
-        name: string
-    },
-    currency: {
+    created_at?: string;
+    updated_at?: string;
+    type?: Type,
+    currency?: {
         id: number;
         key: string;
         name: string;
@@ -77,38 +75,64 @@ export interface Advertiser {
     viewable_percent_lifetime?: number;
 }
 
-export interface AdvertiserDataCreate {
+export interface ListDataCreate {
     name: string;
-    category_id: number;
+    type_id: number;
     domain: string;
     app_bundle: string;
     active: boolean;
 }
 
-export interface AdvertiserDataUpdate {
+export interface ListDataUpdate {
     id: number;
     name: string;
-    category_id: number;
+    type_id: number;
     domain: string;
     app_bundle: string;
     active: boolean;
 }
 
-export interface AdvertiserList {
+export interface ListList {
     id: number;
     value: string;
 }
 
-export interface Notification {
-    title?: String;
-    subtitle?: String;
-    message?: String;
-    type?: String;
+export interface Type {
+    id?: number;
+    key?: string;
+    name?: string;
 }
 
-export enum MessageTypes {
-    INFO = "info",
-    SUCCESS = "success",
-    ERROR = "error",
-    WARNING = "warning",
+export interface ListFilters {
+    name?: string;
+    type_id?: number;
+    external_id?: number;
+    domain?: string;
+    app_bundle?: string;
+    active?: boolean;
+}
+
+export interface ListOptions {
+    sort: string;// name | domain | app_bundle | external_id
+    order: string;// asc | desc
+}
+
+export interface ListPaginated {
+    page: number;
+    limit: number;
+}
+
+export interface ResultPaginate {
+    current_page?: number;
+    data?: List[]
+    first_page_url?: string;
+    from?: number;
+    last_page?: number;
+    last_page_url?: string;
+    next_page_url?: string;
+    path?: string;
+    per_page?: number;
+    prev_page_url?: string;
+    to?: number;
+    total?: number;
 }

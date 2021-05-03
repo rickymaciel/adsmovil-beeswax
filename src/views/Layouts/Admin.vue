@@ -57,7 +57,34 @@
 				{
 					text: "Tools",
 					disabled: false,
-					href: "/admin/tools",
+					href: "#",
+					children: [
+						{
+							text: "Event",
+							disabled: false,
+							href: "/admin/events/index",
+						},
+						{
+							text: "List",
+							disabled: false,
+							href: "/admin/custom_lists/index",
+						},
+						{
+							text: "Model",
+							disabled: false,
+							href: "/admin/models/index",
+						},
+						{
+							text: "Modifier",
+							disabled: false,
+							href: "/admin/modifiers/index",
+						},
+						{
+							text: "Segment",
+							disabled: false,
+							href: "/admin/segments/index",
+						},
+					],
 				},
 			],
 		}),

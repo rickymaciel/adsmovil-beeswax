@@ -1,0 +1,46 @@
+.notification-dialog {
+
+    .title, .message {
+        font-family: Gotham;
+        font-style: normal;
+        font-variant: normal;
+        font-weight: normal;
+    }
+
+    .title {
+        font-size: 1.5rem !important;
+        line-height: normal;
+        letter-spacing: 0.48px;
+        text-align: center !important;
+        display: block;
+        margin: 1rem 3.5rem 0 3.5rem;
+        word-break: break-word;
+    }
+
+    .message {
+        font-size: 1rem !important;
+        letter-spacing: 0px;
+        line-height: normal;
+        color: #3A4972;
+        display: block;
+        margin: 0 3.5rem 1rem 3.5rem;
+        word-break: break-word;
+    }
+}
+
+.success {
+    .notification-dialog {
+        .title {
+            color: $success;
+        }
+    }
+}
+
+
+.error {
+    .notification-dialog {
+        .title {
+            color: $error;
+        }
+    }
+}

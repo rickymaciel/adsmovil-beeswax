@@ -150,13 +150,33 @@ export async function all (token: string, filters?: CustomListFilters, options?:
           external_id: value.external_id,
           name: value.name,
           custom_list_type_id: value.custom_list_type_id,
+          type: {
+            id: value.type.id,
+            key: value.type.key,
+            name: value.type.name
+          },
           delimiter: value.delimiter,
           default_radius_km: value.default_radius_km,
           notes: value.notes,
           active: value.active,
-          created_by: value.created_by,
-          updated_by: value.updated_by,
-          deleted_by: value.deleted_by,
+          created_by: {
+            id: value.created_by.id,
+            first_name: value.created_by.name,
+            last_name: value.created_by.last_name,
+            email: value.created_by.email
+          },
+          updated_by: {
+            id: value.updated_by.id,
+            first_name: value.updated_by.name,
+            last_name: value.updated_by.last_name,
+            email: value.updated_by.email
+          },
+          deleted_by: {
+            id: (isEmpty(value.deleted_by)) ? null : value.deleted_by.id,
+            first_name: (isEmpty(value.deleted_by)) ? null : value.deleted_by.name,
+            last_name: (isEmpty(value.deleted_by)) ? null : value.deleted_by.last_name,
+            email: (isEmpty(value.deleted_by)) ? null : value.deleted_by.email
+          },
           created_at: value.created_at,
           updated_at: value.updated_at
         } as CustomList
@@ -202,13 +222,33 @@ export async function paginated (token: string, paginated: CustomListPaginated, 
           external_id: value.external_id,
           name: value.name,
           custom_list_type_id: value.custom_list_type_id,
+          type: {
+            id: value.type.id,
+            key: value.type.key,
+            name: value.type.name
+          },
           delimiter: value.delimiter,
           default_radius_km: value.default_radius_km,
           notes: value.notes,
           active: value.active,
-          created_by: value.created_by,
-          updated_by: value.updated_by,
-          deleted_by: value.deleted_by,
+          created_by: {
+            id: value.created_by.id,
+            first_name: value.created_by.name,
+            last_name: value.created_by.last_name,
+            email: value.created_by.email
+          },
+          updated_by: {
+            id: value.updated_by.id,
+            first_name: value.updated_by.name,
+            last_name: value.updated_by.last_name,
+            email: value.updated_by.email
+          },
+          deleted_by: {
+            id: (isEmpty(value.deleted_by)) ? null : value.deleted_by.id,
+            first_name: (isEmpty(value.deleted_by)) ? null : value.deleted_by.name,
+            last_name: (isEmpty(value.deleted_by)) ? null : value.deleted_by.last_name,
+            email: (isEmpty(value.deleted_by)) ? null : value.deleted_by.email
+          },
           created_at: value.created_at,
           updated_at: value.updated_at
         } as CustomList

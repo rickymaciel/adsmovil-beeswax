@@ -2,23 +2,19 @@
 	<section
 		class="d-lg-flex justify-space-between align-center align-items-center"
 	>
-		<!-- <v-container>
-			<v-card class="d-block" elevation="2" outlined>
-				<v-card-text>{{ items }}</v-card-text>
-			</v-card>
-		</v-container> -->
 		<v-breadcrumbs :items="items">
 			<template v-slot:divider>
 				<v-icon>mdi-chevron-right</v-icon>
 			</template>
-			<v-breadcrumbs-item
-				slot="item"
-				slot-scope="{ item }"
-				exact
-				:to="item.to"
-			>
-				{{ item.text }}
-			</v-breadcrumbs-item>
+			<template v-slot:item="{ item }">
+				<v-breadcrumbs-item
+					:to="item.to"
+					exact
+					:disabled="item.disabled"
+				>
+					{{ item.text }}
+				</v-breadcrumbs-item>
+			</template>
 		</v-breadcrumbs>
 
 		<template v-if="showSearcher">
@@ -28,7 +24,6 @@
 </template>
 
 <script lang="ts">
-	import { isUndefined, last } from "lodash";
 	import Searcher from "../../components/Content/Searcher.vue";
 	export default {
 		name: "BreadCrumbs",
@@ -41,21 +36,14 @@
 		data: function () {
 			return {
 				message: null,
-				directoriesRoot: ["/admin/advertisers"],
+				directoriesRoot: ["/admin/advertisers", "/admin/custom_lists"],
 			};
 		},
 		components: { Searcher },
-		mounted() {
-			console.log("Breadcrumbs", { params: this.$route.params });
-		},
+		mounted() {},
 		computed: {
 			items() {
 				let self = this;
-				// console.log("Breadcrumbs::items", {
-				// 	matched: self.$route.matched,
-				// 	params: this.$route.params,
-				// });
-
 				return self.$route.matched.map((math: any) => {
 					this.path = this.getPath(math.path);
 					return {
@@ -71,7 +59,7 @@
 		methods: {
 			getPath(path: string) {
 				if (this.isEditPath(path)) {
-					path.replace(":id", this.$route.params.id);
+					path = path.replace(":id", this.$route.params.id);
 					return path;
 				}
 				if (this.isRoot(path)) {

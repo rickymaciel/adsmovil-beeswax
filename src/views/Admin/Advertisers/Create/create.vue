@@ -1,6 +1,6 @@
 <template>
 	<v-container class="my-0">
-		<Alertize :message="message" :type="type"></Alertize>
+		<Alertize @return-alertize="redirectTo"></Alertize>
 		<v-layout column>
 			<v-form
 				ref="form"
@@ -221,6 +221,7 @@
 		Category,
 	} from "../../../../interfaces/advertiser";
 	import { isEmpty, isNull, isUndefined, isNaN } from "lodash";
+	import { MessageTypes } from "../../../../interfaces/proccess";
 
 	import Alertize from "../../../../components/Alertize.vue";
 
@@ -232,16 +233,6 @@
 			title: "Create",
 			advertiser: {} as AdvertiserDataCreate,
 			valid: false,
-			loading: false,
-			message: "",
-			type: "info",
-			items: [
-				{ name: "Florida", id: 2 },
-				{ name: "Georgia", id: 3 },
-				{ name: "Nebraska", id: 4 },
-				{ name: "California", id: 5 },
-				{ name: "New York", id: 6 },
-			],
 			show_tooltip_app_bundle: false,
 			show_tooltip_domain: false,
 
@@ -306,6 +297,18 @@
 			},
 		},
 		methods: {
+			setNotification(notification: Notification) {
+				return this.$store.dispatch(
+					"proccess/setNotification",
+					notification,
+					{ root: true }
+				);
+			},
+			redirectTo() {
+				this.setNotification({ title: "", message: "", type: "" });
+				this.$router.push({ name: "AdvertisersList" });
+			},
+
 			async validate() {
 				let form = this.$refs.form;
 				const valid = await form.validate();
@@ -321,15 +324,25 @@
 				this.setLoading(true);
 				const result = await this.dispatchAdvertiser();
 				console.log("handleSubmit", { result: result });
+
 				if (isUndefined(result) || isNull(result) || isEmpty(result)) {
-					return;
+					this.setNotification({
+						title: this.$t("title-failed"),
+						message: this.$t("failed"),
+						type: MessageTypes.ERROR,
+					});
+				} else {
+					this.setNotification({
+						title: this.$t("title-success"),
+						message: this.$t("success"),
+						type: MessageTypes.SUCCESS,
+					});
+					setTimeout(() => {
+						this.redirectTo;
+					}, 2000);
 				}
+
 				this.setLoading(false);
-				this.message = this.$t("success");
-				this.type = "success";
-				setTimeout(() => {
-					this.$router.push({ name: "AdvertisersList" });
-				}, 2000);
 			},
 			setLoading(_loading: Boolean) {
 				this.$store.state.proccess.loading = _loading;

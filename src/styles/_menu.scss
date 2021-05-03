@@ -1,0 +1,15 @@
+.v-tools {
+    .v-list-item--active {
+        border-left-width: 4px;
+        border-left: 0.5rem solid $secondary;
+        background-color: darken($color: $primary, $amount: 20%) !important;
+    }
+
+    .v-list-item {
+        border-top: 0.5px solid #141c41;
+
+        &:first-child {
+            border-top: 0.5px solid transparent;
+        }
+    }
+}

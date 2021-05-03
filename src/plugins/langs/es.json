@@ -26,10 +26,10 @@
     "invalidEmail": "El correo electrónico debe ser válido",
     "backLogin": "Atrás para iniciar sesión",
     "Search": "Buscar",
-    "advertisers": {
-        "created": "Tus cambios se han guardado correctamente",
-        "failed": "Tus cambios no se guardaron"
-    },
     "success": "Tus cambios se han guardado correctamente",
-    "failed": "Tus cambios no se guardaron"
+    "failed": "Tus cambios no se guardaron",
+    "title-success": "¡Felicidades!",
+    "title-failed": "¡Error!",
+    "continue": "Continuar",
+    "try-again": "Intentar otra vez"
 }

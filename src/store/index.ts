@@ -5,9 +5,13 @@ import AuthService, { ProviderToken } from '@/services/auth-service'
 import ProfileService, { ProviderProfile } from '@/services/profile-service'
 import PermissionService, { PermissionProfile } from '@/services/permission-service'
 import AdvertiserService from '@/services/advertiser-service'
+import CustomListService from '@/services/custom-list-service'
+import ListItemService from '@/services/list-item-service'
 import { Credential } from '@/interfaces/credential'
 import { Advertiser, AdvertiserDataCreate, AdvertiserDataUpdate, AdvertiserFilters, AdvertiserOptions, Category, ResultPaginate } from '@/interfaces/advertiser'
+import { Notification } from '@/interfaces/proccess'
 import { isNull, isUndefined } from 'lodash'
+import { CustomList, CustomListFilters, CustomListOptions, CustomListPaginated, CustomListResultPaginate } from '@/interfaces/custom_list'
 
 const token = localStorage.getItem('token') || ''
 
@@ -22,15 +26,28 @@ export default new Vuex.Store({
             namespaced: true,
             state: () => ({
                 loading: false,
+                alertize: false,
+                notification: {
+                    message: "",
+                    type: "success",
+                    title: ""
+                },
             }),
             mutations: {
                 SET_LOADING(state, _loading = false) {
                     state.loading = _loading;
                 },
+                SET_NOTIFICATION(state, _notification: Notification = { message: "", type: "", title: "" }) {
+                    state.notification = _notification;
+                    state.alertize = Boolean(_notification.message)
+                },
             },
             getters: {
                 loading(state) {
                     return state.loading
+                },
+                notification(state) {
+                    return state.notification
                 },
             },
             actions: {
@@ -41,6 +58,16 @@ export default new Vuex.Store({
                     } catch (error) {
                         console.error('@Action:setLoading.catch', { error: error })
                         commit('SET_TOKEN')
+                        return await Promise.reject()
+                    }
+                },
+                async setNotification({ commit }, notification: Notification) {
+                    try {
+                        commit('SET_NOTIFICATION', notification)
+                        return await Promise.resolve()
+                    } catch (error) {
+                        console.error('@Action:setNotification.catch', { error: error })
+                        commit('SET_NOTIFICATION')
                         return await Promise.reject()
                     }
                 },
@@ -67,7 +94,6 @@ export default new Vuex.Store({
                 async logIn({ commit }, credential: Credential) {
                     try {
                         const response = await AuthService.login(credential)
-                        console.log('@Action:logIn', { response: response })
                         commit('SET_TOKEN', ProviderToken(response))
                         return await Promise.resolve(response)
                     } catch (error) {
@@ -81,7 +107,6 @@ export default new Vuex.Store({
                 async signOff({ commit }) {
                     try {
                         const response = await AuthService.logout()
-                        console.log('@Action:signOff', { response: response })
                         commit('SET_TOKEN')
                         localStorage.clear()
                         window.location.href = '/'
@@ -115,7 +140,6 @@ export default new Vuex.Store({
                 async fetchProfile({ commit }) {
                     try {
                         const response = await ProfileService.profile()
-                        console.log('@Action:fetchProfile', { response: response })
                         commit('SET_PROFILE', ProviderProfile(response))
                         return await Promise.resolve(response)
                     } catch (error) {
@@ -147,7 +171,6 @@ export default new Vuex.Store({
                 async fetchPermissions({ commit }) {
                     try {
                         const response = await PermissionService.permissions()
-                        console.log('@Action:fetchPermissions', { response: response })
                         commit('SET_PERMISSIONS', PermissionProfile(response))
                         return await Promise.resolve(response)
                     } catch (error) {
@@ -190,7 +213,6 @@ export default new Vuex.Store({
                 async getAll({ commit }, filters?: AdvertiserFilters, options?: AdvertiserOptions) {
                     try {
                         const response = await AdvertiserService.all(filters, options)
-                        console.log('@Action:getAll', { response: response })
                         if (!isUndefined(response) && !isNull(response)) {
                             commit('SET_RESULT_PAGINATED', response)
                         }
@@ -207,7 +229,6 @@ export default new Vuex.Store({
                 async getCategories({ commit }) {
                     try {
                         const response = await AdvertiserService.categories()
-                        console.log('@Action:getCategories', { response: response })
                         if (!isUndefined(response) && !isNull(response)) {
                             commit('SET_CATEGORIES', response.data.response)
                         }
@@ -223,9 +244,7 @@ export default new Vuex.Store({
 
                 async createAdvertiser({ commit }, advertiser: AdvertiserDataCreate) {
                     try {
-                        console.log('@Action:createAdvertiser', { advertiser: advertiser })
                         const response = await AdvertiserService.create(advertiser)
-                        console.log('@Action:createAdvertiser', { response: response })
                         if (!isUndefined(response) && !isNull(response)) {
                             commit('SET_ADVERTISER', response);
                         }
@@ -241,9 +260,7 @@ export default new Vuex.Store({
 
                 async showAdvertiser({ commit }, id: number) {
                     try {
-                        console.log('@Action:showAdvertiser', { id: id })
                         const response = await AdvertiserService.show(id);
-                        console.log('@Action:showAdvertiser', { response: response })
                         if (!isUndefined(response) && !isNull(response)) {
                             commit('SET_ADVERTISER', response);
                         }
@@ -259,9 +276,7 @@ export default new Vuex.Store({
 
                 async updateAdvertiser({ commit }, params: { advertiser: AdvertiserDataUpdate, id: number }) {
                     try {
-                        console.log('@Action:updateAdvertiser', { advertiser: params.advertiser })
                         const response = await AdvertiserService.update(params.advertiser, params.id);
-                        console.log('@Action:updateAdvertiser', { response: response })
                         if (!isUndefined(response) && !isNull(response)) {
                             commit('SET_ADVERTISER', response);
                         }
@@ -274,6 +289,65 @@ export default new Vuex.Store({
                         return await Promise.reject(message_2)
                     }
                 }
+            }
+        },
+        custom_list: {
+            namespaced: true,
+            state: () => ({
+                custom_list_result_paginate: {} as CustomListResultPaginate,
+                custom_list: {} as CustomList
+            }),
+            mutations: {
+                SET_CUSTOM_LIST_RESULT_PAGINATED(state, _custom_list_result_paginate: CustomListResultPaginate) {
+                    state.custom_list_result_paginate = _custom_list_result_paginate
+                },
+                DEL_CUSTOM_LIST_RESULT_PAGINATED(state) {
+                    state.custom_list_result_paginate = {} as CustomListResultPaginate
+                },
+            },
+            getters: {
+                custom_list_result_paginate(state): CustomListResultPaginate {
+                    return state.custom_list_result_paginate
+                },
+            },
+            actions: {
+                async getPaginated({ commit }, paginated: CustomListPaginated, filters?: CustomListFilters, options?: CustomListOptions) {
+                    try {
+                        const response: CustomListResultPaginate = await CustomListService.paginated(paginated, filters, options)
+                        console.log('getPaginated', { response: response });
+                        if (!isUndefined(response) && !isNull(response)) {
+                            console.log('getPaginated::SET_CUSTOM_LIST_RESULT_PAGINATED', { response: response });
+                            commit('SET_CUSTOM_LIST_RESULT_PAGINATED', response)
+                        }
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        console.error('@Action:getPaginated.catch', { error: error })
+                        commit('DEL_CUSTOM_LIST_RESULT_PAGINATED')
+                        const message_2 = typeof undefined !== typeof error.response.data.message ? error.response.data.message : error.toString()
+                        console.error('@Action:getPaginated.catch', { message: message_2 })
+                        return await Promise.reject(message_2)
+                    }
+                },
+            }
+        },
+        listItem: {
+            namespaced: true,
+            actions: {
+                async uploadFile({ commit }, upload: any) {
+                    try {
+                        const response = await ListItemService.upload(upload)
+                        if (!isUndefined(response) && !isNull(response)) {
+                            //commit('SET_ADVERTISER', response);
+                        }
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        console.error('@Action:upload.catch', { error: error })
+                        //commit('SET_ADVERTISER');
+                        const message_2 = typeof undefined !== typeof error.response.data.message ? error.response.data.message : error.toString()
+                        console.error('@Action:upload.catch', { message: message_2 })
+                        return await Promise.reject(message_2)
+                    }
+                },
             }
         },
     }
