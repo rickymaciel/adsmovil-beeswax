@@ -170,7 +170,7 @@
 								>
 									<template v-slot:activator="{ on, attrs }">
 										<v-tab
-											class="text-capitalize"
+											class="text-capitalize v-tab--main"
 											:disabled="item.disabled"
 											:key="index"
 											v-bind="attrs"
@@ -206,7 +206,7 @@
 							</template>
 							<template v-else>
 								<v-tab
-									class="text-capitalize"
+									class="text-capitalize v-tab--main"
 									:disabled="item.disabled"
 									:key="index"
 									:to="item.href"

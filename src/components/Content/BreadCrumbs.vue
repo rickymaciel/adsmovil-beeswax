@@ -1,6 +1,6 @@
 <template>
 	<section
-		class="d-lg-flex justify-space-between align-center align-items-center"
+		class="d-lg-flex justify-space-between align-center align-items-center align-self-center"
 	>
 		<v-breadcrumbs :items="items">
 			<template v-slot:divider>
@@ -36,7 +36,13 @@
 		data: function () {
 			return {
 				message: null,
-				directoriesRoot: ["/admin/advertisers", "/admin/custom_lists"],
+				directoriesRoot: [
+					"/admin/advertisers",
+					"/admin/custom_lists",
+					"/admin/campaigns",
+					"/admin/lineitem",
+					"/admin/creatives",
+				],
 			};
 		},
 		components: { Searcher },
@@ -45,6 +51,7 @@
 			items() {
 				let self = this;
 				return self.$route.matched.map((math: any) => {
+					console.log(math.path);
 					this.path = this.getPath(math.path);
 					return {
 						exact: true,

@@ -7,7 +7,7 @@
 			<v-col cols="12" class="ma-0">
 				<TitleWelcome
 					:title="getTitle"
-					type="title-2"
+					type="title-2 text-capitalize"
 					:showSubtitle="false"
 					:showSearcher="false"
 				></TitleWelcome>

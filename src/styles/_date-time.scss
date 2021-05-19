@@ -1,0 +1,24 @@
+.v-time-picker-custom {
+    .v-picker__title {
+        height: 84px;
+        padding-top: 10px
+    }
+}
+
+.v-time-picker-title {
+    color: #FFFFFF;
+    display: flex;
+    line-height: 1;
+    justify-content: center !important;
+}
+
+.v-time-picker-title__time {
+    .v-picker__title__btn, span {
+        align-items: center;
+        display: inline-flex;
+        height: 50px !important;
+        font-size: 50px !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+}

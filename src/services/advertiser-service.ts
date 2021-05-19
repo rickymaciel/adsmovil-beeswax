@@ -76,7 +76,6 @@ class AdvertiserService {
     async update(advertiser: AdvertiserDataUpdate, id: number) {
         try {
             const response = await AxiosPatch(`${ADVERTISER_ROUTE}/${id}`, advertiser);
-            console.log('AdvertiserService:update: ', { response: response });
 
             if (response.status < 200 && response.status > 300) {
                 return null;
@@ -85,6 +84,33 @@ class AdvertiserService {
             return response.data.response;
         } catch (error) {
             console.error('AdvertiserService:update', { error: error })
+        }
+    }
+
+    async list(filters?: AdvertiserFilters, options?: AdvertiserOptions) {
+        try {
+            let filter = ''
+            let option = ''
+
+            if (!isUndefined(filters)) {
+                filter = getFilters(filters)
+            }
+
+            if (!isUndefined(options)) {
+                option += getOptions(options, 'list')
+            }
+
+            const url = getURL(filter, option)
+
+            const response = await AxiosGet(`${ADVERTISER_ROUTE}/${url}`);
+
+            if (response.status < 200 && response.status > 300) {
+                return null;
+            }
+
+            return response.data.response;
+        } catch (error) {
+            console.error('AdvertiserService:list', { error: error })
         }
     }
 

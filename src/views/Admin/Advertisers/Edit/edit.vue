@@ -245,7 +245,7 @@
 		AdvertiserDataUpdate,
 		Category,
 	} from "../../../../interfaces/advertiser";
-	import { isEmpty, isNull, isUndefined, isNaN, last } from "lodash";
+	import { isEmpty, isNull, isUndefined, isNaN, last, toNumber } from "lodash";
 
 	import Alertize from "../../../../components/Alertize.vue";
 	import { Notification, MessageTypes } from "../../../../interfaces/proccess";
@@ -287,9 +287,9 @@
 		},
 		computed: {
 			getId() {
-				let pathArray = this.$route.path.split("/");
+				let pathArray: String[] = this.$route.path.split("/");
 				const lastItem = last(pathArray);
-				this.id = !isNaN(lastItem) ? lastItem : NaN;
+				this.id = !isNaN(toNumber(lastItem)) ? toNumber(lastItem) : NaN;
 			},
 			getCategories(): Category[] {
 				return this.$store.state.advertiser.categories;

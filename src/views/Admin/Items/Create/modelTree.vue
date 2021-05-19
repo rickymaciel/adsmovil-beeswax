@@ -1,22 +1,18 @@
 <template>
-	<v-container class="my-0">
-		<v-layout column>
-			<TableListModelTree
-				:headers="prepareTableHeaders"
-				:items="prepareTableContent"
-				:title="title"
-			></TableListModelTree>
-		</v-layout>
-	</v-container>
+	<TableListModelTree
+		:headers="prepareTableHeaders"
+		:items="prepareTableContent"
+		:title="title"
+	></TableListModelTree>
 </template>
 
 <script lang="ts">
 	import TableListModelTree from "../List/TableListModelTree.vue";
 	import Vue from "vue";
 	/*import {
-		List,
-		ResultPaginate,
-	} from "../../../../interfaces/list";*/
+			List,
+			ResultPaginate,
+		} from "../../../../interfaces/list";*/
 	import { isNull, isUndefined } from "lodash";
 
 	export interface ListItemModelTree {
@@ -24,7 +20,7 @@
 		items?: string[];
 		value?: string;
 		name?: string;
-		actions?:[]
+		actions?: [];
 	}
 
 	export default Vue.extend({
@@ -46,35 +42,35 @@
 						items: ["item 1", "item 2", "item 3"],
 						value: "Value 1",
 						name: "Item List 1",
-						actions:["create", "edit", "delete"]
+						actions: ["create", "edit", "delete"],
 					},
 					{
 						id: 2,
 						items: ["item 1", "item 2", "item 3"],
 						value: "Value 2",
 						name: "Item List 2",
-						actions:["create", "edit", "delete"]
+						actions: ["create", "edit", "delete"],
 					},
 					{
 						id: 3,
 						items: ["item 1", "item 2", "item 3"],
 						value: "Value 3",
 						name: "Item List 3",
-						actions:["create", "edit", "delete"]
-					}
-				]
+						actions: ["create", "edit", "delete"],
+					},
+				];
 			},
 			getLists(): ListItemModelTree[] {
 				/*const result: ResultPaginate = this.getData;
-				if (
-					isUndefined(result) ||
-					isNull(result) ||
-					isUndefined(result?.data) ||
-					isNull(result?.data)
-				) {
-					return [];
-				}
-				return result.data;*/
+					if (
+						isUndefined(result) ||
+						isNull(result) ||
+						isUndefined(result?.data) ||
+						isNull(result?.data)
+					) {
+						return [];
+					}
+					return result.data;*/
 				return this.getData;
 			},
 			prepareTableHeaders() {
@@ -127,7 +123,7 @@
 						items: item?.items,
 						value: item?.value,
 						name: item?.name,
-						actions: item?.actions
+						actions: item?.actions,
 					};
 				});
 			},

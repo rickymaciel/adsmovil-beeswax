@@ -3,7 +3,7 @@
 		<v-text-field
 			v-model="term"
 			ref="term"
-			class="searcher"
+			class="searcher m-lg-0 m-sm-1"
 			:label="$t('Search')"
 			clearable
 			solo

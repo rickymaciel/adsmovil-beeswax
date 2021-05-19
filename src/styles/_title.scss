@@ -1,6 +1,7 @@
 .title-1 {
     .v-list-item {
         padding: 0 !important;
+        min-height: 24px !important;
         .v-list-item__title {
             text-align: left;
             font-family: Gotham;
@@ -8,6 +9,7 @@
             font-weight: normal;
             letter-spacing: 0px;
             color: #3A4972 !important;
+            padding: 0 !important;
         }
         .v-list-item__subtitle {
             text-align: left;
@@ -16,6 +18,7 @@
             font-weight: normal;
             letter-spacing: 0.48px;
             color: #3A4972 !important;
+            padding: 0 !important;
         }
     }
 }
@@ -23,13 +26,15 @@
 .title-2 {
     .v-list-item {
         padding: 0 !important;
+        min-height: 30px !important;
         .v-list-item__title {
             text-align: left;
             font-family: Gotham;
-            font-size: 1.5rem;
-            font-weight: normal;
+            font-size: 1.1rem;
+            font-weight: 600;
             letter-spacing: 0.48px;
             color: #00A2D8 !important;
+            padding: 0 !important;
         }
         .v-list-item__subtitle {
             text-align: left;
@@ -38,6 +43,7 @@
             font-weight: normal;
             letter-spacing: 0.48px;
             color: #3A4972 !important;
+            padding: 0 !important;
         }
     }
 }

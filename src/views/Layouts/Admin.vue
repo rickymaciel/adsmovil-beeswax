@@ -37,22 +37,22 @@
 				{
 					text: "Campaigns",
 					disabled: false,
-					href: "/admin/campaigns",
+					href: "/admin/campaigns/index",
 				},
 				{
 					text: "Line Item",
 					disabled: false,
-					href: "/admin/line-item",
+					href: "/admin/lineitem/index",
 				},
 				{
 					text: "Creatives",
 					disabled: false,
-					href: "/admin/creatives",
+					href: "/admin/creatives/index",
 				},
 				{
 					text: "Reporting",
 					disabled: false,
-					href: "/admin/reporting",
+					href: "/admin/reporting/index",
 				},
 				{
 					text: "Tools",

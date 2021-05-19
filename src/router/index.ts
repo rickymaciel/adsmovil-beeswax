@@ -104,7 +104,7 @@ const routes: Array<RouteConfig> = [
                         component: () => import('@/views/Admin/Advertisers/List/index.vue'),
                         meta: {
                             requiresAuth: true,
-                            breadcrumb: ""
+                            breadcrumb: "Advertisers List"
                         },
                     },
                     {
@@ -142,7 +142,7 @@ const routes: Array<RouteConfig> = [
                         component: () => import('@/views/Admin/CustomList/List/index.vue'),
                         meta: {
                             requiresAuth: true,
-                            breadcrumb: ""
+                            breadcrumb: "List of custom lists"
                         },
                     },
                     {
@@ -155,14 +155,166 @@ const routes: Array<RouteConfig> = [
                         },
                     },
                     {
+                        path: 'show/:id',
+                        name: 'CustomListShow',
+                        component: () => import('@/views/Admin/CustomList/Show/show.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: "Add list items"
+                        },
+                    },
+                    {
                         path: 'edit/:id',
                         name: 'ListsEdit',
-                        //component: () => import('@/views/Admin/Lists/Edit/edit.vue'),
+                        //component: () => import('@/views/Admin/CustomList/Edit/edit.vue'),
                         meta: {
                             requiresAuth: true,
                             breadcrumb: "Edit custom list"
                         },
                     }
+                ]
+            },
+            {
+                path: 'modifiers',
+                name: 'Modifiers',
+                component: () => import('@/views/Admin/Modifiers/index.vue'),
+                meta: {
+                    requiresAuth: true,
+                    breadcrumb: "Modifiers"
+                },
+                children: [
+                    {
+                        path: 'index',
+                        name: 'ModifiersList',
+                        component: () => import('@/views/Admin/Modifiers/List/index.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: "Modifiers List"
+                        },
+                    },
+                    /*{
+                        path: 'create',
+                        name: 'ModifiersCreate',
+                        component: () => import('@/views/Admin/Modifiers/Create/create.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: "Create new Modifier"
+                        },
+                    },
+                    {
+                        path: 'edit/:id',
+                        name: 'ModifiersEdit',
+                        component: () => import('@/views/Admin/Modifiers/Edit/edit.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: "Edit Modifier"
+                        },
+                    }*/
+                ]
+            },
+            {
+                path: 'campaigns',
+                name: 'Campaigns',
+                component: () => import('@/views/Admin/Campaigns/index.vue'),
+                meta: {
+                    requiresAuth: true,
+                    breadcrumb: "Campaigns list"
+                },
+                children: [
+                    {
+                        path: 'index',
+                        name: 'CampaignsIndex',
+                        component: () => import('@/views/Admin/Campaigns/List/index.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: "Campaigns list"
+                        },
+                    },
+                    {
+                        path: 'create',
+                        name: 'CampaignsCreate',
+                        component: () => import('@/views/Admin/Campaigns/Create/create.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: "Create New campaign"
+                        },
+                    },
+                    // {
+                    //     path: 'show/:id',
+                    //     name: 'CampaignsShow',
+                    //     component: () => import('@/views/Admin/Campaigns/Show/show.vue'),
+                    //     meta: {
+                    //         requiresAuth: true,
+                    //         breadcrumb: "Add list items"
+                    //     },
+                    // },
+                    {
+                        path: 'edit/:id',
+                        name: 'ListsEdit',
+                        //component: () => import('@/views/Admin/Campaigns/Edit/edit.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: "Edit campaign"
+                        },
+                    }
+                ]
+            },
+            {
+                path: 'lineitem',
+                name: 'LineItem',
+                component: () => import('@/views/Admin/LineItem/index.vue'),
+                meta: {
+                    requiresAuth: true,
+                    breadcrumb: "Line Item List"
+                },
+                children: [
+                    {
+                        path: 'index',
+                        name: 'lineItemList',
+                        component: () => import('@/views/Admin/LineItem/List/index.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: "Line Item List"
+                        },
+                    },
+                    {
+                        path: 'create',
+                        name: 'LineItemCreate',
+                        component: () => import('@/views/Admin/LineItem/Create/create.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: "Create new Line Item"
+                        },
+                    },
+                ]
+            },
+            {
+                path: 'creatives',
+                name: 'creatives',
+                component: () => import('@/views/Admin/Creatives/index.vue'),
+                meta: {
+                    requiresAuth: true,
+                    breadcrumb: "Creatives list"
+                },
+                children: [
+                    {
+                        path: 'index',
+                        name: 'CreativesIndex',
+                        component: () => import('@/views/Admin/Creatives/List/index.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: "Creatives list"
+                        },
+                    },
+                    {
+                        path: 'create',
+                        name: 'CreativesCreate',
+                        component: () => import('@/views/Admin/Creatives/Create/create.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: "Create New Creative"
+                        },
+                    },
                 ]
             },
         ]

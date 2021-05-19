@@ -3,7 +3,7 @@
 		class="d-lg-flex justify-space-between align-center align-items-center"
 		:class="type"
 	>
-		<v-list-item two-line>
+		<v-list-item>
 			<v-list-item-content>
 				<v-list-item-title>{{ $t(title) }}</v-list-item-title>
 				<v-list-item-subtitle v-if="showSubtitle">
@@ -52,7 +52,9 @@
 
 		data: () => ({}),
 
-		async created() {},
+		created() {
+			console.log("TitleWelcome", { type: this.type, title: this.title });
+		},
 
 		mounted() {},
 

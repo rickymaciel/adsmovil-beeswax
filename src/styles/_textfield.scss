@@ -57,6 +57,15 @@
         }
 
     }
+
+    &.p-prefix {
+        .v-text-field__suffix {
+            padding-right: 8px !important;
+            font-size: 12px !important;
+
+        }
+    }
+
 	&.label-fixed {
 
         &.disabled {

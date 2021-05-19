@@ -7,11 +7,12 @@ import {
   RESET_ROUTE,
   AxiosPost,
   PERMISSION_ROUTE,
+  ACCOUNT_ROUTE,
   AxiosGet
 } from '@/api/AxiosService'
 import { Credential } from '@/interfaces/credential'
 import { Reset } from '@/interfaces/reset'
-import { Profile, UserInit, Permission } from '@/interfaces/user'
+import { Profile, UserInit, Account, Permission } from '@/interfaces/user'
 import { Token } from '@/interfaces/token'
 import { isEmpty, isUndefined, forEach } from 'lodash'
 
@@ -64,6 +65,37 @@ export async function profile (token: string) {
         last_name: response.last_name || 'N/A',
         email: response.email || 'N/A'
       } as Profile
+    }
+
+    console.log('ERROR: ', response.message)
+
+    return null
+  } catch (error) {
+    console.log('EXCEPTION: ', error)
+    return null
+  }
+}
+
+export async function account (token: string) {
+  try {
+    const response = await AxiosGet(ACCOUNT_ROUTE, token)
+
+    if (!isEmpty(response) && !isUndefined(response.id)) {
+      return {
+        id: response.id,
+        name: response.name,
+        currency: {
+          id: response.currency.id,
+          key: response.currency.key,
+          name: response.currency.name,
+          glyph: response.currency.glyph,
+          emoji_flag: response.currency.emoji_flag
+        },
+        timezone: {
+          id: response.timezone.id,
+          name: response.timezone.name
+        }
+      } as Account
     }
 
     console.log('ERROR: ', response.message)

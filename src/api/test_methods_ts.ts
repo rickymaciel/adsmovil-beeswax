@@ -1,13 +1,22 @@
-import { login, logout, initialize, profile, forgot, reset, permissions } from './auth/AuthApi'
-//import { create, update, remove, show, all, list, paginated, resendEmail } from './user/UserApi'
+import { account, forgot, initialize, login, logout, permissions, profile, reset } from './auth/AuthApi'
+//import { create, remove, resendEmail, show, update } from './user/UserApi'
 //import { create, update, changeStatus, show, all, list, paginated, categories } from './advertiser/AdvertiserApi'
-import { create, update, changeStatus, show, all, paginated, list } from './custom_list/CustomListAPI'
+//import { create, update, changeStatus, show, all, paginated, list } from './custom_list/CustomListAPI'
 //import { create, update, changeStatus, all, paginated, list, deleted, clear } from './custom_list/items/ListItemsAPI'
+//import { create, update, show, all, paginated, list, modules, types } from './modifiers/ModifierApi'
+import { create, all, paginated, list, show, changeStatus, update } from './campaing/CampaingApi'
+import { UserInit } from '@/interfaces/user'
+import { CampaingDataCreate, CampaingDataUpdate, FrecuencyCapsDataCreate } from '../interfaces/campaing'
 //import { list } from './timezone/timezoneAPI'
 //import { list } from './currency/CurrencyAPI'
 //import { list } from './custom_list/ExchangesAPI'
 //import { list } from './custom_list/TypeAPI'
-import { UserInit } from '@/interfaces/user'
+//import { list } from './unit_time/UnitTimeApi'
+//import { list } from './budget/BudgetApi'
+//import { list } from './kpi/KpiCampaingApi'
+//import { list } from './strategies/OptimizationApi'
+//import { list } from './strategies/StrategyApi'
+//import { list } from './pacing/PacingApi'
 
 /* -------- BEGIN AUTH -------- */
 const test_login = {
@@ -44,6 +53,22 @@ const test_profile = {
     }).then(async value => {
       const data_profile = await profile(value)
       return data_profile
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_account = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_account = await account(value)
+      console.log('ACCOUNT', data_account)
+      return data_account
     }).catch(error => {
       console.log('EXCEPTION: ', error)
       return null
@@ -128,7 +153,7 @@ const test_permissions = {
 /* -------- END AUTH -------- */
 
 /* -------- BEGIN USER -------- */
-/* const test_create_user = {
+/*const test_create_user = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
@@ -236,7 +261,7 @@ const test_remove_user = {
       return false
     })
   }
-} */
+}*/
 /* -------- END USER -------- */
 
 /* -------- BEGIN ADVERTISER -------- */
@@ -388,7 +413,7 @@ const test_categories = {
 /* -------- END CURRENCY -------- */
 
 /* -------- BEGIN CUSTOM LIST -------- */
-const test_custom_list_exchanges = {
+/*const test_custom_list_exchanges = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
@@ -504,7 +529,7 @@ const test_get_custom_list = {
       return null
     })
   }
-}
+}*/
 /* -------- END CUSTOM LIST -------- */
 
 /* -------- BEGIN LIST ITEM -------- */
@@ -636,4 +661,404 @@ const test_get_list_item = {
 }*/
 /* -------- END LIST ITEM -------- */
 
-export default test_get_custom_list
+/* -------- BEGIN MODIFIER -------- */
+/*const test_modifier_create = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const term = {
+        module_id: 83,
+        key: 'country',
+        value: 'USA',
+        modifier: 1,
+        matching_type_id: 97
+      } as ModifierTermData
+
+      const modifier = {
+        name: 'Test modifier 1',
+        advertiser_id: 3,
+        alternative_id: 7,
+        modifier_type_id: 95,
+        terms: [term, term, term]
+      } as ModifierDataCreate
+
+      const data_modifier = await create(modifier, value)
+
+      console.log('MODIFIER CREATE', data_modifier)
+
+      return data_modifier
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_modifier_update = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const term = {
+        module_id: 83,
+        key: 'country',
+        value: 'ABW',
+        modifier: 2,
+        matching_type_id: 97
+      } as ModifierTermData
+
+      const modifier = {
+        id: 7,
+        name: 'Modifier Polaco (update)',
+        alternative_id: 8,
+        terms: [term]
+      } as ModifierDataUpdate
+
+      const data_modifier = await update(modifier, value)
+
+      console.log('MODIFIER UPDATE', data_modifier)
+
+      return data_modifier
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_modifier_list = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      // const data_modifiers = await all(value, {}, { sort: 'name', order: 'asc'})
+      // const data_modifiers = await paginated(value, { page: 1, limit: 25 }, { advertiser_id: 3 }, { sort: 'name', order: 'asc' })
+      // const data_modifiers = await list(value, {}, {  sort: 'name', order: 'asc' })
+      const data_modifiers = await show(5, value)
+
+      console.log('MODIFIERS', data_modifiers)
+
+      return data_modifiers
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_modifier_type = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_types = await types(value)
+
+      console.log('MODIFIER TYPE', data_types)
+
+      return data_types
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_modifier_module = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_modules = await modules(value)
+
+      console.log('MODIFIER MODULE', data_modules)
+
+      return data_modules
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_matching = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_matchings = await matchings(value)
+
+      console.log('MATCHINGS', data_matchings)
+
+      return data_matchings
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}*/
+/* -------- END MODIFIER -------- */
+
+/* -------- BEGIN UNIT TIME -------- */
+/*const test_unit_times = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_unit_times = await list(value)
+
+      console.log('UNIT TIMES', data_unit_times)
+
+      return data_unit_times
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}*/
+/* -------- END UNIT TIME -------- */
+
+/* -------- BEGIN BUDGETS -------- */
+/*const test_budget = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_budgets = await list(value)
+
+      console.log('BUDGETS', data_budgets)
+
+      return data_budgets
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}*/
+/* -------- END BUDGETS -------- */
+
+/* -------- BEGIN KPI -------- */
+/*const test_kpi_campaing = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_kpi = await list(value)
+
+      console.log('KPI CAMPAING', data_kpi)
+
+      return data_kpi
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}*/
+/* -------- END KPI -------- */
+
+/* -------- BEGIN OPTIMIZATION STRATEGIES -------- */
+/*const test_optimization = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_ops = await list(value)
+
+      console.log('OPTIMIZATION', data_ops)
+
+      return data_ops
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}*/
+/* -------- END OPTIMIZATION STRATEGIES -------- */
+
+/* -------- BEGIN STRATEGIES -------- */
+/*const test_strategies = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_strategies = await list(value)
+
+      console.log('STRATEGIES', data_strategies)
+
+      return data_strategies
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}*/
+/* -------- END STRATEGIES -------- */
+
+/* -------- BEGIN PACING -------- */
+/*const test_pacing = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_pacing = await list(value)
+
+      console.log('PACING', data_pacing)
+
+      return data_pacing
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}*/
+/* -------- END PACING -------- */
+
+/* -------- BEGIN CAMPAING -------- */
+const test_create_campaing = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const fc = {
+        impressions: 26,
+        every_time: 4,
+        unit_time_id: 5
+      } as FrecuencyCapsDataCreate
+
+      const campaing = {
+        advertiser_id: 1,
+        name: 'Campaign ADSMOVIL',
+        budget: 100,
+        daily_budget: 56,
+        budget_type_id: 1,
+        start_date: '2021-05-15 08:21:20',
+        end_date: '2021-05-22 08:00:00',
+        active: 1,
+        alternative_id: '400',
+        optimization_strategy_id: 8,
+        strategy_id: 11,
+        campaign_pacing_id: 13,
+        kpi_campaign_id: 16,
+        automatic_allocation: 1,
+        kpi_objective: 22,
+        cpm_bid: 50,
+        target_ecpc: 50,
+        target_ctr: 0.5,
+        target_vcr: 0.5,
+        trafficker_id: 2,
+        frequency_caps: [fc]
+      } as CampaingDataCreate
+
+      const data_campaing = await create(campaing, value)
+
+      console.log('CAMPAING CREATE', data_campaing)
+
+      return data_campaing
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_update_campaing = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const fc = {
+        impressions: 10,
+        every_time: 3,
+        unit_time_id: 3
+      } as FrecuencyCapsDataCreate
+
+      const campaing = {
+        id: 12,
+        name: 'Campaing POLACO',
+        budget: 60,
+        daily_budget: 36,
+        start_date: '2021-05-26 09:00:00',
+        end_date: '2021-05-28 07:30:00',
+        alternative_id: '501',
+        optimization_strategy_id: 8,
+        strategy_id: 11,
+        campaign_pacing_id: 13,
+        kpi_campaign_id: 16,
+        automatic_allocation: 1,
+        kpi_objective: 22,
+        cpm_bid: 50,
+        target_ecpc: 50,
+        target_ctr: 0.5,
+        target_vcr: 0.5,
+        trafficker_id: 2,
+        active: true,
+        frequency_caps: [fc]
+      } as CampaingDataUpdate
+
+      const data_campaing = await update(campaing, value)
+
+      console.log('CAMPAING UPDATE', data_campaing)
+
+      return data_campaing
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_get_campaing = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      // const data_campaing = await all(value, {}, { sort: 'name', order: 'asc' })
+      // const data_campaing = await paginated(value, { page: 1, limit: 15 }, { name: 'Campaign ADSMOVI' }, { sort: 'name', order: 'asc' })
+      // const data_campaing = await list(value, {}, { sort: 'name', order: 'asc' })
+      const data_campaing = await show(12, value)
+
+      console.log('CAMPAINGS', data_campaing)
+
+      return data_campaing
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_change_status_campaing = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const change = await changeStatus(5, true, value)
+
+      console.log('CHANGE STATUS CAMPAING', change)
+
+      return change
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+/* -------- END CAMPAING -------- */
+
+export default test_get_campaing

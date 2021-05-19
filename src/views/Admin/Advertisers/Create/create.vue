@@ -357,7 +357,6 @@
 				this.show_tooltip_domain = !this.show_tooltip_domain;
 			},
 			toggleStatus(status: boolean) {
-				console.log(status);
 				this.active = Boolean(status);
 			},
 			async dispatchCategories() {

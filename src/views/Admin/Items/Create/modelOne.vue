@@ -1,22 +1,18 @@
 <template>
-	<v-container class="my-0">
-		<v-layout column>
-			<TableListModelOne
-				:headers="prepareTableHeaders"
-				:items="prepareTableContent"
-				:title="title"
-			></TableListModelOne>
-		</v-layout>
-	</v-container>
+	<TableListModelOne
+		:headers="prepareTableHeaders"
+		:items="prepareTableContent"
+		:title="title"
+	></TableListModelOne>
 </template>
 
 <script lang="ts">
 	import TableListModelOne from "./../List/TableListModelOne.vue";
 	import Vue from "vue";
 	/*import {
-		List,
-		ResultPaginate,
-	} from "../../../../interfaces/list";*/
+				List,
+				ResultPaginate,
+			} from "../../../../interfaces/list";*/
 	import { isNull, isUndefined } from "lodash";
 
 	export interface ListItemModelOne {
@@ -24,7 +20,7 @@
 		value?: string;
 		items?: [];
 		name?: string;
-		actions?:[];
+		actions?: [];
 	}
 
 	export default Vue.extend({
@@ -43,38 +39,38 @@
 				return [
 					{
 						id: 1,
-						items: ["asd","1234"],
+						items: ["asd", "1234"],
 						value: "Value 1",
 						name: "Item List 1",
-						actions:["create", "edit", "delete"]
+						actions: ["create", "edit", "delete"],
 					},
 					{
 						id: 2,
-						items: ["fgh","3458"],
+						items: ["fgh", "3458"],
 						value: "Value 2",
 						name: "Item List 2",
-						actions:["create", "edit", "delete"]
+						actions: ["create", "edit", "delete"],
 					},
 					{
 						id: 3,
-						items: ["skl","9023"],
+						items: ["skl", "9023"],
 						value: "Value 3",
 						name: "Item List 3",
-						actions:["create", "edit", "delete"]
-					}
-				]
+						actions: ["create", "edit", "delete"],
+					},
+				];
 			},
 			getLists(): ListItemModelOne[] {
 				/*const result: ResultPaginate = this.getData;
-				if (
-					isUndefined(result) ||
-					isNull(result) ||
-					isUndefined(result?.data) ||
-					isNull(result?.data)
-				) {
-					return [];
-				}
-				return result.data;*/
+						if (
+							isUndefined(result) ||
+							isNull(result) ||
+							isUndefined(result?.data) ||
+							isNull(result?.data)
+						) {
+							return [];
+						}
+						return result.data;*/
 				return this.getData;
 			},
 			prepareTableHeaders() {
@@ -127,7 +123,7 @@
 						items: item?.items,
 						value: item?.value,
 						name: item?.name,
-						actions: item?.actions
+						actions: item?.actions,
 					};
 				});
 			},
