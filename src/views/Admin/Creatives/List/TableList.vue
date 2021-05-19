@@ -8,9 +8,8 @@
 			hide-default-footer
 			:mobile-breakpoint="null"
 		>
-			<!-- LABEL -->
 
-			<!-- id -->
+			<!-- ID -->
 			<template v-slot:[`header.id`]="{ header }">
 				<v-menu :close-on-content-click="false">
 					<template v-slot:activator="{ on, attrs }">
@@ -54,7 +53,7 @@
 				</v-menu>
 			</template>
 
-			<!-- name -->
+			<!-- CREATIVE NAME -->
 			<template v-slot:[`header.name`]="{ header }">
 				<v-menu :close-on-content-click="false">
 					<template v-slot:activator="{ on, attrs }">
@@ -96,8 +95,8 @@
 				</v-menu>
 			</template>
 
-			<!-- active -->
-			<template v-slot:[`header.active`]="{ header }">
+			<!-- SIZE -->
+			<template v-slot:[`header.size`]="{ header }">
 				<v-menu :close-on-content-click="false">
 					<template v-slot:activator="{ on, attrs }">
 						<div v-bind="attrs" v-on="on">
@@ -106,45 +105,14 @@
 						</div>
 					</template>
 
-					<v-list subheader two-line flat>
-						<v-subheader>Filter</v-subheader>
-
-						<v-list-item>
-							<v-radio-group v-model="radios">
-								<v-radio color="secondary" value="asc">
-									<template v-slot:label>
-										<div>Active</div>
-									</template>
-								</v-radio>
-								<v-radio color="secondary" value="desc">
-									<template v-slot:label>
-										<div>Inactive</div>
-									</template>
-								</v-radio>
-							</v-radio-group>
-						</v-list-item>
-					</v-list>
-				</v-menu>
-			</template>
-
-			<!-- category -->
-			<template v-slot:[`header.category`]="{ header }">
-				<v-menu :close-on-content-click="false">
-					<template v-slot:activator="{ on, attrs }">
-						<div v-bind="attrs" v-on="on">
-							{{ header.text }}
-							<v-icon>mdi-chevron-down</v-icon>
-						</div>
-					</template>
-
-					<v-list subheader two-line flat>
+					<v-list subheader>
 						<v-subheader>Filter</v-subheader>
 
 						<v-list-item>
 							<v-text-field
 								class="label-fixed no-top"
 								ref="id"
-								v-model="header.category"
+								v-model="filter.size.value"
 								type="text"
 								:placeholder="header.text"
 								clearable
@@ -160,6 +128,7 @@
 								block
 								outlined
 								rounded
+								@click="removeFilterSize()"
 							>
 								Remove filter
 							</v-btn>
@@ -168,9 +137,158 @@
 				</v-menu>
 			</template>
 
-			<!-- ITEMS -->
+			<!-- TYPE -->
+			<template v-slot:[`header.type`]="{ header }">
+				<v-menu :close-on-content-click="false">
+					<template v-slot:activator="{ on, attrs }">
+						<div v-bind="attrs" v-on="on">
+							{{ header.text }}
+							<v-icon>mdi-chevron-down</v-icon>
+						</div>
+					</template>
 
-			<!-- active -->
+					<v-list subheader>
+						<v-subheader>Filter</v-subheader>
+
+						<v-list-item>
+							<v-text-field
+								class="label-fixed no-top"
+								ref="id"
+								v-model="filter.type.value"
+								type="text"
+								:placeholder="header.text"
+								clearable
+							></v-text-field>
+						</v-list-item>
+
+						<v-divider></v-divider>
+
+						<v-list-item>
+							<v-btn
+								color="secondary"
+								elevation="2"
+								block
+								outlined
+								rounded
+								@click="removeFilterType()"
+							>
+								Remove filter
+							</v-btn>
+						</v-list-item>
+					</v-list>
+				</v-menu>
+			</template>
+
+			<!-- LINE ITEMS -->
+			<template v-slot:[`header.lineItems`]="{ header }">
+				<v-menu :close-on-content-click="false">
+					<template v-slot:activator="{ on, attrs }">
+						<div v-bind="attrs" v-on="on">
+							{{ header.text }}
+							<v-icon>mdi-chevron-down</v-icon>
+						</div>
+					</template>
+
+					<v-list subheader>
+						<v-subheader>Filter</v-subheader>
+
+						<v-list-item>
+							<v-text-field
+								class="label-fixed no-top"
+								ref="id"
+								v-model="filter.lineItems.value"
+								type="number"
+								:placeholder="header.text"
+								clearable
+							></v-text-field>
+						</v-list-item>
+
+						<v-divider></v-divider>
+
+						<v-list-item>
+							<v-btn
+								color="secondary"
+								elevation="2"
+								block
+								outlined
+								rounded
+								@click="removeFilterLineItems()"
+							>
+								Remove filter
+							</v-btn>
+						</v-list-item>
+					</v-list>
+				</v-menu>
+			</template>
+
+			<!-- THUMBAILS -->
+			<template v-slot:[`header.thumbail`]="{ header }">
+				<v-menu :close-on-content-click="false">
+					<template v-slot:activator="{ on, attrs }">
+						<div v-bind="attrs" v-on="on">
+							{{ header.text }}
+							<v-icon>mdi-chevron-down</v-icon>
+						</div>
+					</template>
+
+					<v-list subheader>
+						<v-subheader>Filter</v-subheader>
+
+						<v-list-item>
+							<v-text-field
+								class="label-fixed no-top"
+								ref="id"
+								v-model="filter.thumbail.value"
+								type="text"
+								:placeholder="header.text"
+								clearable
+							></v-text-field>
+						</v-list-item>
+
+						<v-divider></v-divider>
+
+						<v-list-item>
+							<v-btn
+								color="secondary"
+								elevation="2"
+								block
+								outlined
+								rounded
+								@click="removeFilterThumbail()"
+							>
+								Remove filter
+							</v-btn>
+						</v-list-item>
+					</v-list>
+				</v-menu>
+			</template>
+
+			<template v-slot:[`item.thumbail`]="{ item }">
+				<v-card-actions>
+					<v-img
+						style="borderRadius: 5px"
+						lazy-src="https://picsum.photos/id/11/10/6"
+						max-height="45"
+						max-width="45"
+						src="https://picsum.photos/id/11/500/300"
+					></v-img>
+					<v-btn
+						color="secondary"
+						elevation="0"
+						medium
+						raised
+						rounded
+						text
+						icon
+					>
+						<v-icon small class="secondary--text">
+							mdi-magnify-plus-outline
+						</v-icon>
+					</v-btn>
+				</v-card-actions>
+			</template>
+
+			<!-- ACTIVE -->
 			<template v-slot:[`item.active`]="{ item }">
 				<strong class="d-flex" :class="getColor(item.active)">
 					<v-icon :class="getColor(item.active)"
@@ -180,6 +298,7 @@
 				</strong>
 			</template>
 
+			<!-- ACTIONS -->
 			<template v-slot:[`item.actions`]="{ item }">
 				<v-card-actions>
 					<v-btn
@@ -190,10 +309,6 @@
 						rounded
 						text
 						icon
-						:to="{
-							name: 'AdvertiserEdit',
-							params: { id: item.id },
-						}"
 					>
 						<v-icon small class="secondary--text">
 							mdi-pencil
@@ -201,13 +316,17 @@
 					</v-btn>
 				</v-card-actions>
 			</template>
+
 		</v-data-table>
+
+		<!-- PAGINATE --->
 		<div v-if="items.length" class="text-center py-8">
 			<v-pagination
 				v-model="current_page"
 				:length="getLength"
 			></v-pagination>
 		</div>
+
 	</section>
 </template>
 
@@ -216,7 +335,7 @@
 	import Vue from "vue";
 
 	export default Vue.extend({
-		name: "CreativesHeader",
+		name: "CreativesTable",
 		props: {
 			current_page: {
 				type: Number,
@@ -260,6 +379,26 @@
 					value: "",
 					order: "asc",
 				},
+				size: {
+					value: "",
+					order: "asc",
+				},
+				type: {
+					value: "",
+					order: "asc",
+				},
+				lineItems: {
+					value: "",
+					order: "asc",
+				},
+				thumbail: {
+					value: "",
+					order: "asc",
+				},
+				active: {
+					value: "",
+					order: "asc",
+				},
 			},
 			filtered: [],
 		}),
@@ -279,6 +418,7 @@
 
 			filteredData() {
 				this.filtered = this.items;
+				
 				// filter by id
 				if (!isNull(this.filter.id.value)) {
 					this.filtered = this.filtered.filter((item: { id: string }) => {
@@ -288,7 +428,7 @@
 					});
 				}
 
-				// filter by name
+				// filter by campaign name
 				if (!isNull(this.filter.name.value)) {
 					this.filtered = this.filtered.filter(
 						(item: { name: string }) => {
@@ -298,6 +438,51 @@
 						}
 					);
 				}
+
+				// filter by size
+				if (!isNull(this.filter.size.value)) {
+					this.filtered = this.filtered.filter(
+						(item: { size: string }) => {
+							return item.size
+								.toLowerCase()
+								.includes(this.filter.size.value.toLowerCase());
+						}
+					);
+				}
+
+				// filter by type
+				if (!isNull(this.filter.type.value)) {
+					this.filtered = this.filtered.filter(
+						(item: { type: string }) => {
+							return item.type
+								.toLowerCase()
+								.includes(this.filter.type.value.toLowerCase());
+						}
+					);
+				}
+
+				// filter by line items
+				if (!isNull(this.filter.lineItems.value)) {
+					this.filtered = this.filtered.filter(
+						(item: { lineItems: string }) => {
+							return item.lineItems.toString()
+								.toLowerCase()
+								.includes(this.filter.lineItems.value.toLowerCase());
+						}
+					);
+				}
+
+				// filter by thumbail
+				if (!isNull(this.filter.thumbail.value)) {
+					this.filtered = this.filtered.filter(
+						(item: { thumbail: string }) => {
+							return item.thumbail
+								.toLowerCase()
+								.includes(this.filter.thumbail.value.toLowerCase());
+						}
+					);
+				}
+
 				this.sorteredData();
 				return this.filtered;
 			},
@@ -325,6 +510,18 @@
 			},
 			removeFilterName() {
 				this.filter.name.value = "";
+			},
+			removeFilterSize() {
+				this.filter.size.value = "";
+			},
+			removeFilterType() {
+				this.filter.type.value = "";
+			},
+			removeFilterLineItems() {
+				this.filter.lineItems.value = "";
+			},
+			removeFilterThumbail() {
+				this.filter.thumbail.value = "";
 			},
 		},
 	});
