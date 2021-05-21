@@ -12,7 +12,7 @@
 					exact
 					:disabled="item.disabled"
 				>
-					{{ item.text }}
+					{{ $t(item.text) }}
 				</v-breadcrumbs-item>
 			</template>
 		</v-breadcrumbs>
@@ -51,7 +51,6 @@
 			items() {
 				let self = this;
 				return self.$route.matched.map((math: any) => {
-					console.log(math.path);
 					this.path = this.getPath(math.path);
 					return {
 						exact: true,

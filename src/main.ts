@@ -5,7 +5,8 @@ import i18n from '@/plugins/i18n'
 import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
-import moment from 'moment';
+// import moment from 'moment';
+import moment from 'moment-timezone';
 
 moment.locale('es');
 

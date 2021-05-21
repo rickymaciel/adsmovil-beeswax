@@ -250,11 +250,11 @@ const routes: Array<RouteConfig> = [
                     // },
                     {
                         path: 'edit/:id',
-                        name: 'ListsEdit',
-                        //component: () => import('@/views/Admin/Campaigns/Edit/edit.vue'),
+                        name: 'CampaignsEdit',
+                        component: () => import('@/views/Admin/Campaigns/Edit/edit.vue'),
                         meta: {
                             requiresAuth: true,
-                            breadcrumb: "Edit campaign"
+                            breadcrumb: "edit-campaign"
                         },
                     }
                 ]

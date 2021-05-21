@@ -33,6 +33,7 @@
 								:owners="getUsers"
 								@update-model="updateModelOverview"
 								@init-frequency-caps="dispatchUnitTimes()"
+								@create-campaign="dispatchCreateCampaign"
 							></Overview>
 						</v-layout>
 					</v-tab-item>
@@ -53,6 +54,7 @@
 	import { initCampaign } from "../../../../utils/initData";
 	import Alertize from "../../../../components/Alertize.vue";
 	import { isEmpty } from "lodash";
+	import { CampaignDataCreate } from "../../../../interfaces/campaign";
 
 	export default Vue.extend({
 		name: "Create",
@@ -199,6 +201,15 @@
 					{
 						root: true,
 					}
+				);
+			},
+
+			async dispatchCreateCampaign(data: { campaign: CampaignDataCreate }) {
+				console.log("dispatchCreateCampaign", { data: data });
+				return this.$store.dispatch(
+					"campaign/createCampaign",
+					data.campaign,
+					{ root: true }
 				);
 			},
 		},

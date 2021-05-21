@@ -31,5 +31,11 @@
     "title-success": "¡Felicidades!",
     "title-failed": "¡Error!",
     "continue": "Continuar",
-    "try-again": "Intentar otra vez"
+    "save-continue": "Guardar y continuar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "try-again": "Intentar otra vez",
+    "max": "Este valor no puede ser mayor que {max}",
+    "min": "Este valor debe ser como mínimo {min}",
+    "edit-campaign": "Editar campaña"
 }

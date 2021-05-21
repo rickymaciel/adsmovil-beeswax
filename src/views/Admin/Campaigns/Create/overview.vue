@@ -1,5 +1,6 @@
 <template>
 	<v-card justify="between" align="center" color="grey lighten-3 py-4">
+		{{ initEdit }}
 		<v-form
 			ref="form"
 			justify="between"
@@ -8,7 +9,7 @@
 			lazy-validation
 		>
 			<v-container>
-				<!-- <v-card> campaign: {{ campaign }} </v-card> -->
+				<!-- <v-card>account: {{ account }}</v-card> -->
 				<v-row dense>
 					<!-- Name: name ✔-->
 					<v-col cols="12" sm="12" md="6" lg="4">
@@ -43,6 +44,7 @@
 						>
 							<v-autocomplete
 								class="label-fixed"
+								:class="{ disabled: isEdit }"
 								v-model.number="campaign.advertiser_id"
 								v-numeric
 								:rules="getRules.required"
@@ -53,6 +55,7 @@
 								item-value="id"
 								label="Advertiser*"
 								placeholder="Advertiser"
+								:disabled="isEdit"
 							></v-autocomplete>
 						</v-card>
 					</v-col>
@@ -71,7 +74,7 @@
 								v-model.number="campaign.trafficker_id"
 								v-numeric
 								:rules="getRules.required"
-								:hint="`Advertiser`"
+								:hint="`Owner`"
 								:items="owners"
 								ref="trafficker_id"
 								item-text="value"
@@ -265,6 +268,7 @@
 									v-numeric
 									:rules="getRules.required"
 									row
+									:disabled="isEdit"
 								>
 									<v-radio
 										v-for="budgetType in getBudgetType"
@@ -318,21 +322,18 @@
 							</v-layout>
 							<v-layout>
 								<v-radio-group
+									v-numeric
+									row
 									v-model.number="
 										campaign.automatic_allocation
 									"
-									v-numeric
-									row
 								>
 									<v-radio
 										color="secondary"
-										label="Yes"
-										:value="1"
-									></v-radio>
-									<v-radio
-										color="secondary"
-										label="No"
-										:value="0"
+										v-for="n in getAllocationData"
+										:key="n.key"
+										:label="n.value"
+										:value="n.key"
 									></v-radio>
 								</v-radio-group>
 							</v-layout>
@@ -376,6 +377,9 @@
 									v-numeric
 									:rules="getRules.required"
 									row
+									:disabled="
+										isEdit && isOptimizationStrategyById
+									"
 								>
 									<v-radio
 										v-for="element in getOptimizationStrategies"
@@ -558,12 +562,13 @@
 							<v-text-field
 								v-model.number="campaign.cpm_bid"
 								v-numeric
-								:rules="getRules.required"
+								:rules="getRules.cpm_bid"
 								hint="Bid CPM"
 								ref="cpm_bid"
 								placeholder="Bid CPM"
 								label="Bid CPM"
 								class="label-fixed"
+								max="25000"
 							></v-text-field>
 						</v-card>
 					</v-col>
@@ -610,7 +615,7 @@
 						>
 							<v-text-field
 								v-model="campaign.target_ecpc"
-								:rules="getRules.required"
+								:rules="getRules.target_ecpc"
 								hint="Target eCPCV"
 								ref="target_ecpc"
 								placeholder="Target eCPCV"
@@ -637,7 +642,7 @@
 						>
 							<v-text-field
 								v-model="campaign.target_ctr"
-								:rules="getRules.required"
+								:rules="getRules.target_ctr"
 								hint="Target CTR"
 								ref="target_ctr"
 								placeholder="Target CTR"
@@ -664,7 +669,7 @@
 						>
 							<v-text-field
 								v-model="campaign.target_vcr"
-								:rules="getRules.required"
+								:rules="getRules.target_vcr"
 								hint="Target VCR"
 								ref="target_vcr"
 								placeholder="Target VCR"
@@ -848,7 +853,7 @@
 									color="secondary"
 									class="ma-2 px-8"
 								>
-									{{ $t("save & continue") }}
+									{{ $t("save-continue") }}
 								</v-btn>
 								<v-btn
 									rounded
@@ -930,6 +935,18 @@
 				type: Array,
 				required: true,
 			},
+			start_time: {
+				type: String,
+				default: "00:00:00",
+			},
+			end_time: {
+				type: String,
+				default: "00:59:59",
+			},
+			is_edit: {
+				type: Boolean,
+				default: false,
+			},
 		},
 		components: { DateTimePicker },
 		data: () => ({
@@ -940,20 +957,20 @@
 			openStartTime: false,
 			openEndDate: false,
 			openEndTime: false,
-			date_format: "YYYY-MM-DD HH:MM:SS",
 			expected_show: false,
 			expected_value: undefined,
 			expected_label: "",
-			start_time: "00:00:00",
-			end_time: "23:59:59",
 			campaign_duration: undefined,
 			show_target_ecpc: false,
 			show_target_ctr: false,
 			show_target_vcr: false,
 		}),
 		created() {},
-		async mounted() {},
+		mounted() {},
 		computed: {
+			isEdit() {
+				return this.is_edit;
+			},
 			startDateTime() {
 				if (!this.campaign.start_date) return "";
 				return `${this.campaign.start_date} ${this.start_time || ""}`;
@@ -975,6 +992,26 @@
 				return {
 					required: [(v: any) => Boolean(v) || this.$t("fieldRequired")],
 					number: [(v: number) => !isNaN(v) || this.$t("fieldRequired")],
+					cpm_bid: [
+						(v: any) => Boolean(v) || this.$t("fieldRequired"),
+						(v: number) => v > 0 || this.$t("min", { min: 0 }),
+						(v: number) => v <= 25000 || this.$t("max", { max: 25000 }),
+					],
+					target_ecpc: [
+						(v: any) => Boolean(v) || true,
+						(v: number) => v > 0 || this.$t("min", { min: 0 }),
+						(v: number) => v <= 10000 || this.$t("max", { max: 10000 }),
+					],
+					target_ctr: [
+						(v: any) => Boolean(v) || true,
+						(v: number) => v >= 0 || this.$t("min", { min: 0 }),
+						(v: number) => v <= 1 || this.$t("max", { max: 1 }),
+					],
+					target_vcr: [
+						(v: any) => Boolean(v) || true,
+						(v: number) => v >= 0 || this.$t("min", { min: 0 }),
+						(v: number) => v <= 1 || this.$t("max", { max: 1 }),
+					],
 				};
 			},
 			nameRules() {
@@ -1020,9 +1057,31 @@
 				return label;
 			},
 
+			getAllocationData() {
+				return [
+					{
+						kay: 0,
+						value: "No",
+					},
+					{
+						kay: 1,
+						value: "Yes",
+					},
+				];
+			},
+
 			/**
 			 * Check
 			 */
+
+			initEdit() {
+				if (!this.isEdit) return;
+				if (this.campaign.frequency_caps.length) {
+					this.$emit("init-frequency-caps");
+				}
+				this.calcCampaignDuration();
+			},
+
 			showCampaignPacing() {
 				return (
 					this.isAutomaticAllocation && this.isOptimizationStrategyById
@@ -1281,18 +1340,15 @@
 			handleCancel() {},
 			async handleSubmit() {
 				if (!(await this.validate())) return;
-				this.dispatchSubmit();
+				const emit = this.isEdit ? "update-campaign" : "create-campaign";
+				this.$emit(emit, {
+					campaign: this.prepareDataCreate(),
+				});
 			},
 
-			async dispatchSubmit() {
-				return this.$store.dispatch(
-					"campaign/createCampaign",
-					this.prepareDataCreate(),
-					{ root: true }
-				);
-			},
 			prepareDataCreate() {
 				return {
+					id: this.isEdit ? Number(this.campaign.id) : undefined,
 					name: String(this.campaign.name),
 					advertiser_id: Number(this.campaign.advertiser_id),
 					budget: Number(this.campaign.budget),
@@ -1320,13 +1376,7 @@
 					target_vcr: Number(this.campaign.target_vcr),
 				} as CampaignDataCreate;
 			},
-			setNotification(notification: any) {
-				return this.$store.dispatch(
-					"proccess/setNotification",
-					notification,
-					{ root: true }
-				);
-			},
+
 			calcCampaignDuration() {
 				const startDate = this.moment(
 					`${this.campaign.start_date} ${this.start_time}`

@@ -104,6 +104,7 @@ export interface Notification {
     subtitle?: String;
     message?: String;
     type?: String;
+    to?: String;
 }
 
 export enum MessageTypes {

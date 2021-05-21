@@ -14,37 +14,37 @@ axios.defaults.headers.common['Accept'] = 'application/json'
 const token = localStorage.getItem('token') || ''
 
 if (token && token.startsWith('Bearer ')) {
-  axios.defaults.headers.common.Authorization = ValidateToken(token)
+    axios.defaults.headers.common.Authorization = ValidateToken(token)
 }
 
 // Add a request interceptor
 axios.interceptors.request.use(function (config) {
-  return config
+    return config
 }, function (error) {
-  console.error('AxiosService.interceptors', { request: error })
-  return Promise.reject(error)
+    console.error('AxiosService.interceptors', { request: error })
+    return Promise.reject(error)
 })
 
 // Add a response interceptor
 axios.interceptors.response.use(function (response) {
-  if (HasProviderToken(response)) {
-    const provider = ProviderToken(response)
-    //console.log('interceptor:response', { provider: provider })
+    if (HasProviderToken(response)) {
+        const provider = ProviderToken(response)
+        //console.log('interceptor:response', { provider: provider })
 
-    if (provider && provider.startsWith('Bearer')) {
-      const tokenValid = ValidateToken(provider)
+        if (provider && provider.startsWith('Bearer')) {
+            const tokenValid = ValidateToken(provider)
 
-      if (String(tokenValid).length > 0) {
-        axios.defaults.headers.common.Authorization = tokenValid
-        localStorage.setItem('token', tokenValid)
-      }
+            if (String(tokenValid).length > 0) {
+                axios.defaults.headers.common.Authorization = tokenValid
+                localStorage.setItem('token', tokenValid)
+            }
+        }
     }
-  }
 
-  return response
+    return response
 }, function (error) {
-  console.error('AxiosService.interceptors', { error: error })
-  return Promise.reject(error)
+    console.error('AxiosService.interceptors', { error: error })
+    return Promise.reject(error)
 })
 
 /**
@@ -52,54 +52,63 @@ axios.interceptors.response.use(function (response) {
  * @param url
  * @param payload
  */
-export function AxiosPost (url: string, payload: any) {
-  return axios.post(url, payload)
+export function AxiosPost(url: string, payload: any) {
+    return axios.post(url, payload)
 }
 
 /**
  * GET
  * @param url
  */
-export function AxiosGet (url: string) {
-  return axios.get(url)
+export function AxiosGet(url: string) {
+    return axios.get(url)
 }
 
 /**
- * GET
+ * PATCH
  * @param url
+ * @param payload
  */
-export function AxiosPatch (url: string, payload: any) {
-  return axios.patch(url, payload)
+export function AxiosPatch(url: string, payload: any) {
+    return axios.patch(url, payload)
 }
 
 /**
  * HasSuccess
  * @param response AxiosResponse<any>
  */
-export function HasSuccess (response: AxiosResponse<any>) {
-  return Boolean((response.status >= 200 && response.status < 300) && typeof response.data.success === typeof undefined && response.data.success)
+export function HasSuccess(response: AxiosResponse<any>) {
+    return Boolean((response.status >= 200 && response.status < 300) && typeof response.data.success !== typeof undefined && response.data.success)
 }
 
 /**
  * HasError
  * @param response AxiosResponse<any>
  */
-export function HasError (response: AxiosResponse<any>) {
-  return Boolean((response.status < 200 || response.status > 300))
+export function HasError(response: AxiosResponse<any>) {
+    return Boolean((response.status < 200 || response.status > 300) && !response.data.success)
 }
 
 /**
  * ResponseData
  * @param response AxiosResponse<any>
  */
-export function ResponseData (response: AxiosResponse<any>) {
-  return response.data
+export function ResponseData(response: AxiosResponse<any>) {
+    return response.data
 }
 
 /**
  * ResponseDataContent
  * @param response AxiosResponse<any>
  */
-export function ResponseDataContent (response: AxiosResponse<any>) {
-  return response.data.response
+export function ResponseDataContent(response: AxiosResponse<any>) {
+    return response.data.response
+}
+
+/**
+ * ResponseDataContent
+ * @param response AxiosResponse<any>
+ */
+export function ErrorDataMessage(response: AxiosResponse<any>) {
+    return response.data.message
 }

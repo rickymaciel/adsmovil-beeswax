@@ -1,18 +1,20 @@
-import { CampaignDataCreate } from '@/interfaces/campaign';
-import { Notification, MessageTypes } from '@/interfaces/proccess';
-import { AxiosPost } from '@/services/axios-service'
-import Store from '@/store/index'
+import { Campaign, CampaignDataCreate } from '@/interfaces/campaign';
+import { AxiosGet, AxiosPatch, AxiosPost } from '@/services/axios-service'
 
 export const CAMPAIGN_ROUTE = '/api/campaigns'
 
 class CampaignService {
 
     async create(campaign: CampaignDataCreate) {
-        try {
-            return AxiosPost(CAMPAIGN_ROUTE, campaign);
-        } catch (error) {
-            console.error('CampaignService:create', { error: error })
-        }
+        return AxiosPost(CAMPAIGN_ROUTE, campaign);
+    }
+
+    async update(campaign: Campaign) {
+        return AxiosPatch(`${CAMPAIGN_ROUTE}/${campaign.id}`, campaign);
+    }
+
+    async show(id: number) {
+        return AxiosGet(`${CAMPAIGN_ROUTE}/${id}`);
     }
 }
 

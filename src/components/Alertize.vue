@@ -72,6 +72,9 @@
 			getType() {
 				return this.notification.type;
 			},
+			redirectTo() {
+				return this.notification.to;
+			},
 
 			isSuccess() {
 				return this.getType === MessageTypes.SUCCESS;
@@ -115,12 +118,13 @@
 				switch (this.getType) {
 					case MessageTypes.ERROR:
 						this.resetNotification();
-
 						break;
 
 					case MessageTypes.SUCCESS:
+						if (this.redirectTo) {
+							this.$router.push({ name: this.redirectTo });
+						}
 						this.resetNotification();
-						this.$router.push({ name: "AdvertisersList" });
 
 						break;
 

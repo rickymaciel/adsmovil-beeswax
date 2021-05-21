@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import i18n from '@/plugins/i18n'
 
 import AuthService, { ProviderToken } from '@/services/auth-service'
 import ProfileService, { ProviderProfile } from '@/services/profile-service'
@@ -19,7 +20,8 @@ import { isNull, isUndefined } from 'lodash'
 import { CustomList, CustomListDataCreate, CustomListFilters, CustomListOptions, CustomListPaginated, CustomListResultPaginate, List, Type } from '@/interfaces/custom_list'
 
 import { resolveList } from '../utils/resolveObjectArray'
-import { CampaignDataCreate } from '@/interfaces/campaign'
+import { Campaign, CampaignDataCreate } from '@/interfaces/campaign'
+import { ErrorDataMessage, HasError, HasSuccess, ResponseData, ResponseDataContent } from '@/services/axios-service'
 /**
  * Hard Code Account
  */
@@ -89,7 +91,7 @@ export default new Vuex.Store({
                 },
                 async setNotification({ commit }, notification: Notification) {
                     try {
-                        console.error('@Action:setNotification', { notification: notification })
+                        console.log('@Action:setNotification', { notification: notification })
                         commit('SET_NOTIFICATION', notification)
                         return await Promise.resolve()
                     } catch (error) {
@@ -697,6 +699,9 @@ export default new Vuex.Store({
                 campaign: null,
             }),
             mutations: {
+                SET_CAMPAIGN(state, _campaign: Campaign = {} as Campaign) {
+                    state.campaign = _campaign
+                }
             },
             getters: {
             },
@@ -716,6 +721,73 @@ export default new Vuex.Store({
                             message = message.concat(`: ${errors}`);
                         }
                         console.error('@Action:createCampaign.catch', { message: message })
+
+                        this.dispatch('proccess/setNotification', { message: message, type: MessageTypes.ERROR, title: "Error" } as Notification, { root: true })
+
+                        return await Promise.reject({
+                            status: false,
+                            message: message,
+                            errors: error.response.data.errors ? error.response.data.errors : []
+                        })
+                    }
+                },
+
+                async updateCampaign({ commit }, campaign: Campaign) {
+                    try {
+                        const response = await CampaignService.update(campaign)
+
+                        console.log('updateCampaign', {
+                            response: response,
+                            campaign: campaign,
+                            hasSuccess: HasSuccess(response),
+                            hasError: HasError(response),
+                            content: ResponseDataContent(response),
+                        });
+
+                        if (HasSuccess(response)) {
+                            commit('SET_CAMPAIGN', ResponseDataContent(response));
+                            this.dispatch('proccess/setNotification', { message: i18n.t('success'), type: MessageTypes.SUCCESS, title: i18n.t('title-success'), to: 'CampaignsIndex' } as Notification, { root: true })
+                            return await Promise.resolve(ResponseDataContent(response))
+                        }
+                        return await Promise.reject(ErrorDataMessage(response))
+
+                    } catch (error) {
+                        console.error('@Action:updateCampaign.catch:::stringify', { error: JSON.stringify(error) })
+                        var message = typeof undefined !== typeof error.response.data.message ? error.response.data.message : error.toString()
+                        const errors = error.response.data.errors ? Array(error.response.data.errors).join(', ') : null;
+                        console.log('@Action:updateCampaign.catch:::errors', { errors: errors })
+                        if (errors) {
+                            message = message.concat(`: ${errors}`);
+                        }
+                        console.error('@Action:updateCampaign.catch:::message', { message: message })
+
+                        this.dispatch('proccess/setNotification', { message: message, type: MessageTypes.ERROR, title: "Error" } as Notification, { root: true })
+
+                        return await Promise.reject({
+                            status: false,
+                            message: message,
+                            errors: error.response.data.errors ? error.response.data.errors : []
+                        })
+                    }
+                },
+
+                async showCampaign({ commit }, id: number) {
+                    try {
+                        const response = await CampaignService.show(id);
+                        if (HasSuccess(response)) {
+                            commit('SET_CAMPAIGN', ResponseDataContent(response));
+                            return await Promise.resolve(ResponseDataContent(response))
+                        }
+                        return await Promise.reject(ErrorDataMessage(response))
+                    } catch (error) {
+                        commit('SET_CAMPAIGN');
+                        console.error('@Action:showCampaign.catch', { error: error })
+                        var message = typeof undefined !== typeof error.response.data.message ? error.response.data.message : error.toString()
+                        const errors = error.response.data.errors ? Array(error.response.data.errors).join(', ') : null;
+                        if (errors) {
+                            message = message.concat(`: ${errors}`);
+                        }
+                        console.error('@Action:showCampaign.catch', { message: message })
 
                         this.dispatch('proccess/setNotification', { message: message, type: MessageTypes.ERROR, title: "Error" } as Notification, { root: true })
 

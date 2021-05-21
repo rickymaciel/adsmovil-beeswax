@@ -31,5 +31,11 @@
     "title-success": "Congratulations!",
     "title-failed": "Error!",
     "continue": "Continue",
-    "try-again": "Try again"
+    "try-again": "Try again",
+    "save-continue": "Save & Continue",
+    "save": "Save",
+    "cancel": "Cancel",
+    "max": "This value may not be greater than {max}",
+    "min": "This value must be at least {min}",
+    "edit-campaign": "Edit campaign"
 }
