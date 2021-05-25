@@ -52,9 +52,7 @@
 
 		data: () => ({}),
 
-		created() {
-			console.log("TitleWelcome", { type: this.type, title: this.title });
-		},
+		created() {},
 
 		mounted() {},
 

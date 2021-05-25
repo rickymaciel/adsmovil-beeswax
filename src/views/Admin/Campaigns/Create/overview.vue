@@ -176,6 +176,7 @@
 							model_time="start_time"
 							:open_date="openStartDate"
 							:open_time="openStartTime"
+							type_validate_date="min-todate"
 							@date="startDateUpdate"
 							@time="startTimeUpdate"
 							@close-date="closeOpenStartDate"
@@ -199,6 +200,7 @@
 							model_time="end_time"
 							:open_date="openEndDate"
 							:open_time="openEndTime"
+							type_validate_date="must-after"
 							@date="endDateUpdate"
 							@time="endTimeUpdate"
 							@close-date="closeOpenEndDate"
@@ -436,13 +438,14 @@
 							<v-text-field
 								v-model.number="campaign.daily_budget"
 								v-numeric
-								:rules="getRules.required"
-								:hint="getSuggested"
+								:rules="getRules.daily_budget"
+								:hint="getError('daily_budget')"
 								ref="daily_budget"
 								placeholder="Daily Budget"
 								label="Daily Budget"
 								class="label-fixed p-prefix"
 								:suffix="getSuggested"
+								:persistent-hint="hasError('daily_budget')"
 							>
 							</v-text-field>
 						</v-card>
@@ -814,7 +817,7 @@
 				<v-divider class="my-4"></v-divider>
 
 				<v-row no-gutters align="center" justify="center">
-					<v-col cols="12" sm="12" md="8" lg="9">
+					<v-col cols="12" sm="4" md="4" lg="6">
 						<v-card
 							elevation="0"
 							class="pa-2"
@@ -831,7 +834,7 @@
 						</v-card>
 					</v-col>
 
-					<v-col cols="12" sm="12" md="8" lg="3">
+					<v-col cols="12" sm="8" md="8" lg="6">
 						<v-card
 							elevation="0"
 							class="pa-2"
@@ -874,7 +877,15 @@
 
 <script lang="ts">
 	import Vue from "vue";
-	import { isUndefined, isNull, isEmpty, isNaN, find, isNumber } from "lodash";
+	import {
+		isUndefined,
+		isNull,
+		isEmpty,
+		isNaN,
+		find,
+		isNumber,
+		first,
+	} from "lodash";
 	import { AdvertiserList } from "../../../../interfaces/advertiser";
 	import DateTimePicker from "../../../../components/Content/DateTimePicker.vue";
 	import { CampaignDataCreate } from "../../../../interfaces/campaign";
@@ -947,6 +958,12 @@
 				type: Boolean,
 				default: false,
 			},
+			errors: {
+				type: Object,
+				default: function () {
+					return {};
+				},
+			},
 		},
 		components: { DateTimePicker },
 		data: () => ({
@@ -966,7 +983,13 @@
 			show_target_vcr: false,
 		}),
 		created() {},
-		mounted() {},
+		mounted() {
+			setTimeout(() => {
+				if (!this.campaign.frequency_caps.length) {
+					this.addRowFrecuency();
+				}
+			}, 1000);
+		},
 		computed: {
 			isEdit() {
 				return this.is_edit;
@@ -1012,6 +1035,14 @@
 						(v: number) => v >= 0 || this.$t("min", { min: 0 }),
 						(v: number) => v <= 1 || this.$t("max", { max: 1 }),
 					],
+					daily_budget: [
+						(v: any) => Boolean(v) || this.$t("fieldRequired"),
+						(v: any) =>
+							v >= this.calcSuggested ||
+							this.$t("greaterOrEqual", {
+								value: this.calcSuggested,
+							}),
+					],
 				};
 			},
 			nameRules() {
@@ -1027,6 +1058,10 @@
 				];
 			},
 
+			calcSuggested() {
+				return Math.round(this.campaign.budget / this.campaign_duration);
+			},
+
 			getSuggested() {
 				if (
 					!this.showDailyBudget ||
@@ -1034,9 +1069,7 @@
 					!this.campaign_duration
 				)
 					return "";
-				return `Suggested ${Math.round(
-					this.campaign.budget / this.campaign_duration
-				)}`;
+				return `Suggested ${this.calcSuggested}`;
 			},
 
 			getKpiObjectiveLabel() {
@@ -1289,6 +1322,15 @@
 			},
 		},
 		methods: {
+			getError(index: string | number) {
+				if (!this.hasError(index)) return "";
+				return first(this.errors[index]);
+			},
+
+			hasError(index: string | number) {
+				return this.errors.hasOwnProperty(index);
+			},
+
 			/**
 			 * targets: show_ecpc, show_ctr, show_vcr
 			 */
@@ -1337,13 +1379,22 @@
 				const valid = await form.validate();
 				return await valid;
 			},
-			handleCancel() {},
+			handleCancel() {
+				this.$router.push({ name: "CampaignsIndex" });
+			},
+
 			async handleSubmit() {
-				if (!(await this.validate())) return;
-				const emit = this.isEdit ? "update-campaign" : "create-campaign";
-				this.$emit(emit, {
-					campaign: this.prepareDataCreate(),
-				});
+				try {
+					if (!(await this.validate())) return;
+					const emit = this.isEdit
+						? "update-campaign"
+						: "create-campaign";
+					this.$emit(emit, {
+						campaign: this.prepareDataCreate(),
+					});
+				} catch (error) {
+					console.error("handleSubmit", { error: error });
+				}
 			},
 
 			prepareDataCreate() {
@@ -1512,6 +1563,7 @@
 				});
 			},
 			deleteRowFrecuency(index: number) {
+				if (this.campaign.frequency_caps.length === 1) return;
 				this.campaign.frequency_caps.splice(index, 1);
 			},
 		},

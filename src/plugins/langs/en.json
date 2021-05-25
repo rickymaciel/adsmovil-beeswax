@@ -28,8 +28,10 @@
     "Search": "Search",
     "success": "Your changes have been saved successfully",
     "failed": "Your changes weren’t saved",
+    "not-found": "Object not found or not active",
     "title-success": "Congratulations!",
     "title-failed": "Error!",
+    "close": "Close",
     "continue": "Continue",
     "try-again": "Try again",
     "save-continue": "Save & Continue",
@@ -37,5 +39,8 @@
     "cancel": "Cancel",
     "max": "This value may not be greater than {max}",
     "min": "This value must be at least {min}",
-    "edit-campaign": "Edit campaign"
+    "edit-campaign": "Edit campaign",
+    "greaterOrEqual": "This value must be greater than or equal {value}",
+    "must-after": "This date must be a date after today",
+    "min-todate": "This date must be at least the current date and time"
 }

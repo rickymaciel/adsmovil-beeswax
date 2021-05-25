@@ -18,6 +18,16 @@
 							v-if="currentTabSelected(item, 'Overview')"
 							column
 						>
+							<v-card
+								v-if="hasErrors"
+								class="mt-2"
+								color="secondary"
+							>
+								<v-card-text class="white--text">
+									Errores: {{ getErrors }}
+								</v-card-text>
+							</v-card>
+
 							<Overview
 								:account="getAccount"
 								:advertisers="getAdvertisers"
@@ -33,7 +43,8 @@
 								:owners="getUsers"
 								@update-model="updateModelOverview"
 								@init-frequency-caps="dispatchUnitTimes()"
-								@create-campaign="dispatchCreateCampaign"
+								@create-campaign="handleSubmit"
+								:errors="getErrors"
 							></Overview>
 						</v-layout>
 					</v-tab-item>
@@ -111,6 +122,12 @@
 			},
 			getUsers() {
 				return this.$store.state.users.users;
+			},
+			getErrors() {
+				return this.$store.state.proccess.errors;
+			},
+			hasErrors() {
+				return Object.keys(this.$store.state.proccess.errors).length > 0;
 			},
 		},
 		methods: {
@@ -204,13 +221,26 @@
 				);
 			},
 
-			async dispatchCreateCampaign(data: { campaign: CampaignDataCreate }) {
-				console.log("dispatchCreateCampaign", { data: data });
-				return this.$store.dispatch(
-					"campaign/createCampaign",
-					data.campaign,
-					{ root: true }
-				);
+			async handleSubmit(data: { campaign: CampaignDataCreate }) {
+				try {
+					console.log("handleSubmit", { campaign: data.campaign });
+					this.setLoading(true);
+					await this.create(data.campaign);
+					this.setLoading(false);
+				} catch (error) {
+					console.error("handleSubmit", { error: error });
+					this.setLoading(false);
+				}
+			},
+
+			async create(campaign: CampaignDataCreate) {
+				return this.$store.dispatch("campaign/create", campaign, {
+					root: true,
+				});
+			},
+
+			setLoading(_loading: Boolean) {
+				this.$store.state.proccess.loading = _loading;
 			},
 		},
 

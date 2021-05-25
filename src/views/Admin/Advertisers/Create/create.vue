@@ -245,8 +245,7 @@
 		created() {},
 		async mounted() {
 			this.setLoading(true);
-			const result = await this.dispatchCategories();
-			console.log("mounted:dispatchCategories", { result: result });
+			await this.dispatchCategories();
 			this.setLoading(false);
 		},
 		computed: {
@@ -306,49 +305,29 @@
 			},
 			redirectTo() {
 				this.setNotification({ title: "", message: "", type: "" });
-				this.$router.push({ name: "AdvertisersList" });
+				this.$router.push({ name: "AdvertisersIndex" });
 			},
 
 			async validate() {
 				let form = this.$refs.form;
-				const valid = await form.validate();
-				console.log("validate", {
-					form: form,
-					validate: valid,
-					advertiser: this.advertiser,
-				});
-				return await valid;
+				return await form.validate();
 			},
 			async handleSubmit() {
-				if (!(await this.validate())) return;
-				this.setLoading(true);
-				const result = await this.dispatchAdvertiser();
-				console.log("handleSubmit", { result: result });
-
-				if (isUndefined(result) || isNull(result) || isEmpty(result)) {
-					this.setNotification({
-						title: this.$t("title-failed"),
-						message: this.$t("failed"),
-						type: MessageTypes.ERROR,
-					});
-				} else {
-					this.setNotification({
-						title: this.$t("title-success"),
-						message: this.$t("success"),
-						type: MessageTypes.SUCCESS,
-					});
-					setTimeout(() => {
-						this.redirectTo;
-					}, 2000);
+				try {
+					if (!(await this.validate())) return;
+					this.setLoading(true);
+					await this.create();
+					this.setLoading(false);
+				} catch (error) {
+					console.error("handleSubmit", { error: error });
+					this.setLoading(false);
 				}
-
-				this.setLoading(false);
 			},
 			setLoading(_loading: Boolean) {
 				this.$store.state.proccess.loading = _loading;
 			},
 			handleCancel() {
-				this.$router.push({ name: "AdvertisersList" });
+				this.$router.push({ name: "AdvertisersIndex" });
 			},
 			toggleTooltipAppBundle() {
 				this.show_tooltip_app_bundle = !this.show_tooltip_app_bundle;
@@ -364,7 +343,7 @@
 					root: true,
 				});
 			},
-			async dispatchAdvertiser() {
+			async create() {
 				this.advertiser = {
 					name: this.name,
 					category_id: this.category_id,
@@ -372,14 +351,9 @@
 					app_bundle: this.app_bundle,
 					active: this.active,
 				} as AdvertiserDataCreate;
-				console.log("dispatchAdvertiser", { advertiser: this.advertiser });
-				return this.$store.dispatch(
-					"advertiser/createAdvertiser",
-					this.advertiser,
-					{
-						root: true,
-					}
-				);
+				return this.$store.dispatch("advertiser/create", this.advertiser, {
+					root: true,
+				});
 			},
 		},
 	});

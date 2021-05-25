@@ -1,6 +1,6 @@
 import { AdvertiserDataCreate, AdvertiserDataUpdate, AdvertiserFilters, AdvertiserOptions, AdvertiserPaginated } from '@/interfaces/advertiser'
-import { AxiosGet, AxiosPost, AxiosPatch } from '@/services/axios-service'
 import { isEmpty, isUndefined } from 'lodash'
+import { AxiosGet, AxiosPatch, AxiosPost, GetData, GetErrors, GetMessage } from './axios-service';
 
 export const ADVERTISER_ROUTE = '/api/advertisers'
 export const ADVERTISER_CATEGORIES_ROUTE = '/api/list/advertiser_categories'
@@ -22,68 +22,94 @@ class AdvertiserService {
 
             const url = getURL(filter, option)
             const response = await AxiosGet(ADVERTISER_ROUTE + url)
-            console.log('AxiosGet: ', { url: url, response: response })
 
-            if (response.status < 200 && response.status > 300) {
-                return null;
-            }
-
-            return response.data.response;
+            return Promise.resolve(GetData(response));
 
         } catch (error) {
-            console.error('AdvertiserService:all', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+
+    async paginated(filters?: AdvertiserFilters, options?: AdvertiserOptions) {
+        try {
+            let filter = ''
+            let option = ''
+
+            if (!isUndefined(filters)) {
+                filter = getFilters(filters)
+            }
+
+            if (!isUndefined(options)) {
+                option += getOptions(options, 'paginated')
+            }
+
+            const url = getURL(filter, option)
+            const response = await AxiosGet(ADVERTISER_ROUTE + url)
+            return Promise.resolve(GetData(response));
+
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 
     async categories() {
         try {
-            return AxiosGet(ADVERTISER_CATEGORIES_ROUTE)
+            const response = await AxiosGet(ADVERTISER_CATEGORIES_ROUTE)
+            console.log('AdvertiserService::categories', { response: response });
+            return Promise.resolve(GetData(response));
         } catch (error) {
-            console.error('AdvertiserService:categories', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 
     async create(advertiser: AdvertiserDataCreate) {
         try {
             const response = await AxiosPost(ADVERTISER_ROUTE, advertiser);
-            console.log('AdvertiserService:create: ', { response: response });
-
-            if (response.status < 200 && response.status > 300) {
-                return null;
-            }
-
-            return response.data.response;
+            return Promise.resolve(GetData(response));
         } catch (error) {
-            console.error('AdvertiserService:create', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 
     async show(id: number) {
         try {
             const response = await AxiosGet(`${ADVERTISER_ROUTE}/${id}`);
-            console.log('AdvertiserService:show: ', { response: response });
-
-            if (response.status < 200 && response.status > 300) {
-                return null;
-            }
-
-            return response.data.response;
+            return Promise.resolve(GetData(response));
         } catch (error) {
-            console.error('AdvertiserService:show', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 
     async update(advertiser: AdvertiserDataUpdate, id: number) {
         try {
             const response = await AxiosPatch(`${ADVERTISER_ROUTE}/${id}`, advertiser);
-
-            if (response.status < 200 && response.status > 300) {
-                return null;
-            }
-
-            return response.data.response;
+            return Promise.resolve(GetData(response));
         } catch (error) {
-            console.error('AdvertiserService:update', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 
@@ -101,16 +127,14 @@ class AdvertiserService {
             }
 
             const url = getURL(filter, option)
-
             const response = await AxiosGet(`${ADVERTISER_ROUTE}/${url}`);
-
-            if (response.status < 200 && response.status > 300) {
-                return null;
-            }
-
-            return response.data.response;
+            return Promise.resolve(GetData(response));
         } catch (error) {
-            console.error('AdvertiserService:list', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 

@@ -40,73 +40,25 @@
 		created() {},
 		async mounted() {
 			this.setLoading(true);
-			const result = await this.dispatchAll();
+			await this.getPaginated();
 			this.setLoading(false);
 		},
 		computed: {
 			getResultPaginate(): ResultPaginate {
-				//return this.$store.state.modifier.result_paginate;
-				return {
-					current_page: 1,
-					next_page_url: "",
-					path: "",
-					per_page: 10,
-					prev_page_url: "",
-					to: 11,
-					total: 40,
-					data: [
-						{
-							id: 1,
-							name: "Modifier 1",
-							type: {
-								id: 1,
-								type: "Bid",
-								description: "",
-								extra: "",
-							},
-							created_at: new Date().toString(),
-							updated_at: new Date().toString(),
-							active: true,
-							advertiser: {
-								id: 1,
-								external_id: 1,
-								account_id: 1,
-								name: "string",
-								domain: "string",
-								category_id: 1,
-								app_bundle: "string",
-								currency_id: 1,
-								active: true,
-								created_by: 1,
-								updated_by: 1,
-								deleted_by: "string",
-								created_at: "string",
-								updated_at: "string",
-							},
-							external_id: 1,
-							alternative_id: 1,
-							account_id: 1,
-							advertiser_id: 1,
-							modifier_type_id: 1,
-							created_by: 1,
-							updated_by: 1,
-							deleted_by: "",
-						},
-					],
-				};
+				return this.$store.state.modifier.result_paginate;
 			},
 			getModifiers(): Modifier[] {
-				/*const result: ResultPaginate = this.getResultPaginate;
-														if (
-															isUndefined(result) ||
-															isNull(result) ||
-															isUndefined(result.data) ||
-															isNull(result.data)
-														) {
-															return [];
-														}
-														return result.data;*/
-				return this.getResultPaginate.data;
+				const result: ResultPaginate = this.getResultPaginate;
+				if (
+					isUndefined(result) ||
+					isNull(result) ||
+					isUndefined(result.data) ||
+					isNull(result.data)
+				) {
+					return [];
+				}
+				return result.data;
+				//return this.getResultPaginate.data;
 			},
 			prepareTableHeaders() {
 				return [
@@ -183,13 +135,18 @@
 			setLoading(_loading: Boolean) {
 				this.$store.state.proccess.loading = _loading;
 			},
-			async dispatchAll(
+			async getPaginated(
 				filters?: ModifierFilters,
 				options?: ModifierOptions
 			) {
-				return this.$store.dispatch("modifier/getAll", filters, options, {
-					root: true,
-				});
+				return this.$store.dispatch(
+					"modifier/paginated",
+					filters,
+					options,
+					{
+						root: true,
+					}
+				);
 			},
 			toFormatDate(d: Date) {
 				if (!d) {

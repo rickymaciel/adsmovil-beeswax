@@ -95,7 +95,7 @@
 			</template>
 
 			<!-- CAMPAIGN NAME -->
-			<template v-slot:[`header.campaignName`]="{ header }">
+			<template v-slot:[`header.name`]="{ header }">
 				<v-menu :close-on-content-click="false">
 					<template v-slot:activator="{ on, attrs }">
 						<div v-bind="attrs" v-on="on">
@@ -111,7 +111,7 @@
 							<v-text-field
 								class="label-fixed no-top"
 								ref="id"
-								v-model="filter.campaignName.value"
+								v-model="filter.name.value"
 								type="text"
 								:placeholder="header.text"
 								clearable
@@ -127,7 +127,7 @@
 								block
 								outlined
 								rounded
-								@click="removeFilterCampaignName()"
+								@click="removeFilterName()"
 							>
 								Remove filter
 							</v-btn>
@@ -178,8 +178,8 @@
 				</v-menu>
 			</template>
 
-			<!-- CAMPAIGN SPENT -->
-			<template v-slot:[`header.campaignSpent`]="{ header }">
+			<!-- CAMPAIGN SPEND -->
+			<template v-slot:[`header.spend`]="{ header }">
 				<v-menu :close-on-content-click="false">
 					<template v-slot:activator="{ on, attrs }">
 						<div v-bind="attrs" v-on="on">
@@ -195,7 +195,7 @@
 							<v-text-field
 								class="label-fixed no-top"
 								ref="id"
-								v-model="filter.campaignSpent.value"
+								v-model="filter.spend.value"
 								type="number"
 								:placeholder="header.text"
 								clearable
@@ -211,7 +211,7 @@
 								block
 								outlined
 								rounded
-								@click="removeFilterCampaignSpent()"
+								@click="removeFilterSpend()"
 							>
 								Remove filter
 							</v-btn>
@@ -398,7 +398,7 @@
 				</v-menu>
 			</template>
 
-			<template v-slot:[`header.actions`]="{ header }">
+			<template v-slot:[`item.actions`]="{ item }">
 				<v-card-actions>
 					<v-btn
 						color="secondary"
@@ -408,6 +408,10 @@
 						rounded
 						text
 						icon
+						:to="{
+							name: 'CampaignEdit',
+							params: { id: item.id },
+						}"
 					>
 						<v-icon small class="secondary--text">
 							mdi-pencil
@@ -424,7 +428,6 @@
 				:length="getLength"
 			></v-pagination>
 		</div>
-
 	</section>
 </template>
 
@@ -481,15 +484,11 @@
 					value: "",
 					order: "asc",
 				},
-				campaignName: {
-					value: "",
-					order: "asc",
-				},
 				campaignBudget: {
 					value: "",
 					order: "asc",
 				},
-				campaignSpent: {
+				spend: {
 					value: "",
 					order: "asc",
 				},
@@ -543,18 +542,20 @@
 						(item: { advertiserName: string }) => {
 							return item.advertiserName
 								.toLowerCase()
-								.includes(this.filter.advertiserName.value.toLowerCase());
+								.includes(
+									this.filter.advertiserName.value.toLowerCase()
+								);
 						}
 					);
 				}
 
 				// filter by campaign name
-				if (!isNull(this.filter.campaignName.value)) {
+				if (!isNull(this.filter.name.value)) {
 					this.filtered = this.filtered.filter(
-						(item: { campaignName: string }) => {
-							return item.campaignName
+						(item: { name: string }) => {
+							return item.name
 								.toLowerCase()
-								.includes(this.filter.campaignName.value.toLowerCase());
+								.includes(this.filter.name.value.toLowerCase());
 						}
 					);
 				}
@@ -565,18 +566,21 @@
 						(item: { campaignBudget: string }) => {
 							return item.campaignBudget
 								.toLowerCase()
-								.includes(this.filter.campaignBudget.value.toLowerCase());
+								.includes(
+									this.filter.campaignBudget.value.toLowerCase()
+								);
 						}
 					);
 				}
-				
-				// filter by campaign budget
-				if (!isNull(this.filter.campaignSpent.value)) {
+
+				// filter by campaign Spend
+				if (!isNull(this.filter.spend.value)) {
 					this.filtered = this.filtered.filter(
-						(item: { campaignSpent: string }) => {
-							return item.campaignSpent.toString()
+						(item: { spend: string }) => {
+							return item.spend
+								.toString()
 								.toLowerCase()
-								.includes(this.filter.campaignSpent.value.toLowerCase());
+								.includes(this.filter.spend.value.toLowerCase());
 						}
 					);
 				}
@@ -587,7 +591,9 @@
 						(item: { startDate: string }) => {
 							return item.startDate
 								.toLowerCase()
-								.includes(this.filter.startDate.value.toLowerCase());
+								.includes(
+									this.filter.startDate.value.toLowerCase()
+								);
 						}
 					);
 				}
@@ -607,9 +613,12 @@
 				if (!isNull(this.filter.assosiateLineItem.value)) {
 					this.filtered = this.filtered.filter(
 						(item: { assosiateLineItem: string }) => {
-							return item.assosiateLineItem.toString()
+							return item.assosiateLineItem
+								.toString()
 								.toLowerCase()
-								.includes(this.filter.assosiateLineItem.value.toLowerCase());
+								.includes(
+									this.filter.assosiateLineItem.value.toLowerCase()
+								);
 						}
 					);
 				}
@@ -618,9 +627,12 @@
 				if (!isNull(this.filter.budgetRemaining.value)) {
 					this.filtered = this.filtered.filter(
 						(item: { budgetRemaining: string }) => {
-							return item.budgetRemaining.toString()
+							return item.budgetRemaining
+								.toString()
 								.toLowerCase()
-								.includes(this.filter.budgetRemaining.value.toLowerCase());
+								.includes(
+									this.filter.budgetRemaining.value.toLowerCase()
+								);
 						}
 					);
 				}

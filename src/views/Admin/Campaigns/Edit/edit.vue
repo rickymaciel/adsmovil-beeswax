@@ -1,9 +1,8 @@
 <template>
 	<v-layout class="d-block ma-0 pa-0">
-		<Alertize @return-alertize="redirectTo"></Alertize>
+		<Alertize></Alertize>
 		<v-layout class="d-block ma-0 pa-0 white">
 			<v-container class="my-0 py-0">
-				<v-card> getId: {{ getId }} </v-card>
 				<CreateTabs
 					:current_tab="currentTab"
 					:items="items"
@@ -37,7 +36,7 @@
 								:is_edit="isEdit"
 								@update-model="updateModelOverview"
 								@init-frequency-caps="dispatchUnitTimes()"
-								@update-campaign="dispatchEditCampaign"
+								@update-campaign="handleSubmit"
 							></Overview>
 						</v-layout>
 					</v-tab-item>
@@ -84,7 +83,7 @@
 			time_format: "HH:mm:ss",
 		}),
 		async created() {
-			await this.dispatchShowCampaign();
+			await this.handleShow();
 			this.campaign = this.getParsedData();
 			console.log("mounted", { campaign: this.campaign });
 		},
@@ -164,21 +163,8 @@
 
 				return campaign;
 			},
-
 			formatDate(date: String, format: String) {
 				return this.moment(date).format(format);
-			},
-
-			redirectTo() {
-				this.setNotification({ title: "", message: "", type: "" });
-				this.$router.push({ name: "AdvertisersList" });
-			},
-			setNotification(notification: Notification) {
-				return this.$store.dispatch(
-					"proccess/setNotification",
-					notification,
-					{ root: true }
-				);
 			},
 			updateSelectedTabIndex(index: number) {
 				this.currentTab = index;
@@ -193,11 +179,6 @@
 			/**
 			 * GET
 			 */
-			async dispatchShowCampaign() {
-				return this.$store.dispatch("campaign/showCampaign", this.getId, {
-					root: true,
-				});
-			},
 			async dispatchAdvertisers() {
 				return this.$store.dispatch("advertiser/list", {
 					filters: {} as AdvertiserFilters,
@@ -263,14 +244,42 @@
 					}
 				);
 			},
+			async show(id: number) {
+				return this.$store.dispatch("campaign/show", id, {
+					root: true,
+				});
+			},
 
-			async dispatchEditCampaign(data: { campaign: Campaign }) {
-				console.log("dispatchEditCampaign", { data: data });
-				return this.$store.dispatch(
-					"campaign/updateCampaign",
-					data.campaign,
-					{ root: true }
-				);
+			async handleShow() {
+				try {
+					this.setLoading(true);
+					await this.show(this.getId);
+					this.setLoading(false);
+				} catch (error) {
+					console.error("handleShow", { error: error });
+					this.setLoading(false);
+				}
+			},
+
+			async handleSubmit(data: { campaign: Campaign }) {
+				try {
+					this.setLoading(true);
+					await this.update(data.campaign);
+					this.setLoading(false);
+				} catch (error) {
+					console.error("handleSubmit", { error: error });
+					this.setLoading(false);
+				}
+			},
+
+			async update(campaign: Campaign) {
+				return this.$store.dispatch("campaign/update", campaign, {
+					root: true,
+				});
+			},
+
+			setLoading(_loading: Boolean) {
+				this.$store.state.proccess.loading = _loading;
 			},
 		},
 

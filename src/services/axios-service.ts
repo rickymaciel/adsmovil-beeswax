@@ -2,9 +2,10 @@
 /// SOLO CONFIGURACIONES DE AXIOS
 ///
 
-import axios, { AxiosResponse } from 'axios'
+import axios, { AxiosError, AxiosResponse } from 'axios'
 import { HasProviderToken, ProviderToken } from './auth-service'
 import { ValidateToken } from '@/services/jwt-service'
+import { isNull, isUndefined } from 'lodash'
 
 axios.defaults.baseURL = 'https://dsp-api-testing.adsmovil.com'
 
@@ -29,8 +30,6 @@ axios.interceptors.request.use(function (config) {
 axios.interceptors.response.use(function (response) {
     if (HasProviderToken(response)) {
         const provider = ProviderToken(response)
-        //console.log('interceptor:response', { provider: provider })
-
         if (provider && provider.startsWith('Bearer')) {
             const tokenValid = ValidateToken(provider)
 
@@ -73,6 +72,8 @@ export function AxiosPatch(url: string, payload: any) {
     return axios.patch(url, payload)
 }
 
+// RESPONSE BOOLEAN CHECK //
+
 /**
  * HasSuccess
  * @param response AxiosResponse<any>
@@ -90,25 +91,54 @@ export function HasError(response: AxiosResponse<any>) {
 }
 
 /**
- * ResponseData
- * @param response AxiosResponse<any>
+ * HasErrors
+ * @param error AxiosResponse<any>
  */
-export function ResponseData(response: AxiosResponse<any>) {
-    return response.data
+export function HasErrors(error: AxiosError<any>) {
+    return Boolean(error.response?.data.errors)
 }
 
 /**
- * ResponseDataContent
+ * HasMessage
  * @param response AxiosResponse<any>
  */
-export function ResponseDataContent(response: AxiosResponse<any>) {
+export function HasMessage(response: AxiosResponse<any>) {
+    return String(response.data.message).length > 0
+}
+
+// GET DATA FROM RESPONSE //
+
+/**
+ * GetData
+ * @param response AxiosResponse<any>
+ */
+export function GetData(response: AxiosResponse<any>) {
+    console.log('GetData', {
+        response: response.data.response
+    });
     return response.data.response
 }
 
 /**
- * ResponseDataContent
- * @param response AxiosResponse<any>
+ * GetDataError
+ * @param error AxiosError<any>
  */
-export function ErrorDataMessage(response: AxiosResponse<any>) {
-    return response.data.message
+export function GetDataError(error: AxiosError<any>) {
+    return error.response?.data
+}
+
+/**
+ * GetErrors
+ * @param error AxiosError<any>
+ */
+export function GetErrors(error: AxiosError<any>) {
+    return error.response?.data.errors || {}
+}
+
+/**
+ * GetMessage
+ * @param response AxiosError<any>
+ */
+export function GetMessage(error: AxiosError<any>) {
+    return error.response?.data.message
 }

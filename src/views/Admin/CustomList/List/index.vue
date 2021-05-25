@@ -46,12 +46,12 @@
 		created() {},
 		async mounted() {
 			this.setLoading(true);
-			await this.dispatchAll();
+			await this.getPaginated();
 			this.setLoading(false);
 		},
 		computed: {
 			getResultPaginate(): CustomListResultPaginate {
-				return this.$store.state.custom_list.custom_list_result_paginate;
+				return this.$store.state.custom_list.result_paginate;
 			},
 			getLists(): CustomList[] {
 				const result: CustomListResultPaginate = this.getResultPaginate;
@@ -131,13 +131,13 @@
 			setLoading(_loading: Boolean) {
 				this.$store.state.proccess.loading = _loading;
 			},
-			async dispatchAll(
+			async getPaginated(
 				custom_list_paginated: CustomListPaginated,
 				filters?: CustomListFilters,
 				options?: CustomListOptions
 			) {
 				return this.$store.dispatch(
-					"custom_list/getPaginated",
+					"custom_list/paginated",
 					custom_list_paginated,
 					filters,
 					options,

@@ -41,7 +41,7 @@
 		created() {},
 		async mounted() {
 			this.setLoading(true);
-			const result = await this.dispatchAll();
+			await this.getPaginated();
 			this.setLoading(false);
 		},
 		computed: {
@@ -145,13 +145,18 @@
 			setLoading(_loading: Boolean) {
 				this.$store.state.proccess.loading = _loading;
 			},
-			async dispatchAll(
+			async getPaginated(
 				filters?: AdvertiserFilters,
 				options?: AdvertiserOptions
 			) {
-				return this.$store.dispatch("advertiser/getAll", filters, options, {
-					root: true,
-				});
+				return this.$store.dispatch(
+					"advertiser/paginated",
+					filters,
+					options,
+					{
+						root: true,
+					}
+				);
 			},
 		},
 	});

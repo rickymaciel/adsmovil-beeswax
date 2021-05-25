@@ -1,5 +1,5 @@
 import { Profile } from '@/interfaces/user'
-import { AxiosPost, ResponseDataContent } from '@/services/axios-service'
+import { AxiosPost, GetData } from '@/services/axios-service'
 import { isEmpty, isUndefined } from 'lodash'
 import { AxiosResponse } from 'axios'
 
@@ -16,17 +16,17 @@ class ProfileService {
  * @param response
  */
 export function ProviderProfile(response: AxiosResponse<any>) {
-    const content = ResponseDataContent(response)
+    const data = GetData(response)
 
     const profile: Profile = {} as Profile
 
-    if (!isEmpty(content) && !isUndefined(content)) {
-        profile.id = content.id || 'N/A'
-        profile.account_id = content.account_id || 'N/A'
-        profile.first_name = content.name || 'N/A'
-        profile.last_name = content.last_name || 'N/A'
-        profile.email = content.email || 'N/A'
-        profile.avatar = content.avatar || 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460'
+    if (!isEmpty(data) && !isUndefined(data)) {
+        profile.id = data.id || 'N/A'
+        profile.account_id = data.account_id || 'N/A'
+        profile.first_name = data.name || 'N/A'
+        profile.last_name = data.last_name || 'N/A'
+        profile.email = data.email || 'N/A'
+        profile.avatar = data.avatar || 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460'
 
     }
 

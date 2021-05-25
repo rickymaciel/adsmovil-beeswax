@@ -256,7 +256,6 @@
 
 		computed: {
 			getRoutePath() {
-				console.log("getRoutePath", this.$route.path);
 				return this.$route.path;
 			},
 

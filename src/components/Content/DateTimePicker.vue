@@ -1,7 +1,5 @@
 <template>
 	<v-card elevation="0" class="pa-2" outlined tile color="rgb(0, 0, 0, 0.0)">
-		<!-- <p>openDate:{{ openDate }}</p>
-		<p>openTime:{{ openTime }}</p> -->
 		<v-dialog
 			:ref="model_date"
 			v-model="openDate"
@@ -135,15 +133,17 @@
 				type: Boolean,
 				default: true,
 			},
+			type_validate_date: {
+				type: String, // must-after | min-todate
+				default: "",
+			},
 		},
 		mounted() {},
 		computed: {
 			getRules() {
 				return [
-					(v: any) =>
-						this.validate
-							? Boolean(v) || this.$t("fieldRequired")
-							: true,
+					(v: any) => Boolean(v) || this.$t("fieldRequired"),
+					(v: any) => this.matchedMessage(v)[this.type_validate_date],
 				];
 			},
 			dateTime() {
@@ -184,6 +184,26 @@
 			},
 		},
 		methods: {
+			matchedMessage(v: any) {
+				return {
+					"must-after": this.isAfterToDay(v) || this.$t("must-after"),
+					"min-todate": this.isSameAfterToDay(v) || this.$t("min-todate"),
+				};
+			},
+
+			isAfterToDay(date: string) {
+				const today = this.moment();
+				const momentDate = this.moment(`${date}`);
+				if (!momentDate.isValid()) return false;
+				return momentDate.isAfter(today);
+			},
+			isSameAfterToDay(date: string) {
+				const today = this.moment();
+				const momentDate = this.moment(`${date}`);
+				if (!momentDate.isValid()) return false;
+				return momentDate.isSameOrAfter(today);
+			},
+
 			closeDate() {
 				if (
 					!Boolean((this as any).dataDate) ||

@@ -28,8 +28,10 @@
     "Search": "Buscar",
     "success": "Tus cambios se han guardado correctamente",
     "failed": "Tus cambios no se guardaron",
+    "not-found": "Objeto no encontrado o inactivo",
     "title-success": "¡Felicidades!",
     "title-failed": "¡Error!",
+    "close": "Cerrar",
     "continue": "Continuar",
     "save-continue": "Guardar y continuar",
     "save": "Guardar",
@@ -37,5 +39,8 @@
     "try-again": "Intentar otra vez",
     "max": "Este valor no puede ser mayor que {max}",
     "min": "Este valor debe ser como mínimo {min}",
-    "edit-campaign": "Editar campaña"
+    "edit-campaign": "Editar campaña",
+    "greaterOrEqual": "Este valor debe ser mayor o igual que {value}",
+    "must-after": "Esta fecha debe ser posterior a hoy.",
+    "min-todate": "Esta fecha debe ser al menos la fecha y hora actual"
 }

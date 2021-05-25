@@ -105,6 +105,7 @@ export interface Notification {
     message?: String;
     type?: String;
     to?: String;
+    show?: Boolean;
 }
 
 export enum MessageTypes {
@@ -112,4 +113,6 @@ export enum MessageTypes {
     SUCCESS = "success",
     ERROR = "error",
     WARNING = "warning",
+    NOTFOUND = "not-found",
+    FAILED = "failed"
 }

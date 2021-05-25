@@ -1,5 +1,5 @@
 import { CustomListPaginated, CustomListFilters, CustomListOptions, Type, CustomListDataCreate } from '@/interfaces/custom_list'
-import { AxiosGet, AxiosPost } from '@/services/axios-service'
+import { AxiosGet, AxiosPost, GetData, GetErrors } from '@/services/axios-service'
 import { isUndefined, isEmpty } from 'lodash'
 
 export const CUSTOM_LIST_ROUTE = '/api/custom_lists'
@@ -27,16 +27,11 @@ class CustomListService {
 
             const url = getURL(filter, option)
             const response = await AxiosGet(CUSTOM_LIST_ROUTE + url)
-            console.log('AxiosGet:paginated ', { url: url, response: response })
-
-            if (response.status < 200 && response.status > 300) {
-                return null;
-            }
-
-            return response.data.response;
+            return Promise.resolve(GetData(response));
 
         } catch (error) {
             console.error('CustomListService:paginated', { error: error })
+            return Promise.reject(GetErrors(error));
         }
     }
 

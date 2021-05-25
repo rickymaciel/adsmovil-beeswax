@@ -42,21 +42,18 @@
 						items: ["asd", "1234"],
 						value: "Value 1",
 						name: "Item List 1",
-						actions: ["create", "edit", "delete"],
 					},
 					{
 						id: 2,
 						items: ["fgh", "3458"],
 						value: "Value 2",
 						name: "Item List 2",
-						actions: ["create", "edit", "delete"],
 					},
 					{
 						id: 3,
 						items: ["skl", "9023"],
 						value: "Value 3",
 						name: "Item List 3",
-						actions: ["create", "edit", "delete"],
 					},
 				];
 			},

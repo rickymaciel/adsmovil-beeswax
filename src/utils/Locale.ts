@@ -32,7 +32,6 @@ function parseLocale(locale: string) {
     if (locale.startsWith('pt')) {
         pl = 'pt'
     }
-    console.log('parseLocale', { locale: locale, pl: pl })
 
     return pl
 }

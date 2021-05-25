@@ -21,11 +21,11 @@
 			</div>
 
 			<v-card-title class="title justify-center">
-				<h3>{{ notification.title }}</h3>
+				<h3>{{ getTitle }}</h3>
 			</v-card-title>
 
 			<v-card-title class="message justify-center">
-				{{ notification.message }}
+				{{ getMessage }}
 			</v-card-title>
 
 			<v-card-actions class="justify-center lighten-2 pa-8">
@@ -34,7 +34,7 @@
 					class="px-8 ma-8"
 					elevation="2"
 					rounded
-					@click="actionBtn"
+					@click="actionBtn()"
 				>
 					{{ btnText }}
 				</v-btn>
@@ -44,7 +44,6 @@
 </template>
 
 <script lang="ts">
-	import { isEmpty, isNull, isUndefined } from "lodash";
 	import { Notification, MessageTypes } from "../interfaces/proccess";
 	import Vue from "vue";
 	export default Vue.extend({
@@ -62,75 +61,88 @@
 				return this.$store.state.proccess.notification;
 			},
 
-			hasMessage() {
-				return (
-					!isUndefined(this.notification.message) &&
-					!isNull(this.notification.message) &&
-					!isEmpty(this.notification.message)
-				);
+			showNotification() {
+				return Boolean(this.notification.show);
 			},
+
+			getMessage() {
+				return this.notification.message;
+			},
+
 			getType() {
 				return this.notification.type;
 			},
-			redirectTo() {
+
+			getRedirectTo() {
 				return this.notification.to;
 			},
 
+			getTitle() {
+				return this.matchedTitle[this.notification.type];
+			},
+
 			isSuccess() {
-				return this.getType === MessageTypes.SUCCESS;
+				return this.notification.type === MessageTypes.SUCCESS;
 			},
 
 			isError() {
-				return this.getType === MessageTypes.ERROR;
+				return this.notification.type === MessageTypes.ERROR;
+			},
+
+			// matched
+
+			matchedTitle() {
+				return {
+					success: this.$t("title-success"),
+					error: this.$t("title-failed"),
+				};
+			},
+
+			matchedType() {
+				return {
+					success: this.$t("continue"),
+					error: this.$t("try-again"),
+				};
 			},
 
 			btnText() {
-				let text = "";
-				if (this.isSuccess) {
-					text = this.$t("continue");
+				if (this.getRedirectTo) {
+					return this.$t("close");
 				}
-				if (this.isError) {
-					text = this.$t("try-again");
-				}
-				return text;
+				return this.matchedType[this.getType];
 			},
+
 			isAlertize: {
 				set(val: Boolean) {
 					this.setAlertize(val);
 				},
 				get() {
-					return this.$store.state.proccess.alertize;
+					return this.showNotification;
 				},
 			},
 		},
 		methods: {
 			setAlertize(val: Boolean) {
-				this.$store.state.proccess.alertize = val;
+				this.$store.state.proccess.notification.show = val;
 			},
-			resetNotification() {
+			async resetNotification() {
 				return this.$store.dispatch(
 					"proccess/setNotification",
-					{},
+					{ show: false, message: "", type: "" } as Notification,
 					{ root: true }
 				);
 			},
-			actionBtn() {
-				switch (this.getType) {
-					case MessageTypes.ERROR:
-						this.resetNotification();
-						break;
-
-					case MessageTypes.SUCCESS:
-						if (this.redirectTo) {
-							this.$router.push({ name: this.redirectTo });
-						}
-						this.resetNotification();
-
-						break;
-
-					default:
-						break;
+			async actionBtn() {
+				const to = this.getRedirectTo;
+				console.log("actionBtn", { to: to });
+				await this.resetNotification();
+				console.log("resetNotification", {
+					notification: this.notification,
+				});
+				if (to) {
+					return this.$router.push({ name: to });
 				}
+				return;
 			},
 		},
 	});

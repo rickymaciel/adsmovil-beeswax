@@ -1,135 +1,371 @@
 <template>
 	<v-card elevation="0">
-		<v-simple-table>
-			<template v-slot:default>
-				<thead>
-					<tr>
-						<th style="width: 10%">ID</th>
-						<th style="width: 15%">Tatitude</th>
-						<th style="width: 15%">Longitude</th>
-						<th style="width: 10%">Radius</th>
-						<th style="width: 10%">Value</th>
-						<th style="width: 40%" colspan="2">List Item Name</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr v-for="(item, index) in records" :key="index">
-						<td class="py-0 my-0">
-							<div class="d-flex justify-center ma-0 pa-0">
-								<v-text-field
-									v-model="records[index].id"
-									ref="records[index].id"
-									placeholder="Id"
-									class="label-fixed py-0 my-0"
-									hide-details="auto"
-								></v-text-field>
-							</div>
-						</td>
-						<td class="py-0 my-0">
-							<div class="d-flex justify-center ma-0 pa-0">
-								<v-text-field
-									v-model="records[index].latitude"
-									ref="records[index].latitude"
-									placeholder="Latitude"
-									class="label-fixed py-0 my-0"
-									hide-details="auto"
-								></v-text-field>
-							</div>
-						</td>
-						<td class="py-0 my-0">
-							<div class="d-flex justify-center ma-0 pa-0">
-								<v-text-field
-									v-model="records[index].longitude"
-									ref="records[index].longitude"
-									placeholder="Longitude"
-									class="label-fixed py-0 my-0"
-									hide-details="auto"
-								></v-text-field>
-							</div>
-						</td>
-						<td class="py-0 my-0">
-							<div class="d-flex justify-center ma-0 pa-0">
-								<v-text-field
-									v-model="records[index].radius"
-									ref="records[index].radius"
-									placeholder="Radius"
-									class="label-fixed py-0 my-0"
-									hide-details="auto"
-								></v-text-field>
-							</div>
-						</td>
-						<td class="py-0 my-0">
-							<div class="d-flex justify-center ma-0 pa-0">
-								<v-text-field
-									v-model="records[index].value"
-									ref="records[index].value"
-									placeholder="Value"
-									class="label-fixed py-0 my-0"
-									hide-details="auto"
-								></v-text-field>
-							</div>
-						</td>
-						<td class="py-0 my-0">
-							<div class="d-flex justify-center ma-0 pa-0">
-								<v-text-field
-									v-model="records[index].name"
-									ref="records[index].value"
-									placeholder="List Item Name"
-									class="label-fixed py-0 my-0"
-									hide-details="auto"
-								></v-text-field>
-							</div>
-						</td>
 
-						<td class="py-0 my-0">
-							<div
-								class="d-flex justify-center ma-0 pa-0 box-btn-action-icon"
-							>
-								<!-- Alert Icon Success -->
-								<v-icon
-									v-show="
-										records[index].success !== undefined &&
-										records[index].success
-									"
-									small
-									style="color: rgb(66, 233, 66) !important"
-								>
-									mdi-check-circle
-								</v-icon>
+		<v-data-table
+			:headers="headers"
+			:items="records"
+			item-key="modifier"
+			class="elevation-1"
+			hide-default-footer
+			:mobile-breakpoint="null"
+		>
 
-								<!-- Alert Icon Danger -->
-								<v-icon
-									v-show="
-										records[index].success !== undefined &&
-										!records[index].success
-									"
-									small
-									style="color: rgb(235, 67, 67) !important"
-								>
-									mdi-close-circle
-								</v-icon>
+			<!-- ID -->
+			<template v-slot:[`header.id`]="{ header }">
+				<v-menu :close-on-content-click="false">
+					<template v-slot:activator="{ on, attrs }">
+						<div v-bind="attrs" v-on="on">
+							{{ header.text.toUpperCase() }}
+							<v-icon>mdi-chevron-down</v-icon>
+						</div>
+					</template>
 
-								<!-- Actión Delete Item -->
-								<v-btn
-									color="secondary"
-									elevation="0"
-									small
-									raised
-									rounded
-									text
-									icon
-									@click="handleDelete(index)"
-								>
-									<v-icon small class="secondary--text">
-										mdi-trash-can-outline
-									</v-icon>
-								</v-btn>
-							</div>
-						</td>
-					</tr>
-				</tbody>
+					<v-list subheader>
+						<v-subheader>Sort</v-subheader>
+
+						<v-list-item>
+							<v-text-field
+								class="label-fixed no-top"
+								ref="id"
+								v-model="filter.id.value"
+								type="number"
+								:placeholder="header.text"
+								clearable
+							></v-text-field>
+						</v-list-item>
+
+						<v-divider></v-divider>
+
+						<v-list-item>
+							<v-radio-group v-model="filter.id.order">
+								<v-radio color="secondary" value="asc">
+									<template v-slot:label>
+										<div>Ascending</div>
+									</template>
+								</v-radio>
+								<v-radio color="secondary" value="desc">
+									<template v-slot:label>
+										<div>Descending</div>
+									</template>
+								</v-radio>
+							</v-radio-group>
+						</v-list-item>
+					</v-list>
+				</v-menu>
 			</template>
-		</v-simple-table>
+
+			<template v-slot:[`item.id`]="{ item }">
+				<v-text-field
+					v-model="item.id"
+					:rules="itemIdRules"
+					placeholder="Item ID"
+					class="label-fixed"
+					counter="255"
+				></v-text-field>
+			</template>
+
+			<!-- LATITUDE -->
+			<template v-slot:[`header.latitude`]="{ header }">
+				<v-menu :close-on-content-click="false">
+					<template v-slot:activator="{ on, attrs }">
+						<div v-bind="attrs" v-on="on">
+							{{ header.text }}
+							<v-icon>mdi-chevron-down</v-icon>
+						</div>
+					</template>
+
+					<v-list subheader>
+						<v-subheader>Filter</v-subheader>
+
+						<v-list-item>
+							<v-text-field
+								class="label-fixed no-top"
+								ref="id"
+								v-model="filter.latitude.value"
+								type="text"
+								:placeholder="header.text"
+								clearable
+							></v-text-field>
+						</v-list-item>
+
+						<v-divider></v-divider>
+
+						<v-list-item>
+							<v-btn
+								color="secondary"
+								elevation="2"
+								block
+								outlined
+								rounded
+								@click="removeFilterLatitude()"
+							>
+								Remove filter
+							</v-btn>
+						</v-list-item>
+					</v-list>
+				</v-menu>
+			</template>
+			
+			<template v-slot:[`item.latitude`]="{ item }">
+				<v-text-field
+					v-model="item.latitude"
+					:rules="latitudeRules"
+					placeholder="Latitude"
+					class="label-fixed"
+					counter="255"
+				></v-text-field>
+			</template>
+			
+			<!-- LONGITUDE -->
+			<template v-slot:[`header.longitude`]="{ header }">
+				<v-menu :close-on-content-click="false">
+					<template v-slot:activator="{ on, attrs }">
+						<div v-bind="attrs" v-on="on">
+							{{ header.text }}
+							<v-icon>mdi-chevron-down</v-icon>
+						</div>
+					</template>
+
+					<v-list subheader>
+						<v-subheader>Filter</v-subheader>
+
+						<v-list-item>
+							<v-text-field
+								class="label-fixed no-top"
+								ref="id"
+								v-model="filter.longitude.value"
+								type="text"
+								:placeholder="header.text"
+								clearable
+							></v-text-field>
+						</v-list-item>
+
+						<v-divider></v-divider>
+
+						<v-list-item>
+							<v-btn
+								color="secondary"
+								elevation="2"
+								block
+								outlined
+								rounded
+								@click="removeFilterLongitude()"
+							>
+								Remove filter
+							</v-btn>
+						</v-list-item>
+					</v-list>
+				</v-menu>
+			</template>
+			
+			<template v-slot:[`item.longitude`]="{ item }">
+				<v-text-field
+					v-model="item.longitude"
+					:rules="longitudeRules"
+					placeholder="Longitude"
+					class="label-fixed"
+					counter="255"
+				></v-text-field>
+			</template>
+
+			<!-- RADIUS -->
+			<template v-slot:[`header.radius`]="{ header }">
+				<v-menu :close-on-content-click="false">
+					<template v-slot:activator="{ on, attrs }">
+						<div v-bind="attrs" v-on="on">
+							{{ header.text }}
+							<v-icon>mdi-chevron-down</v-icon>
+						</div>
+					</template>
+
+					<v-list subheader two-line flat>
+						<v-subheader>Filter</v-subheader>
+
+						<v-list-item>
+							<v-text-field
+								class="label-fixed no-top"
+								ref="id"
+								v-model="header.radius"
+								type="text"
+								:placeholder="header.text"
+								clearable
+							></v-text-field>
+						</v-list-item>
+
+						<v-divider></v-divider>
+
+						<v-list-item>
+							<v-btn
+								color="secondary"
+								elevation="2"
+								block
+								outlined
+								rounded
+							>
+								Remove filter
+							</v-btn>
+						</v-list-item>
+					</v-list>
+				</v-menu>
+			</template>
+
+			<template v-slot:[`item.radius`]="{ item }">
+				<v-text-field
+					v-model="item.radius"
+					:rules="radiusRules"
+					placeholder="Radius"
+					class="label-fixed"
+					counter="255"
+				></v-text-field>
+			</template>
+
+			<!-- VALUE -->
+			<template v-slot:[`header.value`]="{ header }">
+				<v-menu :close-on-content-click="false">
+					<template v-slot:activator="{ on, attrs }">
+						<div v-bind="attrs" v-on="on">
+							{{ header.text }}
+							<v-icon>mdi-chevron-down</v-icon>
+						</div>
+					</template>
+
+					<v-list subheader two-line flat>
+						<v-subheader>Filter</v-subheader>
+
+						<v-list-item>
+							<v-text-field
+								class="label-fixed no-top"
+								ref="id"
+								v-model="header.value"
+								type="text"
+								:placeholder="header.text"
+								clearable
+							></v-text-field>
+						</v-list-item>
+
+						<v-divider></v-divider>
+
+						<v-list-item>
+							<v-btn
+								color="secondary"
+								elevation="2"
+								block
+								outlined
+								rounded
+							>
+								Remove filter
+							</v-btn>
+						</v-list-item>
+					</v-list>
+				</v-menu>
+			</template>
+
+			<template v-slot:[`item.value`]="{ item }">
+				<v-text-field
+					v-model="item.value"
+					:rules="valueRules"
+					placeholder="Value"
+					class="label-fixed"
+					counter="255"
+				></v-text-field>
+			</template>
+
+			<!-- LIST ITEM NAME -->
+			<template v-slot:[`header.name`]="{ header }">
+				<v-menu :close-on-content-click="false">
+					<template v-slot:activator="{ on, attrs }">
+						<div v-bind="attrs" v-on="on">
+							{{ header.text }}
+							<v-icon>mdi-chevron-down</v-icon>
+						</div>
+					</template>
+
+					<v-list subheader two-line flat>
+						<v-subheader>Filter</v-subheader>
+
+						<v-list-item>
+							<v-text-field
+								class="label-fixed no-top"
+								ref="id"
+								v-model="header.name"
+								type="text"
+								:placeholder="header.name"
+								clearable
+							></v-text-field>
+						</v-list-item>
+
+						<v-divider></v-divider>
+
+						<v-list-item>
+							<v-btn
+								color="secondary"
+								elevation="2"
+								block
+								outlined
+								rounded
+							>
+								Remove filter
+							</v-btn>
+						</v-list-item>
+					</v-list>
+				</v-menu>
+			</template>
+
+			<template v-slot:[`item.name`]="{ item }">
+				<v-text-field
+					v-model="item.name"
+					:rules="nameRules"
+					placeholder="Name"
+					class="label-fixed"
+					counter="255"
+				></v-text-field>
+			</template>
+
+			<template v-slot:[`item.actions`]="{ item, index }">
+				<v-card-actions>
+					<!-- Alert Icon Success -->
+					<v-icon
+						v-show="
+							item.success !== undefined &&
+							item.success
+						"
+						small
+						style="color: rgb(66, 233, 66) !important"
+					>
+						mdi-check-circle
+					</v-icon>
+
+					<!-- Alert Icon Danger -->
+					<v-icon
+						v-show="
+							item.success !== undefined &&
+							item.success
+						"
+						small
+						style="color: rgb(235, 67, 67) !important"
+					>
+						mdi-close-circle
+					</v-icon>
+
+					<!-- Actión Delete Item -->
+					<v-btn
+						color="secondary"
+						elevation="0"
+						medium
+						raised
+						rounded
+						text
+						icon
+						@click="handleDelete(index)"
+					>
+						<v-icon small class="secondary--text">
+							mdi-trash-can-outline
+						</v-icon>
+					</v-btn>
+				</v-card-actions>
+			</template>
+
+		</v-data-table>
 
 		<v-row no-gutters>
 			<v-card-subtitle class="secondary--text mt-2">
@@ -188,15 +424,54 @@
 		components: {},
 		data: () => ({
 			records: Array,
+			filter: {
+				id: {
+					value: "",
+					order: "asc",
+				},
+				name: {
+					value: "",
+					order: "asc",
+				},
+				latitude: {
+					value: "",
+					order: "asc",
+				},
+				longitude: {
+					value: "",
+					order: "asc",
+				},
+				radius: {
+					value: "",
+					order: "asc",
+				},
+				value: {
+					value: "",
+					order: "asc",
+				},
+			},
 		}),
 
-		created() {},
+		created() {
+			this.records = this.initialicerecords(this.items);
+		},
 
 		mounted() {
 			this.records = this.initialicerecords(this.items);
 		},
 
-		computed: {},
+		computed: {
+			filteredData() {
+				this.filtered = this.items;
+				return this.filtered;
+			},
+			itemIdRules(){},
+			latitudeRules(){},
+			longitudeRules(){},
+			radiusRules(){},
+			valueRules(){},
+			nameRules(){},
+		},
 
 		methods: {
 			initialicerecords(oldRecords) {
@@ -231,6 +506,7 @@
 				console.log("--- handleCancel ---");
 			},
 			handleDelete(index) {
+				console.log("--- handleDelete ---", index);
 				this.records.splice(index, 1);
 			},
 		},

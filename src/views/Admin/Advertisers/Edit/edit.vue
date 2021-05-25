@@ -273,17 +273,22 @@
 		}),
 		created() {},
 		async mounted() {
-			this.setLoading(true);
-			await this.dispatchCategories();
-			this.getId;
-			this.advertiser = await this.dispatchShowAdvertiser();
-			this.id = this.advertiser.id;
-			this.name = this.advertiser.name;
-			this.category_id = this.advertiser.category_id;
-			this.domain = this.advertiser.domain;
-			this.app_bundle = this.advertiser.app_bundle;
-			this.active = this.advertiser.active;
-			this.setLoading(false);
+			try {
+				this.setLoading(true);
+				await this.dispatchCategories();
+				this.getId;
+				this.advertiser = await this.dispatchShowAdvertiser();
+				this.id = this.advertiser.id;
+				this.name = this.advertiser.name;
+				this.category_id = this.advertiser.category_id;
+				this.domain = this.advertiser.domain;
+				this.app_bundle = this.advertiser.app_bundle;
+				this.active = this.advertiser.active;
+				this.setLoading(false);
+			} catch (error) {
+				this.setLoading(false);
+				console.log("mounted", { error: error });
+			}
 		},
 		computed: {
 			getId() {
@@ -346,8 +351,7 @@
 		methods: {
 			async validate() {
 				let form = this.$refs.form;
-				const valid = await form.validate();
-				return await valid;
+				return await form.validate();
 			},
 			setNotification(notification: Notification) {
 				return this.$store.dispatch(
@@ -357,35 +361,19 @@
 				);
 			},
 			async handleSubmit() {
-				if (!(await this.validate())) return;
-
-				this.setLoading(true);
-
-				const result = await this.dispatchUpdateAdvertiser();
-
-				if (isUndefined(result) || isNull(result) || isEmpty(result)) {
+				try {
+					if (!(await this.validate())) return;
+					this.setLoading(true);
+					await this.update();
 					this.setLoading(false);
-
-					this.setNotification({
-						title: this.$t("title-failed"),
-						message: this.$t("failed"),
-						type: MessageTypes.ERROR,
-					});
-
-					return;
-				} else {
-					this.setNotification({
-						title: this.$t("title-success"),
-						message: this.$t("success"),
-						type: MessageTypes.SUCCESS,
-					});
+				} catch (error) {
+					console.error("handleSubmit", { error: error });
+					this.setLoading(false);
 				}
-
-				this.setLoading(false);
 			},
 			redirectTo() {
 				this.setNotification({ title: "", message: "", type: "" });
-				this.$router.push({ name: "AdvertisersList" });
+				this.$router.push({ name: "AdvertisersIndex" });
 			},
 			setLoading(_loading: Boolean) {
 				this.$store.state.proccess.loading = _loading;
@@ -405,11 +393,11 @@
 				});
 			},
 			async dispatchShowAdvertiser() {
-				return this.$store.dispatch("advertiser/showAdvertiser", this.id, {
+				return this.$store.dispatch("advertiser/show", this.id, {
 					root: true,
 				});
 			},
-			async dispatchUpdateAdvertiser() {
+			async update() {
 				this.advertiser = {
 					id: this.id,
 					name: this.name,
@@ -420,7 +408,7 @@
 				} as AdvertiserDataUpdate;
 
 				return this.$store.dispatch(
-					"advertiser/updateAdvertiser",
+					"advertiser/update",
 					{
 						advertiser: this.advertiser,
 						id: this.id,

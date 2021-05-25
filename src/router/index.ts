@@ -73,6 +73,13 @@ const routes: Array<RouteConfig> = [
             breadcrumb: "Dashboard"
         },
         beforeEnter(to, from, next) {
+            console.log('auth:beforeEnter', {
+                to: to,
+                from: from,
+                state: store.state,
+                logguedin: store.state['auth'].loggedIn
+            })
+
             if (store.state['auth'].loggedIn) {
                 next()
             } else {
@@ -100,7 +107,7 @@ const routes: Array<RouteConfig> = [
                 children: [
                     {
                         path: 'index',
-                        name: 'AdvertisersList',
+                        name: 'AdvertisersIndex',
                         component: () => import('@/views/Admin/Advertisers/List/index.vue'),
                         meta: {
                             requiresAuth: true,
@@ -232,7 +239,7 @@ const routes: Array<RouteConfig> = [
                     },
                     {
                         path: 'create',
-                        name: 'CampaignsCreate',
+                        name: 'CampaignCreate',
                         component: () => import('@/views/Admin/Campaigns/Create/create.vue'),
                         meta: {
                             requiresAuth: true,
@@ -250,7 +257,7 @@ const routes: Array<RouteConfig> = [
                     // },
                     {
                         path: 'edit/:id',
-                        name: 'CampaignsEdit',
+                        name: 'CampaignEdit',
                         component: () => import('@/views/Admin/Campaigns/Edit/edit.vue'),
                         meta: {
                             requiresAuth: true,
