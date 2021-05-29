@@ -1,12 +1,5 @@
 import { forEach, isEmpty, isUndefined } from 'lodash'
-import {
-  MODIFIER_ROUTE,
-  AxiosPost,
-  MODIFIER_TYPE_ROUTE,
-  MODIFIER_MODULE_ROUTE,
-  AxiosGet,
-  AxiosPatch
-} from '@/api/AxiosService'
+import { AxiosPost, AxiosGet, AxiosPatch } from '@/api/AxiosService'
 import {
   Modifier,
   ModifierType,
@@ -20,9 +13,11 @@ import {
   ModifierDataUpdate
 } from '@/interfaces/modifier'
 
+const ROUTES = require('../routes').MODIFIERS
+
 export async function create (modifier: ModifierDataCreate, token: string) {
   try {
-    const response = await AxiosPost(MODIFIER_ROUTE, modifier, token)
+    const response = await AxiosPost(ROUTES.MODIFIER_ROUTE, modifier, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       let terms = [] as any
@@ -105,7 +100,7 @@ export async function create (modifier: ModifierDataCreate, token: string) {
 
 export async function update (modifier: ModifierDataUpdate, token: string) {
   try {
-    const response = await AxiosPatch(MODIFIER_ROUTE + '/' + modifier.id, modifier, token)
+    const response = await AxiosPatch(ROUTES.MODIFIER_ROUTE + '/' + modifier.id, modifier, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       let terms = [] as any
@@ -188,7 +183,7 @@ export async function update (modifier: ModifierDataUpdate, token: string) {
 
 export async function show (id: number, token: string) {
   try {
-    const response = await AxiosGet(MODIFIER_ROUTE + '/' + id, token)
+    const response = await AxiosGet(ROUTES.MODIFIER_ROUTE + '/' + id, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       let terms = [] as any
@@ -276,7 +271,7 @@ export async function all (token: string, filters?: ModifierFilters, options?: M
     }
 
     const url = getURL(filter, option)
-    const response = await AxiosGet(MODIFIER_ROUTE + url, token)
+    const response = await AxiosGet(ROUTES.MODIFIER_ROUTE + url, token)
 
     const modifiers = [] as any
 
@@ -349,7 +344,7 @@ export async function paginated (token: string, paginated: ModifierPaginated, fi
     }
 
     const url = getURL(filter, option)
-    const response = await AxiosGet(MODIFIER_ROUTE + url, token)
+    const response = await AxiosGet(ROUTES.MODIFIER_ROUTE + url, token)
 
     const modifiers = [] as any
 
@@ -425,7 +420,7 @@ export async function list (token: string, filters?: ModifierFilters, options?: 
     }
 
     const url = getURL(filter, option)
-    const response = await AxiosGet(MODIFIER_ROUTE + url, token)
+    const response = await AxiosGet(ROUTES.MODIFIER_ROUTE + url, token)
 
     const list = [] as any
 
@@ -453,7 +448,7 @@ export async function list (token: string, filters?: ModifierFilters, options?: 
 
 export async function types (token: string) {
   try {
-    const response = await AxiosGet(MODIFIER_TYPE_ROUTE, token)
+    const response = await AxiosGet(ROUTES.MODIFIER_TYPE_ROUTE, token)
 
     const types = [] as any
 
@@ -479,7 +474,7 @@ export async function types (token: string) {
 
 export async function modules (token: string) {
   try {
-    const response = await AxiosGet(MODIFIER_MODULE_ROUTE, token)
+    const response = await AxiosGet(ROUTES.MODIFIER_MODULE_ROUTE, token)
 
     const modules = [] as any
 

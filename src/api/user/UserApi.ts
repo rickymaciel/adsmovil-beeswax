@@ -1,5 +1,5 @@
-import { USER_ROUTE, EMAIL_RESEND_ROUTE, AxiosPost, AxiosGet, AxiosDelete, AxiosPatch } from '@/api/AxiosService'
 import { isEmpty, isUndefined, forEach, replace } from 'lodash'
+import { AxiosPost, AxiosGet, AxiosDelete, AxiosPatch } from '@/api/AxiosService'
 import {
   User,
   Profile,
@@ -11,9 +11,11 @@ import {
   UserList
 } from '@/interfaces/user'
 
+const ROUTES = require('../routes').USER
+
 export async function create (user: UserDataCreate, token: string) {
   try {
-    const response = await AxiosPost(USER_ROUTE, user, token)
+    const response = await AxiosPost(ROUTES.USER_ROUTE, user, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       return {
@@ -34,7 +36,7 @@ export async function create (user: UserDataCreate, token: string) {
 
 export async function update (user: UserDataUpdate, token: string) {
   try {
-    const response = await AxiosPatch(USER_ROUTE + '/' + user.id, user, token)
+    const response = await AxiosPatch(ROUTES.USER_ROUTE + '/' + user.id, user, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       return {
@@ -57,7 +59,7 @@ export async function update (user: UserDataUpdate, token: string) {
 
 export async function remove (userId: number, token: string) {
   try {
-    const response = await AxiosDelete(USER_ROUTE + '/' + userId, token)
+    const response = await AxiosDelete(ROUTES.USER_ROUTE + '/' + userId, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       return true
@@ -74,7 +76,7 @@ export async function remove (userId: number, token: string) {
 
 export async function show (userId: number, token: string) {
   try {
-    const response = await AxiosGet(USER_ROUTE + '/' + userId, token)
+    const response = await AxiosGet(ROUTES.USER_ROUTE + '/' + userId, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       return {
@@ -109,7 +111,7 @@ export async function all (token: string, filters?: UserFilters, options?: UserO
     }
 
     const url = getURL(filter, option)
-    const response = await AxiosGet(USER_ROUTE + url, token)
+    const response = await AxiosGet(ROUTES.USER_ROUTE + url, token)
 
     const users = [] as any
 
@@ -153,7 +155,7 @@ export async function paginated (token: string, paginated: UserPaginated, filter
     }
 
     const url = getURL(filter, option)
-    const response = await AxiosGet(USER_ROUTE + url, token)
+    const response = await AxiosGet(ROUTES.USER_ROUTE + url, token)
 
     const users = [] as any
 
@@ -200,7 +202,7 @@ export async function list (token: string, filters?: UserFilters, options?: User
     }
 
     const url = getURL(filter, option)
-    const response = await AxiosGet(USER_ROUTE + url, token)
+    const response = await AxiosGet(ROUTES.USER_ROUTE + url, token)
 
     const list = [] as any
 
@@ -231,7 +233,7 @@ export async function list (token: string, filters?: UserFilters, options?: User
 
 export async function resendEmail (userId: number, token: string) {
   try {
-    const response = await AxiosPost(EMAIL_RESEND_ROUTE + '/' + userId, null, token)
+    const response = await AxiosPost(ROUTES.EMAIL_RESEND_ROUTE + '/' + userId, null, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       return true

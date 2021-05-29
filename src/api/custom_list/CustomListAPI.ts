@@ -1,5 +1,5 @@
 import { forEach, isEmpty, isUndefined } from 'lodash'
-import { CUSTOM_LIST_ROUTE, AxiosPost, AxiosGet, AxiosPatch } from '@/api/AxiosService'
+import { AxiosPost, AxiosGet, AxiosPatch } from '@/api/AxiosService'
 import {
   CustomList,
   CustomListDataCreate,
@@ -10,9 +10,11 @@ import {
   List
 } from '@/interfaces/custom_list'
 
+const ROUTES = require('../routes').CUSTOM_LIST
+
 export async function create (customList: CustomListDataCreate, token: string) {
   try {
-    const response = await AxiosPost(CUSTOM_LIST_ROUTE, customList, token)
+    const response = await AxiosPost(ROUTES.CUSTOM_LIST_ROUTE, customList, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       return {
@@ -44,7 +46,7 @@ export async function create (customList: CustomListDataCreate, token: string) {
 
 export async function update (customList: CustomListDataUpdate, token: string) {
   try {
-    const response = await AxiosPatch(CUSTOM_LIST_ROUTE + '/' + customList.id, customList, token)
+    const response = await AxiosPatch(ROUTES.CUSTOM_LIST_ROUTE + '/' + customList.id, customList, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       return {
@@ -77,7 +79,7 @@ export async function update (customList: CustomListDataUpdate, token: string) {
 export async function changeStatus (id: number, status: boolean, token: string) {
   try {
     const active = status ? 1 : 0
-    const response = await AxiosPatch(CUSTOM_LIST_ROUTE + '/' + id + '/set/' + active, {}, token)
+    const response = await AxiosPatch(ROUTES.CUSTOM_LIST_ROUTE + '/' + id + '/set/' + active, {}, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       return true
@@ -94,7 +96,7 @@ export async function changeStatus (id: number, status: boolean, token: string) 
 
 export async function show (id: number, token: string) {
   try {
-    const response = await AxiosGet(CUSTOM_LIST_ROUTE + '/' + id, token)
+    const response = await AxiosGet(ROUTES.CUSTOM_LIST_ROUTE + '/' + id, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       return {
@@ -138,7 +140,7 @@ export async function all (token: string, filters?: CustomListFilters, options?:
     }
 
     const url = getURL(filter, option)
-    const response = await AxiosGet(CUSTOM_LIST_ROUTE + url, token)
+    const response = await AxiosGet(ROUTES.CUSTOM_LIST_ROUTE + url, token)
 
     const customs_lists = [] as any
 
@@ -210,7 +212,7 @@ export async function paginated (token: string, paginated: CustomListPaginated, 
     }
 
     const url = getURL(filter, option)
-    const response = await AxiosGet(CUSTOM_LIST_ROUTE + url, token)
+    const response = await AxiosGet(ROUTES.CUSTOM_LIST_ROUTE + url, token)
 
     const customs_lists = [] as any
 
@@ -285,7 +287,7 @@ export async function list (token: string, filters?: CustomListFilters, options?
     }
 
     const url = getURL(filter, option)
-    const response = await AxiosGet(CUSTOM_LIST_ROUTE + url, token)
+    const response = await AxiosGet(ROUTES.CUSTOM_LIST_ROUTE + url, token)
 
     const list = [] as any
 

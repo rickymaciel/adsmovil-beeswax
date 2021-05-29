@@ -36,7 +36,7 @@
 					rounded
 					@click="actionBtn()"
 				>
-					{{ btnText }}
+					{{ getBtnText }}
 				</v-btn>
 			</v-card-actions>
 		</v-card>
@@ -78,7 +78,11 @@
 			},
 
 			getTitle() {
-				return this.matchedTitle[this.notification.type];
+				return this.notification.title;
+			},
+
+			getBtnText() {
+				return this.notification.btn_text;
 			},
 
 			isSuccess() {
@@ -105,13 +109,6 @@
 				};
 			},
 
-			btnText() {
-				if (this.getRedirectTo) {
-					return this.$t("close");
-				}
-				return this.matchedType[this.getType];
-			},
-
 			isAlertize: {
 				set(val: Boolean) {
 					this.setAlertize(val);
@@ -128,17 +125,19 @@
 			async resetNotification() {
 				return this.$store.dispatch(
 					"proccess/setNotification",
-					{ show: false, message: "", type: "" } as Notification,
+					{
+						show: false,
+						message: "",
+						type: "",
+						title: "",
+						btn_text: "",
+					} as Notification,
 					{ root: true }
 				);
 			},
 			async actionBtn() {
 				const to = this.getRedirectTo;
-				console.log("actionBtn", { to: to });
 				await this.resetNotification();
-				console.log("resetNotification", {
-					notification: this.notification,
-				});
 				if (to) {
 					return this.$router.push({ name: to });
 				}

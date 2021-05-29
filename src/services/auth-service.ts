@@ -1,5 +1,5 @@
 import { Credential } from '@/interfaces/credential'
-import { AxiosPost } from '@/services/axios-service'
+import { AxiosPost, GetData, GetErrors, GetMessage } from '@/services/axios-service'
 
 export const LOGIN_ROUTE = '/api/auth/login'
 export const LOGOUT_ROUTE = '/api/auth/logout'
@@ -8,17 +8,27 @@ class AuthService {
 
     async login(credentials: Credential) {
         try {
-            return AxiosPost(LOGIN_ROUTE, credentials)
+            const response = await AxiosPost(LOGIN_ROUTE, credentials)
+            return Promise.resolve(GetData(response));
         } catch (error) {
-            console.error('AuthService:login', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 
     async logout() {
         try {
-            return AxiosPost(LOGOUT_ROUTE, null)
+            const response = await AxiosPost(LOGOUT_ROUTE, null)
+            return Promise.resolve(GetData(response));
         } catch (error) {
-            console.error('AuthService:logout', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 

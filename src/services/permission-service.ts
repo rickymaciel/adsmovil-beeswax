@@ -1,11 +1,21 @@
-import { AxiosGet, GetData } from '@/services/axios-service'
+import { AxiosGet, GetData, GetErrors, GetMessage } from '@/services/axios-service'
 import { AxiosResponse } from 'axios'
 
 export const PERMISSION_ROUTE = '/api/auth/permissions'
 
 class PermissionService {
     async permissions() {
-        return AxiosGet(PERMISSION_ROUTE)
+        try {
+            const response = await AxiosGet(PERMISSION_ROUTE);
+            return Promise.resolve(GetData(response));
+
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
     }
 }
 
@@ -14,7 +24,7 @@ class PermissionService {
  * @param response
  */
 export function PermissionProfile(response: AxiosResponse<any>) {
-    return GetData(response)
+    return response.data?.permissions
 }
 
 export default new PermissionService()

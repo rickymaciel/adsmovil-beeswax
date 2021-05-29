@@ -1,5 +1,5 @@
 import { forEach, isEmpty, isUndefined } from 'lodash'
-import { LIST_ITEM_ROUTE, AxiosPost, AxiosGet, AxiosPatch, AxiosDelete } from '@/api/AxiosService'
+import { AxiosPost, AxiosGet, AxiosPatch, AxiosDelete } from '@/api/AxiosService'
 import {
   ListItem,
   ListItemDataCreate,
@@ -9,6 +9,8 @@ import {
   List, ListItemDataUpdate
 } from '@/interfaces/list_items'
 
+const ROUTES = require('../routes').CUSTOM_LIST
+
 export async function create (listItem: ListItemDataCreate, customListType: string, token: string) {
   try {
     if (customListType == 'lat_long') {
@@ -17,7 +19,7 @@ export async function create (listItem: ListItemDataCreate, customListType: stri
       }
     }
 
-    const response = await AxiosPost(LIST_ITEM_ROUTE, listItem, token)
+    const response = await AxiosPost(ROUTES.LIST_ITEM_ROUTE, listItem, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       return {
@@ -48,7 +50,7 @@ export async function create (listItem: ListItemDataCreate, customListType: stri
 
 export async function update (listItem: ListItemDataUpdate, token: string) {
   try {
-    const response = await AxiosPatch(LIST_ITEM_ROUTE + '/' + listItem.id, listItem, token)
+    const response = await AxiosPatch(ROUTES.LIST_ITEM_ROUTE + '/' + listItem.id, listItem, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       return {
@@ -80,7 +82,7 @@ export async function update (listItem: ListItemDataUpdate, token: string) {
 export async function changeStatus (id: number, status: boolean, token: string) {
   try {
     const active = status ? 1 : 0
-    const response = await AxiosPatch(LIST_ITEM_ROUTE + '/' + id + '/set/' + active, {}, token)
+    const response = await AxiosPatch(ROUTES.LIST_ITEM_ROUTE + '/' + id + '/set/' + active, {}, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       return true
@@ -97,7 +99,7 @@ export async function changeStatus (id: number, status: boolean, token: string) 
 
 export async function deleted (id: number, token: string) {
   try {
-    const response = await AxiosDelete(LIST_ITEM_ROUTE + '/' + id, token)
+    const response = await AxiosDelete(ROUTES.LIST_ITEM_ROUTE + '/' + id, token)
 
     if (response.length == 0) {
       return true
@@ -114,7 +116,7 @@ export async function deleted (id: number, token: string) {
 
 export async function clear (id: number, token: string) {
   try {
-    const response = await AxiosDelete(LIST_ITEM_ROUTE + '/clear/' + id, token)
+    const response = await AxiosDelete(ROUTES.LIST_ITEM_ROUTE + '/clear/' + id, token)
 
     if (response.length == 0) {
       return true
@@ -143,7 +145,7 @@ export async function all (token: string, filters?: ListItemFilters, options?: L
     }
 
     const url = getURL(filter, option)
-    const response = await AxiosGet(LIST_ITEM_ROUTE + url, token)
+    const response = await AxiosGet(ROUTES.LIST_ITEM_ROUTE + url, token)
 
     const list_items = [] as any
 
@@ -194,7 +196,7 @@ export async function paginated (token: string, paginated: ListItemPaginated, fi
     }
 
     const url = getURL(filter, option)
-    const response = await AxiosGet(LIST_ITEM_ROUTE + url, token)
+    const response = await AxiosGet(ROUTES.LIST_ITEM_ROUTE + url, token)
 
     const list_items = [] as any
 
@@ -248,7 +250,7 @@ export async function list (token: string, filters?: ListItemFilters, options?: 
     }
 
     const url = getURL(filter, option)
-    const response = await AxiosGet(LIST_ITEM_ROUTE + url, token)
+    const response = await AxiosGet(ROUTES.LIST_ITEM_ROUTE + url, token)
 
     const list_items = [] as any
 

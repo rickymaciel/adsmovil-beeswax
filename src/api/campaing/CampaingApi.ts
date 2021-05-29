@@ -1,3 +1,5 @@
+import { forEach, isEmpty, isUndefined } from 'lodash'
+import { AxiosPost, AxiosPatch, AxiosGet, AxiosPut } from '@/api/AxiosService'
 import {
   Campaing,
   CampaingDataCreate,
@@ -7,12 +9,12 @@ import {
   CampaingOptions,
   CampaingPaginated, FrecuencyCaps
 } from '@/interfaces/campaing'
-import { CAMPAING_ROUTE, AxiosPost, AxiosPatch, AxiosGet, AxiosPut } from '@/api/AxiosService'
-import { forEach, isEmpty, isUndefined } from 'lodash'
+
+const ROUTES = require('../routes').CAMPAING
 
 export async function create (campaing: CampaingDataCreate, token: string) {
   try {
-    const response = await AxiosPost(CAMPAING_ROUTE, campaing, token)
+    const response = await AxiosPost(ROUTES.CAMPAING_ROUTE, campaing, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       let frequency_caps = [] as any
@@ -85,7 +87,7 @@ export async function create (campaing: CampaingDataCreate, token: string) {
 
 export async function update (campaing: CampaingDataUpdate, token: string) {
   try {
-    const response = await AxiosPatch(CAMPAING_ROUTE + '/' + campaing.id, campaing, token)
+    const response = await AxiosPatch(ROUTES.CAMPAING_ROUTE + '/' + campaing.id, campaing, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       let frequency_caps = [] as any
@@ -159,7 +161,7 @@ export async function update (campaing: CampaingDataUpdate, token: string) {
 export async function changeStatus (id: number, status: boolean, token: string) {
   try {
     const active = status ? 1 : 0
-    const response = await AxiosPut(CAMPAING_ROUTE + '/' + id + '/set/' + active, {}, token)
+    const response = await AxiosPut(ROUTES.CAMPAING_ROUTE + '/' + id + '/set/' + active, {}, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       return true
@@ -176,7 +178,7 @@ export async function changeStatus (id: number, status: boolean, token: string) 
 
 export async function show (id: number, token: string) {
   try {
-    const response = await AxiosGet(CAMPAING_ROUTE + '/' + id, token)
+    const response = await AxiosGet(ROUTES.CAMPAING_ROUTE + '/' + id, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       let frequency_caps = [] as any
@@ -298,7 +300,7 @@ export async function all (token: string, filters?: CampaingFilters, options?: C
     }
 
     const url = getURL(filter, option)
-    const response = await AxiosGet(CAMPAING_ROUTE + url, token)
+    const response = await AxiosGet(ROUTES.CAMPAING_ROUTE + url, token)
 
     const campaings = [] as any
 
@@ -368,7 +370,7 @@ export async function paginated (token: string, paginated: CampaingPaginated, fi
     }
 
     const url = getURL(filter, option)
-    const response = await AxiosGet(CAMPAING_ROUTE + url, token)
+    const response = await AxiosGet(ROUTES.CAMPAING_ROUTE + url, token)
 
     const campaings = [] as any
 
@@ -441,7 +443,7 @@ export async function list (token: string, filters?: CampaingFilters, options?: 
     }
 
     const url = getURL(filter, option)
-    const response = await AxiosGet(CAMPAING_ROUTE + url, token)
+    const response = await AxiosGet(ROUTES.CAMPAING_ROUTE + url, token)
 
     const list = [] as any
 

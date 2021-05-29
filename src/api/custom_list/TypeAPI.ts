@@ -1,10 +1,12 @@
 import { isEmpty, forEach } from 'lodash'
-import { CUSTOM_LIST_TYPES_ROUTE, AxiosGet } from '@/api/AxiosService'
+import { AxiosGet } from '@/api/AxiosService'
 import { Type } from '@/interfaces/custom_list'
+
+const ROUTES = require('../routes').CUSTOM_LIST
 
 export async function list (token: string) {
   try {
-    const response = await AxiosGet(CUSTOM_LIST_TYPES_ROUTE, token)
+    const response = await AxiosGet(ROUTES.CUSTOM_LIST_TYPES_ROUTE, token)
 
     const types = [] as any
 

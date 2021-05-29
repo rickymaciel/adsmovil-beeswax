@@ -11,7 +11,6 @@ class CampaignService {
             return Promise.resolve(GetData(response));
 
         } catch (error) {
-            console.error('CampaignService:create', { error: error })
             return Promise.reject({
                 success: false,
                 message: GetMessage(error),
@@ -26,7 +25,6 @@ class CampaignService {
             return Promise.resolve(GetData(response));
 
         } catch (error) {
-            console.error('CampaignService:update', { error: error })
             return Promise.reject({
                 success: false,
                 message: GetMessage(error),
@@ -41,8 +39,6 @@ class CampaignService {
             return Promise.resolve(GetData(response));
 
         } catch (error) {
-
-            console.error('CampaignService:show', { error: error })
             return Promise.reject({
                 success: false,
                 message: GetMessage(error),
@@ -70,7 +66,6 @@ class CampaignService {
             return Promise.resolve(GetData(response));
 
         } catch (error) {
-            console.error('CampaignService:paginated', { error: error })
             return Promise.reject({
                 success: false,
                 message: GetMessage(error),

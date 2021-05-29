@@ -1,5 +1,5 @@
 import { CustomListPaginated, CustomListFilters, CustomListOptions, Type, CustomListDataCreate } from '@/interfaces/custom_list'
-import { AxiosGet, AxiosPost, GetData, GetErrors } from '@/services/axios-service'
+import { AxiosGet, AxiosPost, GetData, GetErrors, GetMessage } from '@/services/axios-service'
 import { isUndefined, isEmpty } from 'lodash'
 
 export const CUSTOM_LIST_ROUTE = '/api/custom_lists'
@@ -28,144 +28,128 @@ class CustomListService {
             const url = getURL(filter, option)
             const response = await AxiosGet(CUSTOM_LIST_ROUTE + url)
             return Promise.resolve(GetData(response));
-
         } catch (error) {
-            console.error('CustomListService:paginated', { error: error })
-            return Promise.reject(GetErrors(error));
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 
     async getViewByTypeSelected(type: Type) {
         try {
-            return MatchedView(type.key);
+            return Promise.resolve(await MatchedView(type.key));
         } catch (error) {
-            console.error('CustomListService:getViewByTypeSelected', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 
     async create(customList: CustomListDataCreate) {
         try {
             const response = await AxiosPost(CUSTOM_LIST_ROUTE, customList)
-            console.log('AxiosPost:create ', { response: response })
-
-            if (response.status < 200 && response.status > 300) {
-                return null;
-            }
-
-            return response.data.response;
+            return Promise.resolve(GetData(response));
         } catch (error) {
-            console.error('CustomListService:create', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 
     async show(id: Number) {
         try {
             const response = await AxiosGet(`${CUSTOM_LIST_ROUTE}/${id}`)
-            console.log('AxiosGet:show ', { response: response })
-
-            if (response.status < 200 && response.status > 300) {
-                return null;
-            }
-
-            return response.data.response;
+            return Promise.resolve(GetData(response));
         } catch (error) {
-            console.error('CustomListService:show', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 
     async budgetTypes() {
         try {
             const response = await AxiosGet(`${BUDGET_TYPE_ROUTE}`)
-            console.log('AxiosGet:budgetTypes ', { response: response })
-
-            if (response.status < 200 && response.status > 300) {
-                return null;
-            }
-
-            return response.data.response;
-
+            return Promise.resolve(GetData(response));
         } catch (error) {
-            console.error('CustomListService:budgetTypes', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 
     async campaignPacing() {
         try {
             const response = await AxiosGet(`${CAMPAING_PACING_ROUTE}`)
-            console.log('AxiosGet:campaignPacing ', { response: response })
-
-            if (response.status < 200 && response.status > 300) {
-                return null;
-            }
-
-            return response.data.response;
-
+            return Promise.resolve(GetData(response));
         } catch (error) {
-            console.error('CustomListService:campaignPacing', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 
     async optimizationStrategies() {
         try {
             const response = await AxiosGet(`${STRATEGY_OPTIMIZATION_ROUTE}`)
-            console.log('AxiosGet:optimizationStrategies ', { response: response })
-
-            if (response.status < 200 && response.status > 300) {
-                return null;
-            }
-
-            return response.data.response;
-
+            return Promise.resolve(GetData(response));
         } catch (error) {
-            console.error('CustomListService:optimizationStrategies', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 
     async kpiCampaigns() {
         try {
             const response = await AxiosGet(`${CAMPAING_KPI_ROUTE}`)
-            console.log('AxiosGet:kpiCampaigns ', { response: response })
-
-            if (response.status < 200 && response.status > 300) {
-                return null;
-            }
-
-            return response.data.response;
-
+            return Promise.resolve(GetData(response));
         } catch (error) {
-            console.error('CustomListService:kpiCampaigns', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 
     async strategies() {
         try {
             const response = await AxiosGet(`${STRATEGY_ROUTE}`)
-            console.log('AxiosGet:strategies ', { response: response })
-
-            if (response.status < 200 && response.status > 300) {
-                return null;
-            }
-
-            return response.data.response;
-
+            return Promise.resolve(GetData(response));
         } catch (error) {
-            console.error('CustomListService:strategies', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 
     async unitTimes() {
         try {
             const response = await AxiosGet(`${UNIT_TIME_ROUTE}`)
-            console.log('AxiosGet:unitTimes ', { response: response })
-
-            if (response.status < 200 && response.status > 300) {
-                return null;
-            }
-
-            return response.data.response;
-
+            return Promise.resolve(GetData(response));
         } catch (error) {
-            console.error('CustomListService:unitTimes', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 
@@ -234,7 +218,7 @@ function ModelTreeList() {
     ];
 };
 
-function MatchedView(key: string) {
+async function MatchedView(key: string) {
     let modelView = '';
 
     if (ModelOneList().includes(key)) {

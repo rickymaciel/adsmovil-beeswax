@@ -1,10 +1,12 @@
 import { isEmpty, forEach } from 'lodash'
 import { Budget } from '@/interfaces/budget'
-import { BUDGET_ROUTE, AxiosGet } from '@/api/AxiosService'
+import { AxiosGet } from '@/api/AxiosService'
+
+const ROUTES = require('../routes').BUDGET
 
 export async function list (token: string) {
   try {
-    const response = await AxiosGet(BUDGET_ROUTE, token)
+    const response = await AxiosGet(ROUTES.BUDGET_ROUTE, token)
 
     const budgets = [] as any
 

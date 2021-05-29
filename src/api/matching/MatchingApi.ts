@@ -1,10 +1,12 @@
 import { forEach, isEmpty } from 'lodash'
-import { AxiosPost, MATCHING_ROUTE, AxiosGet, AxiosPatch } from '@/api/AxiosService'
+import { AxiosGet } from '@/api/AxiosService'
 import { Matching } from '@/interfaces/matching'
+
+const ROUTES = require('../routes').MATCHING
 
 export async function matchings (token: string) {
   try {
-    const response = await AxiosGet(MATCHING_ROUTE, token)
+    const response = await AxiosGet(ROUTES.MATCHING_ROUTE, token)
 
     const matchings = [] as any
 

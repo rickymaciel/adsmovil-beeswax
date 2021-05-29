@@ -5,7 +5,7 @@ import {
     ModifierOptions,
     ModifierPaginated,
 } from '@/interfaces/modifier'
-import { AxiosGet, AxiosPost, AxiosPatch, GetData, GetErrors } from '@/services/axios-service'
+import { AxiosGet, AxiosPost, AxiosPatch, GetData, GetErrors, GetMessage } from '@/services/axios-service'
 import { isEmpty, isUndefined } from 'lodash'
 
 export const MODIFIER_ROUTE = '/api/modifiers'
@@ -27,56 +27,52 @@ class ModifierService {
 
             const url = getURL(filter, option)
             const response = await AxiosGet(MODIFIER_ROUTE + url)
-
             return Promise.resolve(GetData(response));
-
         } catch (error) {
-            console.error('ModifierService:paginated', { error: error })
-            return Promise.reject(GetErrors(error));
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 
     async create(modifier: ModifierDataCreate) {
         try {
             const response = await AxiosPost(MODIFIER_ROUTE, modifier);
-            console.log('ModifierService:create: ', { response: response });
-
-            if (response.status < 200 && response.status > 300) {
-                return null;
-            }
-
-            return response.data.response;
+            return Promise.resolve(GetData(response));
         } catch (error) {
-            console.error('ModifierService:create', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 
     async show(id: number) {
         try {
             const response = await AxiosGet(`${MODIFIER_ROUTE}/${id}`);
-            console.log('ModifierService:show: ', { response: response });
-
-            if (response.status < 200 && response.status > 300) {
-                return null;
-            }
-
-            return response.data.response;
+            return Promise.resolve(GetData(response));
         } catch (error) {
-            console.error('ModifierService:show', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 
     async update(modifier: ModifierDataUpdate, id: number) {
         try {
             const response = await AxiosPatch(`${MODIFIER_ROUTE}/${id}`, modifier);
-
-            if (response.status < 200 && response.status > 300) {
-                return null;
-            }
-
-            return response.data.response;
+            return Promise.resolve(GetData(response));
         } catch (error) {
-            console.error('ModifierService:update', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 
@@ -96,14 +92,13 @@ class ModifierService {
             const url = getURL(filter, option)
 
             const response = await AxiosGet(`${MODIFIER_ROUTE}/${url}`);
-
-            if (response.status < 200 && response.status > 300) {
-                return null;
-            }
-
-            return response.data.response;
+            return Promise.resolve(GetData(response));
         } catch (error) {
-            console.error('ModifierService:list', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 

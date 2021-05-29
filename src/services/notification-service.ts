@@ -7,35 +7,37 @@ class NotificationService {
      * @param params // { customMessage, to }
      * @returns 
      */
-    async SuccessNotification(params: { to: any; }) {
+    async SuccessNotification(params: { to: string; title?: string; btn_text?: string; }) {
         return {
+            title: params.title,
             message: i18n.t(MessageTypes.SUCCESS),
             type: MessageTypes.SUCCESS,
             to: params.to,
+            btn_text: params.btn_text,
             show: true
         } as Notification
     }
 
     /**
-     * Error
-     * @param params // { customMessage, type, to }
+     * Default Notification
+     * @param params
      * @returns 
      */
-    async ErrorNotification(params: { customMessage: any; to: any; }) {
-        console.log('ErrorNotification', {
-            message: getMessage(params.customMessage)
-        });
+    async CreateNotification(params: Notification) {
         return {
-            message: getMessage(params.customMessage),
-            type: MessageTypes.ERROR,
+            title: params.title,
+            message: params.message,
+            type: params.type,
             to: params.to,
+            btn_text: params.btn_text,
             show: true
         } as Notification
     }
 }
 
 export function getMessage(customMessage: string) {
-    return customMessage === NOTFOUNDMESSAGE ? i18n.t(MessageTypes.NOTFOUND) : i18n.t(MessageTypes.FAILED)
+    if (!customMessage) return i18n.t(MessageTypes.FAILED);
+    return customMessage === NOTFOUNDMESSAGE ? i18n.t(MessageTypes.NOTFOUND) : customMessage
 }
 
 export default new NotificationService()

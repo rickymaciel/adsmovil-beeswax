@@ -4,9 +4,13 @@ import { account, forgot, initialize, login, logout, permissions, profile, reset
 //import { create, update, changeStatus, show, all, paginated, list } from './custom_list/CustomListAPI'
 //import { create, update, changeStatus, all, paginated, list, deleted, clear } from './custom_list/items/ListItemsAPI'
 //import { create, update, show, all, paginated, list, modules, types } from './modifiers/ModifierApi'
-import { create, all, paginated, list, show, changeStatus, update } from './campaing/CampaingApi'
+//import { create, all, paginated, list, show, changeStatus, update } from './campaing/CampaingApi'
 import { UserInit } from '@/interfaces/user'
-import { CampaingDataCreate, CampaingDataUpdate, FrecuencyCapsDataCreate } from '../interfaces/campaing'
+import { adPositions } from '@/api/inventory/InventoryApi'
+//import { domainList } from '@/api/domain/DomainApi'
+//import { creativeSize } from '@/api/ad_size/AdSizeApi'
+//import { countries, lat_long, regions } from '@/api/geo/GeoApi'
+//import { CampaingDataCreate, CampaingDataUpdate, FrecuencyCapsDataCreate } from '../interfaces/campaing'
 //import { list } from './timezone/timezoneAPI'
 //import { list } from './currency/CurrencyAPI'
 //import { list } from './custom_list/ExchangesAPI'
@@ -926,7 +930,7 @@ const test_matching = {
 /* -------- END PACING -------- */
 
 /* -------- BEGIN CAMPAING -------- */
-const test_create_campaing = {
+/*const test_create_campaing = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
@@ -1058,7 +1062,89 @@ const test_change_status_campaing = {
       return false
     })
   }
-}
+}*/
 /* -------- END CAMPAING -------- */
 
-export default test_get_campaing
+/* -------- BEGIN GEO -------- */
+/*const test_geo = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      // const data_geo = await countries(value)
+      // const data_geo = await regions(value)
+      const data_geo = await lat_long(value)
+
+      console.log('GEO', data_geo)
+
+      return data_geo
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}*/
+/* -------- END GEO -------- */
+
+/* -------- BEGIN AD SIZE -------- */
+/*const test_ad_size = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_ad_size = await creativeSize(value)
+
+      console.log('AD SIZE', data_ad_size)
+
+      return data_ad_size
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}*/
+/* -------- END AD SIZE -------- */
+
+/* -------- BEGIN DOMAIN -------- */
+/*const test_domain = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_domain = await domainList(value)
+
+      console.log('DOMAIN', data_domain)
+
+      return data_domain
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}*/
+/* -------- END DOMAIN -------- */
+
+/* -------- BEGIN INVENTORY -------- */
+const test_inventory = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_inventory = await adPositions(value)
+
+      console.log('INVENTORY', data_inventory)
+
+      return data_inventory
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+/* -------- END INVENTORY -------- */
+
+export default test_inventory

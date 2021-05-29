@@ -18,39 +18,6 @@ axios.interceptors.response.use(function (response) {
   return Promise.reject(error)
 })
 
-/**
- * Routes
- */
-export const LOGIN_ROUTE = '/api/auth/login'
-export const LOGOUT_ROUTE = '/api/auth/logout'
-export const PROFILE_ROUTE = '/api/auth/me'
-export const FORGOT_ROUTE = '/api/auth/password/forgot'
-export const RESET_ROUTE = '/api/auth/password/reset'
-export const PERMISSION_ROUTE = '/api/auth/permissions'
-export const INITIALIZE_ROUTE = '/api/auth/init'
-export const ACCOUNT_ROUTE = '/api/account'
-export const USER_ROUTE = '/api/users'
-export const EMAIL_RESEND_ROUTE = '/api/users/resend_email'
-export const ADVERTISER_ROUTE = '/api/advertisers'
-export const ADVERTISER_CATEGORIES_ROUTE = '/api/list/advertiser_categories'
-export const TIMEZONE_ROUTE = '/api/list/timezones'
-export const CURRENCY_ROUTE = '/api/list/currencies'
-export const CUSTOM_LIST_ROUTE = '/api/custom_lists'
-export const CUSTOM_LIST_EXCHANGE_ROUTE = '/api/list/custom_list_exchanges'
-export const CUSTOM_LIST_TYPES_ROUTE = '/api/list/custom_list_types'
-export const LIST_ITEM_ROUTE = '/api/custom_list_items'
-export const MODIFIER_TYPE_ROUTE = 'api/list/modifier_types'
-export const MODIFIER_MODULE_ROUTE = 'api/list/modifier_modules'
-export const MODIFIER_ROUTE = '/api/modifiers'
-export const MATCHING_ROUTE = 'api/list/matching_types'
-export const UNIT_TIME_ROUTE = 'api/list/unit_times'
-export const BUDGET_ROUTE = 'api/list/budget_types'
-export const CAMPAING_KPI_ROUTE = 'api/list/kpi_campaigns'
-export const STRATEGY_ROUTE = 'api/list/strategies'
-export const STRATEGY_OPTIMIZATION_ROUTE = 'api/list/optimization_strategies'
-export const CAMPAING_PACING_ROUTE = 'api/list/campaign_pacing'
-export const CAMPAING_ROUTE = 'api/campaigns'
-
 export function AxiosPost (url: string, payload: any, token: string) {
   return axios.post(url, payload, {
     headers: {

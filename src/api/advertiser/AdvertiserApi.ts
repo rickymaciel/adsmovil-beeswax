@@ -1,10 +1,4 @@
-import {
-  ADVERTISER_ROUTE,
-  AxiosPost,
-  AxiosGet,
-  AxiosPatch,
-  ADVERTISER_CATEGORIES_ROUTE
-} from '@/api/AxiosService'
+import { AxiosPost, AxiosGet, AxiosPatch } from '@/api/AxiosService'
 import { forEach, isEmpty, isUndefined, replace } from 'lodash'
 import {
   Advertiser,
@@ -17,9 +11,11 @@ import {
   Category
 } from '@/interfaces/advertiser'
 
+const ROUTES = require('../routes').ADVERTISER
+
 export async function create (advertiser: AdvertiserDataCreate, token: string) {
   try {
-    const response = await AxiosPost(ADVERTISER_ROUTE, advertiser, token)
+    const response = await AxiosPost(ROUTES.ADVERTISER_ROUTE, advertiser, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       return {
@@ -76,7 +72,7 @@ export async function create (advertiser: AdvertiserDataCreate, token: string) {
 
 export async function update (advertiser: AdvertiserDataUpdate, token: string) {
   try {
-    const response = await AxiosPatch(ADVERTISER_ROUTE + '/' + advertiser.id, advertiser, token)
+    const response = await AxiosPatch(ROUTES.ADVERTISER_ROUTE + '/' + advertiser.id, advertiser, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       return {
@@ -134,7 +130,7 @@ export async function update (advertiser: AdvertiserDataUpdate, token: string) {
 export async function changeStatus (id: number, status: boolean, token: string) {
   try {
     const active = status ? 1 : 0
-    const response = await AxiosPatch(ADVERTISER_ROUTE + '/' + id + '/set/' + active, {}, token)
+    const response = await AxiosPatch(ROUTES.ADVERTISER_ROUTE + '/' + id + '/set/' + active, {}, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       return true
@@ -151,7 +147,7 @@ export async function changeStatus (id: number, status: boolean, token: string) 
 
 export async function show (id: number, token: string) {
   try {
-    const response = await AxiosGet(ADVERTISER_ROUTE + '/' + id, token)
+    const response = await AxiosGet(ROUTES.ADVERTISER_ROUTE + '/' + id, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       return {
@@ -220,7 +216,7 @@ export async function all (token: string, filters?: AdvertiserFilters, options?:
     }
 
     const url = getURL(filter, option)
-    const response = await AxiosGet(ADVERTISER_ROUTE + url, token)
+    const response = await AxiosGet(ROUTES.ADVERTISER_ROUTE + url, token)
 
     const advertisers = [] as any
 
@@ -298,7 +294,7 @@ export async function paginated (token: string, paginated: AdvertiserPaginated, 
     }
 
     const url = getURL(filter, option)
-    const response = await AxiosGet(ADVERTISER_ROUTE + url, token)
+    const response = await AxiosGet(ROUTES.ADVERTISER_ROUTE + url, token)
 
     const advertisers = [] as any
 
@@ -378,7 +374,7 @@ export async function list (token: string, filters?: AdvertiserFilters, options?
     }
 
     const url = getURL(filter, option)
-    const response = await AxiosGet(ADVERTISER_ROUTE + url, token)
+    const response = await AxiosGet(ROUTES.ADVERTISER_ROUTE + url, token)
 
     const list = [] as any
 
@@ -406,7 +402,7 @@ export async function list (token: string, filters?: AdvertiserFilters, options?
 
 export async function categories (token: string) {
   try {
-    const response = await AxiosGet(ADVERTISER_CATEGORIES_ROUTE, token)
+    const response = await AxiosGet(ROUTES.ADVERTISER_CATEGORIES_ROUTE, token)
 
     const categories = [] as any
 

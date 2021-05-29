@@ -1,10 +1,12 @@
 import { isEmpty, forEach } from 'lodash'
+import { AxiosGet } from '@/api/AxiosService'
 import { PacingCampaing } from '@/interfaces/pacing'
-import { CAMPAING_PACING_ROUTE, AxiosGet } from '@/api/AxiosService'
+
+const ROUTES = require('../routes').PACING
 
 export async function list (token: string) {
   try {
-    const response = await AxiosGet(CAMPAING_PACING_ROUTE, token)
+    const response = await AxiosGet(ROUTES.CAMPAING_PACING_ROUTE, token)
 
     const campaign_pacings = [] as any
 

@@ -5,7 +5,6 @@
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { HasProviderToken, ProviderToken } from './auth-service'
 import { ValidateToken } from '@/services/jwt-service'
-import { isNull, isUndefined } from 'lodash'
 
 axios.defaults.baseURL = 'https://dsp-api-testing.adsmovil.com'
 
@@ -22,7 +21,7 @@ if (token && token.startsWith('Bearer ')) {
 axios.interceptors.request.use(function (config) {
     return config
 }, function (error) {
-    console.error('AxiosService.interceptors', { request: error })
+    //console.error('AxiosService.interceptors', { request: error })
     return Promise.reject(error)
 })
 
@@ -42,7 +41,11 @@ axios.interceptors.response.use(function (response) {
 
     return response
 }, function (error) {
-    console.error('AxiosService.interceptors', { error: error })
+    console.error('AxiosService.interceptors', {
+        success: false,
+        message: GetMessage(error),
+        errors: GetErrors(error)
+    })
     return Promise.reject(error)
 })
 
@@ -113,9 +116,6 @@ export function HasMessage(response: AxiosResponse<any>) {
  * @param response AxiosResponse<any>
  */
 export function GetData(response: AxiosResponse<any>) {
-    console.log('GetData', {
-        response: response.data.response
-    });
     return response.data.response
 }
 

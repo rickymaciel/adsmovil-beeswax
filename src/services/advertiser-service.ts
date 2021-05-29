@@ -63,7 +63,6 @@ class AdvertiserService {
     async categories() {
         try {
             const response = await AxiosGet(ADVERTISER_CATEGORIES_ROUTE)
-            console.log('AdvertiserService::categories', { response: response });
             return Promise.resolve(GetData(response));
         } catch (error) {
             return Promise.reject({

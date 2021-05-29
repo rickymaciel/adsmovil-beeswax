@@ -1,4 +1,4 @@
-import { AxiosGet } from "./axios-service";
+import { AxiosGet, GetData, GetErrors, GetMessage } from "./axios-service";
 
 export const CUSTOM_LIST_TYPES_ROUTE = '/api/list/custom_list_types'
 
@@ -6,16 +6,14 @@ class TypeService {
     async list() {
         try {
             const response = await AxiosGet(CUSTOM_LIST_TYPES_ROUTE)
-            console.log('TypeService::AxiosGet: ', { response: response })
-
-            if (response.status < 200 && response.status > 300) {
-                return null;
-            }
-
-            return response.data.response;
+            return Promise.resolve(GetData(response));
 
         } catch (error) {
-            console.error('TypeService:list', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 }

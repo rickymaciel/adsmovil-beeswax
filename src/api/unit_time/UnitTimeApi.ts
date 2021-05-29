@@ -1,10 +1,12 @@
 import { isEmpty, forEach } from 'lodash'
+import { AxiosGet } from '@/api/AxiosService'
 import { UnitTime } from '@/interfaces/unit_time'
-import { UNIT_TIME_ROUTE, AxiosGet } from '@/api/AxiosService'
+
+const ROUTES = require('../routes').UNIT_TIME
 
 export async function list (token: string) {
   try {
-    const response = await AxiosGet(UNIT_TIME_ROUTE, token)
+    const response = await AxiosGet(ROUTES.UNIT_TIME_ROUTE, token)
 
     const unit_times = [] as any
 

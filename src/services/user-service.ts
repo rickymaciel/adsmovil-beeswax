@@ -1,5 +1,5 @@
 import { UserFilters, UserOptions, UserPaginated } from '@/interfaces/user'
-import { AxiosGet } from '@/services/axios-service'
+import { AxiosGet, GetData, GetErrors, GetMessage } from '@/services/axios-service'
 import { isEmpty, isUndefined } from 'lodash'
 
 export const USERS_ROUTE = '/api/users'
@@ -21,15 +21,14 @@ class UserService {
 
             const url = getURL(filter, option)
             const response = await AxiosGet(USERS_ROUTE + url)
-            console.log('AxiosGet:UserService:all ', { url: url, response: response })
+            return Promise.resolve(GetData(response));
 
-            if (response.status < 200 && response.status > 300) {
-                return null;
-            }
-
-            return response.data.response;
         } catch (error) {
-            console.error('UserService:users', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 
@@ -48,16 +47,14 @@ class UserService {
 
             const url = getURL(filter, option)
             const response = await AxiosGet(USERS_ROUTE + url)
-            console.log('AxiosGet:UserService:list ', { url: url, response: response })
-
-            if (response.status < 200 && response.status > 300) {
-                return null;
-            }
-
-            return response.data.response;
+            return Promise.resolve(GetData(response));
 
         } catch (error) {
-            console.error('UserService:list', { error: error })
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
         }
     }
 }

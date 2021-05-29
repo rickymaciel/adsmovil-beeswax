@@ -1,5 +1,5 @@
 import { Profile } from '@/interfaces/user'
-import { AxiosPost, GetData } from '@/services/axios-service'
+import { AxiosPost, GetData, GetErrors, GetMessage } from '@/services/axios-service'
 import { isEmpty, isUndefined } from 'lodash'
 import { AxiosResponse } from 'axios'
 
@@ -7,7 +7,17 @@ export const PROFILE_ROUTE = '/api/auth/me'
 
 class ProfileService {
     async profile() {
-        return AxiosPost(PROFILE_ROUTE, null)
+        try {
+            const response = await AxiosPost(PROFILE_ROUTE, {});
+            return Promise.resolve(GetData(response));
+
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
     }
 }
 
@@ -16,7 +26,7 @@ class ProfileService {
  * @param response
  */
 export function ProviderProfile(response: AxiosResponse<any>) {
-    const data = GetData(response)
+    const data = response.data?.profile
 
     const profile: Profile = {} as Profile
 

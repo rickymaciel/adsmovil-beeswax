@@ -912,11 +912,15 @@
 			},
 			campaign: {
 				type: Object,
-				required: true,
+				default: function () {
+					return { frequency_caps: [] };
+				},
 			},
 			account: {
 				type: Object,
-				required: true,
+				default: function () {
+					return {};
+				},
 			},
 			budget_types: {
 				type: Array,
@@ -985,7 +989,10 @@
 		created() {},
 		mounted() {
 			setTimeout(() => {
-				if (!this.campaign.frequency_caps.length) {
+				if (
+					!isUndefined(this.campaign.frequency_caps) &&
+					!this.campaign.frequency_caps.length
+				) {
 					this.addRowFrecuency();
 				}
 			}, 1000);
@@ -1108,8 +1115,16 @@
 			 */
 
 			initEdit() {
-				if (!this.isEdit) return;
-				if (this.campaign.frequency_caps.length) {
+				if (
+					!this.isEdit &&
+					!isUndefined(this.campaign) &&
+					Object.entries(this.campaign).length
+				)
+					return;
+				if (
+					!isUndefined(this.campaign.frequency_caps) &&
+					this.campaign.frequency_caps.length
+				) {
 					this.$emit("init-frequency-caps");
 				}
 				this.calcCampaignDuration();
@@ -1555,6 +1570,7 @@
 				this.end_time = data;
 			},
 			addRowFrecuency() {
+				if (isUndefined(this.campaign.frequency_caps)) return;
 				this.$emit("init-frequency-caps");
 				this.campaign.frequency_caps.push({
 					impressions: undefined,

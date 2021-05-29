@@ -1,24 +1,15 @@
-import {
-  LOGIN_ROUTE,
-  LOGOUT_ROUTE,
-  INITIALIZE_ROUTE,
-  PROFILE_ROUTE,
-  FORGOT_ROUTE,
-  RESET_ROUTE,
-  AxiosPost,
-  PERMISSION_ROUTE,
-  ACCOUNT_ROUTE,
-  AxiosGet
-} from '@/api/AxiosService'
+import { AxiosPost, AxiosGet } from '@/api/AxiosService'
 import { Credential } from '@/interfaces/credential'
 import { Reset } from '@/interfaces/reset'
 import { Profile, UserInit, Account, Permission } from '@/interfaces/user'
 import { Token } from '@/interfaces/token'
 import { isEmpty, isUndefined, forEach } from 'lodash'
 
+const ROUTES = require('../routes').AUTH
+
 export async function login (credentials: Credential) {
   try {
-    const response = await AxiosPost(LOGIN_ROUTE, credentials, '')
+    const response = await AxiosPost(ROUTES.LOGIN_ROUTE, credentials, '')
 
     if (!isEmpty(response) && !isUndefined(response.access_token)) {
       return {
@@ -38,7 +29,7 @@ export async function login (credentials: Credential) {
 
 export async function logout (token: string) {
   try {
-    const response = await AxiosPost(LOGOUT_ROUTE, null, token)
+    const response = await AxiosPost(ROUTES.LOGOUT_ROUTE, null, token)
 
     if (!isEmpty(response) && !isUndefined(response.message)) {
       return true
@@ -55,7 +46,7 @@ export async function logout (token: string) {
 
 export async function profile (token: string) {
   try {
-    const response = await AxiosPost(PROFILE_ROUTE, null, token)
+    const response = await AxiosPost(ROUTES.PROFILE_ROUTE, null, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       return {
@@ -78,7 +69,7 @@ export async function profile (token: string) {
 
 export async function account (token: string) {
   try {
-    const response = await AxiosGet(ACCOUNT_ROUTE, token)
+    const response = await AxiosGet(ROUTES.ACCOUNT_ROUTE, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       return {
@@ -109,7 +100,7 @@ export async function account (token: string) {
 
 export async function initialize (user: UserInit, hash: string, token: string) {
   try {
-    const response = await AxiosPost(INITIALIZE_ROUTE + '/' + hash, user, token)
+    const response = await AxiosPost(ROUTES.INITIALIZE_ROUTE + '/' + hash, user, token)
 
     if (!isEmpty(response) && !isUndefined(response.id)) {
       return {
@@ -132,7 +123,7 @@ export async function initialize (user: UserInit, hash: string, token: string) {
 
 export async function forgot (email: string, token: string) {
   try {
-    const response = await AxiosPost(FORGOT_ROUTE, { email: email }, token)
+    const response = await AxiosPost(ROUTES.FORGOT_ROUTE, { email: email }, token)
 
     if (!isEmpty(response)) {
       return response.message
@@ -149,7 +140,7 @@ export async function forgot (email: string, token: string) {
 
 export async function reset (reset: Reset, token: string) {
   try {
-    const response = await AxiosPost(RESET_ROUTE, reset, token)
+    const response = await AxiosPost(ROUTES.RESET_ROUTE, reset, token)
 
     if (!isEmpty(response)) {
       return response.message
@@ -166,7 +157,7 @@ export async function reset (reset: Reset, token: string) {
 
 export async function permissions (token: string) {
   try {
-    const response = await AxiosGet(PERMISSION_ROUTE, token)
+    const response = await AxiosGet(ROUTES.PERMISSION_ROUTE, token)
     const permissions = [] as any
 
     if (!isEmpty(response) && response.length > 0) {

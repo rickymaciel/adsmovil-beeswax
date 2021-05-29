@@ -1,10 +1,12 @@
 import { isEmpty, forEach } from 'lodash'
+import { AxiosGet } from '@/api/AxiosService'
 import { KpiCampaing } from '@/interfaces/kpi'
-import { CAMPAING_KPI_ROUTE, AxiosGet } from '@/api/AxiosService'
+
+const ROUTES = require('../routes').KPI
 
 export async function list (token: string) {
   try {
-    const response = await AxiosGet(CAMPAING_KPI_ROUTE, token)
+    const response = await AxiosGet(ROUTES.CAMPAING_KPI_ROUTE, token)
 
     const kpi_campaings = [] as any
 

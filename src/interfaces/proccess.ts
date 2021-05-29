@@ -82,7 +82,7 @@ export interface AdvertiserDataCreate {
     category_id: number;
     domain: string;
     app_bundle: string;
-    active: boolean;
+    active: Boolean;
 }
 
 export interface AdvertiserDataUpdate {
@@ -91,7 +91,7 @@ export interface AdvertiserDataUpdate {
     category_id: number;
     domain: string;
     app_bundle: string;
-    active: boolean;
+    active: Boolean;
 }
 
 export interface AdvertiserList {
@@ -100,12 +100,13 @@ export interface AdvertiserList {
 }
 
 export interface Notification {
-    title?: String;
-    subtitle?: String;
-    message?: String;
-    type?: String;
-    to?: String;
+    title: string;
+    subtitle?: string;
+    message: string;
+    type: string;
+    to?: string;
     show?: Boolean;
+    btn_text: string
 }
 
 export enum MessageTypes {
@@ -114,5 +115,7 @@ export enum MessageTypes {
     ERROR = "error",
     WARNING = "warning",
     NOTFOUND = "not-found",
-    FAILED = "failed"
+    FAILED = "failed",
+    CONTINUE = "continue",
+    TRYAGAIN = "try-again"
 }

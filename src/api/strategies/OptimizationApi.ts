@@ -1,10 +1,12 @@
 import { isEmpty, forEach } from 'lodash'
+import { AxiosGet } from '@/api/AxiosService'
 import { Optimization } from '@/interfaces/strategy'
-import { STRATEGY_OPTIMIZATION_ROUTE, AxiosGet } from '@/api/AxiosService'
+
+const ROUTES = require('../routes').STRATEGIES
 
 export async function list (token: string) {
   try {
-    const response = await AxiosGet(STRATEGY_OPTIMIZATION_ROUTE, token)
+    const response = await AxiosGet(ROUTES.STRATEGY_OPTIMIZATION_ROUTE, token)
 
     const optimizations = [] as any
 
