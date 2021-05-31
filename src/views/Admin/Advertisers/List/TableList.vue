@@ -1,19 +1,8 @@
 <template>
 	<section>
-		<!-- <div class="pa-4 white--text red darken-2">
-			Total: {{ getTotalFiltered }}
-		</div> -->
-		<!-- <div class="pa-4 white--text grey darken-3">
-			<div>filtered:</div>
-			{{ filtered }}
-		</div>
-		<div class="pa-4 white--text grey darken-3">
-			<div>filteredData:</div>
-			{{ filteredData }}
-		</div> -->
 		<v-data-table
 			:headers="headers"
-			:items="filteredData"
+			:items="items"
 			item-key="advertiser"
 			class="elevation-1"
 			hide-default-footer
@@ -215,15 +204,15 @@
 		</v-data-table>
 		<div v-if="items.length" class="text-center py-8">
 			<v-pagination
-				v-model="current_page"
+				v-model="currentPage"
 				:length="getLength"
+				@input="updatePaginate"
 			></v-pagination>
 		</div>
 	</section>
 </template>
 
 <script lang="ts">
-	import { isNull, orderBy } from "lodash";
 	import Vue from "vue";
 
 	export default Vue.extend({
@@ -280,74 +269,33 @@
 		mounted() {},
 
 		computed: {
+			currentPage: {
+				set(val) {
+					this.$emit("update-current-page", val);
+				},
+				get() {
+					return this.current_page;
+				},
+			},
 			getLength() {
 				return Math.ceil(this.total / this.per_page);
-			},
-
-			getTotalFiltered() {
-				return this.filtered.length;
-			},
-
-			filteredData() {
-				this.filtered = this.items;
-				// filter by id
-				if (!isNull(this.filter.id.value)) {
-					this.filtered = this.filtered.filter((item: { id: string }) => {
-						return String(item.id)
-							.toLowerCase()
-							.includes(this.filter.id.value.toLowerCase());
-					});
-				}
-
-				// filter by name
-				if (!isNull(this.filter.name.value)) {
-					this.filtered = this.filtered.filter(
-						(item: { name: string }) => {
-							return item.name
-								.toLowerCase()
-								.includes(this.filter.name.value.toLowerCase());
-						}
-					);
-				}
-				this.sorteredData();
-				return this.filtered;
 			},
 		},
 
 		methods: {
-			sorteredData() {
-				this.filtered = orderBy(
-					this.filtered,
-					["name"],
-					[this.filter.name.order]
-				);
-
-				this.filtered = orderBy(
-					this.filtered,
-					["id"],
-					[this.filter.id.order]
-				);
-			},
 			getColor(active: Boolean) {
 				return active ? "green--text" : "red--text";
 			},
 			getActiveText(active: Boolean) {
 				return active ? "Active" : "Inactive";
 			},
+			updatePaginate(data: Number) {
+				console.log("TableList::updatePaginate", data);
+				this.$emit("update-paginate", data);
+			},
 			removeFilterName() {
-				this.filter.name.value = "";
+				//this.filter.name.value = "";
 			},
 		},
-
-		// watch: {
-		// 	"filter.id.order": function (data) {
-		// 		this.filtered = this.filteredData;
-		// 		console.log("watch:id:order", {
-		// 			data: data,
-		// 			list: this.filtered,
-		// 			filter: this.filter,
-		// 		});
-		// 	},
-		// },
 	});
 </script>

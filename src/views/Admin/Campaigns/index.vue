@@ -1,7 +1,7 @@
 <template>
 	<v-layout class="d-block">
 		<v-layout class="white">
-			<CampaignHeader></CampaignHeader>
+			<Header></Header>
 		</v-layout>
 		<v-layout class="grey lighten-3">
 			<router-view></router-view>
@@ -10,13 +10,13 @@
 </template>
 
 <script lang="ts">
-	import CampaignHeader from "./CampaignHeader.vue";
+	import Header from "../Commons/Header.vue";
 	import Vue from "vue";
 
 	export default Vue.extend({
 		name: "Campaigns",
 		props: {},
-		components: { CampaignHeader },
+		components: { Header },
 		data: () => ({}),
 		created() {},
 		async mounted() {},

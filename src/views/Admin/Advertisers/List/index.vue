@@ -14,6 +14,7 @@
 				:total="Number(getResultPaginate.total)"
 				:headers="prepareTableHeaders"
 				:items="prepareTableContent"
+				@update-paginate="updatePaginate"
 			></TableList>
 		</v-layout>
 	</v-container>
@@ -28,8 +29,10 @@
 		AdvertiserFilters,
 		AdvertiserOptions,
 		ResultPaginate,
+		AdvertiserPaginated,
 	} from "../../../../interfaces/advertiser";
 	import { isNull, isUndefined } from "lodash";
+	import ParamService from "../../../../services/params-service";
 
 	export default Vue.extend({
 		name: "AdvertiserList",
@@ -37,6 +40,15 @@
 		components: { TableList, Buttons },
 		data: () => ({
 			title: "List",
+			paginated: {
+				page: 1,
+				limit: 20,
+			} as AdvertiserPaginated,
+			filters: {} as AdvertiserFilters,
+			options: {
+				sort: "name",
+				order: "asc",
+			} as AdvertiserOptions,
 		}),
 		created() {},
 		async mounted() {
@@ -145,18 +157,22 @@
 			setLoading(_loading: Boolean) {
 				this.$store.state.proccess.loading = _loading;
 			},
-			async getPaginated(
-				filters?: AdvertiserFilters,
-				options?: AdvertiserOptions
-			) {
+			async getPaginated() {
 				return this.$store.dispatch(
 					"advertiser/paginated",
-					filters,
-					options,
+					await ParamService.getParams(
+						this.paginated,
+						this.filters,
+						this.options
+					),
 					{
 						root: true,
 					}
 				);
+			},
+			updatePaginate(data: any) {
+				console.log("index::updatePaginate", data);
+				this.paginated.page = data;
 			},
 		},
 	});

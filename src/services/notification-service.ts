@@ -26,7 +26,7 @@ class NotificationService {
     async CreateNotification(params: Notification) {
         return {
             title: params.title,
-            message: params.message,
+            message: params.message === "Unauthorized" ? i18n.t("Unauthorized") : params.message,
             type: params.type,
             to: params.to,
             btn_text: params.btn_text,

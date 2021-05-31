@@ -1,7 +1,11 @@
 <template>
 	<v-container class="my-0">
 		<v-layout column>
-			<Buttons></Buttons>
+			<Buttons
+				:limit="paginated.limit"
+				@selected-limit="selectedLimit"
+				to="/admin/campaigns/create"
+			></Buttons>
 		</v-layout>
 		<v-layout column>
 			<TableList
@@ -14,6 +18,11 @@
 				:total="Number(getResultPaginate.total)"
 				:headers="prepareTableHeaders"
 				:items="prepareTableContent"
+				:filters_init="filters"
+				:options="options"
+				:limit="paginated.limit"
+				@update-paginate="updatePaginate"
+				@update-params="updateParams"
 			></TableList>
 		</v-layout>
 	</v-container>
@@ -21,15 +30,17 @@
 
 <script lang="ts">
 	import TableList from "./TableList.vue";
-	import Buttons from "./Buttons.vue";
+	import Buttons from "../../Commons/Buttons.vue";
 	import Vue from "vue";
-	import { isNull, isUndefined, result } from "lodash";
+	import { isNull, isUndefined } from "lodash";
 	import {
-		Campaing,
+		Campaign,
 		CampaingFilters,
 		CampaingOptions,
+		CampaingPaginated,
 		ResultPaginate,
-	} from "../../../../interfaces/campaing";
+	} from "../../../../interfaces/campaign";
+	import ParamService from "../../../../services/params-service";
 
 	export default Vue.extend({
 		name: "CampaignList",
@@ -37,18 +48,20 @@
 		components: { Buttons, TableList },
 		data: () => ({
 			title: "List",
+			filter: {},
+			paginated: { page: 1, limit: 50 } as CampaingPaginated,
+			filters: {} as CampaingFilters,
+			options: { sort: "", order: "asc" } as CampaingOptions,
 		}),
 		created() {},
 		async mounted() {
-			this.setLoading(true);
 			await this.getPaginated();
-			this.setLoading(false);
 		},
 		computed: {
 			getResultPaginate(): ResultPaginate {
 				return this.$store.state.campaign.result_paginate;
 			},
-			getCampaigns(): Campaing[] {
+			getCampaigns(): Campaign[] {
 				const result: ResultPaginate = this.getResultPaginate;
 				if (
 					isUndefined(result) ||
@@ -74,7 +87,7 @@
 						align: "start",
 						sortable: false,
 						filterable: true,
-						value: "advertiserName",
+						value: "advertiser_name",
 					},
 					{
 						text: "Campaign Name",
@@ -88,7 +101,7 @@
 						align: "center",
 						sortable: false,
 						filterable: true,
-						value: "campaignBudget",
+						value: "budget",
 					},
 					{
 						text: "Campaign Spend",
@@ -102,14 +115,14 @@
 						align: "center",
 						sortable: false,
 						filterable: true,
-						value: "startDate",
+						value: "start_date",
 					},
 					{
 						text: "End Date",
 						align: "center",
 						sortable: false,
 						filterable: true,
-						value: "endDate",
+						value: "end_date",
 					},
 					{
 						text: "Assosiate Line Item",
@@ -146,17 +159,17 @@
 
 				if (isUndefined(entities) || isNull(entities)) return [];
 
-				const result = entities.map((entity: Campaing) => {
+				const result = entities.map((entity: Campaign) => {
 					return {
 						id: entity.id,
-						advertiserName: entity.advertiser_name,
+						advertiser_name: entity.advertiser_name,
 						name: entity.name,
-						campaignBudget: entity.budget.toString(),
+						budget: entity.budget,
 						spend: entity.spend,
-						startDate: this.moment(entity.start_date).format(
+						start_date: this.moment(entity.start_date).format(
 							"YYYY-MM-DD HH:mm:ss"
 						),
-						endDate: this.moment(entity.end_date).format(
+						end_date: this.moment(entity.end_date).format(
 							"YYYY-MM-DD HH:mm:ss"
 						),
 						assosiateLineItem: 100, // TODO REFACTORIZAR
@@ -172,18 +185,44 @@
 			setLoading(_loading: Boolean) {
 				this.$store.state.proccess.loading = _loading;
 			},
-			async getPaginated(
-				filters?: CampaingFilters,
-				options?: CampaingOptions
-			) {
-				return this.$store.dispatch(
+			async getPaginated() {
+				this.setLoading(true);
+				await this.$store.dispatch(
 					"campaign/paginated",
-					filters,
-					options,
+					await ParamService.getParams(
+						this.paginated,
+						this.filters,
+						this.options
+					),
 					{
 						root: true,
 					}
 				);
+				this.setLoading(false);
+			},
+			updatePaginate(data: any) {
+				this.paginated.page = data;
+			},
+			async selectedLimit(limit: number) {
+				this.paginated.limit = limit;
+				this.updatePaginate(1);
+				await this.getPaginated();
+			},
+			async updateParams(params: {
+				filters: CampaingOptions;
+				options: CampaingOptions;
+			}) {
+				this.filters = params.filters;
+				this.options = params.options;
+				this.updatePaginate(1);
+				await this.getPaginated();
+			},
+		},
+		watch: {
+			"paginated.page"(val, old) {
+				if (val !== old) {
+					this.getPaginated();
+				}
 			},
 		},
 	});

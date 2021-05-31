@@ -1,6 +1,6 @@
 <template>
 	<v-main class="main" :class="{ mobile: $vuetify.breakpoint.mobile }">
-		<v-container class="pa-8 fill-height">
+		<v-container class="pa-lg-8 pa-sm-0 fill-height">
 			<v-row>
 				<v-col>
 					<v-flex class="d-flex flex-row justify-center align-center">
@@ -19,6 +19,8 @@
 								>
 									{{ $t("login") }}
 								</v-card-title>
+
+								<Alertize></Alertize>
 
 								<v-card-text>
 									<v-form
@@ -50,7 +52,7 @@
 															$t('enterEmail')
 														"
 														:rules="emailRules"
-														:disabled="loading"
+														:disabled="isLoading"
 													></v-text-field>
 												</v-col>
 												<v-col cols="12" sm="12">
@@ -64,7 +66,7 @@
 														"
 														:rules="passwordRules"
 														clearable
-														:disabled="loading"
+														:disabled="isLoading"
 													></v-text-field>
 												</v-col>
 												<v-col cols="12" sm="12">
@@ -86,7 +88,7 @@
 																color="secondary"
 																class="text-capitalize"
 																:disabled="
-																	loading
+																	isLoading
 																"
 																href="/auth/forgot-password"
 															>
@@ -109,7 +111,7 @@
 																color="secondary"
 																class="secondary--text"
 																:disabled="
-																	loading
+																	isLoading
 																"
 															></v-switch>
 														</v-row>
@@ -133,7 +135,7 @@
 																class="px-16"
 																rounded
 																:disabled="
-																	loading
+																	isLoading
 																"
 																@click="
 																	handleLogin
@@ -154,7 +156,7 @@
 						</div>
 					</v-flex>
 				</v-col>
-				<v-overlay :value="loading">
+				<v-overlay :value="isLoading">
 					<v-progress-circular
 						indeterminate
 						size="64"
@@ -166,7 +168,8 @@
 	</v-main>
 </template>
 
-<script>
+<script lang="ts">
+	import Alertize from "../../components/Alertize.vue";
 	export default {
 		name: "Login",
 		props: {},
@@ -177,24 +180,21 @@
 				password: "Chaicu777",
 				rememberMe: true,
 				valid: false,
-				loading: false,
 				message: "",
 			};
 		},
 
 		created() {},
 
-		mounted() {
-			//console.log("mounted", { lang: this.$vuetify.lang });
-		},
+		mounted() {},
 
 		computed: {
-			getMessageComputed() {
-				return this.message;
-			},
-
 			isLoggedIn() {
 				return this.$store.state.auth.loggedIn;
+			},
+
+			isLoading() {
+				return this.$store.state.proccess.loading;
 			},
 
 			token() {
@@ -203,24 +203,25 @@
 
 			emailRules() {
 				return [
-					(v) => !!v || this.$t("fieldRequired"),
-					(v) => /.+@.+\..+/.test(v) || this.$t("invalidEmail"),
+					(v: any) => !!v || this.$t("fieldRequired"),
+					(v: string) => /.+@.+\..+/.test(v) || this.$t("invalidEmail"),
 				];
 			},
 
 			passwordRules() {
 				return [
-					(v) => !!v || this.$t("fieldRequired"),
-					(v) => (v && v.length >= 8) || this.$t("minLength", { min: 8 }),
+					(v: any) => !!v || this.$t("fieldRequired"),
+					(v: string | any[]) =>
+						(v && v.length >= 8) || this.$t("minLength", { min: 8 }),
 				];
 			},
 		},
 
-		components: {},
+		components: { Alertize },
 
 		methods: {
-			dispatchLogin(credentials) {
-				return this.$store.dispatch("auth/logIn", credentials, {
+			async dispatchLogin(credentials: { email: string; password: string }) {
+				return await this.$store.dispatch("auth/logIn", credentials, {
 					root: true,
 				});
 			},
@@ -239,42 +240,38 @@
 				return form.validate();
 			},
 
-			handleLogin() {
-				if (!this.validate()) return;
+			async handleLogin() {
+				try {
+					if (!this.validate()) return;
 
-				this.loading = true;
+					this.setLoading(true);
 
-				this.dispatchLogin({ email: this.email, password: this.password })
-					.then(
-						(data) => {
-							console.log("view:Login:dispatchLogin", { data: data });
-							this.$router.push("/admin/dashboard");
-							this.loading = false;
-						},
-						(error) => {
-							console.error("handleLogin:Login(error)", {
-								error: error,
-							});
-							this.message = error;
-							this.loading = false;
-						}
-					)
-					.catch((error) => {
-						console.error("handleLogin:Login:catch", { error: error });
-						this.message = error;
-						this.loading = false;
+					const response = await this.dispatchLogin({
+						email: this.email,
+						password: this.password,
 					});
+
+					if (response.success) {
+						this.$router.push("/admin/dashboard");
+					}
+
+					this.setLoading(false);
+				} catch (error) {
+					console.error("Login::handleLogin", { error: error });
+					this.setLoading(false);
+				}
 			},
 
 			resetForm() {
 				this.valid = false;
-				this.loading = false;
 				this.email = "";
 				this.password = "";
 				this.message = "";
 			},
+
+			setLoading(_loading: Boolean) {
+				this.$store.state.proccess.loading = _loading;
+			},
 		},
 	};
 </script>
-
-<style src="./Login.scss" lang="scss" />

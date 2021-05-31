@@ -1,3 +1,10 @@
 .v-select__selection--comma {
     margin: 7px !important;
 }
+
+.secondary--text {
+    .v-input__control {
+        color: $secondary !important;
+        caret-color: $secondary !important;
+    }
+}

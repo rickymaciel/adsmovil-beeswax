@@ -67,8 +67,14 @@ html, body {
 
 .mobile {
     .form-container {
-        //min-height: 70vh;
+        background: transparent 0% 0% no-repeat padding-box !important;
         width: 100%;
-        border-radius: 20px;
+        border-radius: 20px !important;
+        padding: 0rem;
+       min-height: auto !important;
+    }
+
+    .image-container {
+        display: none;
     }
 }

@@ -195,6 +195,7 @@
 											:key="_index"
 											link
 											:to="subitem.href"
+											:disabled="subitem.disabled"
 										>
 											<v-list-item-subtitle
 												class="white--text"

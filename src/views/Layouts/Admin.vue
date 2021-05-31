@@ -51,7 +51,7 @@
 				},
 				{
 					text: "Reporting",
-					disabled: false,
+					disabled: true,
 					href: "/admin/reporting/index",
 				},
 				{
@@ -61,7 +61,7 @@
 					children: [
 						{
 							text: "Event",
-							disabled: false,
+							disabled: true,
 							href: "/admin/events/index",
 						},
 						{
@@ -71,7 +71,7 @@
 						},
 						{
 							text: "Model",
-							disabled: false,
+							disabled: true,
 							href: "/admin/models/index",
 						},
 						{
@@ -81,7 +81,7 @@
 						},
 						{
 							text: "Segment",
-							disabled: false,
+							disabled: true,
 							href: "/admin/segments/index",
 						},
 					],

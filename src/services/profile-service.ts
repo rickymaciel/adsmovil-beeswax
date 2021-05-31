@@ -9,6 +9,7 @@ class ProfileService {
     async profile() {
         try {
             const response = await AxiosPost(PROFILE_ROUTE, {});
+            console.log("@Actions:profile", { response: response });
             return Promise.resolve(GetData(response));
 
         } catch (error) {
@@ -25,18 +26,17 @@ class ProfileService {
  * Util: get profile
  * @param response
  */
-export function ProviderProfile(response: AxiosResponse<any>) {
-    const data = response.data?.profile
+export function ProviderProfile(response: any) {
 
     const profile: Profile = {} as Profile
 
-    if (!isEmpty(data) && !isUndefined(data)) {
-        profile.id = data.id || 'N/A'
-        profile.account_id = data.account_id || 'N/A'
-        profile.first_name = data.name || 'N/A'
-        profile.last_name = data.last_name || 'N/A'
-        profile.email = data.email || 'N/A'
-        profile.avatar = data.avatar || 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460'
+    if (!isEmpty(response) && !isUndefined(response)) {
+        profile.id = response.id
+        profile.account_id = response.account_id
+        profile.first_name = response.name
+        profile.last_name = response.last_name
+        profile.email = response.email
+        profile.avatar = response.avatar || 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460'
 
     }
 

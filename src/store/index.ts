@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex, { Dispatch } from 'vuex'
 import i18n from '@/plugins/i18n';
 
-import AuthService, { ProviderToken } from '@/services/auth-service'
+import AuthService from '@/services/auth-service'
 import ProfileService, { ProviderProfile } from '@/services/profile-service'
 import PermissionService, { PermissionProfile } from '@/services/permission-service'
 import AdvertiserService from '@/services/advertiser-service'
@@ -21,7 +21,7 @@ import { isNull, isUndefined } from 'lodash'
 import { CustomList, CustomListDataCreate, CustomListFilters, CustomListOptions, CustomListPaginated, CustomListResultPaginate, List, Type } from '@/interfaces/custom_list'
 
 import { resolveList } from '../utils/resolveObjectArray'
-import { Campaign, CampaignDataCreate, CampaingFilters, CampaingOptions } from '@/interfaces/campaign'
+import { Campaign, CampaignDataCreate } from '@/interfaces/campaign'
 import { Modifier, ModifierList, ModifierFilters, ModifierOptions, ModifierDataCreate, ModifierDataUpdate } from '@/interfaces/modifier'
 import notificationService from '@/services/notification-service'
 import { AxiosError } from 'axios';
@@ -137,9 +137,11 @@ export default new Vuex.Store({
                 async logIn({ commit }, credential: Credential) {
                     try {
                         const response = await AuthService.login(credential)
-                        commit('SET_TOKEN', ProviderToken(response))
+                        console.log("@@Actions:logIn", { response: response });
+                        commit('SET_TOKEN', response.token)
                         return await Promise.resolve(response)
                     } catch (error) {
+                        console.error("@@Actions:logIn", { error: error });
                         commit('SET_TOKEN')
                         CatcherError(this.dispatch, error, { to: "Root" });
                         return await Promise.reject(error)
@@ -247,9 +249,9 @@ export default new Vuex.Store({
                 },
             },
             actions: {
-                async paginated({ commit }, filters?: AdvertiserFilters, options?: AdvertiserOptions) {
+                async paginated({ commit }, params) {
                     try {
-                        const response = await AdvertiserService.paginated(filters, options)
+                        const response = await AdvertiserService.paginated(params)
                         commit('SET_RESULT_PAGINATED', response)
                         return await Promise.resolve(response)
                     } catch (error) {
@@ -272,7 +274,16 @@ export default new Vuex.Store({
                 async create({ }, advertiser: AdvertiserDataCreate) {
                     try {
                         const response = await AdvertiserService.create(advertiser);
-                        CreateNotification(this.dispatch, { type: MessageTypes.SUCCESS, message: i18n.t('title-success'), to: "AdvertisersIndex" } as Notification);
+                        CreateNotification(
+                            this.dispatch,
+                            {
+                                type: MessageTypes.SUCCESS,
+                                title: i18n.t('title-success'),
+                                message: i18n.t('success'),
+                                btn_text: i18n.t('continue'),
+                                to: "AdvertisersIndex"
+                            } as Notification
+                        );
                         return Promise.resolve(response)
                     } catch (error) {
                         CatcherError(this.dispatch, error);
@@ -284,7 +295,16 @@ export default new Vuex.Store({
                     try {
                         const response = await AdvertiserService.update(params.advertiser, params.id);
                         commit('SET_ADVERTISER', response);
-                        CreateNotification(this.dispatch, { type: MessageTypes.SUCCESS, message: i18n.t('title-success'), to: "AdvertisersIndex" } as Notification);
+                        CreateNotification(
+                            this.dispatch,
+                            {
+                                type: MessageTypes.SUCCESS,
+                                title: i18n.t('title-success'),
+                                message: i18n.t('success'),
+                                btn_text: i18n.t('continue'),
+                                to: "AdvertisersIndex"
+                            } as Notification
+                        );
                         return await Promise.resolve(response)
                     } catch (error) {
                         CatcherError(this.dispatch, error);
@@ -493,16 +513,10 @@ export default new Vuex.Store({
                 async uploadFile({ commit }, upload: any) {
                     try {
                         const response = await ListItemService.upload(upload)
-                        if (!isUndefined(response) && !isNull(response)) {
-                            //commit('SET_ADVERTISER', response);
-                        }
                         return await Promise.resolve(response)
                     } catch (error) {
-                        console.error('@Action:upload.catch', { error: error })
-                        //commit('SET_ADVERTISER');
-                        const message_2 = typeof undefined !== typeof error.response.data.message ? error.response.data.message : error.toString()
-                        console.error('@Action:upload.catch', { message: message_2 })
-                        return await Promise.reject(message_2)
+                        CatcherError(this.dispatch, error, { to: "AdvertisersIndex" });
+                        return await Promise.reject(error)
                     }
                 },
             }
@@ -559,19 +573,11 @@ export default new Vuex.Store({
                 async getUsers({ commit }, params) {
                     try {
                         const response = await UserService.list(params.filters, params.options);
-
-                        if (isUndefined(response) || isNull(response)) {
-                            return await Promise.reject({ message: 'No response' })
-                        }
-
                         commit('SET_USERS', resolveList(response))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        console.error('@Action:getUsers.catch', { error: error })
-                        commit('SET_USERS')
-                        const message_2 = typeof undefined !== typeof error.response.data.message ? error.response.data.message : error.toString()
-                        console.error('@Action:getUsers.catch', { message: message_2 })
-                        return await Promise.reject(message_2)
+                        CatcherError(this.dispatch, error, { to: "AdvertisersIndex" });
+                        return await Promise.reject(error)
                     }
                 },
             }
@@ -598,7 +604,16 @@ export default new Vuex.Store({
                 async create({ }, campaign: CampaignDataCreate) {
                     try {
                         const response = await CampaignService.create(campaign)
-                        CreateNotification(this.dispatch, { type: MessageTypes.SUCCESS, message: i18n.t('title-success'), to: "CampaignsIndex" } as Notification);
+                        CreateNotification(
+                            this.dispatch,
+                            {
+                                type: MessageTypes.SUCCESS,
+                                title: i18n.t('title-success'),
+                                message: i18n.t('success'),
+                                btn_text: i18n.t('continue'),
+                                to: "CampaignsIndex"
+                            } as Notification
+                        );
                         return await Promise.resolve(response)
                     } catch (error) {
                         CatcherError(this.dispatch, error);
@@ -610,7 +625,16 @@ export default new Vuex.Store({
                     try {
                         const response = await CampaignService.update(campaign)
                         commit('SET_CAMPAIGN', response);
-                        CreateNotification(this.dispatch, { type: MessageTypes.SUCCESS, message: i18n.t('title-success'), to: "CampaignsIndex" } as Notification);
+                        CreateNotification(
+                            this.dispatch,
+                            {
+                                type: MessageTypes.SUCCESS,
+                                title: i18n.t('title-success'),
+                                message: i18n.t('success'),
+                                btn_text: i18n.t('continue'),
+                                to: "CampaignsIndex"
+                            } as Notification
+                        );
                         return await Promise.resolve(response)
 
                     } catch (error) {
@@ -629,10 +653,9 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
-
-                async paginated({ commit }, filters?: CampaingFilters, options?: CampaingOptions) {
+                async paginated({ commit }, params) {
                     try {
-                        const response = await CampaignService.paginated(filters, options)
+                        const response = await CampaignService.paginated(params)
                         commit('SET_RESULT_PAGINATED', response)
                         return await Promise.resolve(response)
                     } catch (error) {
@@ -757,6 +780,10 @@ export function Errors(dispatch: Dispatch, error: any) {
  * @param params { to?: string }
  */
 export function CatcherError(dispatch: Dispatch, error: AxiosError, params?: { to?: string }) {
+    console.log("CatcherError", {
+        error: error,
+        params: params
+    });
     Errors(dispatch, error);
     CreateNotification(dispatch, {
         type: MessageTypes.ERROR,

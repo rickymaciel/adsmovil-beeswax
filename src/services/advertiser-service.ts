@@ -34,17 +34,17 @@ class AdvertiserService {
         }
     }
 
-    async paginated(filters?: AdvertiserFilters, options?: AdvertiserOptions) {
+    async paginated(params: { paginated?: AdvertiserPaginated, filters?: AdvertiserFilters, options?: AdvertiserOptions }) {
         try {
             let filter = ''
             let option = ''
 
-            if (!isUndefined(filters)) {
-                filter = getFilters(filters)
+            if (!isUndefined(params.filters)) {
+                filter = getFilters(params.filters)
             }
 
-            if (!isUndefined(options)) {
-                option += getOptions(options, 'paginated')
+            if (!isUndefined(params.options)) {
+                option += getOptions(params.options, 'paginated', params.paginated)
             }
 
             const url = getURL(filter, option)

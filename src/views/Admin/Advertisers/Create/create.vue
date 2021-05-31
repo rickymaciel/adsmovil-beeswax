@@ -221,8 +221,6 @@
 		Category,
 	} from "../../../../interfaces/advertiser";
 	import { isEmpty, isNull, isUndefined, isNaN } from "lodash";
-	import { MessageTypes } from "../../../../interfaces/proccess";
-
 	import Alertize from "../../../../components/Alertize.vue";
 
 	export default Vue.extend({
