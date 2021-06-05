@@ -1,81 +1,178 @@
-import { forEach, isEmpty, isUndefined } from 'lodash'
+import { forEach, isEmpty, isUndefined, isNull } from 'lodash'
 import { AxiosPost, AxiosGet, AxiosPatch, AxiosDelete } from '@/api/AxiosService'
+import { success, error } from '@/api/handlers/HandlerResponse'
+import { GetMessage, GetErrors } from '@/api/handlers/HandlerError'
 import {
   ListItem,
   ListItemDataCreate,
   ListItemFilters,
   ListItemOptions,
   ListItemPaginated,
-  List, ListItemDataUpdate
+  List, ListItemDataUpdate, ListItemLoad
 } from '@/interfaces/list_items'
 
-const ROUTES = require('../routes').CUSTOM_LIST
+const ROUTES = require('../../routes').CUSTOM_LIST
 
 export async function create (listItem: ListItemDataCreate, customListType: string, token: string) {
   try {
     if (customListType == 'lat_long') {
       if (isUndefined(listItem.list_item.lat) || isUndefined(listItem.list_item.long) || isUndefined(listItem.list_item.radius_km)) {
-        return 'Field list_item invalid format.'//{'lat':number,'long':number,'radius_km':number}
+        return error('Field list_item invalid format.', []) // {'lat':number,'long':number,'radius_km':number}
       }
     }
 
-    const response = await AxiosPost(ROUTES.LIST_ITEM_ROUTE, listItem, token)
+    return AxiosPost(ROUTES.LIST_ITEM_ROUTE, listItem, token).then(async (result) => {
+      if (result.success) {
+        let data = result.content
 
-    if (!isEmpty(response) && !isUndefined(response.id)) {
-      return {
-        id: response.id,
-        external_id: response.external_id,
-        list_item: response.list_item,
-        value: response.value,
-        name: response.name,
-        active: response.active,
-        custom_list_id: response.custom_list_id,
-        created_by: response.created_by,
-        updated_by: response.updated_by,
-        deleted_by: response.deleted_by,
-        created_at: response.created_at,
-        updated_at: response.updated_at,
-        deleted_at: response.deleted_at
-      } as ListItem
-    }
+        let item = {
+          id: data.id,
+          external_id: data.external_id,
+          list_item: data.list_item,
+          value: data.value,
+          name: data.name,
+          active: data.active,
+          custom_list_id: data.custom_list_id,
+          created_by: data.created_by,
+          updated_by: data.updated_by,
+          deleted_by: data.deleted_by,
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+          deleted_at: data.deleted_at
+        } as ListItem
 
-    console.log('ERROR: ', response)
+        return success('', item)
+      }
 
-    return null
-  } catch (error) {
-    console.log('EXCEPTION: ', error)
-    return null
+      console.log('ERROR: ', result)
+
+      return error(result.message, result.errors)
+    }).catch(function (err) {
+      console.log('EXCEPTION: ', err)
+      return error(GetMessage(err), GetErrors(err))
+    })
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
+    return error(GetMessage(err), GetErrors(err))
   }
 }
 
 export async function update (listItem: ListItemDataUpdate, token: string) {
   try {
-    const response = await AxiosPatch(ROUTES.LIST_ITEM_ROUTE + '/' + listItem.id, listItem, token)
+    return AxiosPatch(ROUTES.LIST_ITEM_ROUTE + '/' + listItem.id, listItem, token).then((result) => {
+      if (result.success) {
+        let data = result.content
 
-    if (!isEmpty(response) && !isUndefined(response.id)) {
-      return {
-        id: response.id,
-        external_id: response.external_id,
-        list_item: response.list_item,
-        value: response.value,
-        name: response.name,
-        active: response.active,
-        custom_list_id: response.custom_list_id,
-        created_by: response.created_by,
-        updated_by: response.updated_by,
-        deleted_by: response.deleted_by,
-        created_at: response.created_at,
-        updated_at: response.updated_at,
-        deleted_at: response.deleted_at
-      } as ListItem
+        let item = {
+          id: data.id,
+          external_id: data.external_id,
+          list_item: data.list_item,
+          value: data.value,
+          name: data.name,
+          active: data.active,
+          custom_list_id: data.custom_list_id,
+          created_by: data.created_by,
+          updated_by: data.updated_by,
+          deleted_by: data.deleted_by,
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+          deleted_at: data.deleted_at
+        } as ListItem
+
+        return success('', item)
+      }
+
+      console.log('ERROR: ', result)
+
+      return error(result.message, result.errors)
+    }).catch(function (err) {
+      console.log('EXCEPTION: ', err)
+      return error(GetMessage(err), GetErrors(err))
+    })
+  } catch (err) {
+    console.log('EXCEPTION: ', error)
+    return error(GetMessage(err), GetErrors(err))
+  }
+}
+
+export async function loadItems (items: ListItemLoad[], type: string, token: string) {
+  try {
+    let listItems = {
+      success: true,
+      message: '',
+      content: [] as any
     }
 
-    console.log('ERROR: ', response)
+    return new Promise((resolve, reject) => {
+      let load = [] as any
 
-    return null
-  } catch (error) {
-    console.log('EXCEPTION: ', error)
-    return null
+      forEach(items, async function (value, key) {
+        let item = {
+          success: true,
+          message: '',
+          errors: [],
+          item: value
+        }
+
+        if (isNull(value.id)) {//Create
+          let data = {
+            custom_list_id: value.custom_list_id,
+            list_item: value.list_item,
+            name: value.name,
+            value: value.value
+          } as ListItemDataCreate
+
+          let response = create(data, type, token).then((result) => {
+            if (!result.success) {
+              item.success = false
+              item.message = result.message
+              item.errors = result.errors
+            }
+
+            listItems.content.push(item)
+          }).catch(function (err) {
+            console.log('EXCEPTION: ', err)
+            return error(GetMessage(err), GetErrors(err))
+          })
+
+          load.push(response)
+        } else {//Update
+          let data = {
+            id: value.id,
+            name: value.name,
+            value: value.value,
+            active: value.active
+          } as ListItemDataUpdate
+
+          let response = update(data, token).then((result) => {
+            if (!result.success) {
+              item.success = false
+              item.message = result.message
+              item.errors = result.errors
+            }
+
+            listItems.content.push(item)
+          }).catch(function (err) {
+            console.log('EXCEPTION: ', err)
+            return error(GetMessage(err), GetErrors(err))
+          })
+
+          load.push(response)
+        }
+      })
+
+      return Promise.all(load).then(data => {
+        resolve(listItems)
+      })
+    }).then((result) => {
+      return result
+    }).catch(function (err) {
+      console.log('EXCEPTION: ', err)
+      return error(GetMessage(err), GetErrors(err))
+    })
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
+    return error(GetMessage(err), GetErrors(err))
   }
 }
 

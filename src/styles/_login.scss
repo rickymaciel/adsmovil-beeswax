@@ -20,6 +20,7 @@ html, body {
 }
 
 .main {
+    width: 70%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -29,10 +30,10 @@ html, body {
 }
 
 .image-container {
-    width: 100%;
+    width: 100% !important;
     min-height: 750px;
     background-image: url("../assets/bg/Login_img.svg");
-    background-position: top;
+    background-position: inherit;
     background-size: cover;
 	justify-content: center;
     margin: 0;
@@ -43,9 +44,9 @@ html, body {
 .form-container {
     align-items: center;
 	justify-content: center;
-    align-content: center;
-    align-self: center;    
-    width: 100%;
+    align-content: flex-end;
+    align-self: center;
+    width: 100% !important;
     min-height: 750px;
     padding: 2rem;
     border-radius: 0px 20px 20px 0px;
@@ -53,6 +54,7 @@ html, body {
     align-items: center;
     justify-content: center;
     position: relative;
+    background: white 0% 0% no-repeat padding-box !important;
 }
 
 .form-title {
@@ -66,12 +68,22 @@ html, body {
 }
 
 .mobile {
+    &.main {
+        width: 100% !important;
+        align-items: center;
+        justify-content: start;
+        align-content: start;
+        align-self: start;
+        position: relative;
+    }
+
     .form-container {
-        background: transparent 0% 0% no-repeat padding-box !important;
-        width: 100%;
-        border-radius: 20px !important;
-        padding: 0rem;
-       min-height: auto !important;
+        background: white 0% 0% no-repeat padding-box !important;
+        border-radius: 20px;
+        width: 100% !important;
+        min-height: auto !important;
+        margin: 0;
+        padding: 0 !important;
     }
 
     .image-container {

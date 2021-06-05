@@ -3,8 +3,6 @@
 		<div
 			class="mb-2 d-flex justify-space-between align-center align-self-center"
 		>
-			<!-- <v-card> limit: {{ limit }} </v-card>
-			<v-card> show_rows: {{ show_rows }} </v-card> -->
 			<v-btn
 				:to="to"
 				class="me-4 mb-1"
@@ -31,7 +29,7 @@
 				<img src="@/assets/icons/download_btn.png" alt="Tools" />
 			</v-btn>
 
-			<v-btn
+			<!-- <v-btn
 				color="secondary"
 				elevation="0"
 				icon
@@ -42,7 +40,7 @@
 				class="me-4 mb-1"
 			>
 				<img src="@/assets/icons/bulk_btn.png" alt="Tools" />
-			</v-btn>
+			</v-btn> -->
 		</div>
 
 		<div
@@ -113,7 +111,7 @@
 				</v-list>
 			</v-menu>
 
-			<v-menu
+			<!-- <v-menu
 				transition="slide-y-transition"
 				offset-y
 				:close-on-content-click="true"
@@ -166,7 +164,7 @@
 						</v-list-item>
 					</v-list-item-group>
 				</v-list>
-			</v-menu>
+			</v-menu> -->
 		</div>
 	</div>
 </template>
@@ -180,7 +178,7 @@
 		props: {
 			limit: {
 				type: Number,
-				default: 15,
+				default: 25,
 			},
 			to: {
 				type: String,
@@ -210,20 +208,16 @@
 			initShowRows() {
 				return [
 					{
+						value: 25,
+						text: "25 rows",
+					},
+					{
 						value: 50,
 						text: "50 rows",
 					},
 					{
 						value: 100,
 						text: "100 rows",
-					},
-					{
-						value: 150,
-						text: "150 rows",
-					},
-					{
-						value: 200,
-						text: "200 rows",
 					},
 				];
 			},

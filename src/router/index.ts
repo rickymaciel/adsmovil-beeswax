@@ -95,6 +95,13 @@ const routes: Array<RouteConfig> = [
                     requiresAuth: true,
                     breadcrumb: "Dashboard"
                 },
+                beforeEnter(to, from, next) {
+                    if (store.state['auth'].loggedIn) {
+                        next('/admin/campaigns/index')
+                    } else {
+                        next('/auth/login')
+                    }
+                },
             },
             {
                 path: 'advertisers',

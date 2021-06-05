@@ -11,7 +11,7 @@
 			</v-col>
 		</v-row>
 
-		<v-row no-gutters>
+		<!-- <v-row no-gutters>
 			<label
 				>File
 				<input
@@ -22,7 +22,7 @@
 				/>
 			</label>
 			<button v-on:click="submitFile()">Submit</button>
-		</v-row>
+		</v-row> -->
 	</v-container>
 </template>
 

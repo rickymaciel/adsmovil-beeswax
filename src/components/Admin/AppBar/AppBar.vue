@@ -59,8 +59,9 @@
 											<v-avatar v-else color="secondary">
 												<span
 													class="white--text headline"
-													>{{ nameFL }}</span
 												>
+													{{ nameFL }}
+												</span>
 											</v-avatar>
 										</v-avatar>
 									</v-list-item-avatar>
@@ -68,73 +69,90 @@
 										<v-list-item-title
 											class="subtitle-2 white--text ma-0"
 										>
-											{{ getFirstName }}
+											{{ getName }}
 										</v-list-item-title>
-										<!-- <v-list-item-subtitle
-											class="subtitle white--text"
-										>
-											{{ getRoutePath }}
-										</v-list-item-subtitle> -->
 									</v-list-item-content>
 
 									<v-list-item-action>
-										<v-icon color="#47A0D3"
-											>mdi-chevron-down</v-icon
-										>
+										<v-icon color="#47A0D3">
+											mdi-chevron-down
+										</v-icon>
 									</v-list-item-action>
 								</v-list-item>
 							</v-list>
 						</template>
-						<v-list v-if="getProfile">
-							<v-list-item>
-								<v-list-item-content class="pa-2">
-									<v-list-item-title class="title"
-										>Profile</v-list-item-title
-									>
+						<v-list shaped v-if="getProfile">
+							<v-list-item two-line>
+								<v-list-item-content>
+									<v-list-item-title class="text-h6">
+										Name
+									</v-list-item-title>
 									<v-list-item-subtitle>
-										Account ID:
-										<span class="font-weight-bold">
-											{{ getProfile.account_id }}
-										</span>
-									</v-list-item-subtitle>
-									<v-list-item-subtitle>
-										Name:
-										<span class="font-weight-bold">
-											{{ getProfile.first_name }}
-											{{ getProfile.last_name }}
-										</span>
-									</v-list-item-subtitle>
-									<v-list-item-subtitle>
-										Role:
-										<span class="font-weight-bold">
-											?
-										</span>
+										{{ getProfile.name }}
+										{{ getProfile.last_name }}
 									</v-list-item-subtitle>
 								</v-list-item-content>
 							</v-list-item>
+
 							<v-divider></v-divider>
-							<v-list-item>
-								<v-list-item-content class="pa-2">
-									<v-list-item-title class="title"
-										>Other Accounts</v-list-item-title
-									>
-									<v-list-item-subtitle
-										class="secondary--text"
-									>
-										Account ID: 1
-									</v-list-item-subtitle>
-									<v-list-item-subtitle
-										class="secondary--text"
-									>
-										Account ID: 2
+
+							<v-list-item two-line>
+								<v-list-item-content>
+									<v-list-item-title class="text-h6">
+										Account
+									</v-list-item-title>
+									<v-list-item-subtitle>
+										{{ getProfile.account.name }}
 									</v-list-item-subtitle>
 								</v-list-item-content>
 							</v-list-item>
+
 							<v-divider></v-divider>
+
+							<v-list-item two-line>
+								<v-list-item-content>
+									<v-list-item-title class="text-h6">
+										Roles
+									</v-list-item-title>
+									<v-list-item-subtitle>
+										<v-card-text
+											class="pa-0 ma-0"
+											v-for="role in getProfile.roles"
+											:key="role.id"
+										>
+											{{ role.description }}
+										</v-card-text>
+									</v-list-item-subtitle>
+								</v-list-item-content>
+							</v-list-item>
+
+							<v-divider></v-divider>
+
+							<v-list-item two-line>
+								<v-list-item-content>
+									<v-list-item-title class="text-h6">
+										Accounts
+									</v-list-item-title>
+									<v-list-item-subtitle>
+										<v-card-text
+											class="pa-0 ma-0"
+											v-for="account in getProfile.accounts"
+											:key="account.id"
+										>
+											{{ account.name }}
+										</v-card-text>
+									</v-list-item-subtitle>
+								</v-list-item-content>
+							</v-list-item>
+
+							<v-divider></v-divider>
+
 							<v-list-item link @click="dispatchLogout()">
-								<v-list-item-title class="secondary--text title"
-									>Logout</v-list-item-title
+								<v-list-item-title
+									class="secondary--text title"
 								>
+									Logout
+								</v-list-item-title>
 							</v-list-item>
 						</v-list>
 					</v-menu>
@@ -264,10 +282,10 @@
 				return this.$store.state.profile.profile;
 			},
 
-			getFirstName() {
-				return !isNull(this.$store.state.profile.profile)
-					? this.$store.state.profile.profile.first_name
-					: "";
+			getName() {
+				if (!this.hasElement(this.$store.state.profile.profile, "name"))
+					return "";
+				return this.$store.state.profile.profile.name;
 			},
 
 			hasImage() {
@@ -281,7 +299,7 @@
 			nameFL(): string {
 				return this.getFirtsLetter(
 					this.$store.state.profile.profile,
-					"first_name"
+					"name"
 				);
 			},
 		},

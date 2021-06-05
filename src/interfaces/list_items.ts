@@ -67,6 +67,15 @@ export interface ListItemDataUpdate {
   active: boolean
 }
 
+export interface ListItemLoad {
+  id?: number | null,
+  custom_list_id?: number,
+  list_item?: any,
+  name?: string,
+  value?: number,
+  active?: boolean
+}
+
 export interface ListItemField {// Custom List type 6
   lat: number,
   long: number,

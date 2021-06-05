@@ -37,6 +37,8 @@ const LAT_LONG_ROUTE = 'api/list/custom_lists/lat_long'
 const CREATIVE_SIZE_ROUTE = 'api/list/creative_sizes'
 const DOMAIN_LIST_ROUTE = 'api/list/custom_lists/domain'
 const AD_POSITION_ROUTE = 'api/list/ad_positions'
+const BID_SHADING_ROUTE = 'api/list/bid_shadings'
+const BID_STRATEGY_ROUTE = 'api/list/bid_strategy'
 
 module.exports = {
   ADVERTISER: {
@@ -55,6 +57,10 @@ module.exports = {
     PERMISSION_ROUTE,
     INITIALIZE_ROUTE,
     ACCOUNT_ROUTE
+  },
+  BID: {
+    BID_SHADING_ROUTE,
+    BID_STRATEGY_ROUTE
   },
   BUDGET: {
     BUDGET_ROUTE

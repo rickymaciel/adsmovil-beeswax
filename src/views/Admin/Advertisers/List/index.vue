@@ -1,7 +1,11 @@
 <template>
 	<v-container class="my-0">
 		<v-layout column>
-			<Buttons></Buttons>
+			<Buttons
+				:limit="paginated.limit"
+				@selected-limit="selectedLimit"
+				to="/admin/advertisers/create"
+			></Buttons>
 		</v-layout>
 		<v-layout column>
 			<TableList
@@ -22,7 +26,7 @@
 
 <script lang="ts">
 	import TableList from "./TableList.vue";
-	import Buttons from "../List/Buttons.vue";
+	import Buttons from "../../Commons/Buttons.vue";
 	import Vue from "vue";
 	import {
 		Advertiser,
@@ -42,19 +46,17 @@
 			title: "List",
 			paginated: {
 				page: 1,
-				limit: 20,
+				limit: 25,
 			} as AdvertiserPaginated,
 			filters: {} as AdvertiserFilters,
 			options: {
-				sort: "name",
+				sort: "",
 				order: "asc",
 			} as AdvertiserOptions,
 		}),
 		created() {},
 		async mounted() {
-			this.setLoading(true);
 			await this.getPaginated();
-			this.setLoading(false);
 		},
 		computed: {
 			getResultPaginate(): ResultPaginate {
@@ -158,7 +160,8 @@
 				this.$store.state.proccess.loading = _loading;
 			},
 			async getPaginated() {
-				return this.$store.dispatch(
+				this.setLoading(true);
+				await this.$store.dispatch(
 					"advertiser/paginated",
 					await ParamService.getParams(
 						this.paginated,
@@ -169,10 +172,32 @@
 						root: true,
 					}
 				);
+				this.setLoading(false);
 			},
 			updatePaginate(data: any) {
 				console.log("index::updatePaginate", data);
 				this.paginated.page = data;
+			},
+			async selectedLimit(limit: number) {
+				this.paginated.limit = limit;
+				this.updatePaginate(1);
+				await this.getPaginated();
+			},
+			async updateParams(params: {
+				filters: AdvertiserFilters;
+				options: AdvertiserOptions;
+			}) {
+				this.filters = params.filters;
+				this.options = params.options;
+				this.updatePaginate(1);
+				await this.getPaginated();
+			},
+		},
+		watch: {
+			"paginated.page"(val, old) {
+				if (val !== old) {
+					this.getPaginated();
+				}
 			},
 		},
 	});

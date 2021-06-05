@@ -15,7 +15,7 @@ export function getLocale(): string {
         return locale
     }
 
-    locale = window.navigator.language || window.browserLanguage || window.userLanguage
+    //locale = window.navigator.language || window.browserLanguage || window.userLanguage
 
     locale = parseLocale(locale)
 

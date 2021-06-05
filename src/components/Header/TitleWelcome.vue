@@ -12,9 +12,9 @@
 			</v-list-item-content>
 		</v-list-item>
 
-		<template v-if="showSearcher">
+		<!-- <template v-if="showSearcher">
 			<Searcher />
-		</template>
+		</template> -->
 	</section>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
 	<v-main class="main" :class="{ mobile: $vuetify.breakpoint.mobile }">
-		<v-container class="pa-lg-8 pa-sm-0 fill-height">
+		<v-container class="fill-height">
 			<v-row>
 				<v-col>
 					<v-flex class="d-flex flex-row justify-center align-center">
@@ -9,11 +9,15 @@
 							class="image-container"
 						></div>
 						<div
-							class="form-container d-flex"
+							class="form-container d-lg-flex"
 							justify="center"
 							align="center"
 						>
-							<v-card elevation="0" width="100%">
+							<v-card
+								class="rounded-lg pa-4"
+								:elevation="$vuetify.breakpoint.mobile ? 8 : 0"
+								width="100%"
+							>
 								<v-card-title
 									class="form-title text-capitalize"
 								>
@@ -51,70 +55,77 @@
 														:label="
 															$t('enterEmail')
 														"
-														:rules="emailRules"
+														:rules="[
+															rules.required,
+															rules.emailMatch,
+														]"
 														:disabled="isLoading"
 													></v-text-field>
 												</v-col>
 												<v-col cols="12" sm="12">
 													<v-text-field
 														v-model="password"
+														:append-icon="
+															showPass
+																? 'mdi-eye'
+																: 'mdi-eye-off'
+														"
+														:type="
+															showPass
+																? 'text'
+																: 'password'
+														"
 														ref="password"
 														class="label-fixed"
 														value=""
 														:label="
 															$t('enterPassword')
 														"
-														:rules="passwordRules"
-														clearable
+														:rules="[
+															rules.required,
+															rules.min,
+														]"
 														:disabled="isLoading"
+														@click:append="
+															showPass = !showPass
+														"
 													></v-text-field>
 												</v-col>
-												<v-col cols="12" sm="12">
-													<v-card-actions
-														class="mt-8"
-													>
-														<v-row
-															align="center"
-															justify="space-between"
+												<v-col
+													v-if="false"
+													cols="12"
+													sm="12"
+												>
+													<v-card-actions>
+														<v-btn
+															rounded
+															text
+															color="secondary"
+															class="text-capitalize"
+															:disabled="
+																isLoading
+															"
+															href="/auth/forgot-password"
 														>
-															<v-btn
-																:block="
-																	$vuetify
-																		.breakpoint
-																		.xs
-																"
-																rounded
-																text
-																color="secondary"
-																class="text-capitalize"
-																:disabled="
-																	isLoading
-																"
-																href="/auth/forgot-password"
-															>
-																{{
-																	$t(
-																		"forgotPassword"
-																	)
-																}}
-															</v-btn>
-															<v-switch
-																inset
-																v-model="
-																	rememberMe
-																"
-																:label="
-																	$t(
-																		'rememberMe'
-																	)
-																"
-																color="secondary"
-																class="secondary--text"
-																:disabled="
-																	isLoading
-																"
-															></v-switch>
-														</v-row>
+															{{
+																$t(
+																	"forgotPassword"
+																)
+															}}
+														</v-btn>
+														<v-spacer></v-spacer>
+														<v-switch
+															inset
+															v-model="rememberMe"
+															:label="
+																$t('rememberMe')
+															"
+															color="secondary"
+															class="secondary--text"
+															:disabled="
+																isLoading
+															"
+														></v-switch>
 													</v-card-actions>
 												</v-col>
 												<v-col cols="12" sm="12">
@@ -176,11 +187,19 @@
 
 		data: function () {
 			return {
-				email: "luciano@adsmovil.com",
-				password: "Chaicu777",
+				email: "", // luciano@adsmovil.com
+				password: "", // Chaicu777
 				rememberMe: true,
+				showPass: false,
 				valid: false,
 				message: "",
+				rules: {
+					required: (value: any) => !!value || this.$t("fieldRequired"),
+					min: (v: string | any[]) =>
+						v.length >= 8 || this.$t("minLength", { min: 8 }),
+					emailMatch: (v: string) =>
+						/.+@.+\..+/.test(v) || this.$t("invalidEmail"),
+				},
 			};
 		},
 
@@ -199,21 +218,6 @@
 
 			token() {
 				return this.$store.state.auth.token;
-			},
-
-			emailRules() {
-				return [
-					(v: any) => !!v || this.$t("fieldRequired"),
-					(v: string) => /.+@.+\..+/.test(v) || this.$t("invalidEmail"),
-				];
-			},
-
-			passwordRules() {
-				return [
-					(v: any) => !!v || this.$t("fieldRequired"),
-					(v: string | any[]) =>
-						(v && v.length >= 8) || this.$t("minLength", { min: 8 }),
-				];
 			},
 		},
 
@@ -252,7 +256,7 @@
 					});
 
 					if (response.success) {
-						this.$router.push("/admin/dashboard");
+						this.$router.push({ name: "CampaignsIndex" });
 					}
 
 					this.setLoading(false);

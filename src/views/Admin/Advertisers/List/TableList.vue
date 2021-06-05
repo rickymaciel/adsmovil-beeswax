@@ -81,6 +81,23 @@
 						<v-divider></v-divider>
 
 						<v-list-item>
+							<v-radio-group v-model="filter.id.order">
+								<v-radio color="secondary" value="asc">
+									<template v-slot:label>
+										<div>Ascending</div>
+									</template>
+								</v-radio>
+								<v-radio color="secondary" value="desc">
+									<template v-slot:label>
+										<div>Descending</div>
+									</template>
+								</v-radio>
+							</v-radio-group>
+						</v-list-item>
+
+						<v-divider></v-divider>
+
+						<v-list-item>
 							<v-btn
 								color="secondary"
 								elevation="2"
@@ -123,6 +140,23 @@
 								</v-radio>
 							</v-radio-group>
 						</v-list-item>
+
+						<v-divider></v-divider>
+
+						<v-list-item>
+							<v-radio-group v-model="filter.id.order">
+								<v-radio color="secondary" value="asc">
+									<template v-slot:label>
+										<div>Ascending</div>
+									</template>
+								</v-radio>
+								<v-radio color="secondary" value="desc">
+									<template v-slot:label>
+										<div>Descending</div>
+									</template>
+								</v-radio>
+							</v-radio-group>
+						</v-list-item>
 					</v-list>
 				</v-menu>
 			</template>
@@ -149,6 +183,197 @@
 								:placeholder="header.text"
 								clearable
 							></v-text-field>
+						</v-list-item>
+
+						<v-divider></v-divider>
+
+						<v-list-item>
+							<v-radio-group v-model="filter.id.order">
+								<v-radio color="secondary" value="asc">
+									<template v-slot:label>
+										<div>Ascending</div>
+									</template>
+								</v-radio>
+								<v-radio color="secondary" value="desc">
+									<template v-slot:label>
+										<div>Descending</div>
+									</template>
+								</v-radio>
+							</v-radio-group>
+						</v-list-item>
+
+						<v-divider></v-divider>
+
+						<v-list-item>
+							<v-btn
+								color="secondary"
+								elevation="2"
+								block
+								outlined
+								rounded
+							>
+								Remove filter
+							</v-btn>
+						</v-list-item>
+					</v-list>
+				</v-menu>
+			</template>
+
+			<!-- domain -->
+			<template v-slot:[`header.domain`]="{ header }">
+				<v-menu :close-on-content-click="false">
+					<template v-slot:activator="{ on, attrs }">
+						<div v-bind="attrs" v-on="on">
+							{{ header.text }}
+							<v-icon>mdi-chevron-down</v-icon>
+						</div>
+					</template>
+
+					<v-list subheader two-line flat>
+						<v-subheader>Filter</v-subheader>
+
+						<v-list-item>
+							<v-text-field
+								class="label-fixed no-top"
+								ref="id"
+								v-model="header.domain"
+								type="text"
+								:placeholder="header.text"
+								clearable
+							></v-text-field>
+						</v-list-item>
+
+						<v-divider></v-divider>
+
+						<v-list-item>
+							<v-radio-group v-model="filter.id.order">
+								<v-radio color="secondary" value="asc">
+									<template v-slot:label>
+										<div>Ascending</div>
+									</template>
+								</v-radio>
+								<v-radio color="secondary" value="desc">
+									<template v-slot:label>
+										<div>Descending</div>
+									</template>
+								</v-radio>
+							</v-radio-group>
+						</v-list-item>
+
+						<v-divider></v-divider>
+
+						<v-list-item>
+							<v-btn
+								color="secondary"
+								elevation="2"
+								block
+								outlined
+								rounded
+							>
+								Remove filter
+							</v-btn>
+						</v-list-item>
+					</v-list>
+				</v-menu>
+			</template>
+
+			<!-- appbundle -->
+			<template v-slot:[`header.appbundle`]="{ header }">
+				<v-menu :close-on-content-click="false">
+					<template v-slot:activator="{ on, attrs }">
+						<div v-bind="attrs" v-on="on">
+							{{ header.text }}
+							<v-icon>mdi-chevron-down</v-icon>
+						</div>
+					</template>
+
+					<v-list subheader two-line flat>
+						<v-subheader>Filter</v-subheader>
+
+						<v-list-item>
+							<v-text-field
+								class="label-fixed no-top"
+								ref="id"
+								v-model="header.appbundle"
+								type="text"
+								:placeholder="header.text"
+								clearable
+							></v-text-field>
+						</v-list-item>
+
+						<v-divider></v-divider>
+
+						<v-list-item>
+							<v-radio-group v-model="filter.id.order">
+								<v-radio color="secondary" value="asc">
+									<template v-slot:label>
+										<div>Ascending</div>
+									</template>
+								</v-radio>
+								<v-radio color="secondary" value="desc">
+									<template v-slot:label>
+										<div>Descending</div>
+									</template>
+								</v-radio>
+							</v-radio-group>
+						</v-list-item>
+
+						<v-divider></v-divider>
+
+						<v-list-item>
+							<v-btn
+								color="secondary"
+								elevation="2"
+								block
+								outlined
+								rounded
+							>
+								Remove filter
+							</v-btn>
+						</v-list-item>
+					</v-list>
+				</v-menu>
+			</template>
+
+			<!-- currency -->
+			<template v-slot:[`header.currency`]="{ header }">
+				<v-menu :close-on-content-click="false">
+					<template v-slot:activator="{ on, attrs }">
+						<div v-bind="attrs" v-on="on">
+							{{ header.text }}
+							<v-icon>mdi-chevron-down</v-icon>
+						</div>
+					</template>
+
+					<v-list subheader two-line flat>
+						<v-subheader>Filter</v-subheader>
+
+						<v-list-item>
+							<v-text-field
+								class="label-fixed no-top"
+								ref="id"
+								v-model="header.currency"
+								type="text"
+								:placeholder="header.text"
+								clearable
+							></v-text-field>
+						</v-list-item>
+
+						<v-divider></v-divider>
+
+						<v-list-item>
+							<v-radio-group v-model="filter.id.order">
+								<v-radio color="secondary" value="asc">
+									<template v-slot:label>
+										<div>Ascending</div>
+									</template>
+								</v-radio>
+								<v-radio color="secondary" value="desc">
+									<template v-slot:label>
+										<div>Descending</div>
+									</template>
+								</v-radio>
+							</v-radio-group>
 						</v-list-item>
 
 						<v-divider></v-divider>

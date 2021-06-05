@@ -1,6 +1,6 @@
 <template>
 	<section
-		class="d-lg-flex justify-space-between align-center align-items-center align-self-center"
+		class="d-lg-flex justify-space-between align-center align-items-center align-self-center py-4"
 	>
 		<v-breadcrumbs :items="items">
 			<template v-slot:divider>
@@ -17,9 +17,9 @@
 			</template>
 		</v-breadcrumbs>
 
-		<template v-if="showSearcher">
+		<!-- <template v-if="showSearcher">
 			<Searcher />
-		</template>
+		</template> -->
 	</section>
 </template>
 

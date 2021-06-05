@@ -48,8 +48,7 @@
 		components: { Buttons, TableList },
 		data: () => ({
 			title: "List",
-			filter: {},
-			paginated: { page: 1, limit: 50 } as CampaingPaginated,
+			paginated: { page: 1, limit: 25 } as CampaingPaginated,
 			filters: {} as CampaingFilters,
 			options: { sort: "", order: "asc" } as CampaingOptions,
 		}),

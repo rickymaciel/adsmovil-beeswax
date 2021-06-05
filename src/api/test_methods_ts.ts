@@ -2,11 +2,11 @@ import { account, forgot, initialize, login, logout, permissions, profile, reset
 //import { create, remove, resendEmail, show, update } from './user/UserApi'
 //import { create, update, changeStatus, show, all, list, paginated, categories } from './advertiser/AdvertiserApi'
 //import { create, update, changeStatus, show, all, paginated, list } from './custom_list/CustomListAPI'
-//import { create, update, changeStatus, all, paginated, list, deleted, clear } from './custom_list/items/ListItemsAPI'
+//import { create, update, changeStatus, all, paginated, list, deleted, clear, loadItems } from './custom_list/items/ListItemsAPI'
 //import { create, update, show, all, paginated, list, modules, types } from './modifiers/ModifierApi'
 //import { create, all, paginated, list, show, changeStatus, update } from './campaing/CampaingApi'
 import { UserInit } from '@/interfaces/user'
-import { adPositions } from '@/api/inventory/InventoryApi'
+//import { adPositions } from '@/api/inventory/InventoryApi'
 //import { domainList } from '@/api/domain/DomainApi'
 //import { creativeSize } from '@/api/ad_size/AdSizeApi'
 //import { countries, lat_long, regions } from '@/api/geo/GeoApi'
@@ -21,6 +21,8 @@ import { adPositions } from '@/api/inventory/InventoryApi'
 //import { list } from './strategies/OptimizationApi'
 //import { list } from './strategies/StrategyApi'
 //import { list } from './pacing/PacingApi'
+//import { list } from '@/api/bid/ShadingApi'
+import { list } from '@/api/bid/StrategyApi'
 
 /* -------- BEGIN AUTH -------- */
 const test_login = {
@@ -56,7 +58,8 @@ const test_profile = {
       resolve(token)
     }).then(async value => {
       const data_profile = await profile(value)
-      return data_profile
+      console.log('PROFILE',data_profile)
+      return data_profile;
     }).catch(error => {
       console.log('EXCEPTION: ', error)
       return null
@@ -537,22 +540,50 @@ const test_get_custom_list = {
 /* -------- END CUSTOM LIST -------- */
 
 /* -------- BEGIN LIST ITEM -------- */
-/*const test_list_item_create = {
+/*const test_list_item_loadItems = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
       resolve(token)
     }).then(async value => {
-      // const data_list_item = await create({custom_list_id: 44, list_item: 'ttx/list_item_6', name: 'name_app_id'}, 'app_id', value)
-      const data_list_item = await create({
-        custom_list_id: 386,
-        list_item: {
-          'lat': -29.4169856,
-          'long': -59.9623159,
-          'radius_km': 0.5
+      const items = [
+        {
+          id: null,
+          custom_list_id: 42,
+          list_item: 'app_bundle_5',
+          name: 'app_bundle_5',
+          value: 5
         },
-        name: 'name_lat_long'
-      }, 'lat_long', value)
+        {
+          id: null,
+          custom_list_id: 42,
+          list_item: 'app_bundle_6',
+          name: 'app_bundle_6',
+          value: 6
+        }
+      ]
+
+      const data_list_item = await loadItems(items, 'app_bundle', value)
+
+      console.log('CUSTOM LIST LOAD', data_list_item)
+
+      return data_list_item
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_list_item_create = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_list_item = await create({custom_list_id: 44, list_item: 'ttx/list_item_6', name: 'name_app_id'}, 'app_id', value)
+      //const data_list_item = await create({custom_list_id: 42,list_item: 'app_bundle_create',name: 'app_bundle_create',value: 7}, 'app_bundle', value)
+      //const data_list_item = await create({custom_list_id: 386,list_item: {'lat': -29.4169856,'long': -59.9623159,'radius_km': 0.5},name: 'name_lat_long'}, 'lat_long', value)
 
       console.log('CUSTOM LIST', data_list_item)
 
@@ -1128,7 +1159,7 @@ const test_change_status_campaing = {
 /* -------- END DOMAIN -------- */
 
 /* -------- BEGIN INVENTORY -------- */
-const test_inventory = {
+/*const test_inventory = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
@@ -1144,7 +1175,45 @@ const test_inventory = {
       return null
     })
   }
-}
+}*/
 /* -------- END INVENTORY -------- */
 
-export default test_inventory
+/* -------- BEGIN BID -------- */
+const test_bid_shading = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_shading = await list(value)
+
+      console.log('SHADING', data_shading)
+
+      return data_shading
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_bid_strategy = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_strategy = await list(value)
+
+      console.log('BID STRATEGY', data_strategy)
+
+      return data_strategy
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+/* -------- END BID -------- */
+
+export default test_profile
