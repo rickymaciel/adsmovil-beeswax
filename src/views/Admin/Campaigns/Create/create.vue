@@ -18,7 +18,7 @@
 							v-if="currentTabSelected(item, 'Overview')"
 							column
 						>
-							<v-card
+							<!-- <v-card
 								v-if="hasErrors"
 								class="mt-2"
 								color="secondary"
@@ -26,7 +26,7 @@
 								<v-card-text class="white--text">
 									Errores: {{ getErrors }}
 								</v-card-text>
-							</v-card>
+							</v-card> -->
 
 							<Overview
 								:account="getAccount"

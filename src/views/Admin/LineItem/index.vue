@@ -1,22 +1,22 @@
 <template>
-	<v-layout class="d-block ma-0 pa-0">
-		<v-layout class="white d-block ma-0 pa-0">
-			<LineItemHeader></LineItemHeader>
+	<v-layout class="d-block">
+		<v-layout class="white">
+			<Header></Header>
 		</v-layout>
-		<v-layout class="d-block ma-0 pa-0 pt-lg-4">
+		<v-layout class="grey lighten-3">
 			<router-view></router-view>
 		</v-layout>
 	</v-layout>
 </template>
 
 <script lang="ts">
-	import LineItemHeader from "./LineItemHeader.vue";
+	import Header from "../Commons/Header.vue";
 	import Vue from "vue";
 
 	export default Vue.extend({
 		name: "LineItems",
 		props: {},
-		components: { LineItemHeader },
+		components: { Header },
 		data: () => ({}),
 		created() {},
 		async mounted() {},
