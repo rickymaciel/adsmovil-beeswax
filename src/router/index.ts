@@ -232,7 +232,7 @@ const routes: Array<RouteConfig> = [
                 component: () => import('@/views/Admin/Campaigns/index.vue'),
                 meta: {
                     requiresAuth: true,
-                    breadcrumb: "Campaigns list"
+                    breadcrumb: "Campaigns"
                 },
                 children: [
                     {
@@ -279,7 +279,7 @@ const routes: Array<RouteConfig> = [
                 component: () => import('@/views/Admin/LineItem/index.vue'),
                 meta: {
                     requiresAuth: true,
-                    breadcrumb: "Line Item List"
+                    breadcrumb: "Line Item"
                 },
                 children: [
                     {
@@ -308,7 +308,7 @@ const routes: Array<RouteConfig> = [
                 component: () => import('@/views/Admin/Creatives/index.vue'),
                 meta: {
                     requiresAuth: true,
-                    breadcrumb: "Creatives list"
+                    breadcrumb: "Creatives"
                 },
                 children: [
                     {

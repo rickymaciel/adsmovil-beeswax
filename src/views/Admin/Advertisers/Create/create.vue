@@ -83,13 +83,13 @@
 											placeholder="Advertiser Domain"
 											label="Advertiser Domain*"
 											class="label-fixed"
-											prefix="https://"
-											append-outer-icon="mdi-help-circle-outline"
 											@click:append-outer="
 												toggleTooltipDomain()
 											"
 										></v-text-field>
 									</template>
+									<!-- prefix="https://"
+											append-outer-icon="mdi-help-circle-outline" -->
 									<span>
 										The advertiser’s primary domain. This is
 										recuerde by many exchanges
