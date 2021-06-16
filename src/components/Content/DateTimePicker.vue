@@ -218,19 +218,11 @@
 				this.$emit("close-time");
 			},
 			onSelectedDate(model_date: string, date: any) {
-				console.log("DateTimePicker::onSelectedDate", {
-					model_date: model_date,
-					date: date,
-				});
 				(this as any).$emit("selected-date", date);
 				(this as any).$refs[model_date].save(date);
 				(this as any).onSelectedTime((this as any).model_time, "00:00:00");
 			},
 			onSelectedTime(model_time: string, time: any) {
-				console.log("DateTimePicker::onSelectedTime", {
-					model_time: model_time,
-					time: time,
-				});
 				(this as any).$emit("selected-time", {
 					model_time: model_time,
 					time: time,
