@@ -3,6 +3,7 @@
 		:headers="prepareTableHeaders"
 		:items="prepareTableContent"
 		:title="title"
+		:customList="customList"
 	></TableListModelOne>
 </template>
 
@@ -18,58 +19,34 @@
 	export interface ListItemModelOne {
 		id?: number;
 		value?: string;
-		items?: [];
+		list_item?: string;
 		name?: string;
-		actions?: [];
+		success?: boolean;// representa un estado que indicará si hay o no errores
+		status?: boolean,
+		message?: string,
+		errors?: any[],
+		actions?: any[];
 	}
 
 	export default Vue.extend({
 		name: "ModelOne",
-		props: {},
+		props: {
+			customList: {
+				type: Object,
+				default: {},
+			},
+			items: {
+				type: Array,
+				default: [],
+			},
+		},
 		components: { TableListModelOne },
 		data: () => ({
 			title: "Table List Model One",
 		}),
 		created() {},
-		async mounted() {
-			const result = [];
-		},
+		async mounted() {},
 		computed: {
-			getData() {
-				return [
-					{
-						id: 1,
-						items: ["asd", "1234"],
-						value: "Value 1",
-						name: "Item List 1",
-					},
-					{
-						id: 2,
-						items: ["fgh", "3458"],
-						value: "Value 2",
-						name: "Item List 2",
-					},
-					{
-						id: 3,
-						items: ["skl", "9023"],
-						value: "Value 3",
-						name: "Item List 3",
-					},
-				];
-			},
-			getLists(): ListItemModelOne[] {
-				/*const result: ResultPaginate = this.getData;
-						if (
-							isUndefined(result) ||
-							isNull(result) ||
-							isUndefined(result?.data) ||
-							isNull(result?.data)
-						) {
-							return [];
-						}
-						return result.data;*/
-				return this.getData;
-			},
 			prepareTableHeaders() {
 				return [
 					{
@@ -84,7 +61,7 @@
 						align: "start",
 						sortable: false,
 						filterable: true,
-						value: "items",
+						value: "list_item",
 					},
 					{
 						text: "Value",
@@ -110,17 +87,18 @@
 				];
 			},
 			prepareTableContent() {
-				const lists = this.getLists;
+				const entities = this.items;
+				if (isUndefined(entities) || isNull(entities)) return [];
 
-				if (isUndefined(lists) || isNull(lists)) return [];
-
-				return lists.map((item: ListItemModelOne) => {
+				return entities.map((item: any) => {
 					return {
 						id: item?.id,
-						items: item?.items,
+						list_item: item?.list_item,
 						value: item?.value,
 						name: item?.name,
 						actions: item?.actions,
+						active: item?.active,
+						status: true,
 					};
 				});
 			},

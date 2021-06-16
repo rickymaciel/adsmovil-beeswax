@@ -5,12 +5,15 @@ import { account, forgot, initialize, login, logout, permissions, profile, reset
 //import { create, update, changeStatus, all, paginated, list, deleted, clear, loadItems } from './custom_list/items/ListItemsAPI'
 //import { create, update, show, all, paginated, list, modules, types } from './modifiers/ModifierApi'
 //import { create, all, paginated, list, show, changeStatus, update } from './campaing/CampaingApi'
+import { all, changeStatus, create, list, paginated, show, update } from './line_items/LineItemsApi'
 import { UserInit } from '@/interfaces/user'
 //import { adPositions } from '@/api/inventory/InventoryApi'
 //import { domainList } from '@/api/domain/DomainApi'
 //import { creativeSize } from '@/api/ad_size/AdSizeApi'
 //import { countries, lat_long, regions } from '@/api/geo/GeoApi'
-//import { CampaingDataCreate, CampaingDataUpdate, FrecuencyCapsDataCreate } from '../interfaces/campaing'
+//import { CampaingDataCreate, CampaingDataUpdate } from '@/interfaces/campaing'
+import { FrecuencyCaps, FrecuencyCapsDataCreate } from '@/interfaces/frecuency_caps'
+import { LineItemDataCreate, LineItemDataUpdate } from '@/interfaces/line_item'
 //import { list } from './timezone/timezoneAPI'
 //import { list } from './currency/CurrencyAPI'
 //import { list } from './custom_list/ExchangesAPI'
@@ -20,9 +23,11 @@ import { UserInit } from '@/interfaces/user'
 //import { list } from './kpi/KpiCampaingApi'
 //import { list } from './strategies/OptimizationApi'
 //import { list } from './strategies/StrategyApi'
-//import { list } from './pacing/PacingApi'
+//import { pacingCampaing, pacingLine } from './pacing/PacingApi'
 //import { list } from '@/api/bid/ShadingApi'
-import { list } from '@/api/bid/StrategyApi'
+//import { list } from '@/api/bid/StrategyApi'
+//import { list } from '@/api/line_items/TypeApi'
+//import { list } from '@/api/creatives/MethodApi'
 
 /* -------- BEGIN AUTH -------- */
 const test_login = {
@@ -58,8 +63,8 @@ const test_profile = {
       resolve(token)
     }).then(async value => {
       const data_profile = await profile(value)
-      console.log('PROFILE',data_profile)
-      return data_profile;
+      console.log('PROFILE', data_profile)
+      return data_profile
     }).catch(error => {
       console.log('EXCEPTION: ', error)
       return null
@@ -941,15 +946,34 @@ const test_matching = {
 /* -------- END STRATEGIES -------- */
 
 /* -------- BEGIN PACING -------- */
-/*const test_pacing = {
+/*const test_pacing_campain = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      console.log('TOKEN',token)
+      resolve(token)
+    }).then(async value => {
+      const data_pacing = await pacingCampaing(value)
+
+      console.log('PACING CAMPAIN', data_pacing)
+
+      return data_pacing
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_pacing_line = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
       resolve(token)
     }).then(async value => {
-      const data_pacing = await list(value)
+      const data_pacing = await pacingLine(value)
 
-      console.log('PACING', data_pacing)
+      console.log('PACING LINE', data_pacing)
 
       return data_pacing
     }).catch(error => {
@@ -1179,7 +1203,7 @@ const test_change_status_campaing = {
 /* -------- END INVENTORY -------- */
 
 /* -------- BEGIN BID -------- */
-const test_bid_shading = {
+/*const test_bid_shading = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
@@ -1213,7 +1237,168 @@ const test_bid_strategy = {
       return null
     })
   }
-}
+}*/
 /* -------- END BID -------- */
 
-export default test_profile
+/* -------- BEGIN LINE ITEMS -------- */
+/*const test_line_items_type = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_line = await list(value)
+
+      console.log('LINE ITEM TYPES', data_line)
+
+      return data_line
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}*/
+
+const test_line_items_create = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const fc = {
+        impressions: 26,
+        every_time: 4,
+        unit_time_id: 5
+      } as FrecuencyCapsDataCreate
+
+      const line = {
+        advertiser_id: 44,
+        campaign_id: 38,
+        name: 'Line Item Test',
+        budget: 59.59,
+        daily_budget: 59,
+        start_date: '2021-06-24 08:00:00',
+        end_date: '2021-06-28 08:30:00',
+        active: false,
+        alternative_id: '',
+        bid_strategy_id: 25,
+        strategy_id: 9,
+        line_pacing_id: 12,
+        line_item_type_id: 22,
+        bid_shading_id: 19,
+        creative_method_id: 26,
+        fix_cpm: 22.1,
+        cpm_bid: 1.5,
+        target_ecpc: 51.2,
+        target_ctr: 0.1,
+        target_vcr: 0.3,
+        frequency_caps: [fc]
+      } as LineItemDataCreate
+
+      const data_line = await create(line, value)
+
+      console.log('LINE ITEM CREATE', data_line)
+
+      return data_line
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_line_items_update = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const fc = {
+        impressions: 26,
+        every_time: 4,
+        unit_time_id: 5
+      } as FrecuencyCapsDataCreate
+
+      const line = {
+        id: 1,
+        name: 'Line Item Test',
+        start_date: '2021-06-16 08:00:00',
+        end_date: '2021-06-30 20:00:00',
+        active: false,
+        alternative_id: '1990',
+        frequency_caps: [fc]
+      } as LineItemDataUpdate
+
+      const data_line = await update(line, value)
+
+      console.log('LINE ITEM UPDATE', data_line)
+
+      return data_line
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_get_line_items = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      // const data_line_items = await all(value, {}, { sort: 'name', order: 'asc' })
+      // const data_line_items = await paginated(value, { page: 1, limit: 15 }, { name: 'test' }, { sort: 'name', order: 'asc' })
+      // const data_line_items = await list(value, {}, { sort: 'name', order: 'asc' })
+      const data_line_items = await show(1, value)
+
+      console.log('LINE ITEMS', data_line_items)
+
+      return data_line_items
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_change_status_line_items = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const change = await changeStatus(6, false, value)
+
+      console.log('CHANGE STATUS', change)
+
+      return change
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+/* -------- END LINE ITEMS -------- */
+
+/* -------- BEGIN CREATIVES -------- */
+/*const test_creative_method = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_creative = await list(value)
+
+      console.log('CREATIVE METHOD', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}*/
+/* -------- END CREATIVES -------- */
+
+export default test_get_line_items

@@ -3,6 +3,7 @@
 		:headers="prepareTableHeaders"
 		:items="prepareTableContent"
 		:title="title"
+		:customList="customList"
 	></TableListModelTwo>
 </template>
 
@@ -27,48 +28,27 @@
 
 	export default Vue.extend({
 		name: "ModelTwo",
-		props: {},
+		props: {
+			customList: {
+				type: Object,
+				default: {},
+			},
+			items: {
+				type: Array,
+				default: [],
+			},
+		},
 		components: { TableListModelTwo },
 		data: () => ({
 			title: "Table List Model Two",
 		}),
 		created() {},
-		async mounted() {
-			const result = [];
-		},
+		async mounted() {},
 		computed: {
 			getData() {
-				return [
-					{
-						id: 1,
-						latitude: "12.345",
-						longitude: "54.321",
-						radius: "0.5",
-						value: "Value 1",
-						name: "Item List 1",
-						actions: ["create", "edit", "delete"],
-					},
-					{
-						id: 2,
-						latitude: "12.345",
-						longitude: "54.321",
-						radius: "0.5",
-						value: "Value 2",
-						name: "Item List 2",
-						actions: ["create", "edit", "delete"],
-					},
-					{
-						id: 3,
-						latitude: "12.345",
-						longitude: "54.321",
-						radius: "0.5",
-						value: "Value 3",
-						name: "Item List 3",
-						actions: ["create", "edit", "delete"],
-					},
-				];
+				this.items;
 			},
-			getLists(): ListItemModelTwo[] {
+			getLists(): any[] {
 				/*const result: ResultPaginate = this.getData;
 					if (
 						isUndefined(result) ||
@@ -135,21 +115,27 @@
 				];
 			},
 			prepareTableContent() {
-				const lists = this.getLists;
-
-				if (isUndefined(lists) || isNull(lists)) return [];
-
-				return lists.map((item: ListItemModelTwo) => {
-					return {
-						id: item?.id,
-						latitude: item?.latitude,
-						longitude: item?.longitude,
-						radius: item?.radius,
-						value: item?.value,
-						name: item?.name,
-						actions: item?.actions,
-					};
+				const entities = this.items;
+				
+				if (isUndefined(entities) || isNull(entities)) return [];
+				
+				let result = entities.map((item: any) => {
+					if( item?.list_item?.lat !== undefined && item?.list_item?.long !== undefined ){
+						return {
+							id: item?.id,
+							latitude: item?.list_item?.lat,
+							longitude: item?.list_item?.long,
+							radius: item?.list_item?.radius_km,
+							value: item?.value,
+							name: item?.name,
+							actions: [],
+							active: item?.active,
+							status: true,
+						};
+					}
 				});
+				
+				return result.filter(e => {return e !== undefined});
 			},
 		},
 		methods: {},

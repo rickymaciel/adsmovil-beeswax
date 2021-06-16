@@ -1,5 +1,7 @@
-import { AxiosPost, AxiosGet, AxiosPatch } from '@/api/AxiosService'
 import { forEach, isEmpty, isUndefined, replace } from 'lodash'
+import { success, error } from '@/api/handlers/HandlerResponse'
+import { GetMessage, GetErrors } from '@/api/handlers/HandlerError'
+import { AxiosPost, AxiosGet, AxiosPatch } from '@/api/AxiosService'
 import {
   Advertiser,
   AdvertiserDataCreate,
@@ -17,56 +19,60 @@ export async function create (advertiser: AdvertiserDataCreate, token: string) {
   try {
     const response = await AxiosPost(ROUTES.ADVERTISER_ROUTE, advertiser, token)
 
-    if (!isEmpty(response) && !isUndefined(response.id)) {
-      return {
-        id: response.id,
-        external_id: response.external_id,
-        account_id: response.account_id,
-        name: response.name,
-        domain: response.domain,
-        app_bundle: response.app_bundle,
-        active: response.active,
+    if (response.success) {
+      let data = response.content
+
+      let advertiser = {
+        id: data.id,
+        external_id: data.external_id,
+        account_id: data.account_id,
+        name: data.name,
+        domain: data.domain,
+        app_bundle: data.app_bundle,
+        active: data.active,
         created_by: {
-          id: response.created_by.id,
-          first_name: response.created_by.name,
-          last_name: response.created_by.last_name,
-          email: response.created_by.email
+          id: data.created_by.id,
+          first_name: data.created_by.name,
+          last_name: data.created_by.last_name,
+          email: data.created_by.email
         },
         updated_by: {
-          id: response.updated_by.id,
-          first_name: response.updated_by.name,
-          last_name: response.updated_by.last_name,
-          email: response.updated_by.email
+          id: data.updated_by.id,
+          first_name: data.updated_by.name,
+          last_name: data.updated_by.last_name,
+          email: data.updated_by.email
         },
         deleted_by: {
-          id: (isEmpty(response.deleted_by)) ? null : response.deleted_by.id,
-          first_name: (isEmpty(response.deleted_by)) ? null : response.deleted_by.name,
-          last_name: (isEmpty(response.deleted_by)) ? null : response.deleted_by.last_name,
-          email: (isEmpty(response.deleted_by)) ? null : response.deleted_by.email
+          id: (isEmpty(data.deleted_by)) ? null : data.deleted_by.id,
+          first_name: (isEmpty(data.deleted_by)) ? null : data.deleted_by.name,
+          last_name: (isEmpty(data.deleted_by)) ? null : data.deleted_by.last_name,
+          email: (isEmpty(data.deleted_by)) ? null : data.deleted_by.email
         },
-        created_at: response.created_at,
-        updated_at: response.updated_at,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
         category: {
-          id: response.category.id,
-          key: response.category.key,
-          name: response.category.name
+          id: data.category.id,
+          key: data.category.key,
+          name: data.category.name
         },
         currency: {
-          id: response.currency.id,
-          key: response.currency.key,
-          name: response.currency.name,
-          glyph: response.currency.glyph,
-          emoji_flag: response.currency.emoji_flag
+          id: data.currency.id,
+          key: data.currency.key,
+          name: data.currency.name,
+          glyph: data.currency.glyph,
+          emoji_flag: data.currency.emoji_flag
         }
       } as Advertiser
+
+      return success('', advertiser)
     }
 
     console.log('ERROR: ', response)
 
-    return null
-  } catch (error) {
-    console.log('EXCEPTION: ', error)
-    return null
+    return error(response.message, response.errors)
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
+    return error(GetMessage(err), GetErrors(err))
   }
 }
 
@@ -74,56 +80,60 @@ export async function update (advertiser: AdvertiserDataUpdate, token: string) {
   try {
     const response = await AxiosPatch(ROUTES.ADVERTISER_ROUTE + '/' + advertiser.id, advertiser, token)
 
-    if (!isEmpty(response) && !isUndefined(response.id)) {
-      return {
-        id: response.id,
-        external_id: response.external_id,
-        account_id: response.account_id,
-        name: response.name,
-        domain: response.domain,
-        app_bundle: response.app_bundle,
-        active: response.active,
+    if (response.success) {
+      let data = response.content
+
+      let advertiser = {
+        id: data.id,
+        external_id: data.external_id,
+        account_id: data.account_id,
+        name: data.name,
+        domain: data.domain,
+        app_bundle: data.app_bundle,
+        active: data.active,
         created_by: {
-          id: response.created_by.id,
-          first_name: response.created_by.name,
-          last_name: response.created_by.last_name,
-          email: response.created_by.email
+          id: data.created_by.id,
+          first_name: data.created_by.name,
+          last_name: data.created_by.last_name,
+          email: data.created_by.email
         },
         updated_by: {
-          id: response.updated_by.id,
-          first_name: response.updated_by.name,
-          last_name: response.updated_by.last_name,
-          email: response.updated_by.email
+          id: data.updated_by.id,
+          first_name: data.updated_by.name,
+          last_name: data.updated_by.last_name,
+          email: data.updated_by.email
         },
         deleted_by: {
-          id: (isEmpty(response.deleted_by)) ? null : response.deleted_by.id,
-          first_name: (isEmpty(response.deleted_by)) ? null : response.deleted_by.name,
-          last_name: (isEmpty(response.deleted_by)) ? null : response.deleted_by.last_name,
-          email: (isEmpty(response.deleted_by)) ? null : response.deleted_by.email
+          id: (isEmpty(data.deleted_by)) ? null : data.deleted_by.id,
+          first_name: (isEmpty(data.deleted_by)) ? null : data.deleted_by.name,
+          last_name: (isEmpty(data.deleted_by)) ? null : data.deleted_by.last_name,
+          email: (isEmpty(data.deleted_by)) ? null : data.deleted_by.email
         },
-        created_at: response.created_at,
-        updated_at: response.updated_at,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
         category: {
-          id: response.category.id,
-          key: response.category.key,
-          name: response.category.name
+          id: data.category.id,
+          key: data.category.key,
+          name: data.category.name
         },
         currency: {
-          id: response.currency.id,
-          key: response.currency.key,
-          name: response.currency.name,
-          glyph: response.currency.glyph,
-          emoji_flag: response.currency.emoji_flag
+          id: data.currency.id,
+          key: data.currency.key,
+          name: data.currency.name,
+          glyph: data.currency.glyph,
+          emoji_flag: data.currency.emoji_flag
         }
       } as Advertiser
+
+      return success('', advertiser)
     }
 
-    console.log('ERROR: ', response.message)
+    console.log('ERROR: ', response)
 
-    return null
-  } catch (error) {
-    console.log('EXCEPTION: ', error)
-    return null
+    return error(response.message, response.errors)
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
+    return error(GetMessage(err), GetErrors(err))
   }
 }
 
@@ -132,15 +142,15 @@ export async function changeStatus (id: number, status: boolean, token: string) 
     const active = status ? 1 : 0
     const response = await AxiosPatch(ROUTES.ADVERTISER_ROUTE + '/' + id + '/set/' + active, {}, token)
 
-    if (!isEmpty(response) && !isUndefined(response.id)) {
+    if (response.success) {
       return true
     }
 
     console.log('ERROR: ', response.message)
 
     return false
-  } catch (error) {
-    console.log('EXCEPTION: ', error)
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
     return false
   }
 }
@@ -149,56 +159,60 @@ export async function show (id: number, token: string) {
   try {
     const response = await AxiosGet(ROUTES.ADVERTISER_ROUTE + '/' + id, token)
 
-    if (!isEmpty(response) && !isUndefined(response.id)) {
-      return {
-        id: response.id,
-        external_id: response.external_id,
-        account_id: response.account_id,
-        name: response.name,
-        domain: response.domain,
-        app_bundle: response.app_bundle,
-        active: response.active,
+    if (response.success) {
+      let data = response.content
+
+      let advertiser = {
+        id: data.id,
+        external_id: data.external_id,
+        account_id: data.account_id,
+        name: data.name,
+        domain: data.domain,
+        app_bundle: data.app_bundle,
+        active: data.active,
         created_by: {
-          id: response.created_by.id,
-          first_name: response.created_by.name,
-          last_name: response.created_by.last_name,
-          email: response.created_by.email
+          id: data.created_by.id,
+          first_name: data.created_by.name,
+          last_name: data.created_by.last_name,
+          email: data.created_by.email
         },
         updated_by: {
-          id: response.updated_by.id,
-          first_name: response.updated_by.name,
-          last_name: response.updated_by.last_name,
-          email: response.updated_by.email
+          id: data.updated_by.id,
+          first_name: data.updated_by.name,
+          last_name: data.updated_by.last_name,
+          email: data.updated_by.email
         },
         deleted_by: {
-          id: (isEmpty(response.deleted_by)) ? null : response.deleted_by.id,
-          first_name: (isEmpty(response.deleted_by)) ? null : response.deleted_by.name,
-          last_name: (isEmpty(response.deleted_by)) ? null : response.deleted_by.last_name,
-          email: (isEmpty(response.deleted_by)) ? null : response.deleted_by.email
+          id: (isEmpty(data.deleted_by)) ? null : data.deleted_by.id,
+          first_name: (isEmpty(data.deleted_by)) ? null : data.deleted_by.name,
+          last_name: (isEmpty(data.deleted_by)) ? null : data.deleted_by.last_name,
+          email: (isEmpty(data.deleted_by)) ? null : data.deleted_by.email
         },
-        created_at: response.created_at,
-        updated_at: response.updated_at,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
         category: {
-          id: response.category.id,
-          key: response.category.key,
-          name: response.category.name
+          id: data.category.id,
+          key: data.category.key,
+          name: data.category.name
         },
         currency: {
-          id: response.currency.id,
-          key: response.currency.key,
-          name: response.currency.name,
-          glyph: response.currency.glyph,
-          emoji_flag: response.currency.emoji_flag
+          id: data.currency.id,
+          key: data.currency.key,
+          name: data.currency.name,
+          glyph: data.currency.glyph,
+          emoji_flag: data.currency.emoji_flag
         }
       } as Advertiser
+
+      return success('', advertiser)
     }
 
-    console.log('ERROR: ', response.message)
+    console.log('ERROR: ', response)
 
-    return null
-  } catch (error) {
-    console.log('EXCEPTION: ', error)
-    return null
+    return error(response.message, response.errors)
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
+    return error(GetMessage(err), GetErrors(err))
   }
 }
 
@@ -220,8 +234,10 @@ export async function all (token: string, filters?: AdvertiserFilters, options?:
 
     const advertisers = [] as any
 
-    if (!isEmpty(response) && response.length > 0) {
-      forEach(response, function (value, key) {
+    if (response.success) {
+      let data = response.content
+
+      forEach(data, function (value, key) {
           const advertiser = {
             id: value.id,
             external_id: value.external_id,
@@ -268,15 +284,15 @@ export async function all (token: string, filters?: AdvertiserFilters, options?:
         }
       )
 
-      return advertisers
+      return success('', advertisers)
     }
 
-    console.log('ERROR: ', response.message)
+    console.log('ERROR: ', response)
 
-    return null
-  } catch (error) {
-    console.log('EXCEPTION: ', error)
-    return null
+    return error(response.message, response.errors)
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
+    return error(GetMessage(err), GetErrors(err))
   }
 }
 
@@ -298,8 +314,10 @@ export async function paginated (token: string, paginated: AdvertiserPaginated, 
 
     const advertisers = [] as any
 
-    if (!isEmpty(response) && !isUndefined(response.data) && response.data.length > 0) {
-      forEach(response.data, function (value, key) {
+    if (response.success) {
+      let data = response.content.data
+
+      forEach(data, function (value, key) {
         const advertiser = {
           id: value.id,
           external_id: value.external_id,
@@ -345,18 +363,18 @@ export async function paginated (token: string, paginated: AdvertiserPaginated, 
         advertisers.push(advertiser)
       })
 
-      return {
+      return success('', {
         page: paginated.page,
         advertisers
-      }
+      })
     }
 
-    console.log('ERROR: ', response.message)
+    console.log('ERROR: ', response)
 
-    return null
-  } catch (error) {
-    console.log('EXCEPTION: ', error)
-    return null
+    return error(response.message, response.errors)
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
+    return error(GetMessage(err), GetErrors(err))
   }
 }
 
@@ -378,8 +396,10 @@ export async function list (token: string, filters?: AdvertiserFilters, options?
 
     const list = [] as any
 
-    if (!isEmpty(response)) {
-      forEach(response, function (value, key) {
+    if (response.success) {
+      let data = response.content
+
+      forEach(data, function (value, key) {
         const item = {
           id: parseInt(key),
           value: value
@@ -388,15 +408,15 @@ export async function list (token: string, filters?: AdvertiserFilters, options?
         list.push(item)
       })
 
-      return list
+      return success('', list)
     }
 
-    console.log('ERROR: ', response.message)
+    console.log('ERROR: ', response)
 
-    return null
-  } catch (error) {
-    console.log('EXCEPTION: ', error)
-    return null
+    return error(response.message, response.errors)
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
+    return error(GetMessage(err), GetErrors(err))
   }
 }
 
@@ -406,8 +426,10 @@ export async function categories (token: string) {
 
     const categories = [] as any
 
-    if (!isEmpty(response) && response.length > 0) {
-      forEach(response, function (value, key) {
+    if (response.success) {
+      let data = response.content
+
+      forEach(data, function (value, key) {
         const category = {
           id: value.id,
           name: value.name
@@ -416,13 +438,15 @@ export async function categories (token: string) {
         categories.push(category)
       })
 
-      return categories
+      return success('', categories)
     }
 
-    return null
-  } catch (error) {
-    console.log('EXCEPTION: ', error)
-    return null
+    console.log('ERROR: ', response)
+
+    return error(response.message, response.errors)
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
+    return error(GetMessage(err), GetErrors(err))
   }
 }
 

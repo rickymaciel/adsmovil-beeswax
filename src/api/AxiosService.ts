@@ -30,7 +30,7 @@ export function AxiosPost(url: string, payload: any, token: string) {
     }).then(function (response) {
         console.log('POST AxiosPost', response)
         if (response.data.success) {
-            //   return success('', response.data.response)
+              // return success('', response.data.response)
             return response.data.response
         }
 
@@ -70,7 +70,7 @@ export function AxiosPatch(url: string, payload: any, token: string) {
     }).then(function (response) {
         console.log('PATCH AxiosPatch', response)
         if (response.data.success) {
-            //   return success('', response.data.response)
+              // return success('', response.data.response)
             return response.data.response
         }
 
@@ -90,7 +90,7 @@ export function AxiosPut(url: string, payload: any, token: string) {
     }).then(function (response) {
         console.log('PUT AxiosPUT', response)
         if (response.data.success) {
-            //   return success('', response.data.response)
+              // return success('', response.data.response)
             return response.data.response
         }
 
@@ -110,7 +110,7 @@ export function AxiosDelete(url: string, token: string) {
     }).then(function (response) {
         console.log('DELETE AxiosDelete', response)
         if (response.data.success) {
-            //   return success('', response.data.response)
+              // return success('', response.data.response)
             return response.data.response
         }
 

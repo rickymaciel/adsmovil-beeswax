@@ -13,6 +13,7 @@ import AccountService from '@/services/account-service'
 import UserService from '@/services/user-service'
 import CampaignService from '@/services/campaign-service'
 import ModifierService from '@/services/modifier-service'
+import CustomListExchangeService from '@/services/custom-list-exchange-service'
 
 import { Credential } from '@/interfaces/credential'
 import { Advertiser, AdvertiserDataCreate, AdvertiserDataUpdate, AdvertiserFilters, AdvertiserList, AdvertiserOptions, Category, ResultPaginate } from '@/interfaces/advertiser'
@@ -24,7 +25,9 @@ import { resolveList } from '../utils/resolveObjectArray'
 import { Campaign, CampaignDataCreate } from '@/interfaces/campaign'
 import { Modifier, ModifierList, ModifierFilters, ModifierOptions, ModifierDataCreate, ModifierDataUpdate } from '@/interfaces/modifier'
 import notificationService from '@/services/notification-service'
-import { AxiosError } from 'axios';
+import { ListItemDataCreate, ListItemDataUpdate, ListItemFilters, ListItemOptions } from '@/interfaces/list_items'
+import { AxiosError } from 'axios'
+
 /**
  * Hard Code Account
  */
@@ -509,13 +512,214 @@ export default new Vuex.Store({
         },
         listItem: {
             namespaced: true,
+            state: () => ({
+                item: {} as any,
+                items: [] as any[],
+                entities: [] as any[],
+            }),
+            mutations: {
+                SET_ITEM(state, _item: any = {} as any) {
+                    state.item = _item;
+                },
+                SET_ITEM_LIST(state, _items_list: [] = []) {
+                    state.items = _items_list;
+                },
+                SET_ALL_ENTITIES(state, _entities: [] = []) {
+                    state.entities = _entities;
+                },
+            },
+            getters: {},
             actions: {
                 async uploadFile({ commit }, upload: any) {
                     try {
                         const response = await ListItemService.upload(upload)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error, { to: "AdvertisersIndex" });
+                        CatcherError(this.dispatch, error, { to: "" });
+                        return await Promise.reject(error)
+                    }
+                },
+                
+                async create({ commit }, params: {listItem: any, customListType: string}) {
+                //dejamos de usar el parametro customListType por sugerencia de Ricki
+                //async create({ commit }, entity: ListItemDataCreate) {
+                    try {
+                        const response = await ListItemService.create(params?.listItem, params?.customListType);
+                        commit('SET_ITEM', response);
+                        /*CreateNotification(
+                            this.dispatch,
+                            {
+                                type: MessageTypes.SUCCESS,
+                                title: i18n.t('title-success'),
+                                message: i18n.t('success'),
+                                btn_text: i18n.t('continue'),
+                                to: ""
+                            } as Notification
+                        );*/
+                        return Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error, { to: "" });
+                        return Promise.reject(error)
+                    }
+                },
+
+                async update({ commit }, params: {listItem: any, customListType: string}) {
+                //dejamos de usar el parametro customListType por sugerencia de Ricki
+                //async update({ commit }, entity: ListItemDataUpdate) {
+                    try {
+                        const response = await ListItemService.update(params?.listItem, params?.customListType);
+                        commit('SET_ITEM', response);
+                        /*CreateNotification(
+                            this.dispatch,
+                            {
+                                type: MessageTypes.SUCCESS,
+                                title: i18n.t('title-success'),
+                                message: i18n.t('success'),
+                                btn_text: i18n.t('continue'),
+                                to: ""
+                            } as Notification
+                        );*/
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error, { to: "" });
+                        return await Promise.reject(error)
+                    }
+                },
+
+                async show({ commit }, id: number) {
+                    try {
+                        const response = await ListItemService.show(id);
+                        commit('SET_ITEM', response);
+                        CreateNotification(
+                            this.dispatch,
+                            {
+                                type: MessageTypes.SUCCESS,
+                                title: i18n.t('title-success'),
+                                message: i18n.t('success'),
+                                btn_text: i18n.t('continue'),
+                                to: ""
+                            } as Notification
+                        );
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        commit('SET_ITEM');
+                        CatcherError(this.dispatch, error, { to: "" });
+                        return await Promise.reject(error)
+                    }
+                },
+
+                async delete({ commit }, id: number) {
+                    try {
+                        /*const response = await ListItemService.delete(id);*/
+                        commit('SET_ITEM');
+                        CreateNotification(
+                            this.dispatch,
+                            {
+                                type: MessageTypes.SUCCESS,
+                                title: i18n.t('title-success'),
+                                message: i18n.t('not-implemented-yet'),
+                                btn_text: i18n.t('continue'),
+                                to: ""
+                            } as Notification
+                        );
+                        /*return await Promise.resolve(response)*/
+                        return await Promise.resolve({success: true, id: id});
+                    } catch (error) {
+                        commit('SET_ITEM');
+                        CatcherError(this.dispatch, error, { to: "" });
+                        return await Promise.reject(error)
+                    }
+                },
+
+                async list({ commit }, payload: { filters: ListItemFilters, options: ListItemOptions }) {
+                    try {
+                        const response = await ListItemService.list(payload.filters, payload.options);
+                        commit('SET_ITEM_LIST', resolveList(response));
+                        CreateNotification(
+                            this.dispatch,
+                            {
+                                type: MessageTypes.SUCCESS,
+                                title: i18n.t('title-success'),
+                                message: i18n.t('success'),
+                                btn_text: i18n.t('continue'),
+                                to: ""
+                            } as Notification
+                        );
+                        return await Promise.resolve(response);
+                    } catch (error) {
+                        commit('SET_ITEM_LIST')
+                        CatcherError(this.dispatch, error, { to: "" });
+                        return await Promise.reject(error)
+                    }
+                },
+                async getAllByCustomId({ commit }, customList: any) {
+                    try {
+                        const entities = await ListItemService.getAllByCustomId(customList?.id);
+
+                        let response: any[] = [];
+                        const modelView = await CustomListService.getViewByTypeSelectedById(customList?.custom_list_type_id);
+                        switch (modelView) {
+                            case "ModelOne":
+                                entities.forEach(item => {
+                                    let r = {
+                                        id: item?.id,
+                                        list_item: Array.isArray(item.list_item) ? item?.list_item[0].toString() : item?.list_item,
+                                        value: item?.value,
+                                        name: item?.name,
+                                        actions: item?.actions ? item?.actions : [],
+                                        active: item?.active,
+                                    };
+                                    response.push(r);
+                                });
+                                break;
+                            case "ModelTwo":
+                                entities.forEach(item => {
+                                    let r = {
+                                        id: item?.id,
+                                        list_item :{
+                                            lat: item?.list_item?.lat,
+                                            long: item?.list_item?.long,
+                                            radius_km: item?.list_item?.radius_km,
+                                        },
+                                        value: item?.value,
+                                        name: item?.name,
+                                        actions: item?.actions ? item?.actions : [],
+                                        active: item?.active,
+                                    };
+                                    response.push(r);
+                                });
+                                break;
+                            case "ModelTree":
+                                const customListExchange  = await CustomListExchangeService.all();
+                                entities.forEach(item => {
+
+                                    let parameters: String[] = [];
+                                    if( Array.isArray(item.list_item) ){
+                                        parameters = item?.list_item[0].toString().split("/");}
+                                    else{
+                                        parameters = item?.list_item?.split("/");}
+
+                                    let type = customListExchange?.data.find(t => t.abbreviation == parameters[0]);
+                                    if( parameters?.length == 2 && type ){
+                                        let r = {
+                                            id: item?.id,
+                                            list_item_prefix: type.id,
+                                            list_item_prefix_text: parameters[0],
+                                            list_item_value: parameters[1],
+                                            value: item?.value,
+                                            name: item?.name,
+                                            actions: item?.actions ? item?.actions : [],
+                                            active: item?.active,
+                                        };
+                                        response.push(r);
+                                    }
+                                });
+                                break;
+                        }
+                        commit('SET_ALL_ENTITIES', response);
+                        return await Promise.resolve(response);
+                    } catch (error) {
+                        commit('SET_ALL_ENTITIES')
                         return await Promise.reject(error)
                     }
                 },
@@ -749,7 +953,41 @@ export default new Vuex.Store({
                     }
                 },
             }
-        }
+        },
+        customListExchange: {
+            namespaced: true,
+            state: () => ({
+                entities: [] as any[],
+            }),
+            mutations: {
+                SET_ENTITIES(state, _entities: [] = []) {
+                    state.entities = _entities;
+                },
+            },
+            getters: {},
+            actions: {
+                async all({ commit }) {
+                    try {
+                        const response = await CustomListExchangeService.all();
+                        if( response?.success ){
+                            let list: any[] = [];
+                            response?.data.map( e => {
+                                list.push({
+                                    id: e.id,
+                                    abbreviation: e.abbreviation,
+                                    description: e.description,
+                                })
+                            });
+                            commit('SET_ENTITIES', list);
+                        }else{commit('SET_ENTITIES');}
+                        return await Promise.resolve(response?.data);
+                    } catch (error) {
+                        commit('SET_ENTITIES')
+                        return await Promise.reject(error)
+                    }
+                },
+            }
+        },
     }
 })
 

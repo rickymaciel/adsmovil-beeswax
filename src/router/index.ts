@@ -13,12 +13,6 @@ const routes: Array<RouteConfig> = [
         path: '/',
         name: 'Root',
         beforeEnter(to, from, next) {
-            console.log('root:beforeEnter', {
-                to: to,
-                from: from,
-                state: store.state,
-                logguedin: store.state['auth'].loggedIn
-            })
             if (!store.state['auth'].loggedIn) {
                 next('/auth/login')
             } else {
@@ -35,12 +29,6 @@ const routes: Array<RouteConfig> = [
         name: 'Auth',
         component: () => import('@/views/Layouts/Auth.vue'),
         beforeEnter(to, from, next) {
-            console.log('auth:beforeEnter', {
-                to: to,
-                from: from,
-                state: store.state,
-                logguedin: store.state['auth'].loggedIn
-            })
             if (!store.state['auth'].loggedIn) {
                 next()
             } else {
@@ -73,13 +61,6 @@ const routes: Array<RouteConfig> = [
             breadcrumb: "Dashboard"
         },
         beforeEnter(to, from, next) {
-            console.log('auth:beforeEnter', {
-                to: to,
-                from: from,
-                state: store.state,
-                logguedin: store.state['auth'].loggedIn
-            })
-
             if (store.state['auth'].loggedIn) {
                 next()
             } else {
@@ -127,7 +108,7 @@ const routes: Array<RouteConfig> = [
                         component: () => import('@/views/Admin/Advertisers/Create/create.vue'),
                         meta: {
                             requiresAuth: true,
-                            breadcrumb: "Create new advertiser"
+                            breadcrumb: "Create New Advertiser"
                         },
                     },
                     {
@@ -136,7 +117,7 @@ const routes: Array<RouteConfig> = [
                         component: () => import('@/views/Admin/Advertisers/Edit/edit.vue'),
                         meta: {
                             requiresAuth: true,
-                            breadcrumb: "Edit advertiser"
+                            breadcrumb: "Edit Advertiser"
                         },
                     }
                 ]
@@ -165,7 +146,7 @@ const routes: Array<RouteConfig> = [
                         component: () => import('@/views/Admin/CustomList/Create/create.vue'),
                         meta: {
                             requiresAuth: true,
-                            breadcrumb: "Create new custom list"
+                            breadcrumb: "Create New Custom List"
                         },
                     },
                     {
@@ -174,7 +155,7 @@ const routes: Array<RouteConfig> = [
                         component: () => import('@/views/Admin/CustomList/Show/show.vue'),
                         meta: {
                             requiresAuth: true,
-                            breadcrumb: "Add list items"
+                            breadcrumb: "Add List Items"
                         },
                     },
                     {
@@ -183,7 +164,7 @@ const routes: Array<RouteConfig> = [
                         //component: () => import('@/views/Admin/CustomList/Edit/edit.vue'),
                         meta: {
                             requiresAuth: true,
-                            breadcrumb: "Edit custom list"
+                            breadcrumb: "Edit Custom List"
                         },
                     }
                 ]
@@ -232,7 +213,7 @@ const routes: Array<RouteConfig> = [
                 component: () => import('@/views/Admin/Campaigns/index.vue'),
                 meta: {
                     requiresAuth: true,
-                    breadcrumb: "Campaigns list"
+                    breadcrumb: "Campaigns"
                 },
                 children: [
                     {
@@ -241,7 +222,7 @@ const routes: Array<RouteConfig> = [
                         component: () => import('@/views/Admin/Campaigns/List/index.vue'),
                         meta: {
                             requiresAuth: true,
-                            breadcrumb: "Campaigns list"
+                            breadcrumb: "Campaigns List"
                         },
                     },
                     {
@@ -250,7 +231,7 @@ const routes: Array<RouteConfig> = [
                         component: () => import('@/views/Admin/Campaigns/Create/create.vue'),
                         meta: {
                             requiresAuth: true,
-                            breadcrumb: "Create New campaign"
+                            breadcrumb: "Create New Campaign"
                         },
                     },
                     // {
@@ -297,7 +278,7 @@ const routes: Array<RouteConfig> = [
                         component: () => import('@/views/Admin/LineItem/Create/create.vue'),
                         meta: {
                             requiresAuth: true,
-                            breadcrumb: "Create new Line Item"
+                            breadcrumb: "Create New Line Item"
                         },
                     },
                 ]
@@ -308,7 +289,7 @@ const routes: Array<RouteConfig> = [
                 component: () => import('@/views/Admin/Creatives/index.vue'),
                 meta: {
                     requiresAuth: true,
-                    breadcrumb: "Creatives list"
+                    breadcrumb: "Creatives"
                 },
                 children: [
                     {
@@ -317,7 +298,7 @@ const routes: Array<RouteConfig> = [
                         component: () => import('@/views/Admin/Creatives/List/index.vue'),
                         meta: {
                             requiresAuth: true,
-                            breadcrumb: "Creatives list"
+                            breadcrumb: "Creatives List"
                         },
                     },
                     {

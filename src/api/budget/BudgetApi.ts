@@ -1,6 +1,8 @@
 import { isEmpty, forEach } from 'lodash'
-import { Budget } from '@/interfaces/budget'
+import { success, error } from '@/api/handlers/HandlerResponse'
+import { GetMessage, GetErrors } from '@/api/handlers/HandlerError'
 import { AxiosGet } from '@/api/AxiosService'
+import { Budget } from '@/interfaces/budget'
 
 const ROUTES = require('../routes').BUDGET
 
@@ -10,8 +12,10 @@ export async function list (token: string) {
 
     const budgets = [] as any
 
-    if (!isEmpty(response) && Object.keys(response).length > 0) {
-      Object.keys(response).forEach(function (key) {
+    if (response.success) {
+      let data = response.content
+
+      Object.keys(data).forEach(function (key) {
         const budget = {
           id: parseInt(key),
           name: response[key]
@@ -20,12 +24,14 @@ export async function list (token: string) {
         budgets.push(budget)
       })
 
-      return budgets
+      return success('', budgets)
     }
 
-    return null
-  } catch (error) {
-    console.log('EXCEPTION: ', error)
-    return null
+    console.log('ERROR: ', response)
+
+    return error(response.message, response.errors)
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
+    return error(GetMessage(err), GetErrors(err))
   }
 }

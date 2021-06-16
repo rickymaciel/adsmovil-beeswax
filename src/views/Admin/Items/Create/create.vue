@@ -1,8 +1,20 @@
 <template>
 	<section>
-		<ModelOne v-if="modelSelected == 'ModelOne'"></ModelOne>
-		<ModelTwo v-else-if="modelSelected == 'ModelTwo'"></ModelTwo>
-		<ModelTree v-else-if="modelSelected == 'ModelTree'"></ModelTree>
+		<ModelOne
+			v-if="modelSelected == 'ModelOne'"
+			:customList="customList"
+			:items="entities"
+		></ModelOne>
+		<ModelTwo
+			v-else-if="modelSelected == 'ModelTwo'"
+			:customList="customList"
+			:items="entities"
+		></ModelTwo>
+		<ModelTree
+			v-else-if="modelSelected == 'ModelTree'"
+			:customList="customList"
+			:items="entities"
+		></ModelTree>
 	</section>
 </template>
 
@@ -21,6 +33,14 @@
 				type: String,
 				default: undefined,
 			},
+			customList: {
+				type: Object,
+				default: {},
+			},
+			entities: {
+				type: Array,
+				default: []
+			}
 		},
 		components: { ModelOne, ModelTwo, ModelTree },
 		data: () => ({
@@ -30,7 +50,7 @@
 			viewModelTree: false,
 		}),
 		created() {},
-		async mounted() {},
+		mounted() {},
 		computed: {
 			getTypes(): Type[] {
 				return this.$store.state.list.types;

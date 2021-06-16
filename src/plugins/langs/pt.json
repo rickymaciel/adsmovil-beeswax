@@ -42,5 +42,11 @@
     "edit-campaign": "Editar campanha",
     "greaterOrEqual": "Este valor deve ser maior ou igual a {value}",
     "must-after": "Esta data deve ser depois de hoje.",
-    "min-todate": "Esta data deve ser pelo menos a data e hora atuais."
+    "min-todate": "Esta data deve ser pelo menos a data e hora atuais.",
+    "not-implemented-yet": "Método ainda não implementado",
+    "must-be-numeric": "O valor deve ser um número",
+    "domain": "URL inválida. Exemplo: http(s)://www.example.com",
+    "appbundle": "Pacote de aplicativo inválido",
+    "filter": "Filtro",
+    "sort": "Classificar"
 }
