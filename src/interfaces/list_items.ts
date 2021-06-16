@@ -57,7 +57,8 @@ export interface ListItemDataCreate {
   custom_list_id: number,
   list_item: any,
   name: string,
-  value?: number
+  value?: number,
+  errors?: any[]
 }
 
 export interface ListItemDataUpdate {

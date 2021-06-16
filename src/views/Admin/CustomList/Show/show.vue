@@ -44,7 +44,7 @@
 				<!-- <v-divider class="my-4"></v-divider> -->
 
 				<!-- btn group -->
-				<v-row no-gutters align="center" justify="center">
+				<!-- <v-row no-gutters align="center" justify="center">
 					<v-col cols="12" sm="12" md="6" lg="8">
 						<v-card
 							elevation="0"
@@ -90,21 +90,25 @@
 							</v-row>
 						</v-card>
 					</v-col>
-				</v-row>
+				</v-row> -->
 			</v-form>
 
 			<!-- <v-divider v-if="hasTypeSelected" class="my-8"></v-divider> -->
 
 			<!-- select radio group bar -->
-			<v-card v-if="hasTypeSelected" class="pa-10 my-4">
+			<v-card class="pa-10 my-4">
 				<v-row no-gutters>
 					<v-col cols="12" sm="12" md="12" lg="12" align="left">
-						<v-card-title> List items</v-card-title>
+						<v-card-title>List items</v-card-title>
 						<v-card-subtitle>
-							Indique el método de carga que desea utilizar
+							Indicate the charging method you want to use
 						</v-card-subtitle>
 						<v-card-text>
-							<v-radio-group row v-model="option_selected">
+							<v-radio-group
+								row
+								v-model="option_selected"
+								@onChange="updateTypeSelected"
+							>
 								<v-radio
 									label="Load items manually"
 									value="manually"
@@ -121,6 +125,8 @@
 				<CreateItem
 					v-if="showItems"
 					:modelSelected="getModelView"
+					:customList="custom_list"
+					:entities="getListItems"
 				></CreateItem>
 			</v-card>
 		</v-layout>
@@ -149,18 +155,35 @@
 			type: "info",
 			valid: false,
 
-			option_selected: undefined, //
+			option_selected: "manually",
 			custom_list: { active: true } as CustomListDataCreate,
 			type_selected: {} as Type,
+			model_view: undefined,
 		}),
 		async created() {
+			this.setLoading(true);
+			let typeIdSetted = undefined;
 			await this.dispatchTypes();
-			this.dispatchShowCustomList().then((result: CustomList) => {
+			await this.dispatchShowCustomList().then((result: CustomList) => {
 				this.custom_list = result;
+				typeIdSetted = this.custom_list?.custom_list_type_id;
 			});
+			await this.dispatchListItems();
+			let customTypes = this.getCustomTypes;
+			if( Array.isArray(customTypes) ){
+				let type = customTypes.find( t => {return t.id == typeIdSetted});
+				if( type ){
+					await this.dispatchModelView(type);
+				}
+			}
+			this.setLoading(false);
 		},
 		async mounted() {},
 		computed: {
+			getListItems(): any[] {
+				const elements = this.$store.state.listItem.entities;
+				return elements;
+			},
 			getCustomList() {
 				return this.$store.state.custom_list.custom_list;
 			},
@@ -178,8 +201,6 @@
 			},
 			showItems(): Boolean {
 				return (
-					Object.keys(this.type_selected).length > 0 &&
-					String(this.option_selected).length > 0 &&
 					this.option_selected === "manually"
 				);
 			},
@@ -187,6 +208,9 @@
 				let pathArray: String[] = this.$route.path.split("/");
 				const lastItem = last(pathArray);
 				return !isNaN(toNumber(lastItem)) ? toNumber(lastItem) : NaN;
+			},
+			getCustomTypes(): Type[] {
+				return this.$store.state.custom_list.types;
 			},
 		},
 		methods: {
@@ -205,14 +229,9 @@
 			async validate() {
 				let form = this.$refs.form;
 				const valid = await form.validate();
-				console.log("validate", {
-					form: form,
-					validate: valid,
-				});
 				return await valid;
 			},
 			async handleSubmit() {
-				console.log("--- handleSubmit ---");
 				if (!(await this.validate())) return;
 				await this.dispatchCreateCustomList();
 			},
@@ -227,6 +246,13 @@
 			},
 			async dispatchTypes() {
 				return this.$store.dispatch("custom_list/getTypes", {
+					root: true,
+				});
+			},
+			async dispatchListItems() {
+				//let id_selected = this.custom_list.id;
+				if (isNaN(this.custom_list.id)) return [];
+				return this.$store.dispatch("listItem/getAllByCustomId", this.custom_list, {
 					root: true,
 				});
 			},
@@ -260,21 +286,14 @@
 
 				switch (this.option_selected) {
 					case "manually":
-						console.log("--- Método Manual ---");
 						await this.dispatchModelView(data);
-
 						break;
 					case "upload":
-						console.log("--- Método Automático ---");
 
 						break;
 					default:
 						break;
 				}
-			},
-
-			handleTypeModelChange() {
-				console.log("--- Model Selected: ", this.option_selected);
 			},
 		},
 
@@ -284,7 +303,6 @@
 					case "manually":
 						await this.dispatchModelView(this.type_selected);
 						break;
-
 					default:
 						break;
 				}

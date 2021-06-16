@@ -1,6 +1,6 @@
 <template>
 	<v-container class="my-0">
-		<Alertize @return-alertize="redirectTo"></Alertize>
+		<Alertize></Alertize>
 		<v-layout column>
 			<v-form
 				ref="form"
@@ -22,7 +22,11 @@
 							>
 								<v-text-field
 									v-model="name"
-									:rules="nameRules"
+									:rules="[
+										getRules.isRequired,
+										getRules.isMinLength,
+										getRules.isMaxLength,
+									]"
 									hint="Advertiser Name"
 									ref="name"
 									placeholder="Advertiser Name"
@@ -45,7 +49,10 @@
 								<v-autocomplete
 									class="label-fixed"
 									v-model="category_id"
-									:rules="categoryRules"
+									:rules="[
+										getRules.isRequired,
+										getRules.isNumber,
+									]"
 									:hint="`Advertiser Category`"
 									:items="getCategories"
 									ref="category_id"
@@ -74,22 +81,25 @@
 									v-model="show_tooltip_domain"
 									right
 								>
+									<!-- getRules.isDomain, -->
 									<template v-slot:activator="{}">
 										<v-text-field
 											v-model="domain"
 											ref="domain"
-											:rules="domainRules"
+											:rules="[
+												getRules.isRequired,
+												getRules.isDomain,
+											]"
 											hint="Advertiser Domain"
 											placeholder="Advertiser Domain"
 											label="Advertiser Domain*"
 											class="label-fixed"
+											append-outer-icon="mdi-help-circle-outline"
 											@click:append-outer="
 												toggleTooltipDomain()
 											"
 										></v-text-field>
 									</template>
-									<!-- prefix="https://"
-											append-outer-icon="mdi-help-circle-outline" -->
 									<span>
 										The advertiser’s primary domain. This is
 										recuerde by many exchanges
@@ -116,7 +126,7 @@
 									<template v-slot:activator="{}">
 										<v-text-field
 											v-model="app_bundle"
-											:rules="appBundleRules"
+											:rules="[getRules.isRequired]"
 											ref="app_bundle"
 											hint="Advertiser App Bundle"
 											placeholder="Advertiser App Bundle"
@@ -220,8 +230,15 @@
 		AdvertiserDataCreate,
 		Category,
 	} from "../../../../interfaces/advertiser";
-	import { isEmpty, isNull, isUndefined, isNaN } from "lodash";
 	import Alertize from "../../../../components/Alertize.vue";
+
+	import {
+		isRequired,
+		isNumber,
+		isDomain,
+		isMinLength,
+		isMaxLength,
+	} from "../../../../services/rule-services";
 
 	export default Vue.extend({
 		name: "AdvertiserCreate",
@@ -230,13 +247,13 @@
 		data: () => ({
 			title: "Create",
 			advertiser: {} as AdvertiserDataCreate,
-			valid: false,
+			valid: true,
 			show_tooltip_app_bundle: false,
 			show_tooltip_domain: false,
 
 			name: "",
-			category_id: NaN,
-			domain: "",
+			category_id: undefined,
+			domain: "https://",
 			app_bundle: "",
 			active: true,
 		}),
@@ -250,47 +267,18 @@
 			getCategories(): Category[] {
 				return this.$store.state.advertiser.categories;
 			},
-			nameRules() {
-				return [
-					(v: string) =>
-						(!isUndefined(v) && !isNull(v) && !isEmpty(v)) ||
-						this.$t("fieldRequired"),
-					(v: string) =>
-						(v && v.length <= 255) ||
-						this.$t("maxLength", { max: 255 }),
-					(v: string) =>
-						(v && v.length >= 2) || this.$t("minLength", { min: 2 }),
-				];
-			},
-			categoryRules() {
-				return [
-					(v: any) =>
-						(!isNull(v) && !isNaN(v)) || this.$t("fieldRequired"),
-				];
-			},
-			domainRules() {
-				return [
-					(v: string) =>
-						(!isUndefined(v) && !isNull(v) && !isEmpty(v)) ||
-						this.$t("fieldRequired"),
-					(v: string) =>
-						/^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)/gim.test(
-							v
-						) || this.$t("domainRegex"),
-				];
-			},
-			appBundleRules() {
-				return [
-					(v: any) =>
-						(!isUndefined(v) && !isNull(v) && !isEmpty(v)) ||
-						this.$t("fieldRequired"),
-					(v: string) =>
-						/^(?:\w+|\w+\.\w+)+$/gim.test(v) ||
-						this.$t("appBundleRegex"),
-				];
-			},
 			getAdvertiser(): Advertiser {
 				return this.advertiser;
+			},
+
+			getRules() {
+				return {
+					isRequired,
+					isNumber,
+					isDomain,
+					isMinLength,
+					isMaxLength,
+				};
 			},
 		},
 		methods: {
@@ -301,14 +289,9 @@
 					{ root: true }
 				);
 			},
-			redirectTo() {
-				this.setNotification({ title: "", message: "", type: "" });
-				this.$router.push({ name: "AdvertisersIndex" });
-			},
 
 			async validate() {
-				let form = this.$refs.form;
-				return await form.validate();
+				return await this.$refs.form.validate();
 			},
 			async handleSubmit() {
 				try {

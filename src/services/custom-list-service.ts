@@ -49,6 +49,18 @@ class CustomListService {
         }
     }
 
+    async getViewByTypeSelectedById(id: number) {
+        try {
+            return Promise.resolve(await MatchedViewById(id));
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+
     async create(customList: CustomListDataCreate) {
         try {
             const response = await AxiosPost(CUSTOM_LIST_ROUTE, customList)
@@ -198,38 +210,60 @@ function getURL(filters: string, options: string): string {
 }
 
 function ModelOneList() {
-    return ["zip_code"];
+    return [
+        {id: 10, key: "zip_code"},
+        {id: 4, key: "domain"},
+    ];
 };
 
 function ModelTwoList() {
-    return ["lat_long"];
+    return [
+        {id: 6, key: "lat_long"}
+    ];
 };
 
 function ModelTreeList() {
     return [
-        "app_bundle",
-        "app_id",
-        "deal_id",
-        "domain",
-        "ip_address",
-        "placement_id",
-        "publisher_id",
-        "site_id",
+        {id: 1, key: "app_bundle"},
+        {id: 2, key: "app_id"},
+        {id: 3, key: "deal_id"},
+        {id: 5, key: "ip_address"},
+        {id: 7, key: "placement_id"},
+        {id: 8, key: "publisher_id"},
+        {id9: 9, key: "site_id"},
     ];
 };
 
 async function MatchedView(key: string) {
     let modelView = '';
 
-    if (ModelOneList().includes(key)) {
+    if (ModelOneList().find( m => m.key == key)) {
         modelView = 'ModelOne'
     }
 
-    if (ModelTwoList().includes(key)) {
+    if (ModelTwoList().find( m => m.key == key)) {
         modelView = 'ModelTwo'
     }
 
-    if (ModelTreeList().includes(key)) {
+    if (ModelTreeList().find( m => m.key == key)) {
+        modelView = 'ModelTree'
+    }
+    
+    return modelView
+};
+
+async function MatchedViewById(id: number) {
+    let modelView = '';
+
+    if (ModelOneList().find( m => m.id == id)) {
+        modelView = 'ModelOne'
+    }
+
+    if (ModelTwoList().find( m => m.id == id)) {
+        modelView = 'ModelTwo'
+    }
+
+    if (ModelTreeList().find( m => m.id == id)) {
         modelView = 'ModelTree'
     }
 

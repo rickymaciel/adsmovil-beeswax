@@ -1,6 +1,8 @@
 <template>
 	<v-container class="my-0">
 		<v-layout column>
+			<!-- <v-card>option: {{ option }}</v-card>
+			<v-card>filters: {{ filters }}</v-card> -->
 			<Buttons
 				:limit="paginated.limit"
 				@selected-limit="selectedLimit"
@@ -18,7 +20,9 @@
 				:total="Number(getResultPaginate.total)"
 				:headers="prepareTableHeaders"
 				:items="prepareTableContent"
-				@update-paginate="updatePaginate"
+				:option="option"
+				:filters="filters"
+				@selected-option="selectedOption"
 			></TableList>
 		</v-layout>
 	</v-container>
@@ -31,10 +35,12 @@
 	import {
 		Advertiser,
 		AdvertiserFilters,
-		AdvertiserOptions,
-		ResultPaginate,
-		AdvertiserPaginated,
 	} from "../../../../interfaces/advertiser";
+	import {
+		SortingOption,
+		Paginated,
+		ResultPaginate,
+	} from "../../../../interfaces/paginated";
 	import { isNull, isUndefined } from "lodash";
 	import ParamService from "../../../../services/params-service";
 
@@ -42,23 +48,28 @@
 		name: "AdvertiserList",
 		props: {},
 		components: { TableList, Buttons },
-		data: () => ({
-			title: "List",
-			paginated: {
-				page: 1,
-				limit: 25,
-			} as AdvertiserPaginated,
-			filters: {} as AdvertiserFilters,
-			options: {
-				sort: "",
-				order: "asc",
-			} as AdvertiserOptions,
-		}),
+		data: function () {
+			return {
+				title: "List",
+				paginated: {
+					page: 1,
+					limit: 25,
+				} as Paginated,
+				filters: {},
+				option: {
+					sort: "",
+					order: "asc",
+				} as SortingOption,
+			};
+		},
 		created() {},
 		async mounted() {
 			await this.getPaginated();
 		},
 		computed: {
+			getFilters() {
+				return this.filters;
+			},
 			getResultPaginate(): ResultPaginate {
 				return this.$store.state.advertiser.result_paginate;
 			},
@@ -166,7 +177,7 @@
 					await ParamService.getParams(
 						this.paginated,
 						this.filters,
-						this.options
+						this.option
 					),
 					{
 						root: true,
@@ -175,8 +186,22 @@
 				this.setLoading(false);
 			},
 			updatePaginate(data: any) {
-				console.log("index::updatePaginate", data);
 				this.paginated.page = data;
+			},
+			setFilter(params: { key: string | number; value: any }) {
+				this.filters = {};
+				this.filters[params.key] = params.value || "";
+			},
+			async selectedOption(params: {
+				option: SortingOption;
+				filter: string;
+			}) {
+				this.setFilter({ key: params.option.sort, value: params.filter });
+				this.updatePaginate(1);
+				await this.updateParams({
+					filters: this.filters,
+					option: params.option,
+				});
 			},
 			async selectedLimit(limit: number) {
 				this.paginated.limit = limit;
@@ -185,10 +210,10 @@
 			},
 			async updateParams(params: {
 				filters: AdvertiserFilters;
-				options: AdvertiserOptions;
+				option: SortingOption;
 			}) {
 				this.filters = params.filters;
-				this.options = params.options;
+				this.option = params.option;
 				this.updatePaginate(1);
 				await this.getPaginated();
 			},
@@ -198,6 +223,9 @@
 				if (val !== old) {
 					this.getPaginated();
 				}
+			},
+			filters(val, old) {
+				console.log("index::watch:filters", { val: val, old: old });
 			},
 		},
 	});

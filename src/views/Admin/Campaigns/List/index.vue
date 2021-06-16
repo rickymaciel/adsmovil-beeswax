@@ -1,6 +1,8 @@
 <template>
 	<v-container class="my-0">
 		<v-layout column>
+			<!-- <v-card>option: {{ option }}</v-card>
+			<v-card>filters: {{ filters }}</v-card> -->
 			<Buttons
 				:limit="paginated.limit"
 				@selected-limit="selectedLimit"
@@ -18,11 +20,9 @@
 				:total="Number(getResultPaginate.total)"
 				:headers="prepareTableHeaders"
 				:items="prepareTableContent"
-				:filters_init="filters"
-				:options="options"
-				:limit="paginated.limit"
-				@update-paginate="updatePaginate"
-				@update-params="updateParams"
+				:option="option"
+				:filters="filters"
+				@selected-option="selectedOption"
 			></TableList>
 		</v-layout>
 	</v-container>
@@ -35,12 +35,11 @@
 	import { isNull, isUndefined } from "lodash";
 	import {
 		Campaign,
-		CampaingFilters,
 		CampaingOptions,
-		CampaingPaginated,
 		ResultPaginate,
 	} from "../../../../interfaces/campaign";
 	import ParamService from "../../../../services/params-service";
+	import { Paginated, SortingOption } from "../../../../interfaces/paginated";
 
 	export default Vue.extend({
 		name: "CampaignList",
@@ -48,9 +47,15 @@
 		components: { Buttons, TableList },
 		data: () => ({
 			title: "List",
-			paginated: { page: 1, limit: 25 } as CampaingPaginated,
-			filters: {} as CampaingFilters,
-			options: { sort: "", order: "asc" } as CampaingOptions,
+			paginated: {
+				page: 1,
+				limit: 25,
+			} as Paginated,
+			filters: {},
+			option: {
+				sort: "",
+				order: "asc",
+			} as SortingOption,
 		}),
 		created() {},
 		async mounted() {
@@ -202,6 +207,21 @@
 			updatePaginate(data: any) {
 				this.paginated.page = data;
 			},
+			setFilter(params: { key: string | number; value: any }) {
+				this.filters = {};
+				this.filters[params.key] = params.value || "";
+			},
+			async selectedOption(params: {
+				option: SortingOption;
+				filter: string;
+			}) {
+				this.setFilter({ key: params.option.sort, value: params.filter });
+				this.updatePaginate(1);
+				await this.updateParams({
+					filters: this.filters,
+					option: params.option,
+				});
+			},
 			async selectedLimit(limit: number) {
 				this.paginated.limit = limit;
 				this.updatePaginate(1);
@@ -209,10 +229,10 @@
 			},
 			async updateParams(params: {
 				filters: CampaingOptions;
-				options: CampaingOptions;
+				option: SortingOption;
 			}) {
 				this.filters = params.filters;
-				this.options = params.options;
+				this.option = params.option;
 				this.updatePaginate(1);
 				await this.getPaginated();
 			},

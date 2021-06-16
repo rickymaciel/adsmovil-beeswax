@@ -3,394 +3,95 @@
 		<v-data-table
 			:headers="headers"
 			:items="items"
+			:items-per-page="perPage"
 			item-key="advertiser"
 			class="elevation-1"
 			hide-default-footer
 			:mobile-breakpoint="null"
 		>
-			<!-- LABEL -->
-
 			<!-- id -->
 			<template v-slot:[`header.id`]="{ header }">
-				<v-menu :close-on-content-click="false">
-					<template v-slot:activator="{ on, attrs }">
-						<div v-bind="attrs" v-on="on">
-							{{ header.text.toUpperCase() }}
-							<v-icon>mdi-chevron-down</v-icon>
-						</div>
-					</template>
-
-					<v-list subheader>
-						<v-subheader>Sort</v-subheader>
-
-						<v-list-item>
-							<v-text-field
-								class="label-fixed no-top"
-								ref="id"
-								v-model="filter.id.value"
-								type="number"
-								:placeholder="header.text"
-								clearable
-							></v-text-field>
-						</v-list-item>
-
-						<v-divider></v-divider>
-
-						<v-list-item>
-							<v-radio-group v-model="filter.id.order">
-								<v-radio color="secondary" value="asc">
-									<template v-slot:label>
-										<div>Ascending</div>
-									</template>
-								</v-radio>
-								<v-radio color="secondary" value="desc">
-									<template v-slot:label>
-										<div>Descending</div>
-									</template>
-								</v-radio>
-							</v-radio-group>
-						</v-list-item>
-					</v-list>
-				</v-menu>
+				<Filterable
+					field_name="id"
+					type="number"
+					:filters="filters"
+					:header="header"
+					:option="option"
+					@selected-option="selectedOption"
+				></Filterable>
 			</template>
 
 			<!-- name -->
 			<template v-slot:[`header.name`]="{ header }">
-				<v-menu :close-on-content-click="false">
-					<template v-slot:activator="{ on, attrs }">
-						<div v-bind="attrs" v-on="on">
-							{{ header.text }}
-							<v-icon>mdi-chevron-down</v-icon>
-						</div>
-					</template>
-
-					<v-list subheader>
-						<v-subheader>Filter</v-subheader>
-
-						<v-list-item>
-							<v-text-field
-								class="label-fixed no-top"
-								ref="id"
-								v-model="filter.name.value"
-								type="text"
-								:placeholder="header.text"
-								clearable
-							></v-text-field>
-						</v-list-item>
-
-						<v-divider></v-divider>
-
-						<v-list-item>
-							<v-radio-group v-model="filter.id.order">
-								<v-radio color="secondary" value="asc">
-									<template v-slot:label>
-										<div>Ascending</div>
-									</template>
-								</v-radio>
-								<v-radio color="secondary" value="desc">
-									<template v-slot:label>
-										<div>Descending</div>
-									</template>
-								</v-radio>
-							</v-radio-group>
-						</v-list-item>
-
-						<v-divider></v-divider>
-
-						<v-list-item>
-							<v-btn
-								color="secondary"
-								elevation="2"
-								block
-								outlined
-								rounded
-								@click="removeFilterName()"
-							>
-								Remove filter
-							</v-btn>
-						</v-list-item>
-					</v-list>
-				</v-menu>
+				<Filterable
+					field_name="name"
+					type="text"
+					:filters="filters"
+					:header="header"
+					:option="option"
+					@selected-option="selectedOption"
+				></Filterable>
 			</template>
 
 			<!-- active -->
 			<template v-slot:[`header.active`]="{ header }">
-				<v-menu :close-on-content-click="false">
-					<template v-slot:activator="{ on, attrs }">
-						<div v-bind="attrs" v-on="on">
-							{{ header.text }}
-							<v-icon>mdi-chevron-down</v-icon>
-						</div>
-					</template>
-
-					<v-list subheader two-line flat>
-						<v-subheader>Filter</v-subheader>
-
-						<v-list-item>
-							<v-radio-group v-model="radios">
-								<v-radio color="secondary" value="asc">
-									<template v-slot:label>
-										<div>Active</div>
-									</template>
-								</v-radio>
-								<v-radio color="secondary" value="desc">
-									<template v-slot:label>
-										<div>Inactive</div>
-									</template>
-								</v-radio>
-							</v-radio-group>
-						</v-list-item>
-
-						<v-divider></v-divider>
-
-						<v-list-item>
-							<v-radio-group v-model="filter.id.order">
-								<v-radio color="secondary" value="asc">
-									<template v-slot:label>
-										<div>Ascending</div>
-									</template>
-								</v-radio>
-								<v-radio color="secondary" value="desc">
-									<template v-slot:label>
-										<div>Descending</div>
-									</template>
-								</v-radio>
-							</v-radio-group>
-						</v-list-item>
-					</v-list>
-				</v-menu>
+				<Filterable
+					field_name="active"
+					type="text"
+					:filters="filters"
+					:header="header"
+					:option="option"
+					:filter_by_active="true"
+					@selected-option="selectedOption"
+				></Filterable>
 			</template>
 
 			<!-- category -->
 			<template v-slot:[`header.category`]="{ header }">
-				<v-menu :close-on-content-click="false">
-					<template v-slot:activator="{ on, attrs }">
-						<div v-bind="attrs" v-on="on">
-							{{ header.text }}
-							<v-icon>mdi-chevron-down</v-icon>
-						</div>
-					</template>
-
-					<v-list subheader two-line flat>
-						<v-subheader>Filter</v-subheader>
-
-						<v-list-item>
-							<v-text-field
-								class="label-fixed no-top"
-								ref="id"
-								v-model="header.category"
-								type="text"
-								:placeholder="header.text"
-								clearable
-							></v-text-field>
-						</v-list-item>
-
-						<v-divider></v-divider>
-
-						<v-list-item>
-							<v-radio-group v-model="filter.id.order">
-								<v-radio color="secondary" value="asc">
-									<template v-slot:label>
-										<div>Ascending</div>
-									</template>
-								</v-radio>
-								<v-radio color="secondary" value="desc">
-									<template v-slot:label>
-										<div>Descending</div>
-									</template>
-								</v-radio>
-							</v-radio-group>
-						</v-list-item>
-
-						<v-divider></v-divider>
-
-						<v-list-item>
-							<v-btn
-								color="secondary"
-								elevation="2"
-								block
-								outlined
-								rounded
-							>
-								Remove filter
-							</v-btn>
-						</v-list-item>
-					</v-list>
-				</v-menu>
+				<Filterable
+					field_name="category"
+					type="text"
+					:filters="filters"
+					:header="header"
+					:option="option"
+					@selected-option="selectedOption"
+				></Filterable>
 			</template>
 
 			<!-- domain -->
 			<template v-slot:[`header.domain`]="{ header }">
-				<v-menu :close-on-content-click="false">
-					<template v-slot:activator="{ on, attrs }">
-						<div v-bind="attrs" v-on="on">
-							{{ header.text }}
-							<v-icon>mdi-chevron-down</v-icon>
-						</div>
-					</template>
-
-					<v-list subheader two-line flat>
-						<v-subheader>Filter</v-subheader>
-
-						<v-list-item>
-							<v-text-field
-								class="label-fixed no-top"
-								ref="id"
-								v-model="header.domain"
-								type="text"
-								:placeholder="header.text"
-								clearable
-							></v-text-field>
-						</v-list-item>
-
-						<v-divider></v-divider>
-
-						<v-list-item>
-							<v-radio-group v-model="filter.id.order">
-								<v-radio color="secondary" value="asc">
-									<template v-slot:label>
-										<div>Ascending</div>
-									</template>
-								</v-radio>
-								<v-radio color="secondary" value="desc">
-									<template v-slot:label>
-										<div>Descending</div>
-									</template>
-								</v-radio>
-							</v-radio-group>
-						</v-list-item>
-
-						<v-divider></v-divider>
-
-						<v-list-item>
-							<v-btn
-								color="secondary"
-								elevation="2"
-								block
-								outlined
-								rounded
-							>
-								Remove filter
-							</v-btn>
-						</v-list-item>
-					</v-list>
-				</v-menu>
+				<Filterable
+					field_name="domain"
+					type="text"
+					:filters="filters"
+					:header="header"
+					:option="option"
+					@selected-option="selectedOption"
+				></Filterable>
 			</template>
 
 			<!-- appbundle -->
 			<template v-slot:[`header.appbundle`]="{ header }">
-				<v-menu :close-on-content-click="false">
-					<template v-slot:activator="{ on, attrs }">
-						<div v-bind="attrs" v-on="on">
-							{{ header.text }}
-							<v-icon>mdi-chevron-down</v-icon>
-						</div>
-					</template>
-
-					<v-list subheader two-line flat>
-						<v-subheader>Filter</v-subheader>
-
-						<v-list-item>
-							<v-text-field
-								class="label-fixed no-top"
-								ref="id"
-								v-model="header.appbundle"
-								type="text"
-								:placeholder="header.text"
-								clearable
-							></v-text-field>
-						</v-list-item>
-
-						<v-divider></v-divider>
-
-						<v-list-item>
-							<v-radio-group v-model="filter.id.order">
-								<v-radio color="secondary" value="asc">
-									<template v-slot:label>
-										<div>Ascending</div>
-									</template>
-								</v-radio>
-								<v-radio color="secondary" value="desc">
-									<template v-slot:label>
-										<div>Descending</div>
-									</template>
-								</v-radio>
-							</v-radio-group>
-						</v-list-item>
-
-						<v-divider></v-divider>
-
-						<v-list-item>
-							<v-btn
-								color="secondary"
-								elevation="2"
-								block
-								outlined
-								rounded
-							>
-								Remove filter
-							</v-btn>
-						</v-list-item>
-					</v-list>
-				</v-menu>
+				<Filterable
+					field_name="appbundle"
+					type="text"
+					:filters="filters"
+					:header="header"
+					:option="option"
+					@selected-option="selectedOption"
+				></Filterable>
 			</template>
 
 			<!-- currency -->
 			<template v-slot:[`header.currency`]="{ header }">
-				<v-menu :close-on-content-click="false">
-					<template v-slot:activator="{ on, attrs }">
-						<div v-bind="attrs" v-on="on">
-							{{ header.text }}
-							<v-icon>mdi-chevron-down</v-icon>
-						</div>
-					</template>
-
-					<v-list subheader two-line flat>
-						<v-subheader>Filter</v-subheader>
-
-						<v-list-item>
-							<v-text-field
-								class="label-fixed no-top"
-								ref="id"
-								v-model="header.currency"
-								type="text"
-								:placeholder="header.text"
-								clearable
-							></v-text-field>
-						</v-list-item>
-
-						<v-divider></v-divider>
-
-						<v-list-item>
-							<v-radio-group v-model="filter.id.order">
-								<v-radio color="secondary" value="asc">
-									<template v-slot:label>
-										<div>Ascending</div>
-									</template>
-								</v-radio>
-								<v-radio color="secondary" value="desc">
-									<template v-slot:label>
-										<div>Descending</div>
-									</template>
-								</v-radio>
-							</v-radio-group>
-						</v-list-item>
-
-						<v-divider></v-divider>
-
-						<v-list-item>
-							<v-btn
-								color="secondary"
-								elevation="2"
-								block
-								outlined
-								rounded
-							>
-								Remove filter
-							</v-btn>
-						</v-list-item>
-					</v-list>
-				</v-menu>
+				<Filterable
+					field_name="currency"
+					type="text"
+					:filters="filters"
+					:header="header"
+					:option="option"
+					@selected-option="selectedOption"
+				></Filterable>
 			</template>
 
 			<!-- ITEMS -->
@@ -438,10 +139,13 @@
 </template>
 
 <script lang="ts">
+	import { isEmpty } from "lodash";
 	import Vue from "vue";
+	import Filterable from "../../../../components/Header/Tables/Filterable.vue";
+	import { SortingOption } from "../../../../interfaces/paginated";
 
 	export default Vue.extend({
-		name: "AdvertiserHeader",
+		name: "TableList",
 		props: {
 			current_page: {
 				type: Number,
@@ -472,22 +176,23 @@
 				type: Array,
 				default: [],
 			},
-		},
-		components: {},
-		data: () => ({
-			radios: false,
-			filter: {
-				id: {
-					value: "",
-					order: "asc",
-				},
-				name: {
-					value: "",
-					order: "asc",
+			option: {
+				type: Object,
+				default: function () {
+					return {};
 				},
 			},
-			filtered: [],
-		}),
+			filters: {
+				type: Object,
+				default: function () {
+					return {};
+				},
+			},
+		},
+		components: { Filterable },
+		data: function () {
+			return {};
+		},
 
 		created() {},
 
@@ -505,6 +210,11 @@
 			getLength() {
 				return Math.ceil(this.total / this.per_page);
 			},
+			perPage() {
+				return !isNaN(this.per_page) && isEmpty(this.per_page)
+					? this.per_page
+					: 25;
+			},
 		},
 
 		methods: {
@@ -515,11 +225,13 @@
 				return active ? "Active" : "Inactive";
 			},
 			updatePaginate(data: Number) {
-				console.log("TableList::updatePaginate", data);
 				this.$emit("update-paginate", data);
 			},
-			removeFilterName() {
-				//this.filter.name.value = "";
+			selectedOption(params: { option: SortingOption; filter: string }) {
+				this.$emit("selected-option", {
+					option: params.option,
+					filter: params.filter,
+				});
 			},
 		},
 	});

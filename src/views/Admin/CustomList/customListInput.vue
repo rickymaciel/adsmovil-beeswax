@@ -75,6 +75,8 @@
 						placeholder="List Type"
 						:rules="listTypeRules"
 						@change="handleTypeModelChange"
+						:class="{ disabled: isEdit }"
+						:disabled="isEdit"
 					></v-autocomplete>
 				</v-card>
 			</v-col>

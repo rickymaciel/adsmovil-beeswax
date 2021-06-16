@@ -1,5 +1,8 @@
 import { forEach, isEmpty, isUndefined } from 'lodash'
 import { AxiosPost, AxiosPatch, AxiosGet, AxiosPut } from '@/api/AxiosService'
+import { error, success } from '@/api/handlers/HandlerResponse'
+import { GetMessage, GetErrors } from '@/api/handlers/HandlerError'
+import { FrecuencyCaps } from '@/interfaces/frecuency_caps'
 import {
   Campaing,
   CampaingDataCreate,
@@ -7,7 +10,7 @@ import {
   CampaingFilters,
   CampaingList,
   CampaingOptions,
-  CampaingPaginated, FrecuencyCaps
+  CampaingPaginated
 } from '@/interfaces/campaing'
 
 const ROUTES = require('../routes').CAMPAING
@@ -16,10 +19,11 @@ export async function create (campaing: CampaingDataCreate, token: string) {
   try {
     const response = await AxiosPost(ROUTES.CAMPAING_ROUTE, campaing, token)
 
-    if (!isEmpty(response) && !isUndefined(response.id)) {
+    if (response.success) {
+      let data = response.content
       let frequency_caps = [] as any
 
-      forEach(response.frequency_caps, function (value, key) {
+      forEach(data.frequency_caps, function (value, key) {
         const fc = {
           id: value.id,
           impressions: value.impressions,
@@ -39,49 +43,51 @@ export async function create (campaing: CampaingDataCreate, token: string) {
         frequency_caps.push(fc)
       })
 
-      return {
-        id: response.id,
-        name: response.name,
-        budget: response.budget,
-        daily_budget: response.daily_budget,
-        start_date: response.start_date,
-        end_date: response.end_date,
-        active: response.active,
-        alternative_id: response.alternative_id,
-        external_id: response.external_id,
-        spend: response.spend,
-        automatic_allocation: response.automatic_allocation,
-        kpi_objective: response.kpi_objective,
-        cpm_bid: response.cpm_bid,
-        target_ecpc: response.target_ecpc,
-        target_ctr: response.target_ctr,
-        target_vcr: response.target_vcr,
-        created_by: response.created_by,
-        updated_by: response.updated_by,
-        deleted_by: response.deleted_by,
-        created_at: response.created_at,
-        updated_at: response.updated_at,
-        deleted_at: response.deleted_at,
-        account_id: response.account_id,
-        advertiser_id: response.advertiser_id,
-        budget_type_id: response.budget_type_id,
-        currency_id: response.currency_id,
-        timezone_id: response.timezone_id,
-        optimization_strategy_id: response.optimization_strategy_id,
-        strategy_id: response.strategy_id,
-        campaign_pacing_id: response.campaign_pacing_id,
-        kpi_campaign_id: response.kpi_campaign_id,
-        trafficker_id: response.trafficker_id,
+      let campaing = {
+        id: data.id,
+        name: data.name,
+        budget: data.budget,
+        daily_budget: data.daily_budget,
+        start_date: data.start_date,
+        end_date: data.end_date,
+        active: data.active,
+        alternative_id: data.alternative_id,
+        external_id: data.external_id,
+        spend: data.spend,
+        automatic_allocation: data.automatic_allocation,
+        kpi_objective: data.kpi_objective,
+        cpm_bid: data.cpm_bid,
+        target_ecpc: data.target_ecpc,
+        target_ctr: data.target_ctr,
+        target_vcr: data.target_vcr,
+        created_by: data.created_by,
+        updated_by: data.updated_by,
+        deleted_by: data.deleted_by,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+        deleted_at: data.deleted_at,
+        account_id: data.account_id,
+        advertiser_id: data.advertiser_id,
+        budget_type_id: data.budget_type_id,
+        currency_id: data.currency_id,
+        timezone_id: data.timezone_id,
+        optimization_strategy_id: data.optimization_strategy_id,
+        strategy_id: data.strategy_id,
+        campaign_pacing_id: data.campaign_pacing_id,
+        kpi_campaign_id: data.kpi_campaign_id,
+        trafficker_id: data.trafficker_id,
         frequency_caps: frequency_caps
       } as Campaing
+
+      return success('', campaing)
     }
 
     console.log('ERROR: ', response)
 
-    return null
-  } catch (error) {
-    console.log('EXCEPTION: ', error)
-    return null
+    return error(response.message, response.errors)
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
+    return error(GetMessage(err), GetErrors(err))
   }
 }
 
@@ -89,10 +95,11 @@ export async function update (campaing: CampaingDataUpdate, token: string) {
   try {
     const response = await AxiosPatch(ROUTES.CAMPAING_ROUTE + '/' + campaing.id, campaing, token)
 
-    if (!isEmpty(response) && !isUndefined(response.id)) {
+    if (response.success) {
+      let data = response.content
       let frequency_caps = [] as any
 
-      forEach(response.frequency_caps, function (value, key) {
+      forEach(data.frequency_caps, function (value, key) {
         const fc = {
           id: value.id,
           impressions: value.impressions,
@@ -112,49 +119,51 @@ export async function update (campaing: CampaingDataUpdate, token: string) {
         frequency_caps.push(fc)
       })
 
-      return {
-        id: response.id,
-        name: response.name,
-        budget: response.budget,
-        daily_budget: response.daily_budget,
-        start_date: response.start_date,
-        end_date: response.end_date,
-        active: response.active,
-        alternative_id: response.alternative_id,
-        external_id: response.external_id,
-        spend: response.spend,
-        automatic_allocation: response.automatic_allocation,
-        kpi_objective: response.kpi_objective,
-        cpm_bid: response.cpm_bid,
-        target_ecpc: response.target_ecpc,
-        target_ctr: response.target_ctr,
-        target_vcr: response.target_vcr,
-        created_by: response.created_by,
-        updated_by: response.updated_by,
-        deleted_by: response.deleted_by,
-        created_at: response.created_at,
-        updated_at: response.updated_at,
-        deleted_at: response.deleted_at,
-        account_id: response.account_id,
-        advertiser_id: response.advertiser_id,
-        budget_type_id: response.budget_type_id,
-        currency_id: response.currency_id,
-        timezone_id: response.timezone_id,
-        optimization_strategy_id: response.optimization_strategy_id,
-        strategy_id: response.strategy_id,
-        campaign_pacing_id: response.campaign_pacing_id,
-        kpi_campaign_id: response.kpi_campaign_id,
-        trafficker_id: response.trafficker_id,
+      let campaing = {
+        id: data.id,
+        name: data.name,
+        budget: data.budget,
+        daily_budget: data.daily_budget,
+        start_date: data.start_date,
+        end_date: data.end_date,
+        active: data.active,
+        alternative_id: data.alternative_id,
+        external_id: data.external_id,
+        spend: data.spend,
+        automatic_allocation: data.automatic_allocation,
+        kpi_objective: data.kpi_objective,
+        cpm_bid: data.cpm_bid,
+        target_ecpc: data.target_ecpc,
+        target_ctr: data.target_ctr,
+        target_vcr: data.target_vcr,
+        created_by: data.created_by,
+        updated_by: data.updated_by,
+        deleted_by: data.deleted_by,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+        deleted_at: data.deleted_at,
+        account_id: data.account_id,
+        advertiser_id: data.advertiser_id,
+        budget_type_id: data.budget_type_id,
+        currency_id: data.currency_id,
+        timezone_id: data.timezone_id,
+        optimization_strategy_id: data.optimization_strategy_id,
+        strategy_id: data.strategy_id,
+        campaign_pacing_id: data.campaign_pacing_id,
+        kpi_campaign_id: data.kpi_campaign_id,
+        trafficker_id: data.trafficker_id,
         frequency_caps: frequency_caps
       } as Campaing
+
+      return success('', campaing)
     }
 
     console.log('ERROR: ', response)
 
-    return null
-  } catch (error) {
-    console.log('EXCEPTION: ', error)
-    return null
+    return error(response.message, response.errors)
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
+    return error(GetMessage(err), GetErrors(err))
   }
 }
 
@@ -163,11 +172,11 @@ export async function changeStatus (id: number, status: boolean, token: string) 
     const active = status ? 1 : 0
     const response = await AxiosPut(ROUTES.CAMPAING_ROUTE + '/' + id + '/set/' + active, {}, token)
 
-    if (!isEmpty(response) && !isUndefined(response.id)) {
+    if (response.success) {
       return true
     }
 
-    console.log('ERROR: ', response.message)
+    console.log('ERROR: ', response)
 
     return false
   } catch (error) {
@@ -180,10 +189,11 @@ export async function show (id: number, token: string) {
   try {
     const response = await AxiosGet(ROUTES.CAMPAING_ROUTE + '/' + id, token)
 
-    if (!isEmpty(response) && !isUndefined(response.id)) {
+    if (response.success) {
+      let data = response.content
       let frequency_caps = [] as any
 
-      forEach(response.frequency_caps, function (value, key) {
+      forEach(data.frequency_caps, function (value, key) {
         const fc = {
           id: value.id,
           impressions: value.impressions,
@@ -203,86 +213,88 @@ export async function show (id: number, token: string) {
         frequency_caps.push(fc)
       })
 
-      return {
-        id: response.id,
-        name: response.name,
-        budget: response.budget,
-        daily_budget: response.daily_budget,
-        start_date: response.start_date,
-        end_date: response.end_date,
-        active: response.active,
-        alternative_id: response.alternative_id,
-        external_id: response.external_id,
-        spend: response.spend,
-        automatic_allocation: response.automatic_allocation,
-        kpi_objective: response.kpi_objective,
-        cpm_bid: response.cpm_bid,
-        target_ecpc: response.target_ecpc,
-        target_ctr: response.target_ctr,
-        target_vcr: response.target_vcr,
-        created_by: response.created_by,
-        updated_by: response.updated_by,
-        deleted_by: response.deleted_by,
-        created_at: response.created_at,
-        updated_at: response.updated_at,
-        deleted_at: response.deleted_at,
-        account_id: response.account_id,
-        advertiser_id: response.advertiser_id,
-        budget_type_id: response.budget_type_id,
-        currency_id: response.currency_id,
-        timezone_id: response.timezone_id,
-        optimization_strategy_id: response.optimization_strategy_id,
-        strategy_id: response.strategy_id,
-        campaign_pacing_id: response.campaign_pacing_id,
-        kpi_campaign_id: response.kpi_campaign_id,
-        trafficker_id: response.trafficker_id,
+      let campaing = {
+        id: data.id,
+        name: data.name,
+        budget: data.budget,
+        daily_budget: data.daily_budget,
+        start_date: data.start_date,
+        end_date: data.end_date,
+        active: data.active,
+        alternative_id: data.alternative_id,
+        external_id: data.external_id,
+        spend: data.spend,
+        automatic_allocation: data.automatic_allocation,
+        kpi_objective: data.kpi_objective,
+        cpm_bid: data.cpm_bid,
+        target_ecpc: data.target_ecpc,
+        target_ctr: data.target_ctr,
+        target_vcr: data.target_vcr,
+        created_by: data.created_by,
+        updated_by: data.updated_by,
+        deleted_by: data.deleted_by,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+        deleted_at: data.deleted_at,
+        account_id: data.account_id,
+        advertiser_id: data.advertiser_id,
+        budget_type_id: data.budget_type_id,
+        currency_id: data.currency_id,
+        timezone_id: data.timezone_id,
+        optimization_strategy_id: data.optimization_strategy_id,
+        strategy_id: data.strategy_id,
+        campaign_pacing_id: data.campaign_pacing_id,
+        kpi_campaign_id: data.kpi_campaign_id,
+        trafficker_id: data.trafficker_id,
         frequency_caps: frequency_caps,
         budget_type: {
-          id: response.budget_type.id,
-          description: response.budget_type.description
+          id: data.budget_type.id,
+          description: data.budget_type.description
         },
         currency: {
-          id: response.currency.id,
-          name: response.currency.name
+          id: data.currency.id,
+          name: data.currency.name
         },
         advertiser: {
-          id: response.advertiser.id,
-          name: response.advertiser.name
+          id: data.advertiser.id,
+          name: data.advertiser.name
         },
         timezone: {
-          id: response.timezone.id,
-          name: response.timezone.name
+          id: data.timezone.id,
+          name: data.timezone.name
         },
         optimization_strategy: {
-          id: response.optimization_strategy.id,
-          description: response.optimization_strategy.description
+          id: data.optimization_strategy.id,
+          description: data.optimization_strategy.description
         },
         strategy: {
-          id: response.strategy.id,
-          description: response.strategy.description
+          id: data.strategy.id,
+          description: data.strategy.description
         },
         campaign_pacing: {
-          id: response.campaign_pacing.id,
-          description: response.campaign_pacing.description
+          id: data.campaign_pacing.id,
+          description: data.campaign_pacing.description
         },
         kpi_campaign: {
-          id: response.kpi_campaign.id,
-          description: response.kpi_campaign.description
+          id: data.kpi_campaign.id,
+          description: data.kpi_campaign.description
         },
         trafficker: {
-          id: response.trafficker.id,
-          name: response.trafficker.name,
-          last_name: response.trafficker.last_name
+          id: data.trafficker.id,
+          name: data.trafficker.name,
+          last_name: data.trafficker.last_name
         }
       } as Campaing
+
+      return success('', campaing)
     }
 
-    console.log('ERROR: ', response.message)
+    console.log('ERROR: ', response)
 
-    return null
-  } catch (error) {
-    console.log('EXCEPTION: ', error)
-    return null
+    return error(response.message, response.errors)
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
+    return error(GetMessage(err), GetErrors(err))
   }
 }
 
@@ -304,7 +316,7 @@ export async function all (token: string, filters?: CampaingFilters, options?: C
 
     const campaings = [] as any
 
-    if (!isEmpty(response) && response.length > 0) {
+    if (response.success) {
       forEach(response, function (value, key) {
         const campaing = {
           id: value.id,
@@ -344,15 +356,15 @@ export async function all (token: string, filters?: CampaingFilters, options?: C
         campaings.push(campaing)
       })
 
-      return campaings
+      return success('', campaings)
     }
 
-    console.log('ERROR: ', response.message)
+    console.log('ERROR: ', response)
 
-    return null
-  } catch (error) {
-    console.log('EXCEPTION: ', error)
-    return null
+    return error(response.message, response.errors)
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
+    return error(GetMessage(err), GetErrors(err))
   }
 }
 
@@ -374,8 +386,10 @@ export async function paginated (token: string, paginated: CampaingPaginated, fi
 
     const campaings = [] as any
 
-    if (!isEmpty(response) && !isUndefined(response.data) && response.data.length > 0) {
-      forEach(response.data, function (value, key) {
+    if (response.success) {
+      let data = response.content.data
+
+      forEach(data, function (value, key) {
         const campaing = {
           id: value.id,
           name: value.name,
@@ -414,18 +428,18 @@ export async function paginated (token: string, paginated: CampaingPaginated, fi
         campaings.push(campaing)
       })
 
-      return {
+      return success('', {
         page: paginated.page,
         campaings
-      }
+      })
     }
 
-    console.log('ERROR: ', response.message)
+    console.log('ERROR: ', response)
 
-    return null
-  } catch (error) {
-    console.log('EXCEPTION: ', error)
-    return null
+    return error(response.message, response.errors)
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
+    return error(GetMessage(err), GetErrors(err))
   }
 }
 
@@ -447,8 +461,10 @@ export async function list (token: string, filters?: CampaingFilters, options?: 
 
     const list = [] as any
 
-    if (!isEmpty(response)) {
-      forEach(response, function (value, key) {
+    if (response.success) {
+      let data = response.content
+
+      forEach(data, function (value, key) {
         const item = {
           id: parseInt(key),
           value: value
@@ -457,15 +473,15 @@ export async function list (token: string, filters?: CampaingFilters, options?: 
         list.push(item)
       })
 
-      return list
+      return success('', list)
     }
 
-    console.log('ERROR: ', response.message)
+    console.log('ERROR: ', response)
 
-    return null
-  } catch (error) {
-    console.log('EXCEPTION: ', error)
-    return null
+    return error(response.message, response.errors)
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
+    return error(GetMessage(err), GetErrors(err))
   }
 }
 

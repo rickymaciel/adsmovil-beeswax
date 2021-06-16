@@ -3,6 +3,7 @@
 		:headers="prepareTableHeaders"
 		:items="prepareTableContent"
 		:title="title"
+		:customList="customList"
 	></TableListModelTree>
 </template>
 
@@ -25,54 +26,23 @@
 
 	export default Vue.extend({
 		name: "ModelTree",
-		props: {},
+		props: {
+			customList: {
+				type: Object,
+				default: {},
+			},
+			items: {
+				type: Array,
+				default: [],
+			},
+		},
 		components: { TableListModelTree },
 		data: () => ({
 			title: "Table List Model Tree",
 		}),
 		created() {},
-		async mounted() {
-			const result = [];
-		},
+		async mounted() {},
 		computed: {
-			getData() {
-				return [
-					{
-						id: 1,
-						items: ["item 1", "item 2", "item 3"],
-						value: "Value 1",
-						name: "Item List 1",
-						actions: ["create", "edit", "delete"],
-					},
-					{
-						id: 2,
-						items: ["item 1", "item 2", "item 3"],
-						value: "Value 2",
-						name: "Item List 2",
-						actions: ["create", "edit", "delete"],
-					},
-					{
-						id: 3,
-						items: ["item 1", "item 2", "item 3"],
-						value: "Value 3",
-						name: "Item List 3",
-						actions: ["create", "edit", "delete"],
-					},
-				];
-			},
-			getLists(): ListItemModelTree[] {
-				/*const result: ResultPaginate = this.getData;
-					if (
-						isUndefined(result) ||
-						isNull(result) ||
-						isUndefined(result?.data) ||
-						isNull(result?.data)
-					) {
-						return [];
-					}
-					return result.data;*/
-				return this.getData;
-			},
 			prepareTableHeaders() {
 				return [
 					{
@@ -87,7 +57,14 @@
 						align: "start",
 						sortable: false,
 						filterable: true,
-						value: "items",
+						value: "list_item_prefix",
+					},
+					{
+						text: "",
+						align: "start",
+						sortable: false,
+						filterable: true,
+						value: "list_item_value",
 					},
 					{
 						text: "Value",
@@ -113,17 +90,21 @@
 				];
 			},
 			prepareTableContent() {
-				const lists = this.getLists;
+				const entities = this.items;
 
-				if (isUndefined(lists) || isNull(lists)) return [];
+				if (isUndefined(entities) || isNull(entities)) return [];
 
-				return lists.map((item: ListItemModelTree) => {
+				return entities.map((item: any) => {
 					return {
 						id: item?.id,
-						items: item?.items,
+						list_item_prefix: item?.list_item_prefix,
+						list_item_prefix_text: item?.list_item_prefix_text,
+						list_item_value: item?.list_item_value,
 						value: item?.value,
 						name: item?.name,
 						actions: item?.actions,
+						active: item?.active,
+						status: true,
 					};
 				});
 			},

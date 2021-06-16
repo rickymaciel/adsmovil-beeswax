@@ -106,6 +106,7 @@ export interface Category {
 }
 
 export interface AdvertiserFilters {
+    id?: string;
     name?: string;
     category_id?: number;
     external_id?: number;

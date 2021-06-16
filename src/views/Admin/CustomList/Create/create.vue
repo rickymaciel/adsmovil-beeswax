@@ -126,11 +126,8 @@
 				return await valid;
 			},
 			async handleSubmit() {
-				console.log("--- handleSubmit ---");
 				if (!(await this.validate())) return;
-				console.log("--- dispatchCreateCustomList ---");
 				this.dispatchCreateCustomList().then((result: any) => {
-					console.log("dispatchCreateCustomList", { result: result });
 					this.$router.push({
 						name: "CustomListShow",
 						params: { id: result.id },
@@ -175,12 +172,10 @@
 
 				switch (this.option_selected) {
 					case "manually":
-						console.log("--- Método Manual ---");
 						await this.dispatchModelView(data);
 
 						break;
 					case "upload":
-						console.log("--- Método Automático ---");
 
 						break;
 					default:
@@ -188,9 +183,7 @@
 				}
 			},
 
-			handleTypeModelChange() {
-				console.log("--- Model Selected: ", this.option_selected);
-			},
+			handleTypeModelChange() {},
 		},
 
 		watch: {

@@ -1,24 +1,9 @@
 <template>
 	<section>
-		<!-- <v-card dark>
-			<v-card-text>
-				{{ headers }}
-			</v-card-text>
-		</v-card>
-		<v-card dark>
-			<v-card-text>
-				{{ items ? items.length : "N/A" }}
-			</v-card-text>
-		</v-card>
-		<v-card dark>
-			<v-card-text>
-				{{ filters }}
-			</v-card-text>
-		</v-card> -->
 		<v-data-table
 			:headers="headers"
 			:items="items"
-			:items-per-page="limit"
+			:items-per-page="perPage"
 			item-key="advertiser"
 			class="elevation-1"
 			hide-default-footer
@@ -26,309 +11,99 @@
 		>
 			<!-- ID -->
 			<template v-slot:[`header.id`]="{ header }">
-				<v-menu :close-on-content-click="false">
-					<template v-slot:activator="{ on, attrs }">
-						<div v-bind="attrs" v-on="on">
-							{{ header.text.toUpperCase() }}
-							<v-icon>mdi-chevron-down</v-icon>
-						</div>
-					</template>
-
-					<v-list subheader>
-						<v-subheader>Sort</v-subheader>
-
-						<v-list-item>
-							<v-text-field
-								class="label-fixed no-top"
-								ref="id"
-								v-numeric
-								v-model="filters.id"
-								type="number"
-								:placeholder="header.text"
-								clearable
-								@input="debounceInput"
-							></v-text-field>
-						</v-list-item>
-
-						<v-divider></v-divider>
-
-						<v-list-item>
-							<v-radio-group
-								v-model="options.order"
-								@change="debounceInput"
-							>
-								<v-radio color="secondary" value="asc">
-									<template v-slot:label>
-										<div>Ascending</div>
-									</template>
-								</v-radio>
-								<v-radio color="secondary" value="desc">
-									<template v-slot:label>
-										<div>Descending</div>
-									</template>
-								</v-radio>
-							</v-radio-group>
-						</v-list-item>
-					</v-list>
-				</v-menu>
+				<Filterable
+					field_name="id"
+					type="number"
+					:filters="filters"
+					:header="header"
+					:option="option"
+					@selected-option="selectedOption"
+				></Filterable>
 			</template>
 
 			<!-- ADVERTISER NAME -->
 			<template v-slot:[`header.advertiser_name`]="{ header }">
-				<v-menu :close-on-content-click="false">
-					<template v-slot:activator="{ on, attrs }">
-						<div v-bind="attrs" v-on="on">
-							{{ header.text }}
-							<v-icon>mdi-chevron-down</v-icon>
-						</div>
-					</template>
-
-					<v-list subheader>
-						<v-subheader>Filter</v-subheader>
-
-						<v-list-item>
-							<v-text-field
-								class="label-fixed no-top"
-								ref="id"
-								v-model="filters.advertiser_name"
-								@input="debounceInput"
-								type="text"
-								:placeholder="header.text"
-								clearable
-							></v-text-field>
-						</v-list-item>
-
-						<v-divider></v-divider>
-
-						<v-list-item>
-							<v-btn
-								color="secondary"
-								elevation="2"
-								block
-								outlined
-								rounded
-								@click="removeFilter('advertiser_name')"
-							>
-								Remove filter
-							</v-btn>
-						</v-list-item>
-					</v-list>
-				</v-menu>
+				<Filterable
+					field_name="advertiser_name"
+					type="text"
+					:filters="filters"
+					:header="header"
+					:option="option"
+					@selected-option="selectedOption"
+				></Filterable>
 			</template>
 
 			<!-- CAMPAIGN NAME -->
 			<template v-slot:[`header.name`]="{ header }">
-				<v-menu :close-on-content-click="false">
-					<template v-slot:activator="{ on, attrs }">
-						<div v-bind="attrs" v-on="on">
-							{{ header.text }}
-							<v-icon>mdi-chevron-down</v-icon>
-						</div>
-					</template>
-
-					<v-list subheader>
-						<v-subheader>Filter</v-subheader>
-
-						<v-list-item>
-							<v-text-field
-								class="label-fixed no-top"
-								ref="id"
-								v-model="filters.name"
-								@input="debounceInput"
-								type="text"
-								:placeholder="header.text"
-								clearable
-							></v-text-field>
-						</v-list-item>
-
-						<v-divider></v-divider>
-
-						<v-list-item>
-							<v-btn
-								color="secondary"
-								elevation="2"
-								block
-								outlined
-								rounded
-								@click="removeFilter('name')"
-							>
-								Remove filter
-							</v-btn>
-						</v-list-item>
-					</v-list>
-				</v-menu>
+				<Filterable
+					field_name="name"
+					type="text"
+					:filters="filters"
+					:header="header"
+					:option="option"
+					@selected-option="selectedOption"
+				></Filterable>
 			</template>
 
 			<!-- BUDGET -->
 			<template v-slot:[`header.budget`]="{ header }">
-				<v-menu :close-on-content-click="false">
-					<template v-slot:activator="{ on, attrs }">
-						<div v-bind="attrs" v-on="on">
-							{{ header.text }}
-							<v-icon>mdi-chevron-down</v-icon>
-						</div>
-					</template>
-
-					<v-list subheader>
-						<v-subheader>Filter</v-subheader>
-
-						<v-list-item>
-							<v-text-field
-								class="label-fixed no-top"
-								ref="id"
-								v-model="filters.budget"
-								@input="debounceInput"
-								type="text"
-								:placeholder="header.text"
-								clearable
-							></v-text-field>
-						</v-list-item>
-
-						<v-divider></v-divider>
-
-						<v-list-item>
-							<v-btn
-								color="secondary"
-								elevation="2"
-								block
-								outlined
-								rounded
-								@click="removeFilter('budget')"
-							>
-								Remove filter
-							</v-btn>
-						</v-list-item>
-					</v-list>
-				</v-menu>
+				<Filterable
+					field_name="budget"
+					type="number"
+					:filters="filters"
+					:header="header"
+					:option="option"
+					@selected-option="selectedOption"
+				></Filterable>
 			</template>
 
 			<!-- CAMPAIGN SPEND -->
 			<template v-slot:[`header.spend`]="{ header }">
-				<v-menu :close-on-content-click="false">
-					<template v-slot:activator="{ on, attrs }">
-						<div v-bind="attrs" v-on="on">
-							{{ header.text }}
-							<v-icon>mdi-chevron-down</v-icon>
-						</div>
-					</template>
-
-					<v-list subheader>
-						<v-subheader>Filter</v-subheader>
-
-						<v-list-item>
-							<v-text-field
-								class="label-fixed no-top"
-								ref="id"
-								v-model="filters.spend"
-								@input="debounceInput"
-								type="number"
-								:placeholder="header.text"
-								clearable
-							></v-text-field>
-						</v-list-item>
-
-						<v-divider></v-divider>
-
-						<v-list-item>
-							<v-btn
-								color="secondary"
-								elevation="2"
-								block
-								outlined
-								rounded
-								@click="removeFilter('spend')"
-							>
-								Remove filter
-							</v-btn>
-						</v-list-item>
-					</v-list>
-				</v-menu>
+				<Filterable
+					field_name="spend"
+					type="number"
+					:filters="filters"
+					:header="header"
+					:option="option"
+					@selected-option="selectedOption"
+				></Filterable>
 			</template>
 
 			<!-- START DATE -->
 			<template v-slot:[`header.start_date`]="{ header }">
-				<v-menu :close-on-content-click="false">
-					<template v-slot:activator="{ on, attrs }">
-						<div v-bind="attrs" v-on="on">
-							{{ header.text }}
-							<v-icon>mdi-chevron-down</v-icon>
-						</div>
-					</template>
-
-					<v-list subheader>
-						<v-subheader>Filter</v-subheader>
-
-						<v-list-item>
-							<v-text-field
-								class="label-fixed no-top"
-								ref="id"
-								v-model="filters.start_date"
-								@input="debounceInput"
-								type="text"
-								:placeholder="header.text"
-								clearable
-							></v-text-field>
-						</v-list-item>
-
-						<v-divider></v-divider>
-
-						<v-list-item>
-							<v-btn
-								color="secondary"
-								elevation="2"
-								block
-								outlined
-								rounded
-								@click="removeFilter('start_date')"
-							>
-								Remove filter
-							</v-btn>
-						</v-list-item>
-					</v-list>
-				</v-menu>
+				<Filterable
+					field_name="start_date"
+					type="text"
+					:filters="filters"
+					:header="header"
+					:option="option"
+					@selected-option="selectedOption"
+				></Filterable>
 			</template>
 
 			<!-- END DATE -->
-			<template v-slot:[`header.endDate`]="{ header }">
-				<v-menu :close-on-content-click="false">
-					<template v-slot:activator="{ on, attrs }">
-						<div v-bind="attrs" v-on="on">
-							{{ header.text }}
-							<v-icon>mdi-chevron-down</v-icon>
-						</div>
-					</template>
+			<template v-slot:[`header.end_date`]="{ header }">
+				<Filterable
+					field_name="end_date"
+					type="text"
+					:filters="filters"
+					:header="header"
+					:option="option"
+					@selected-option="selectedOption"
+				></Filterable>
+			</template>
 
-					<v-list subheader>
-						<v-subheader>Filter</v-subheader>
-
-						<v-list-item>
-							<v-text-field
-								class="label-fixed no-top"
-								ref="id"
-								v-model="filters.end_date"
-								@input="debounceInput"
-								type="text"
-								:placeholder="header.text"
-								clearable
-							></v-text-field>
-						</v-list-item>
-
-						<v-divider></v-divider>
-
-						<v-list-item>
-							<v-btn
-								color="secondary"
-								elevation="2"
-								block
-								outlined
-								rounded
-								@click="removeFilter('end_date')"
-							>
-								Remove filter
-							</v-btn>
-						</v-list-item>
-					</v-list>
-				</v-menu>
+			<!-- active -->
+			<template v-slot:[`header.active`]="{ header }">
+				<Filterable
+					field_name="active"
+					type="text"
+					:filters="filters"
+					:header="header"
+					:option="option"
+					:filter_by_active="true"
+					@selected-option="selectedOption"
+				></Filterable>
 			</template>
 
 			<!-- ASSOSIATED LINE ITEM -->
@@ -460,12 +235,10 @@
 </template>
 
 <script lang="ts">
-	import { debounce, isEmpty, isNull } from "lodash";
+	import { isEmpty } from "lodash";
 	import Vue from "vue";
-	import {
-		CampaingFilters,
-		CampaingOptions,
-	} from "../../../../interfaces/campaign";
+	import Filterable from "../../../../components/Header/Tables/Filterable.vue";
+	import { SortingOption } from "../../../../interfaces/paginated";
 
 	export default Vue.extend({
 		name: "TableList",
@@ -499,51 +272,22 @@
 				type: Array,
 				default: [],
 			},
-			limit: {
-				type: Number,
-				default: 15,
-			},
-			options: {
+			option: {
 				type: Object,
 				default: function () {
-					return {
-						sort: "",
-						order: "asc",
-					} as CampaingOptions;
+					return {};
 				},
 			},
-			filters_init: {
+			filters: {
 				type: Object,
 				default: function () {
-					return {
-						name: undefined,
-						budget: undefined,
-						start_date: undefined,
-						end_date: undefined,
-						spend: undefined,
-						active: undefined,
-						automatic_allocation: undefined,
-						alternative_id: undefined,
-						advertiser_name: undefined,
-						budget_type: undefined,
-						currency_name: undefined,
-						optimization_strategy_name: undefined,
-						strategy_name: undefined,
-						campaign_pacing_name: undefined,
-						kpi_campaign_name: undefined,
-						bid_shading_name: undefined,
-						timezone_name: undefined,
-						trafficker_name: undefined,
-					} as CampaingFilters;
+					return {};
 				},
 			},
 		},
-		components: {},
+		components: { Filterable },
 		data: function () {
-			return {
-				radios: false,
-				filters: this.filters_init,
-			};
+			return {};
 		},
 		created() {},
 		mounted() {},
@@ -560,6 +304,11 @@
 			getLength() {
 				return Math.ceil(this.total / this.per_page);
 			},
+			perPage() {
+				return !isNaN(this.per_page) && isEmpty(this.per_page)
+					? this.per_page
+					: 25;
+			},
 		},
 
 		methods: {
@@ -572,25 +321,11 @@
 			updatePaginate(data: Number) {
 				this.$emit("update-paginate", data);
 			},
-
-			getFilter(value: any): any {
-				return !isNull(value) && !isEmpty(value) ? value : undefined;
-			},
-
-			debounceInput: debounce(function async(e) {
-				this.emitParams();
-			}, 500),
-
-			emitParams() {
-				this.$emit("update-params", {
-					filters: (this as any).filters,
-					options: (this as any).options,
+			selectedOption(params: { option: SortingOption; filter: string }) {
+				this.$emit("selected-option", {
+					option: params.option,
+					filter: params.filter,
 				});
-			},
-
-			removeFilter(input: any) {
-				(this as any).filters[input] = undefined;
-				(this as any).emitParams();
 			},
 		},
 	});

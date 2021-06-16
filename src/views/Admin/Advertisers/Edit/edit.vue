@@ -1,6 +1,6 @@
 <template>
 	<v-container class="my-0">
-		<Alertize @return-alertize="redirectTo"></Alertize>
+		<Alertize></Alertize>
 		<v-layout column>
 			<v-form
 				ref="form"
@@ -8,6 +8,7 @@
 				align="center"
 				v-model="valid"
 				lazy-validation
+				@submit.prevent="handleSubmit"
 			>
 				<v-container>
 					<v-row no-gutters>
@@ -22,13 +23,15 @@
 							>
 								<v-text-field
 									v-model="id"
-									:rules="idRules"
+									:rules="[
+										getRules.isNumber,
+										getRules.isRequired,
+									]"
 									hint="Advertiser ID"
 									ref="name"
 									placeholder="Advertiser ID"
 									label="Advertiser ID*"
 									class="label-fixed disabled"
-									disabled
 								></v-text-field>
 							</v-card>
 						</v-col>
@@ -46,7 +49,11 @@
 							>
 								<v-text-field
 									v-model="name"
-									:rules="nameRules"
+									:rules="[
+										getRules.isRequired,
+										getRules.isMinLength,
+										getRules.isMaxLength,
+									]"
 									hint="Advertiser Name"
 									ref="name"
 									placeholder="Advertiser Name"
@@ -69,7 +76,10 @@
 								<v-autocomplete
 									class="label-fixed"
 									v-model="category_id"
-									:rules="categoryRules"
+									:rules="[
+										getRules.isRequired,
+										getRules.isNumber,
+									]"
 									:hint="`Advertiser Category`"
 									:items="getCategories"
 									ref="category_id"
@@ -102,12 +112,14 @@
 										<v-text-field
 											v-model="domain"
 											ref="domain"
-											:rules="domainRules"
+											:rules="[
+												getRules.isRequired,
+												getRules.isDomain,
+											]"
 											hint="Advertiser Domain"
 											placeholder="Advertiser Domain"
 											label="Advertiser Domain*"
 											class="label-fixed"
-											prefix="https://"
 											append-outer-icon="mdi-help-circle-outline"
 											@click:append-outer="
 												toggleTooltipDomain()
@@ -140,7 +152,7 @@
 									<template v-slot:activator="{}">
 										<v-text-field
 											v-model="app_bundle"
-											:rules="appBundleRules"
+											:rules="[getRules.isRequired]"
 											ref="app_bundle"
 											hint="Advertiser App Bundle"
 											placeholder="Advertiser App Bundle"
@@ -212,14 +224,15 @@
 							>
 								<v-row align="center" justify="center">
 									<v-btn
+										type="submit"
 										rounded
 										color="secondary"
 										class="mx-2 px-8"
-										@click="handleSubmit"
 									>
 										{{ $t("save") }}
 									</v-btn>
 									<v-btn
+										type="button"
 										rounded
 										color="secondary"
 										class="mx-2 px-8"
@@ -245,10 +258,18 @@
 		AdvertiserDataUpdate,
 		Category,
 	} from "../../../../interfaces/advertiser";
-	import { isEmpty, isNull, isUndefined, isNaN, last, toNumber } from "lodash";
+	import { isNaN, last, toNumber } from "lodash";
 
 	import Alertize from "../../../../components/Alertize.vue";
-	import { Notification, MessageTypes } from "../../../../interfaces/proccess";
+	import { Notification } from "../../../../interfaces/proccess";
+
+	import {
+		isRequired,
+		isNumber,
+		isDomain,
+		isMinLength,
+		isMaxLength,
+	} from "../../../../services/rule-services";
 
 	export default Vue.extend({
 		name: "AdvertiserCreate",
@@ -264,9 +285,9 @@
 			show_tooltip_app_bundle: false,
 			show_tooltip_domain: false,
 
-			id: NaN,
+			id: undefined,
 			name: "",
-			category_id: NaN,
+			category_id: undefined,
 			domain: "",
 			app_bundle: "",
 			active: true,
@@ -281,7 +302,7 @@
 				this.id = this.advertiser.id;
 				this.name = this.advertiser.name;
 				this.category_id = this.advertiser.category_id;
-				this.domain = this.advertiser.domain;
+				this.domain = this.advertiser.domain || "https://";
 				this.app_bundle = this.advertiser.app_bundle;
 				this.active = this.advertiser.active;
 				this.setLoading(false);
@@ -289,6 +310,7 @@
 				this.setLoading(false);
 				console.log("mounted", { error: error });
 			}
+			this.$refs.form.resetValidation();
 		},
 		computed: {
 			getId() {
@@ -299,53 +321,20 @@
 			getCategories(): Category[] {
 				return this.$store.state.advertiser.categories;
 			},
-			idRules() {
-				return [(v: number) => (v && !isNaN(v)) || this.$t("numeric")];
-			},
-			nameRules() {
-				return [
-					(v: string) =>
-						(!isUndefined(v) && !isNull(v) && !isEmpty(v)) ||
-						this.$t("fieldRequired"),
-					(v: string) =>
-						(v && v.length <= 255) ||
-						this.$t("maxLength", { max: 255 }),
-					(v: string) =>
-						(v && v.length >= 2) || this.$t("minLength", { min: 2 }),
-				];
-			},
-			categoryRules() {
-				return [
-					(v: any) =>
-						(!isNull(v) && !isNaN(v)) || this.$t("fieldRequired"),
-				];
-			},
-			domainRules() {
-				return [
-					(v: string) =>
-						(!isUndefined(v) && !isNull(v) && !isEmpty(v)) ||
-						this.$t("fieldRequired"),
-					(v: string) =>
-						/^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)/gim.test(
-							v
-						) || this.$t("domainRegex"),
-				];
-			},
-			appBundleRules() {
-				return [
-					(v: any) =>
-						(!isUndefined(v) && !isNull(v) && !isEmpty(v)) ||
-						this.$t("fieldRequired"),
-					(v: string) =>
-						/^(?:\w+|\w+\.\w+)+$/gim.test(v) ||
-						this.$t("appBundleRegex"),
-				];
-			},
 			getAdvertiser(): Advertiser {
 				return this.advertiser;
 			},
 			isAlertize(): Boolean {
 				return this.$store.state.proccess.alertize;
+			},
+			getRules() {
+				return {
+					isRequired,
+					isNumber,
+					isDomain,
+					isMinLength,
+					isMaxLength,
+				};
 			},
 		},
 		methods: {

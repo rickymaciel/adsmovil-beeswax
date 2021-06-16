@@ -1,4 +1,6 @@
 import { isEmpty, isUndefined, forEach } from 'lodash'
+import { success, error } from '@/api/handlers/HandlerResponse'
+import { GetMessage, GetErrors } from '@/api/handlers/HandlerError'
 import { AxiosGet } from '@/api/AxiosService'
 import { CreativeSize } from '@/interfaces/ad_size'
 
@@ -10,8 +12,10 @@ export async function creativeSize (token: string) {
 
     const creatives = [] as any
 
-    if (!isEmpty(response) && response.length > 0) {
-      forEach(response, function (value, key) {
+    if (response.success) {
+      let data = response.content
+
+      forEach(data, function (value, key) {
         const cs = {
           id: value.id,
           name: value.name, //Key to use
@@ -23,12 +27,14 @@ export async function creativeSize (token: string) {
         creatives.push(cs)
       })
 
-      return creatives
+      return success('', creatives)
     }
 
-    return null
-  } catch (error) {
-    console.log('EXCEPTION: ', error)
-    return null
+    console.log('ERROR: ', response)
+
+    return error(response.message, response.errors)
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
+    return error(GetMessage(err), GetErrors(err))
   }
 }

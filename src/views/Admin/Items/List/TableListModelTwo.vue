@@ -4,7 +4,8 @@
 		<v-data-table
 			:headers="headers"
 			:items="records"
-			item-key="modifier"
+			:items-per-page="records.length"
+			item-key="listItem"
 			class="elevation-1"
 			hide-default-footer
 			:mobile-breakpoint="null"
@@ -57,10 +58,9 @@
 			<template v-slot:[`item.id`]="{ item }">
 				<v-text-field
 					v-model="item.id"
-					:rules="itemIdRules"
-					placeholder="Item ID"
-					class="label-fixed"
-					counter="255"
+					placeholder="ID"
+					class="label-fixed disabled"
+					disabled
 				></v-text-field>
 			</template>
 
@@ -97,7 +97,6 @@
 								block
 								outlined
 								rounded
-								@click="removeFilterLatitude()"
 							>
 								Remove filter
 							</v-btn>
@@ -109,10 +108,11 @@
 			<template v-slot:[`item.latitude`]="{ item }">
 				<v-text-field
 					v-model="item.latitude"
-					:rules="latitudeRules"
+					:rules="getRules.lat"
 					placeholder="Latitude"
 					class="label-fixed"
-					counter="255"
+					:disabled="item.id > 0"
+					:class="{ disabled: item.id > 0 }"
 				></v-text-field>
 			</template>
 			
@@ -149,7 +149,6 @@
 								block
 								outlined
 								rounded
-								@click="removeFilterLongitude()"
 							>
 								Remove filter
 							</v-btn>
@@ -161,10 +160,11 @@
 			<template v-slot:[`item.longitude`]="{ item }">
 				<v-text-field
 					v-model="item.longitude"
-					:rules="longitudeRules"
+					:rules="getRules.long"
 					placeholder="Longitude"
 					class="label-fixed"
-					counter="255"
+					:disabled="item.id > 0"
+					:class="{ disabled: item.id > 0 }"
 				></v-text-field>
 			</template>
 
@@ -212,10 +212,11 @@
 			<template v-slot:[`item.radius`]="{ item }">
 				<v-text-field
 					v-model="item.radius"
-					:rules="radiusRules"
+					:rules="getRules.radius_km"
 					placeholder="Radius"
 					class="label-fixed"
-					counter="255"
+					:disabled="item.id > 0"
+					:class="{ disabled: item.id > 0 }"
 				></v-text-field>
 			</template>
 
@@ -263,10 +264,10 @@
 			<template v-slot:[`item.value`]="{ item }">
 				<v-text-field
 					v-model="item.value"
-					:rules="valueRules"
+					:rules="getRules.value"
 					placeholder="Value"
 					class="label-fixed"
-					counter="255"
+					@change="hasChanged(item)"
 				></v-text-field>
 			</template>
 
@@ -314,10 +315,10 @@
 			<template v-slot:[`item.name`]="{ item }">
 				<v-text-field
 					v-model="item.name"
-					:rules="nameRules"
+					:rules="getRules.required"
 					placeholder="Name"
 					class="label-fixed"
-					counter="255"
+					@change="hasChanged(item)"
 				></v-text-field>
 			</template>
 
@@ -326,8 +327,8 @@
 					<!-- Alert Icon Success -->
 					<v-icon
 						v-show="
-							item.success !== undefined &&
-							item.success
+							item.status !== undefined &&
+							item.status
 						"
 						small
 						style="color: rgb(66, 233, 66) !important"
@@ -338,8 +339,8 @@
 					<!-- Alert Icon Danger -->
 					<v-icon
 						v-show="
-							item.success !== undefined &&
-							item.success
+							item.status !== undefined &&
+							!item.status
 						"
 						small
 						style="color: rgb(235, 67, 67) !important"
@@ -404,7 +405,9 @@
 
 <script lang="ts">
 	import Vue from "vue";
-	import { ListItemModelTwo } from "./../Create/modelTwo.vue";
+	import { isEmpty, isNull, isUndefined, isNaN } from "lodash";
+	import { ListItemDataCreate } from "@/interfaces/list_items";
+
 	export default Vue.extend({
 		name: "TableListModelTwo",
 		props: {
@@ -420,10 +423,15 @@
 				type: String,
 				default: "",
 			},
+			customList: {
+				type: Object,
+				default: {},
+			}
 		},
 		components: {},
 		data: () => ({
 			records: Array,
+			entity: {} as ListItemDataCreate,
 			filter: {
 				id: {
 					value: "",
@@ -458,6 +466,9 @@
 
 		mounted() {
 			this.records = this.initialicerecords(this.items);
+			/*this.setLoading(true);
+			this.records await this.dispatchEntities(this?.customList?.id);
+			this.setLoading(false);*/
 		},
 
 		computed: {
@@ -465,29 +476,161 @@
 				this.filtered = this.items;
 				return this.filtered;
 			},
-			itemIdRules(){},
-			latitudeRules(){},
-			longitudeRules(){},
-			radiusRules(){},
-			valueRules(){},
-			nameRules(){},
+			getRules() {
+				return {
+					required: [(v: any) => Boolean(v) || this.$t("fieldRequired")],
+					lat: [
+						(v: any) => Boolean(v) || this.$t("fieldRequired"),
+						(v: number) => !isNaN(v) || this.$t("must-be-numeric"),
+						(v: number) => v >= -90 || this.$t("min", { min: -90 }),
+						(v: number) => v <= 90 || this.$t("max", { max: 90 }),
+					],
+					long: [
+						(v: any) => Boolean(v) || this.$t("fieldRequired"),
+						(v: number) => !isNaN(v) || this.$t("must-be-numeric"),
+						(v: number) => v >= -180 || this.$t("min", { min: -180 }),
+						(v: number) => v <= 180 || this.$t("max", { max: 180 }),
+					],
+					value: [
+						(v: number) => !isNaN(v) || this.$t("must-be-numeric"),
+						(v: number) => v >= 0 || this.$t("min", { min: 0 }),
+						(v: number) => v <= 100 || this.$t("max", { max: 100 }),
+					],
+					radius_km: [
+						(v: any) => Boolean(v) || this.$t("fieldRequired"),
+						(v: number) => !isNaN(v) || this.$t("must-be-numeric"),
+						(v: number) => v >= 0.001  || this.$t("min", { min: 0.001  }),
+						(v: number) => v <= 50 || this.$t("max", { max: 50 }),
+					],
+				};
+			},
 		},
 
 		methods: {
+			setNotification(notification: Notification) {
+				return this.$store.dispatch(
+					"proccess/setNotification",
+					notification,
+					{ root: true }
+				);
+			},
+			redirectTo() {
+				this.setNotification({ title: "", message: "", type: "" });
+				this.$router.push({ name: "CustomList" });
+			},
 			initialicerecords(oldRecords) {
-				const newRecords = oldRecords.map((r) => {
-					return {
-						...r,
-						success: undefined,
-					};
-				});
-				return newRecords;
+				return oldRecords;
+			},
+			validateEntity(entity: any): boolean {
+				
+				if( isUndefined(entity) || isNull(entity) ){
+					return false;
+					//entity = {errors: ["Item cannot be empty."]};
+				}//else{entity.errors = new Array;}
+
+				if( isUndefined(entity.latitude) || isNull(entity.latitude)  || entity.latitude == "" ){
+					return false;
+					//entity.errors?.push(this.$t("fieldRequired"));
+				}else{
+					let tempotalValue = parseFloat(entity.latitude);
+					if( isNaN(tempotalValue) || (tempotalValue < -90 ) ){
+						return false;
+						//entity.errors?.push(this.$t("min", { min: -90 }));
+					}else if( isNaN(tempotalValue) || tempotalValue > 90 ){
+						//entity.errors?.push(this.$t("min", { min: 90 }));
+						return false;
+					}
+				}
+
+				if( isUndefined(entity.longitude) || isNull(entity.longitude)  || entity.longitude == "" ){
+					return false;
+					//entity.errors?.push(this.$t("fieldRequired"));
+				}else{
+					let tempotalValue = parseFloat(entity.longitude);
+					if( isNaN(tempotalValue) || (tempotalValue < -180 ) ){
+						return false;
+						//entity.errors?.push(this.$t("min", { min: -180 }));
+					}else if( isNaN(tempotalValue) || tempotalValue > 180 ){
+						return false;
+						//entity.errors?.push(this.$t("min", { min: 180 }));
+					}
+				}
+
+				if( !isUndefined(entity.value) ){
+					let tempotalValue = parseFloat(entity.value);
+					if( isNaN(tempotalValue) ){
+						return false;
+						//entity.errors?.push(this.$t("must-be-numeric"));
+					}else if( tempotalValue < 0 ){
+						return false;
+						//entity.errors?.push(this.$t("min", { min: 0 }));
+					}else if( tempotalValue > 100 ){
+						return false;
+						//entity.errors?.push(this.$t("max", { max: 100 }));
+					}
+				}
+
+				if( isUndefined(entity.radius) ){
+					return false;
+					//entity.errors?.push(this.$t("fieldRequired"));
+				}else{
+					let tempotalValue = parseFloat(entity.radius);
+					if( isNaN(tempotalValue) ){
+						return false;
+						//entity.errors?.push(this.$t("must-be-numeric"));
+					}else if( tempotalValue < 0.001 ){
+						return false;
+						//entity.errors?.push(this.$t("min", { min: 0 }));
+					}else if( tempotalValue > 50 ){
+						return false;
+						//entity.errors?.push(this.$t("max", { max: 50 }));
+					}
+				}
+
+				/* if( entity && entity.errors ){
+					return !( entity.errors.length > 0);
+				}else{return false;} */
+				return true;
+			},
+			validate(entities: any[]): boolean {
+				if( isUndefined(entities) || isNull(entities) || isEmpty(entities) ){return false;}
+				let valid = true;
+				let index = 0;
+				while ( index < entities.length && valid ) {
+					valid = this.validateEntity(entities[index]);
+					entities[index].status = valid;
+					index++;
+				}
+				return valid;
 			},
 			async handleSubmit() {
-				console.log("--- handleSubmit ---");
+				try {
+					if ( !(await this.validate(this.records)) ) return;
+					this.setLoading(true);
+					let index: number = 0;
+					while ( index < this.records.length ) {
+						let result = await this.handleAction(this.records[index]);
+						if( result ){
+							this.records[index].id = result?.id;
+							this.records[index].value = result?.value;
+							this.records[index].name = result?.name;
+							this.records[index].edited = false;
+						}
+						index++;
+					}
+					this.setLoading(false);
+				} catch (error) {
+					this.setLoading(false);
+				}
+			},
+			setLoading(_loading: Boolean) {
+				this.$store.state.proccess.loading = _loading;
+			},
+			handleCancel() {
+				this.$router.push({ name: "CustomListIndex" });
 			},
 			handleAddItem() {
-				let item: ListItemModelTwo;
+				let item: any;
 				item = {
 					id: undefined,
 					latitude: undefined,
@@ -496,18 +639,62 @@
 					value: undefined,
 					name: undefined,
 					actions: [],
+					edited: false,
+					status: undefined,
 				};
-				this.records.push({
-					...item,
-					success: undefined,
-				});
+				let result = this.validate(this.records);
+				if( result || this.records.length == 0 ){this.records.push(item);}
 			},
-			handleCancel() {
-				console.log("--- handleCancel ---");
-			},
-			handleDelete(index) {
-				console.log("--- handleDelete ---", index);
+			async handleDelete(index) {
+				/*let result = await this.delete(this.records[index].id);
+				if( result && result.success ){
+					this.records.splice(index, 1);
+				}*/
 				this.records.splice(index, 1);
+			},
+			/*async dispatchEntities(id: number) {
+				return this.$store.dispatch("listItem/getAll", id, {
+					root: true,
+				});
+			},*/
+			async handleAction(item: any) {
+				this.entity = {
+					id: item?.id,
+					custom_list_id: this.customList?.id,
+					list_item: {
+						lat: parseFloat(item?.latitude),
+						long: parseFloat(item?.longitude),
+						radius_km: parseFloat(item?.radius),
+					},
+					name: item?.name?.toString()?.trim(),
+					value: parseFloat(item?.value),
+					edited: item?.edited,
+				} as any;
+				let result:any = undefined;
+				if( this.entity && this.entity?.id > 0 ){
+					if( this.entity.edited ){
+						result = await this.$store.dispatch("listItem/update", {listItem: this.entity, customListType: "lat_long"}, {
+							root: true,
+						});
+					}
+				}else if ( this.entity ) {
+					result = await this.$store.dispatch("listItem/create", {listItem: this.entity, customListType: "lat_long"}, {
+						root: true,
+					});
+				}
+				return result;
+			},
+			async delete(id: number) {				
+				if( id && id > 0 ){
+					return await this.$store.dispatch("listItem/delete", id, {
+						root: true,
+					});
+				}
+				return {success: true};
+			},
+			hasChanged(entity: any){
+				entity.edited = true;
+				return entity;
 			},
 		},
 	});

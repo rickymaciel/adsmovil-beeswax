@@ -39,6 +39,10 @@ const DOMAIN_LIST_ROUTE = 'api/list/custom_lists/domain'
 const AD_POSITION_ROUTE = 'api/list/ad_positions'
 const BID_SHADING_ROUTE = 'api/list/bid_shadings'
 const BID_STRATEGY_ROUTE = 'api/list/bid_strategy'
+const LINE_PACING_ROUTE = 'api/list/line_pacing'
+const LINE_ITEM_TYPE_ROUTE = 'api/list/line_items_types'
+const CREATIVE_METHOD_ROUTE = 'api/list/creatives_methods'
+const LINE_ITEMS_ROUTE = 'api/line_items'
 
 module.exports = {
   ADVERTISER: {
@@ -68,6 +72,9 @@ module.exports = {
   CAMPAING: {
     CAMPAING_ROUTE
   },
+  CREATIVES: {
+    CREATIVE_METHOD_ROUTE
+  },
   CURRENCY: {
     CURRENCY_ROUTE
   },
@@ -92,6 +99,10 @@ module.exports = {
   KPI: {
     CAMPAING_KPI_ROUTE
   },
+  LINE_ITEMS: {
+    LINE_ITEM_TYPE_ROUTE,
+    LINE_ITEMS_ROUTE
+  },
   MATCHING: {
     MATCHING_ROUTE
   },
@@ -101,7 +112,8 @@ module.exports = {
     MODIFIER_ROUTE
   },
   PACING: {
-    CAMPAING_PACING_ROUTE
+    CAMPAING_PACING_ROUTE,
+    LINE_PACING_ROUTE
   },
   STRATEGIES: {
     STRATEGY_ROUTE,
