@@ -23,6 +23,7 @@
     "fieldRequired": "Este campo é obrigatório",
     "minLength": "A senha deve ter pelo menos {min} caracteres",
     "maxLength": "Este campo não pode ter mais de {max} caracteres.",
+    "file-max-size": "O arquivo não deve pesar mais do que {max} MB.",
     "invalidEmail": "E-mail deve ser válido",
     "backLogin": "Volte ao login",
     "Search": "Procurar",
@@ -42,11 +43,14 @@
     "edit-campaign": "Editar campanha",
     "greaterOrEqual": "Este valor deve ser maior ou igual a {value}",
     "must-after": "Esta data deve ser depois de hoje.",
+    "must-after-start": "Esta data deve ser posterior à data de início.",
     "min-todate": "Esta data deve ser pelo menos a data e hora atuais.",
     "not-implemented-yet": "Método ainda não implementado",
     "must-be-numeric": "O valor deve ser um número",
     "domain": "URL inválida. Exemplo: http(s)://www.example.com",
     "appbundle": "Pacote de aplicativo inválido",
     "filter": "Filtro",
-    "sort": "Classificar"
+    "sort": "Classificar",
+    "url-added": "Este URL já foi adicionado",
+    "uploaded": "This file must be uploaded first"
 }

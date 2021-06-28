@@ -14,19 +14,23 @@ import UserService from '@/services/user-service'
 import CampaignService from '@/services/campaign-service'
 import ModifierService from '@/services/modifier-service'
 import CustomListExchangeService from '@/services/custom-list-exchange-service'
+import LineItemService from '@/services/line-item-service'
+import CreativeService from '@/services/creative-service'
 
 import { Credential } from '@/interfaces/credential'
-import { Advertiser, AdvertiserDataCreate, AdvertiserDataUpdate, AdvertiserFilters, AdvertiserList, AdvertiserOptions, Category, ResultPaginate } from '@/interfaces/advertiser'
+import { Advertiser, AdvertiserDataCreate, AdvertiserDataUpdate, AdvertiserList, Category, ResultPaginate } from '@/interfaces/advertiser'
 import { MessageTypes, Notification } from '@/interfaces/proccess'
-import { isNull, isUndefined } from 'lodash'
+import { isEmpty, isNull, isUndefined } from 'lodash'
 import { CustomList, CustomListDataCreate, CustomListFilters, CustomListOptions, CustomListPaginated, CustomListResultPaginate, List, Type } from '@/interfaces/custom_list'
 
-import { resolveList } from '../utils/resolveObjectArray'
-import { Campaign, CampaignDataCreate } from '@/interfaces/campaign'
+import { getCreativeTypeByTemplateId, resolveList, resolveListParams, resolveTemplates } from '../utils/resolveObjectArray'
+import { Campaign, CampaignDataCreate, CampaingList } from '@/interfaces/campaign'
 import { Modifier, ModifierList, ModifierFilters, ModifierOptions, ModifierDataCreate, ModifierDataUpdate } from '@/interfaces/modifier'
 import notificationService from '@/services/notification-service'
-import { ListItemDataCreate, ListItemDataUpdate, ListItemFilters, ListItemOptions } from '@/interfaces/list_items'
+import { ListItemFilters, ListItemOptions } from '@/interfaces/list_items'
 import { AxiosError } from 'axios'
+import { LineItem, LineItemDataCreate, LineItemFilters, LineItemOptions } from '@/interfaces/line_item';
+import lineItemTypeService from '@/services/line-item-type-service';
 
 /**
  * Hard Code Account
@@ -59,7 +63,8 @@ export default new Vuex.Store({
         proccess: {
             namespaced: true,
             state: () => ({
-                loading: false,
+                loading: false, // loading page
+                loading_field: false, // loading for inputs
                 errors: {},
                 notification: {
                     message: "",
@@ -73,6 +78,9 @@ export default new Vuex.Store({
             mutations: {
                 SET_LOADING(state, _loading = false) {
                     state.loading = _loading;
+                },
+                SET_LOADING_FIELD(state, _loading_field = false) {
+                    state.loading_field = _loading_field;
                 },
                 SET_NOTIFICATION(state, _notification: Notification = { message: "", type: "", title: "", btn_text: "", show: false }) {
                     state.notification = _notification;
@@ -95,7 +103,16 @@ export default new Vuex.Store({
                         commit('SET_LOADING', loading)
                         return await Promise.resolve()
                     } catch (error) {
-                        commit('SET_TOKEN')
+                        commit('SET_LOADING')
+                        return await Promise.reject()
+                    }
+                },
+                async setLoadingField({ commit }, loading: Boolean) {
+                    try {
+                        commit('SET_LOADING_FIELD', loading)
+                        return await Promise.resolve()
+                    } catch (error) {
+                        commit('SET_LOADING_FIELD')
                         return await Promise.reject()
                     }
                 },
@@ -140,7 +157,6 @@ export default new Vuex.Store({
                 async logIn({ commit }, credential: Credential) {
                     try {
                         const response = await AuthService.login(credential)
-                        console.log("@@Actions:logIn", { response: response });
                         commit('SET_TOKEN', response.token)
                         return await Promise.resolve(response)
                     } catch (error) {
@@ -326,10 +342,22 @@ export default new Vuex.Store({
                     }
                 },
 
-                async list({ commit }, payload: { filters: AdvertiserFilters, options: AdvertiserOptions }) {
+                async list({ commit }) {
                     try {
-                        const response = await AdvertiserService.list(payload.filters, payload.options)
+                        const response = await AdvertiserService.list()
                         commit('SET_ADVERTISERS_LIST', resolveList(response))
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+
+                async all({ commit }) {
+                    try {
+                        const response = await AdvertiserService.all(undefined, { order: 'asc', sort: 'name' })
+                        console.log('advertiser::all', { response: response });
+                        commit('SET_ADVERTISERS_LIST', response)
                         return await Promise.resolve(response)
                     } catch (error) {
                         CatcherError(this.dispatch, error);
@@ -345,12 +373,26 @@ export default new Vuex.Store({
                 custom_list: {} as CustomList,
                 types: [] as List[],
                 model_view: "" as String,
-                budget_types: [],
+                budget_types: [
+                    {
+                        id: 1,
+                        value: "New"
+                    },
+                    {
+                        id: 2,
+                        value: "Existing"
+                    },
+                ],
                 campaigns_pacing: [],
                 optimization_strategies: [],
                 kpi_campaigns: [],
                 strategies: [],
-                unit_times: []
+                unit_times: [],
+                creative_weighting_methods: [],
+                line_item_types: [],
+                bid_strategy_list: [],
+                lines_pacing_list: [],
+                bidding_shadings_list: [],
             }),
             mutations: {
                 SET_RESULT_PAGINATED(state, _result_paginate: ResultPaginate = {} as ResultPaginate) {
@@ -364,6 +406,9 @@ export default new Vuex.Store({
                 },
                 SET_CUSTOM_LIST(state, _custom_list: CustomList = {} as CustomList) {
                     state.custom_list = _custom_list;
+                },
+                SET_BIDDING_SHADING_LIST(state, _bidding_shadings_list: CustomList = {} as CustomList) {
+                    state.bidding_shadings_list = _bidding_shadings_list;
                 },
                 SET_BUDGET_TYPES(state, _budget_types: [] = []) {
                     state.budget_types = _budget_types;
@@ -382,6 +427,18 @@ export default new Vuex.Store({
                 },
                 SET_UNIT_TIMES(state, _unit_times: [] = []) {
                     state.unit_times = _unit_times;
+                },
+                SET_CREATIVE_WEIGHTING_METHODS(state, _creative_weighting_methods: [] = []) {
+                    state.creative_weighting_methods = _creative_weighting_methods;
+                },
+                SET_LINE_ITEM_TYPES(state, _line_item_types: List[]) {
+                    state.line_item_types = _line_item_types;
+                },
+                SET_BID_STRATEGY_LIST(state, _bid_strategy_list: List[]) {
+                    state.bid_strategy_list = _bid_strategy_list;
+                },
+                SET_LINE_PACING_LIST(state, _lines_pacing_list: List[]) {
+                    state.lines_pacing_list = _lines_pacing_list;
                 },
             },
             getters: {},
@@ -408,6 +465,51 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
+
+                async getLineItemTypes({ commit }) {
+                    try {
+                        const response: List[] = await lineItemTypeService.list()
+                        commit('SET_LINE_ITEM_TYPES', resolveList(response))
+                        return await Promise.resolve(resolveList(response))
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+
+                async getBidStrategies({ commit }) {
+                    try {
+                        const response: List[] = await CustomListService.bidStrategyList()
+                        commit('SET_BID_STRATEGY_LIST', resolveList(response))
+                        return await Promise.resolve(resolveList(response))
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+
+                async getLinesPacing({ commit }) {
+                    try {
+                        const response: List[] = await CustomListService.linePacingList()
+                        commit('SET_LINE_PACING_LIST', resolveList(response))
+                        return await Promise.resolve(resolveList(response))
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+
+                async getBiddingShadings({ commit }) {
+                    try {
+                        const response: List[] = await CustomListService.biddingShadingList()
+                        commit('SET_BIDDING_SHADING_LIST', resolveList(response))
+                        return await Promise.resolve(resolveList(response))
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+
                 async getViewByTypeSelected({ commit }, type: Type) {
                     try {
                         const response = await CustomListService.getViewByTypeSelected(type);
@@ -418,6 +520,7 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
+
                 async createCustomList({ commit }, customList: CustomListDataCreate) {
                     try {
                         const response = await CustomListService.create(customList);
@@ -428,6 +531,7 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
+
                 async show({ commit }, id: Number) {
                     try {
                         const response = await CustomListService.show(id);
@@ -508,6 +612,18 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
+
+                async getCreativeWeightingMethods({ commit }) {
+                    try {
+                        const response = await CustomListService.CreativeWeightingMethods()
+                        commit('SET_CREATIVE_WEIGHTING_METHODS', resolveList(response))
+
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
             }
         },
         listItem: {
@@ -539,10 +655,10 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
-                
-                async create({ commit }, params: {listItem: any, customListType: string}) {
-                //dejamos de usar el parametro customListType por sugerencia de Ricki
-                //async create({ commit }, entity: ListItemDataCreate) {
+
+                async create({ commit }, params: { listItem: any, customListType: string }) {
+                    //dejamos de usar el parametro customListType por sugerencia de Ricki
+                    //async create({ commit }, entity: ListItemDataCreate) {
                     try {
                         const response = await ListItemService.create(params?.listItem, params?.customListType);
                         commit('SET_ITEM', response);
@@ -563,9 +679,9 @@ export default new Vuex.Store({
                     }
                 },
 
-                async update({ commit }, params: {listItem: any, customListType: string}) {
-                //dejamos de usar el parametro customListType por sugerencia de Ricki
-                //async update({ commit }, entity: ListItemDataUpdate) {
+                async update({ commit }, params: { listItem: any, customListType: string }) {
+                    //dejamos de usar el parametro customListType por sugerencia de Ricki
+                    //async update({ commit }, entity: ListItemDataUpdate) {
                     try {
                         const response = await ListItemService.update(params?.listItem, params?.customListType);
                         commit('SET_ITEM', response);
@@ -623,7 +739,7 @@ export default new Vuex.Store({
                             } as Notification
                         );
                         /*return await Promise.resolve(response)*/
-                        return await Promise.resolve({success: true, id: id});
+                        return await Promise.resolve({ success: true, id: id });
                     } catch (error) {
                         commit('SET_ITEM');
                         CatcherError(this.dispatch, error, { to: "" });
@@ -676,7 +792,7 @@ export default new Vuex.Store({
                                 entities.forEach(item => {
                                     let r = {
                                         id: item?.id,
-                                        list_item :{
+                                        list_item: {
                                             lat: item?.list_item?.lat,
                                             long: item?.list_item?.long,
                                             radius_km: item?.list_item?.radius_km,
@@ -690,17 +806,19 @@ export default new Vuex.Store({
                                 });
                                 break;
                             case "ModelTree":
-                                const customListExchange  = await CustomListExchangeService.all();
+                                const customListExchange = await CustomListExchangeService.all();
                                 entities.forEach(item => {
 
                                     let parameters: String[] = [];
-                                    if( Array.isArray(item.list_item) ){
-                                        parameters = item?.list_item[0].toString().split("/");}
-                                    else{
-                                        parameters = item?.list_item?.split("/");}
+                                    if (Array.isArray(item.list_item)) {
+                                        parameters = item?.list_item[0].toString().split("/");
+                                    }
+                                    else {
+                                        parameters = item?.list_item?.split("/");
+                                    }
 
                                     let type = customListExchange?.data.find(t => t.abbreviation == parameters[0]);
-                                    if( parameters?.length == 2 && type ){
+                                    if (parameters?.length == 2 && type) {
                                         let r = {
                                             id: item?.id,
                                             list_item_prefix: type.id,
@@ -792,6 +910,7 @@ export default new Vuex.Store({
                 result_paginate: {} as ResultPaginate,
                 campaign: {} as Campaign,
                 campaigns: [] as Campaign[],
+                campaigns_list: [] as CampaingList[],
             }),
             mutations: {
                 SET_CAMPAIGN(state, _campaign: Campaign = {} as Campaign) {
@@ -799,6 +918,9 @@ export default new Vuex.Store({
                 },
                 SET_RESULT_PAGINATED(state, _result_paginate: ResultPaginate = {} as ResultPaginate) {
                     state.result_paginate = _result_paginate
+                },
+                SET_RESULT_LIST(state, _result_list: CampaingList[] = [] as CampaingList[]) {
+                    state.campaigns_list = _result_list
                 },
             },
             getters: {
@@ -857,6 +979,7 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
+
                 async paginated({ commit }, params) {
                     try {
                         const response = await CampaignService.paginated(params)
@@ -864,6 +987,29 @@ export default new Vuex.Store({
                         return await Promise.resolve(response)
                     } catch (error) {
                         CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+
+                async list({ commit }, params) {
+                    try {
+                        const response = await CampaignService.list(params?.filters, params?.options)
+                        const values = resolveList(response);
+                        commit('SET_RESULT_LIST', values)
+                        return await Promise.resolve(resolveList(values))
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+
+                async getById({ commit }, id: number) {
+                    try {
+                        const response = await CampaignService.show(id);
+                        commit('SET_CAMPAIGN', response);
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error, { to: "" });
                         return await Promise.reject(error)
                     }
                 },
@@ -969,9 +1115,9 @@ export default new Vuex.Store({
                 async all({ commit }) {
                     try {
                         const response = await CustomListExchangeService.all();
-                        if( response?.success ){
+                        if (response?.success) {
                             let list: any[] = [];
-                            response?.data.map( e => {
+                            response?.data.map(e => {
                                 list.push({
                                     id: e.id,
                                     abbreviation: e.abbreviation,
@@ -979,10 +1125,382 @@ export default new Vuex.Store({
                                 })
                             });
                             commit('SET_ENTITIES', list);
-                        }else{commit('SET_ENTITIES');}
+                        } else { commit('SET_ENTITIES'); }
                         return await Promise.resolve(response?.data);
                     } catch (error) {
                         commit('SET_ENTITIES')
+                        return await Promise.reject(error)
+                    }
+                },
+            }
+        },
+        line_item: {
+            namespaced: true,
+            state: () => ({
+                result_paginate: {} as ResultPaginate,
+                lineItems: [] as LineItem[],
+                lineItem: {} as LineItem,
+                lineItem_list: [] as LineItem[],
+            }),
+            mutations: {
+                SET_RESULT_PAGINATED(state, _result_paginate: ResultPaginate = {} as ResultPaginate) {
+                    state.result_paginate = _result_paginate
+                },
+                SET_LINE_ITEM(state, _lineItem: LineItem = {} as LineItem) {
+                    state.lineItem = _lineItem
+                },
+                SET_LINE_ITEMS(state, _lineItems: LineItem[] = [] as LineItem[]) {
+                    state.lineItems = _lineItems
+                },
+                SET_LINE_ITEM_LIST(state, _line_item_list: LineItem[] = [] as LineItem[]) {
+                    state.lineItem_list = _line_item_list
+                }
+            },
+            getters: {
+                result_paginate(state): ResultPaginate {
+                    return state.result_paginate
+                },
+            },
+            actions: {
+                async create({ commit }, lineItem: LineItemDataCreate) {
+                    try {
+                        const response = await LineItemService.create(lineItem);
+                        CreateNotification(
+                            this.dispatch,
+                            {
+                                type: MessageTypes.SUCCESS,
+                                title: i18n.t('title-success'),
+                                message: i18n.t('success'),
+                                btn_text: i18n.t('continue'),
+                                to: "lineItemList"
+                            } as Notification
+                        );
+                        commit('SET_LINE_ITEM', response);
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+
+                async show({ commit }, id: number) {
+                    try {
+                        const response = await LineItemService.show(id);
+                        commit('SET_LINE_ITEM', response);
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error, { to: "lineItemList" });
+                        return await Promise.reject(error)
+                    }
+                },
+
+                async update({ commit }, params: { lineItem: LineItemDataCreate, id: number }) {
+                    try {
+                        const response = await LineItemService.update(params.lineItem, params.id);
+                        commit('SET_LINE_ITEM', response);
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error, { to: "lineItemList" });
+                        return await Promise.reject(error)
+                    }
+                },
+
+                async paginated({ commit }, params) {
+                    try {
+                        const response = await LineItemService.paginated(params)
+                        commit('SET_RESULT_PAGINATED', response)
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+
+                async list({ commit }, payload: { filters: LineItemFilters, options: LineItemOptions }) {
+                    try {
+
+                        const response = await LineItemService.list(payload.filters, payload.options)
+                        commit('SET_LINE_ITEM_LIST', resolveList(response))
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+            }
+        },
+        line_item_type: {
+            namespaced: true,
+            state: () => ({
+                line_item_type_list: [],
+            }),
+            mutations: {
+                SET_TYPE_LIST(state, _types: [] = []) {
+                    state.line_item_type_list = _types
+                }
+            },
+            getters: {},
+            actions: {
+                async list({ commit }, payload: { filters: any, options: any }) {
+                    try {
+                        const response = [
+                            {
+                                id: 1,
+                                name: "Line Item Type 1"
+                            },
+                            {
+                                id: 2,
+                                name: "Line Item Type 2"
+                            },
+                            {
+                                id: 3,
+                                name: "Line Item Type 3"
+                            }
+                        ]
+                        commit('SET_TYPE_LIST', response)
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+            }
+        },
+        creative: {
+            namespaced: true,
+            state: () => ({
+                result_paginate: {} as ResultPaginate,
+                creative: {},
+                asset: {},
+                responseTemplates: {},
+                creative_sizes: [],
+                creative_templates: [],
+                creative_types: [],
+                advertiser_categories: [],
+                mime_types: [],
+                creative_rules: [],
+                expendable_types: [],
+                expendable_directions: [],
+                in_banner_videos: [],
+                vendors: [],
+                addons: [],
+                assets: []
+            }),
+            mutations: {
+                SET_RESULT_PAGINATED(state, _result_paginate: ResultPaginate = {} as ResultPaginate) {
+                    state.result_paginate = _result_paginate
+                },
+                SET_CREATIVE(state, _creative) {
+                    state.creative = _creative;
+                },
+                SET_CREATIVE_SIZES(state, _sizes) {
+                    state.creative_sizes = _sizes
+                },
+                SET_CREATIVE_TEMPLATES(state, _templates) {
+                    state.creative_templates = _templates
+                },
+                SET_CREATIVE_TYPES(state, _types) {
+                    state.creative_types = _types
+                },
+                SET_ADVERTISER_CATEGORIES(state, _categories) {
+                    state.advertiser_categories = _categories
+                },
+                SET_RESPONSE_TEMPLATES(state, _templates) {
+                    state.responseTemplates = _templates
+                },
+                SET_CREATIVE_TYPE_ID(state, _creative_type_id) {
+                    state.creative.creative_type_id = _creative_type_id
+                },
+                SET_MIME_TYPES(state, _mime_types) {
+                    state.mime_types = _mime_types
+                },
+                SET_CREATIVE_RULES(state, _creative_rules) {
+                    state.creative_rules = _creative_rules
+                },
+                SET_EXPENDABLE_TYPES(state, _expendable_types) {
+                    state.expendable_types = _expendable_types
+                },
+                SET_EXPENDABLE_DIRECTIONS(state, _expendable_directions) {
+                    state.expendable_directions = _expendable_directions
+                },
+                SET_IN_BANNER_VIDEOS(state, _in_banner_videos) {
+                    state.in_banner_videos = _in_banner_videos
+                },
+                SET_VENDORS(state, _vendors) {
+                    state.vendors = _vendors
+                },
+                SET_ADDONS(state, _addons) {
+                    state.addons = _addons
+                },
+                SET_ASSETS(state, _assets) {
+                    state.assets = _assets
+                },
+                SET_ASSET(state, _asset) {
+                    state.asset = _asset
+                },
+            },
+            getters: {
+            },
+            actions: {
+                async creativeSizes({ commit }) {
+                    try {
+                        const response = await CreativeService.creativeSizes()
+                        commit('SET_CREATIVE_SIZES', resolveListParams(response, "id", "name"))
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+                async creativeTemplates({ commit, state }) {
+                    try {
+                        const response = await CreativeService.creativeTemplates()
+                        commit('SET_RESPONSE_TEMPLATES', response)
+                        commit('SET_CREATIVE_TEMPLATES', resolveTemplates(response, state.creative_types))
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+                async creativeTypes({ commit }) {
+                    try {
+                        const response = await CreativeService.creativeTypes()
+                        commit('SET_CREATIVE_TYPES', resolveListParams(response, "id", "description"))
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+                async advertiserCategories({ commit }) {
+                    try {
+                        const response = await CreativeService.advertiserCategories()
+                        commit('SET_ADVERTISER_CATEGORIES', resolveListParams(response, "id", "name"))
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+                async getCreativeTypeByTemplateId({ }, params: { creativeTypes: Array<any>, creative_template_id: Number }) {
+                    try {
+                        if (isEmpty(params.creativeTypes) && params.creative_template_id < 1) return await Promise.resolve();
+                        const response = getCreativeTypeByTemplateId(params.creativeTypes, params.creative_template_id)
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+                async mimeTypes({ commit }) {
+                    try {
+                        const response = await CreativeService.mimeTypes()
+                        commit('SET_MIME_TYPES', resolveListParams(response, "id", "description"))
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+                async creativeRules({ commit }) {
+                    try {
+                        const response = await CreativeService.creativeRules()
+                        commit('SET_CREATIVE_RULES', resolveListParams(response, "id", "description"))
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+                async expendableTypes({ commit }) {
+                    try {
+                        const response = await CreativeService.expendableTypes()
+                        commit('SET_EXPENDABLE_TYPES', resolveListParams(response, "id", "description"))
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+                async expendableDirections({ commit }) {
+                    try {
+                        const response = await CreativeService.expendableDirections()
+                        commit('SET_EXPENDABLE_DIRECTIONS', resolveListParams(response, "id", "description"))
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+                async inBannerVideos({ commit }) {
+                    try {
+                        const response = await CreativeService.inBannerVideos()
+                        commit('SET_IN_BANNER_VIDEOS', resolveListParams(response, "id", "description"))
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+                async vendors({ commit }) {
+                    try {
+                        const response = await CreativeService.vendors()
+                        commit('SET_VENDORS', resolveListParams(response, "id", "description"))
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+                async addons({ commit }) {
+                    try {
+                        const response = await CreativeService.addons()
+                        commit('SET_ADDONS', resolveList(response))
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+                async assets({ commit }) {
+                    try {
+                        const response = await CreativeService.assets()
+                        commit('SET_ASSETS', resolveList(response))
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+                async creativeAssets({ commit }, params) {
+                    try {
+                        const response = await CreativeService.creativeAssets(params)
+                        commit('SET_ASSET', response)
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+                async CreateNewCreative({ commit }, params: any) {
+                    try {
+                        const response = await CreativeService.CreateNewCreative(params)
+                        console.log("CreateNewCreative", { params: params, response: response });
+                        commit('SET_CREATIVE', response)
+                        CreateNotification(
+                            this.dispatch,
+                            {
+                                type: MessageTypes.SUCCESS,
+                                title: i18n.t('title-success'),
+                                message: i18n.t('success'),
+                                btn_text: i18n.t('continue'),
+                                to: "CreativesIndex"
+                            } as Notification
+                        );
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
                         return await Promise.reject(error)
                     }
                 },
@@ -1018,7 +1536,8 @@ export function Errors(dispatch: Dispatch, error: any) {
  * @param params { to?: string }
  */
 export function CatcherError(dispatch: Dispatch, error: AxiosError, params?: { to?: string }) {
-    console.log("CatcherError", {
+    dispatch('proccess/setLoading', false, { root: true });
+    console.error("CatcherError", {
         error: error,
         params: params
     });

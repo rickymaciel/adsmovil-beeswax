@@ -5,15 +5,23 @@ import { account, forgot, initialize, login, logout, permissions, profile, reset
 //import { create, update, changeStatus, all, paginated, list, deleted, clear, loadItems } from './custom_list/items/ListItemsAPI'
 //import { create, update, show, all, paginated, list, modules, types } from './modifiers/ModifierApi'
 //import { create, all, paginated, list, show, changeStatus, update } from './campaing/CampaingApi'
-import { all, changeStatus, create, list, paginated, show, update } from './line_items/LineItemsApi'
+//import { all, changeStatus, create, list, paginated, show, update } from './line_items/LineItemsApi'
+//import { create } from '@/api/creatives/banner/ImageApi'
+//import { create } from '@/api/creatives/banner/JsTagApi'
+//import { create } from '@/api/creatives/banner/IframeTagApi'
+//import { create } from '@/api/creatives/banner/MraidTagApi'
+//import { create } from '@/api/creatives/banner/Html5Api'
+//import { create } from '@/api/creatives/video/VastInlineApi'
+import { create } from '@/api/creatives/video/VastWrapper'
 import { UserInit } from '@/interfaces/user'
+//import { check } from './creatives/TagApi'
 //import { adPositions } from '@/api/inventory/InventoryApi'
 //import { domainList } from '@/api/domain/DomainApi'
 //import { creativeSize } from '@/api/ad_size/AdSizeApi'
 //import { countries, lat_long, regions } from '@/api/geo/GeoApi'
 //import { CampaingDataCreate, CampaingDataUpdate } from '@/interfaces/campaing'
-import { FrecuencyCaps, FrecuencyCapsDataCreate } from '@/interfaces/frecuency_caps'
-import { LineItemDataCreate, LineItemDataUpdate } from '@/interfaces/line_item'
+// import { FrecuencyCaps, FrecuencyCapsDataCreate } from '@/interfaces/frecuency_caps'
+// import { LineItemDataCreate, LineItemDataUpdate } from '@/interfaces/line_item'
 //import { list } from './timezone/timezoneAPI'
 //import { list } from './currency/CurrencyAPI'
 //import { list } from './custom_list/ExchangesAPI'
@@ -26,8 +34,16 @@ import { LineItemDataCreate, LineItemDataUpdate } from '@/interfaces/line_item'
 //import { pacingCampaing, pacingLine } from './pacing/PacingApi'
 //import { list } from '@/api/bid/ShadingApi'
 //import { list } from '@/api/bid/StrategyApi'
+//import { list } from '@/api/bid/RatesApi'
 //import { list } from '@/api/line_items/TypeApi'
 //import { list } from '@/api/creatives/MethodApi'
+//import { list } from '@/api/creatives/TypeApi'
+//import { list } from '@/api/creatives/TemplateApi'
+//import { list } from '@/api/creatives/VendorApi'
+//import { list } from '@/api/creatives/RuleApi'
+//import { list } from '@/api/creatives/MimeApi'
+//import { types, direction } from '@/api/creatives/ExpandableApi'
+import { inBanner, apis } from '@/api/creatives/VideoApi'
 
 /* -------- BEGIN AUTH -------- */
 const test_login = {
@@ -1237,7 +1253,26 @@ const test_bid_strategy = {
       return null
     })
   }
+}
+
+const test_bid_rates = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_rate = await list(value)
+
+      console.log('BID RATES', data_rate)
+
+      return data_rate
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
 }*/
+
 /* -------- END BID -------- */
 
 /* -------- BEGIN LINE ITEMS -------- */
@@ -1257,7 +1292,7 @@ const test_bid_strategy = {
       return false
     })
   }
-}*/
+}
 
 const test_line_items_create = {
   data: function () {
@@ -1378,7 +1413,7 @@ const test_change_status_line_items = {
       return false
     })
   }
-}
+}*/
 /* -------- END LINE ITEMS -------- */
 
 /* -------- BEGIN CREATIVES -------- */
@@ -1398,7 +1433,619 @@ const test_change_status_line_items = {
       return false
     })
   }
+}
+
+const test_creative_types = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_creative = await list(value)
+
+      console.log('CREATIVE TYPES', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_creative_templates = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_creative = await list(value)
+
+      console.log('CREATIVE TEMPLATE', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_creative_vendor = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_creative = await list(value)
+
+      console.log('CREATIVE VENDORS', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_creative_rule = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_creative = await list(value)
+
+      console.log('CREATIVE RULES', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_creative_mime_types = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_creative = await list(value)
+
+      console.log('CREATIVE MIME TYPES', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_creative_expandable_types = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_creative = await types(value)
+
+      console.log('CREATIVE EXPANDABLE TYPES', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_creative_expandable_directions = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_creative = await direction(value)
+
+      console.log('CREATIVE EXPANDABLE DIRECTIONS', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_creative_inbanner = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_creative = await inBanner(value)
+
+      console.log('CREATIVE IN BANNER VIDEOS', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_creative_apis = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_creative = await apis(value)
+
+      console.log('CREATIVE VIDEO APIS', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_creative_check_tag = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const tag = {
+        creative_rule_id: 616,
+        creative_content_tag: '<ins data-dcm-placement=\\"\\"/>'
+      }
+
+      const data_creative = await check(tag, value)
+
+      console.log('CREATIVE TAGS', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_create_creative_image = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data = {
+        creative_type_id: 600,
+        creative_template_id: 1,
+        name: 'Test ADS_BEESWAX_7',
+        secure: false,
+        creative_advertiser: {
+          advertiser_id: 14,
+          category_id: 6,
+          domain: 'https://advertiserpolaco.com',
+          app_bundle: 'com.adsmovil.PicoPlaca'
+        },
+        creative_ad_content: {
+          primary_asset_id: 36,
+          click_url: 'http://adsmovil.com/click_url'
+        },
+        creative_exchange_options: {
+          appnexus_submit: false,
+          landing_page_url: 'http://adsmovil.com',
+          vendors: [649, 650, 651]
+        },
+        creative_addon_settings: {
+          addons: [1],
+          pixels: ['https://adsmovil.com/pixels/pixel1.js', 'https://adsmovil.com/pixels/pixel2.js'],
+          scripts: ['https://adsmovil.com/scripts/script1.js', 'https://adsmovil.com/scripts/script2.js']
+        }
+      }
+
+      const data_creative = await create(data, value)
+
+      console.log('CREATIVE IMAGE', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_create_creative_jstag = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data = {
+        creative_type_id: 600,
+        creative_template_id: 4,
+        name: 'Test ADS_BEESWAX_2 Js Tag',
+        secure: false,
+        start_date: '2021-06-26 00:00:00',
+        end_date: '2021-06-30 00:00:00',
+        creative_advertiser: {
+          advertiser_id: 14,
+          category_id: 6,
+          domain: 'https://advertiserpolaco.com',
+          app_bundle: 'com.adsmovil.PicoPlaca'
+        },
+        creative_ad_content: {
+          creative_rule_id: 617,
+          tag: '<ins data-dcm-placement=""/>'
+        },
+        creative_attributes: {
+          width: 320,
+          height: 50,
+          mime_type_id: 630,
+          expandable_type_id: 639,
+          expandable_directions: [1817],
+          responsive: true,
+          in_banner_video_id: 619
+        },
+        creative_exchange_options: {
+          thumbnail_id: 36,
+          appnexus_submit: false,
+          landing_page_url: 'http://adsmovil.com',
+          vendors: [649, 650, 651]
+        },
+        creative_addon_settings: {
+          addons: [1],
+          pixels: ['https://adsmovil.com/pixels/pixel1.js', 'https://adsmovil.com/pixels/pixel2.js'],
+          scripts: ['https://adsmovil.com/scripts/script1.js', 'https://adsmovil.com/scripts/script2.js']
+        }
+      }
+
+      const data_creative = await create(data, value)
+
+      console.log('CREATIVE JS TAG', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_create_creative_iframetag = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data = {
+        creative_type_id: 600,
+        creative_template_id: 5,
+        name: 'Test ADS_BEESWAX_2 Iframe Tag',
+        secure: false,
+        start_date: '2021-06-24 00:00:00',
+        end_date: '2021-06-30 00:00:00',
+        creative_advertiser: {
+          advertiser_id: 14,
+          category_id: 6,
+          domain: 'https://advertiserpolaco.com',
+          app_bundle: 'com.adsmovil.PicoPlaca'
+        },
+        creative_ad_content: {
+          creative_rule_id: 617,
+          tag: '<ins data-dcm-placement=""/>'
+        },
+        creative_attributes: {
+          width: 320,
+          height: 50,
+          mime_type_id: 630,
+          expandable_type_id: 642,
+          expandable_directions: [1821, 1822],
+          responsive: false,
+          in_banner_video_id: 620
+        },
+        creative_exchange_options: {
+          thumbnail_id: 36,
+          appnexus_submit: false,
+          landing_page_url: 'http://adsmovil.com',
+          vendors: [649, 650, 651]
+        },
+        creative_addon_settings: {
+          addons: [1],
+          pixels: ['https://adsmovil.com/pixels/pixel1.js', 'https://adsmovil.com/pixels/pixel2.js'],
+          scripts: ['https://adsmovil.com/scripts/script1.js', 'https://adsmovil.com/scripts/script2.js']
+        }
+      }
+
+      const data_creative = await create(data, value)
+
+      console.log('CREATIVE IFRAME TAG', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_create_creative_mraidtag = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data = {
+        creative_type_id: 600,
+        creative_template_id: 13,
+        name: 'Test ADS_BEESWAX_1 Mraid Tag',
+        secure: true,
+        start_date: '2021-06-24 00:00:00',
+        end_date: '2021-06-30 00:00:00',
+        creative_advertiser: {
+          advertiser_id: 14,
+          category_id: 6,
+          domain: 'https://advertiserpolaco.com',
+          app_bundle: 'com.adsmovil.PicoPlaca'
+        },
+        creative_ad_content: {
+          creative_rule_id: 617,
+          tag: '<ins data-dcm-placement=""/>'
+        },
+        creative_attributes: {
+          width: 320,
+          height: 50,
+          mime_type_id: 630,
+          expandable_type_id: 642,
+          expandable_directions: [1822],
+          responsive: false,
+          in_banner_video_id: 620
+        },
+        creative_exchange_options: {
+          thumbnail_id: 36,
+          appnexus_submit: true,
+          landing_page_url: 'http://adsmovil.com',
+          vendors: [649, 650, 651]
+        },
+        creative_addon_settings: {
+          addons: [1],
+          pixels: ['https://adsmovil.com/pixels/pixel1.js', 'https://adsmovil.com/pixels/pixel2.js'],
+          scripts: ['https://adsmovil.com/scripts/script1.js', 'https://adsmovil.com/scripts/script2.js']
+        }
+      }
+
+      const data_creative = await create(data, value)
+
+      console.log('CREATIVE MRAID TAG', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_create_creative_html5 = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data = {
+        creative_type_id: 600,
+        creative_template_id: 21,
+        name: 'Test ADS_BEESWAX_1 HTML5',
+        secure: true,
+        start_date: '2021-06-24 00:00:00',
+        end_date: '2021-06-30 00:00:00',
+        creative_advertiser: {
+          advertiser_id: 14,
+          category_id: 6,
+          domain: 'https://advertiserpolaco.com',
+          app_bundle: 'com.adsmovil.PicoPlaca'
+        },
+        creative_ad_content: {
+          primary_asset_id: 42
+        },
+        creative_attributes: {
+          width: 320,
+          height: 50,
+          mime_type_id: 630,
+          expandable_type_id: 642,
+          expandable_directions: [1822],
+          responsive: false,
+          in_banner_video_id: 620
+        },
+        creative_exchange_options: {
+          thumbnail_id: 36,
+          appnexus_submit: true,
+          landing_page_url: 'http://adsmovil.com',
+          vendors: [649, 650, 651]
+        },
+        creative_addon_settings: {
+          addons: [1],
+          pixels: ['https://adsmovil.com/pixels/pixel1.js', 'https://adsmovil.com/pixels/pixel2.js'],
+          scripts: ['https://adsmovil.com/scripts/script1.js', 'https://adsmovil.com/scripts/script2.js']
+        }
+      }
+
+      const data_creative = await create(data, value)
+
+      console.log('CREATIVE HTML5', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_create_creative_vast_inline = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data = {
+        creative_type_id: 601,
+        creative_template_id: 3,
+        name: 'Test ADS_BEESWAX_1 Vast Inline',
+        secure: true,
+        start_date: '2021-06-24 00:00:00',
+        end_date: '2021-06-30 00:00:00',
+        active: false,
+        creative_advertiser: {
+          advertiser_id: 2,
+          category_id: 2,
+          domain: 'advertiser2.html5.com',
+          app_bundle: 'com.adsmovil.html5.Advertiser2'
+        },
+        creative_ad_content: {
+          primary_asset_id: 23,
+          title: 'VAST INLINE',
+          click_url: 'http://adsmovil.com/vast/click-url',
+          video_duration: 30,
+          companion_size_id: 3,
+          companion_html: '<html></html>'
+        },
+        creative_attributes: {
+          skippable: true,
+          skip_offset: '00:00:10'
+        },
+        creative_exchange_options: {
+          appnexus_submit: true,
+          landing_page_url: 'http://adsmovil.com',
+          vendors: [649, 650, 651]
+        },
+        creative_addon_settings: {
+          addons: [6],
+          pixels: ['https://adsmovil.com/pixels/pixel1.js', 'https://adsmovil.com/pixels/pixel2.js'],
+          scripts: ['https://adsmovil.com/scripts/script1.js', 'https://adsmovil.com/scripts/script2.js'],
+          click_trackers: ['https://adsmovil.com/tracker1.js', 'https://adsmovil.com/tracker2.js'],
+          vast_events: [
+            {
+              event: 'start',
+              url: 'https://adsmovil.com/start'
+            },
+            {
+              event: 'firstQuartile',
+              url: 'https://adsmovil.com/firstQuartile'
+            }
+          ],
+          progress_events: [
+            {
+              time: '00:00:10',
+              url: 'https://adsmovil.com/time/10'
+            },
+            {
+              time: '00:00:20',
+              url: 'https://adsmovil.com/time/20'
+            }
+          ]
+        }
+      }
+
+      const data_creative = await create(data, value)
+
+      console.log('CREATIVE VAST INLINE', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
 }*/
+
+const test_create_creative_vast_wrapper = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data = {
+        creative_type_id: 601,
+        creative_template_id: 6,
+        name: 'Test ADS_BEESWAX_1 Vast Wrapper',
+        secure: true,
+        start_date: '2021-06-24 00:00:00',
+        end_date: '2021-06-30 00:00:00',
+        active: false,
+        creative_advertiser: {
+          advertiser_id: 2,
+          category_id: 2,
+          domain: 'advertiser2.html5.com',
+          app_bundle: 'com.adsmovil.html5.Advertiser2'
+        },
+        creative_ad_content: {
+          tag: '<tag/>',
+          video_duration: 30
+        },
+        creative_attributes: {
+          video_mime_types: [635, 637, 638],
+          video_api_id: 124,
+          video_bit_rates: [644, 646],
+          skippable: true,
+          skip_offset: '00:00:10',
+          moat_inapp_viewability: true
+        },
+        creative_exchange_options: {
+          appnexus_submit: true,
+          landing_page_url: 'http://adsmovil.com',
+          vendors: [649, 650, 651]
+        },
+        creative_addon_settings: {
+          addons: [6],
+          pixels: ['https://adsmovil.com/pixels/pixel1.js', 'https://adsmovil.com/pixels/pixel2.js'],
+          scripts: ['https://adsmovil.com/scripts/script1.js', 'https://adsmovil.com/scripts/script2.js'],
+          click_trackers: ['https://adsmovil.com/tracker1.js', 'https://adsmovil.com/tracker2.js'],
+          vast_events: [
+            {
+              event: 'start',
+              url: 'https://adsmovil.com/start'
+            },
+            {
+              event: 'firstQuartile',
+              url: 'https://adsmovil.com/firstQuartile'
+            }
+          ],
+          progress_events: [
+            {
+              time: '00:00:10',
+              url: 'https://adsmovil.com/time/10'
+            },
+            {
+              time: '00:00:20',
+              url: 'https://adsmovil.com/time/20'
+            }
+          ]
+        }
+      }
+
+      const data_creative = await create(data, value)
+
+      console.log('CREATIVE VAST WRAPPER', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
 /* -------- END CREATIVES -------- */
 
-export default test_get_line_items
+export default test_create_creative_vast_wrapper

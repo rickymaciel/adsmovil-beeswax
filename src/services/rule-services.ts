@@ -1,8 +1,9 @@
 import i18n from '@/plugins/i18n';
+import moment from 'moment-timezone';
 
-//const domainRegexp = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/gim;
-const domainRegexp = /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gim;
-// const appbundleRegexp = /^(ttx|at|om|adf|ame|aul|aol|apl|axo|bch|vdo|ctx|cri|dm|dtm|emx|eri|svr|adx|im|ie|inm|ia|is|mm|mp|lkq|ox|oz|px|pm|pp|ro|ra|rtk|rp|sm|sas|sx|sps|stv|syn|tm|uty|unr|vrv|anx|mo|yoc|six|kar|ydl|ss|ap|trl)\/[_A-z0-9]*((-|\.)*[_A-z0-9])*$/i;
+const FILE_MAX_FILE = 2000000;
+const MAX_LENGTH = 255;
+const MIN_LENGTH = 2;
 
 export function isRequired(v: any) {
     return Boolean(v) || i18n.t("fieldRequired")
@@ -13,13 +14,47 @@ export function isNumber(v: any) {
 }
 
 export function isMinLength(v: any) {
-    return (v && v.length >= 2) || i18n.t("minLength", { max: 2 })
+    return (v && v.length >= MIN_LENGTH) || i18n.t("minLength", { min: MIN_LENGTH })
 }
 
 export function isMaxLength(v: any) {
-    return (v && v.length <= 255) || i18n.t("maxLength", { max: 255 })
+    return (v && v.length <= MAX_LENGTH) || i18n.t("maxLength", { max: MAX_LENGTH })
+}
+
+export function isFileMaxSize(v: any) {
+    return (v && v.size <= FILE_MAX_FILE) || i18n.t("file-max-size", { max: (FILE_MAX_FILE / 1000000) })
 }
 
 export function isDomain(v: any) {
-    return domainRegexp.test(v) || i18n.t("domain")
+    return /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gim.test(v) || i18n.t("domain")
+}
+
+export function isBeforeToday(v: any) {
+    return moment(v).isBefore(moment()) || i18n.t("min-todate")
+}
+
+export function isAfterToday(v: any) {
+    return moment(v).isAfter(moment()) || i18n.t("min-todate")
+}
+
+export function isAfterCompare(v: any, compareDate: any) {
+    return moment(v).isAfter(moment(compareDate)) || i18n.t("must-after-start")
+}
+
+export function isValidUrl(v: any) {
+    if (v === "") return false;
+    return /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gim.test(v) || i18n.t("domain")
+}
+
+export function isUploaded(v: any) {
+    return !(v instanceof File) || i18n.t("uploaded")
+}
+
+/**
+ * static function
+ * @param v 
+ * @returns 
+ */
+export function isUrl(v: any) {
+    return /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gim.test(v)
 }

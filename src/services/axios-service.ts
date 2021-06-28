@@ -9,7 +9,17 @@ import { ValidateToken } from '@/services/jwt-service'
 axios.defaults.baseURL = 'https://dsp-api-testing.adsmovil.com'
 
 axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*'
+axios.defaults.headers.common['Access-Control-Allow-Headers'] = "Origin, Content-Type, X-Auth-Token"
+axios.defaults.headers.common['Access-Control-Allow-Methods'] = "GET, POST, PATCH, PUT, DELETE, OPTIONS"
 axios.defaults.headers.common['Accept'] = 'application/json'
+
+axios.defaults.headers.get = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Credentials': true,
+};
+
+console.log(axios.defaults.headers);
 
 const token = localStorage.getItem('token') || ''
 
@@ -54,8 +64,20 @@ axios.interceptors.response.use(function (response) {
  * @param url
  * @param payload
  */
-export function AxiosPost(url: string, payload: any) {
-    return axios.post(url, payload)
+export function AxiosPost(url: string, payload: any, has_file: boolean = false) {
+    var headers = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+    if (has_file) {
+        headers = {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        };
+    }
+    return axios.post(url, payload, headers)
 }
 
 /**

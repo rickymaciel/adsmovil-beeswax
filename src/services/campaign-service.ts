@@ -37,7 +37,6 @@ class CampaignService {
         try {
             const response = await AxiosGet(`${CAMPAIGN_ROUTE}/${id}`);
             return Promise.resolve(GetData(response));
-
         } catch (error) {
             return Promise.reject({
                 success: false,
@@ -46,8 +45,6 @@ class CampaignService {
             });
         }
     }
-
-
 
     async paginated(params: { paginated?: CampaingPaginated, filters?: CampaingFilters, options?: CampaingOptions }) {
         try {
@@ -70,6 +67,31 @@ class CampaignService {
             const response = await AxiosGet(CAMPAIGN_ROUTE + url)
             return Promise.resolve(GetData(response));
 
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+
+    async list(filters?: CampaingFilters, options?: CampaingOptions) {
+        try {
+            let filter = ''
+            let option = ''
+
+            if (!isUndefined(filters)) {
+                filter = getFilters(filters)
+            }
+
+            if (!isUndefined(options)) {
+                option += getOptions(options, 'list')
+            }
+
+            const url = getURL(filter, option)
+            const response = await AxiosGet(`${CAMPAIGN_ROUTE}/${url}`);
+            return Promise.resolve(GetData(response));
         } catch (error) {
             return Promise.reject({
                 success: false,

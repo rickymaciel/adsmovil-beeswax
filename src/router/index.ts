@@ -281,6 +281,15 @@ const routes: Array<RouteConfig> = [
                             breadcrumb: "Create New Line Item"
                         },
                     },
+                    /*{
+                        path: 'edit/:id',
+                        name: 'LineItemEdit',
+                        component: () => import('@/views/Admin/LineItem/Edit/edit.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: "edit-campaign"
+                        },
+                    }*/
                 ]
             },
             {

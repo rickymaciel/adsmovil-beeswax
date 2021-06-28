@@ -9,22 +9,22 @@ export async function list (token: string) {
   try {
     const response = await AxiosGet(ROUTES.CREATIVE_METHOD_ROUTE, token)
 
-    const types = [] as any
+    const methods = [] as any
 
     if (response.success) {
       let data = response.content
 
       if (Object.keys(data).length > 0) {
         Object.keys(data).forEach(function (key) {
-          const type = {
+          const method = {
             id: parseInt(key),
             name: data[key]
           } as Method
 
-          types.push(type)
+          methods.push(method)
         })
 
-        return success('', types)
+        return success('', methods)
       }
     }
 

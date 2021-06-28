@@ -9,6 +9,10 @@ export const STRATEGY_OPTIMIZATION_ROUTE = 'api/list/optimization_strategies'
 export const CAMPAING_KPI_ROUTE = 'api/list/kpi_campaigns'
 export const STRATEGY_ROUTE = 'api/list/strategies'
 export const UNIT_TIME_ROUTE = 'api/list/unit_times'
+export const CREATIVE_WEIGHTING_METHODS_ROUTE = '/api/list/creatives_methods'
+export const BID_STRATEGY_ROUTE = 'api/list/bid_strategy'
+export const BID_LINE_PACING_ROUTE = 'api/list/line_pacing'
+export const BID_SHADING_ROUTE = 'api/list/bid_shadings'
 
 class CustomListService {
 
@@ -165,6 +169,57 @@ class CustomListService {
         }
     }
 
+    async CreativeWeightingMethods() {
+        try {
+            const response = await AxiosGet(`${CREATIVE_WEIGHTING_METHODS_ROUTE}`)
+            return Promise.resolve(GetData(response));
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+
+    async bidStrategyList() {
+        try {
+            const response = await AxiosGet(`${BID_STRATEGY_ROUTE}`)
+            return Promise.resolve(GetData(response));
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+    
+    async linePacingList() {
+        try {
+            const response = await AxiosGet(`${BID_LINE_PACING_ROUTE}`)
+            return Promise.resolve(GetData(response));
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+    
+    async biddingShadingList() {
+        try {
+            const response = await AxiosGet(`${BID_SHADING_ROUTE}`)
+            return Promise.resolve(GetData(response));
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
 }
 
 function getFilters(filters: CustomListFilters): string {

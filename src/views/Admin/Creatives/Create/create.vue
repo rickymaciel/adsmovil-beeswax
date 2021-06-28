@@ -1,778 +1,487 @@
 <template>
-	<v-card justify="between" align="center" color="grey lighten-3 py-4">
-		<v-form
-			ref="form"
-			justify="between"
-			align="center"
-			v-model="valid"
-			lazy-validation
-		>
-			<v-container>
-				<v-row dense>
-					<!-- Name -->
-					<v-col cols="12" sm="12" md="4" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="name"
-								:rules="nameRules"
-								hint="Name"
-								ref="name"
-								placeholder="Name"
-								label="Name*"
-								class="label-fixed"
-								counter="255"
-							></v-text-field>
-						</v-card>
-					</v-col>
-
-					<!-- Start Date -->
-					<v-col cols="12" sm="12" md="4" lg="4">
-						<v-menu
-							v-model="menuStartDate"
-							:close-on-content-click="false"
-							:nudge-right="40"
-							transition="scale-transition"
-							offset-y
-							min-width="auto"
-						>
-							<template v-slot:activator="{ on, attrs }">
-								<v-text-field
-									v-model="startDate"
-									label="Start Date"
-									prepend-icon="mdi-calendar"
-									readonly
-									v-bind="attrs"
-									v-on="on"
-									outlined
-								></v-text-field>
-							</template>
-							<v-date-picker
-								v-model="startDateSearch"
-								@input="menuStartDate = false"
-							></v-date-picker>
-						</v-menu>
-					</v-col>
-
-					<!-- End Date -->
-					<v-col cols="12" sm="12" md="4" lg="4">
-						<v-menu
-							v-model="menuEndDate"
-							:close-on-content-click="false"
-							:nudge-right="40"
-							transition="scale-transition"
-							offset-y
-							min-width="auto"
-						>
-							<template v-slot:activator="{ on, attrs }">
-								<v-text-field
-									v-model="endDate"
-									label="End Date"
-									prepend-icon="mdi-calendar"
-									readonly
-									v-bind="attrs"
-									v-on="on"
-									outlined
-								></v-text-field>
-							</template>
-							<v-date-picker
-								v-model="endDateSearch"
-								@input="menuEndDate = false"
-							></v-date-picker>
-						</v-menu>
-					</v-col>
-				</v-row>
-
-				<v-row dense>
-					<!-- Alternative Id -->
-					<v-col cols="12" sm="12" md="4" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="calternativeId"
-								:rules="alternativeIdRules"
-								hint="Alternative Id"
-								ref="alternative_id"
-								placeholder="Alternative Id"
-								label="Alternative Id"
-								class="label-fixed"
-								counter="255"
-							></v-text-field>
-						</v-card>
-					</v-col>
-
-					<!-- Secure -->
-					<v-col cols="12" sm="12" md="4" lg="4">
-						<v-card
-							elevation="0"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-switch
-								color="success"
-								class="v-input--reverse--column"
-								inset
-								flat
-								hide-details
-								v-model="activeSecure"
-								:label="`${
-									activeSecure ? 'Active' : 'Inactive'
-								}`"
-								@change="toggleSecure"
-							>
-							</v-switch>
-						</v-card>
-					</v-col>
-
-					<!-- Active -->
-					<v-col cols="12" sm="12" md="4" lg="4">
-						<v-card
-							elevation="0"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-switch
-								color="success"
-								class="v-input--reverse--column"
-								inset
-								flat
-								hide-details
-								v-model="activeActive"
-								:label="`${
-									activeActive ? 'Active' : 'Inactive'
-								}`"
-								@change="toggleActive"
-							>
-							</v-switch>
-						</v-card>
-					</v-col>
-				</v-row>
-
-				<v-row dense>
-					<!-- Template -->
-					<v-col cols="12" sm="12" md="4" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-autocomplete
-								class="label-fixed"
-								v-model="template_id"
-								:rules="templateRules"
-								:hint="`Template`"
-								:items="getTemplates"
-								ref="template_id"
-								item-text="name"
-								item-value="id"
-								label="Select Creative Template*"
-								placeholder="Select Creative Template"
-							></v-autocomplete>
-						</v-card>
-					</v-col>
-
-					<!-- Width x Height -->
-					<v-col cols="12" sm="12" md="4" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-autocomplete
-								class="label-fixed"
-								v-model="widthHeight_id"
-								:rules="widthHeightRules"
-								:hint="`Select Size`"
-								:items="getWidthHeights"
-								ref="widthHeight_id"
-								item-text="name"
-								item-value="id"
-								label="Select Size*"
-								placeholder="Select Size"
-							></v-autocomplete>
-						</v-card>
-					</v-col>
-				</v-row>
-
-				<!-- Advertiser -->
-				<v-row>
-					<label>Advertiser</label>
-					<v-divider class="ma-4"></v-divider>
-				</v-row>
-
-				<v-row dense>
-					<!-- Advertiser -->
-					<v-col cols="12" sm="12" md="4" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-autocomplete
-								class="label-fixed"
-								v-model="advertiser_id"
-								:rules="advertiserRules"
-								:hint="`Select Advertiser`"
-								:items="getAdvertisers"
-								ref="advertiser_id"
-								item-text="name"
-								item-value="id"
-								label="Select Advertiser*"
-								placeholder="Select Advertiser"
-							></v-autocomplete>
-						</v-card>
-					</v-col>
-
-					<!-- Domain -->
-					<v-col cols="12" sm="12" md="4" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="domainText"
-								:rules="adomainRules"
-								hint="Domain"
-								ref="domain"
-								placeholder="Domain"
-								label="Domain"
-								class="label-fixed"
-								counter="255"
-							></v-text-field>
-						</v-card>
-					</v-col>
-
-					<!-- Category -->
-					<v-col cols="12" sm="12" md="4" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-autocomplete
-								class="label-fixed"
-								v-model="category_name"
-								:rules="categoryRules"
-								:hint="`Select Advertising`"
-								:items="getCategories"
-								ref="category_id"
-								item-text="name"
-								item-value="id"
-								label="Select Advertising*"
-								placeholder="Select Advertising"
-							></v-autocomplete>
-						</v-card>
-					</v-col>
-				</v-row>
-
-				<!-- Ad Content -->
-				<v-row>
-					<label>Ad Content</label>
-					<v-divider class="ma-4"></v-divider>
-				</v-row>
-
-				<v-row dense>
-					<!-- Budget Type -->
-					<v-col cols="12" sm="12" md="4" lg="4">
-						<v-row>
-							<v-col cols="6" sm="6" md="6" lg="6">
-								<v-checkbox
-									v-model="budgetType"
-									label="Fix"
-								></v-checkbox>
-							</v-col>
-							<v-col cols="6" sm="6" md="6" lg="6">
-								<v-checkbox
-									v-model="budgetType"
-									label="Automated"
-								></v-checkbox>
-							</v-col>
-						</v-row>
-					</v-col>
-
-					<!-- Upload New Assets -->
-					<v-col cols="12" sm="12" md="4" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-file-input
-								v-model="files"
-								color="deep-purple accent-4"
-								counter
-								label="Upload New Assets"
-								multiple
-								placeholder="Upload New Assets"
-								prepend-icon="mdi-paperclip"
-								outlined
-								:show-size="1000"
-							>
-								<template v-slot:selection="{ index, text }">
-									<v-chip
-										v-if="index < 2"
-										color="deep-purple accent-4"
-										dark
-										label
-										small
-									>
-										{{ text }}
-									</v-chip>
-
-									<span
-										v-else-if="index === 2"
-										class="
-											overline
-											grey--text
-											text--darken-3
-											mx-2
-										"
-									>
-										+{{ files.length - 2 }} File(s)
-									</span>
-								</template>
-							</v-file-input>
-						</v-card>
-					</v-col>
-
-					<!-- Image -->
-					<v-col cols="12" sm="12" md="4" lg="4">
-						<v-img aspect-ratio="1" class="grey lighten-2">
-							<template v-slot:placeholder>
-								<v-row
-									class="fill-height ma-0"
-									align="center"
-									justify="center"
-								>
-									<v-progress-circular
-										indeterminate
-										color="grey lighten-5"
-									></v-progress-circular>
-								</v-row>
-							</template>
-						</v-img>
-					</v-col>
-				</v-row>
-
-				<v-row dense>
-					<!-- URL -->
-					<v-col cols="12" sm="12" md="4" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="URLContent"
-								:rules="urlRules"
-								hint="Click URL"
-								ref="url"
-								placeholder="Click URL"
-								label="Click URL"
-								class="label-fixed"
-								counter="255"
-							></v-text-field>
-						</v-card>
-					</v-col>
-				</v-row>
-
-				<!-- Exchange Options -->
-				<v-row>
-					<label>Exchange Options</label>
-					<v-divider class="ma-4"></v-divider>
-				</v-row>
-
-				<v-row dense>
-					<!-- Technical Vendor -->
-					<v-col cols="12" sm="12" md="4" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="TechnicalVendorContent"
-								:rules="technicalVendorRules"
-								hint="(Required for Google AdX)"
-								persistent-hint
-								ref="technicalVendor"
-								placeholder="Add Technical Vendor"
-								label="Technical Vendor"
-								class="label-fixed"
-								counter="255"
-							></v-text-field>
-						</v-card>
-					</v-col>
-
-					<!-- Landing Page URL -->
-					<v-col cols="12" sm="12" md="4" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-autocomplete
-								class="label-fixed"
-								v-model="landingURLContent"
-								:rules="landingURLRules"
-								hint="(Required for Google AdX)"
-								persistent-hint
-								:items="getlandingURLs"
-								ref="landingURL_id"
-								item-text="name"
-								item-value="id"
-								label="Landing URL"
-								placeholder="Select Advertiser"
-							></v-autocomplete>
-						</v-card>
-					</v-col>
-
-					<!-- Submit Creative -->
-					<v-col cols="12" sm="12" md="4" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-checkbox
-								v-model="submitCreative"
-								label="Submit ceative to AppNexus for audit"
-							></v-checkbox>
-						</v-card>
-					</v-col>
-				</v-row>
-
-				<!-- Pixels and Scripts -->
-				<v-row>
-					<label>Pixels and Scripts</label>
-					<v-divider class="ma-4"></v-divider>
-				</v-row>
-
-				<v-row dense>
-					<!-- Creative Add-On -->
-					<v-col cols="12" sm="12" md="4" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="creativeAddOn"
-								:rules="creativeAddOnRules"
-								hint="Creative Add-on"
-								placeholder="Creative Add-on"
-								label="Creative Add-on"
-								class="label-fixed"
-								counter="255"
-							></v-text-field>
-						</v-card>
-					</v-col>
-
-					<!-- Pixels -->
-					<v-col cols="12" sm="12" md="4" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="pixel"
-								:rules="pixelRules"
-								hint="Pixel"
-								placeholder="Pixel"
-								label="Pixels"
-								class="label-fixed"
-								counter="255"
-							>
-								<v-icon slot="prepend"> mdi-add-circle </v-icon>
-							</v-text-field>
-							<div id="pixelsContent">
-								<v-label
-									v-for="item in pixels"
-									:key="item.id"
-									v-bind:style="{
-										width: '100%',
-										float: 'left',
-									}"
-								>
-									<a>{{ item.name }}</a>
-									<v-icon>mdi-delete</v-icon>
-								</v-label>
-							</div>
-						</v-card>
-					</v-col>
-
-					<!-- Scripts -->
-					<v-col cols="12" sm="12" md="4" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="script"
-								:rules="scriptlRules"
-								hint="Script"
-								placeholder="Script"
-								label="Scripts"
-								class="label-fixed"
-								counter="255"
-							>
-								<v-icon slot="prepend"> mdi-add-circle </v-icon>
-							</v-text-field>
-							<div id="scriptsContent">
-								<v-label v-for="item in scripts" :key="item.id">
-									<a>{{ item.name }}</a>
-									<v-icon>mdi-delete</v-icon>
-								</v-label>
-							</div>
-						</v-card>
-					</v-col>
-				</v-row>
-
-				<v-divider class="ma-4"></v-divider>
-				<v-row no-gutters align="center" justify="center">
-					<v-col cols="12" sm="12" md="8" lg="9">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-card-text
-								align="start"
-								class="secondary--text info-message"
-							>
-								* Mandatory fields
-							</v-card-text>
-						</v-card>
-					</v-col>
-
-					<v-col cols="12" sm="12" md="8" lg="3">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-row align="center" justify="center">
-								<v-btn
-									rounded
-									color="secondary"
-									class="ma-2 px-8"
-									@click="handleSubmit"
-								>
-									{{ $t("save") }}
-								</v-btn>
-								<v-btn
-									rounded
-									color="secondary"
-									class="ma-2 px-8"
-									@click="handleSubmit"
-								>
-									{{ $t("save & continue") }}
-								</v-btn>
-								<v-btn
-									rounded
-									color="secondary"
-									class="ma-2 px-8"
-									@click="handleCancel"
-								>
-									{{ $t("cancel") }}
-								</v-btn>
-							</v-row>
-						</v-card>
-					</v-col>
-				</v-row>
+	<v-layout class="d-block ma-0 pa-0">
+		<Alertize></Alertize>
+		<v-layout class="d-block ma-0 pa-0">
+			<v-container class="my-0 py-0">
+				<Overview
+					:creative="creative"
+					:message_pixel="message_pixel"
+					:message_script="message_script"
+					:message_click_tracker="message_click_tracker"
+					@update-creative-type-id="updateCreativeTypeId"
+					@fetch-creative-templates="fetchCreativeTemplates"
+					@fetch-creative-sizes="fetchCreativeSizes"
+					@fetch-advertiser-categories="fetchAdvertiserCategories"
+					@fetch-creative-rules="fetchCreativeRules"
+					@fetch-mime-types="fetchMimeTypes"
+					@fetch-creative-advertisers="fetchCreativeAdvertisers"
+					@selected-creative-advertiser="selectedCreativeAdvertiser"
+					@fetch-expendable-types="fetchExpendableTypes"
+					@fetch-expendable-directions="fetchExpendableDirections"
+					@fetch-banner-videos="fetchInBannerVideos"
+					@fetch-vendors="fetchVendors"
+					@fetch-addons="fetchAddons"
+					@fetch-assets="fetchAssets"
+					@fetch-thumbnails="fetchAssets"
+					@add-new-pixel="addPixel"
+					@delete-pixel="deletePixel"
+					@add-new-script="addScript"
+					@add-new-click-tracker="addNewClickTracker"
+					@delete-script="deleteScript"
+					@delete-click-tracker="deleteclickTracker"
+					@create-asset="createAsset"
+					@create-creative-image="createCreativeImage"
+					@create-creative-jstag="createCreativeJsTag"
+					@create-creative-iframetag="createCreativeIframeTag"
+					@create-creative-mraidtag="createCreativeMraidTag"
+					@create-creative-html5="createCreativeHtml5"
+					@create-creative-vast-inline="createCreativeVastInline"
+				></Overview>
 			</v-container>
-		</v-form>
-	</v-card>
+		</v-layout>
+	</v-layout>
 </template>
 
 <script lang="ts">
+	import { isEmpty } from "lodash";
 	import Vue from "vue";
-	import { isUndefined, isNull, isEmpty, findIndex } from "lodash";
+	import Alertize from "../../../../components/Alertize.vue";
+	import { isUrl } from "../../../../services/rule-services";
+	import Overview from "./overview.vue";
+	import { ImageDataCreate } from "../../../../interfaces/creativeBannerImage";
+	import { JsTagDataCreate } from "../../../../interfaces/creativeBannerJsTag";
+	import { IframeTagDataCreate } from "../../../../interfaces/creativeBannerIframeTag";
+	import { MraidTagDataCreate } from "../../../../interfaces/creativeBannerMraidTag";
+	import { Html5DataCreate } from "../../../../interfaces/creativeBannerHtml5";
+	import { initCreative } from "../../../../utils/fields";
 
 	export default Vue.extend({
 		name: "CreateCreative",
 		props: {},
-		components: {},
+		components: { Alertize, Overview },
 		data: () => ({
-			title: "Create New Creative",
-			name: "",
-			domainText: "",
-			category_name: "",
-			URLContent: "",
-			TechnicalVendorContent: "",
-			landingURLContent: "",
-			creativeAddOn: "",
-			pixel: "",
-			script: "",
-			calternativeId: NaN,
-			template_id: NaN,
-			widthHeight_id: NaN,
-			advertiser_id: NaN,
-			activeSecure: false,
-			activeActive: false,
-			budgetType: false,
-			submitCreative: false,
-			files: [],
-			pixels: [
-				{ id: 1, name: "Pixel 1" },
-				{ id: 2, name: "Pixel 2" },
-			],
-			scripts: [
-				{ id: 1, name: "Script 1" },
-				{ id: 2, name: "Script 2" },
-			],
-			//Menúes
-			menuStartDate: false,
-			startDateSearch: (this as any)
-				.moment(new Date())
-				.local()
-				.format("YYYY-MM-DD"),
-			startDate: (this as any)
-				.moment(new Date())
-				.local()
-				.format("YYYY-MM-DD"),
-			menuEndDate: false,
-			endDateSearch: (this as any)
-				.moment(new Date())
-				.local()
-				.format("YYYY-MM-DD"),
-			endDate: (this as any).moment(new Date()).local().format("YYYY-MM-DD"),
-			valid: false,
+			creative: initCreative(),
+			message_pixel: "",
+			message_script: "",
+			message_click_tracker: "",
 		}),
 		created() {},
-		async mounted() {},
+		mounted() {},
 		computed: {
-			alternativeIdRules() {
-				return [];
+			getResponseTemplates() {
+				return this.$store.state.creative.responseTemplates;
 			},
-			templateRules() {
-				return [];
-			},
-			widthHeightRules() {
-				return [];
-			},
-			adomainRules() {
-				return [];
-			},
-			categoryRules() {
-				return [];
-			},
-			urlRules() {
-				return [];
-			},
-			technicalVendorRules() {
-				return [];
-			},
-			landingURLRules() {
-				return [];
-			},
-			creativeAddOnRules() {
-				return [];
-			},
-			pixelRules() {
-				return [];
-			},
-			scriptlRules() {
-				return [];
-			},
-			advertiserRules() {
-				return [];
-			},
-			nameRules() {
-				return [];
-			},
-			getTemplates(): any {
-				return [
-					{ name: "Template 1", id: 1 },
-					{ name: "Template 2", id: 2 },
-					{ name: "Template 3", id: 3 },
-				];
-			},
-			getWidthHeights(): any {
-				return [
-					{ name: "WidthHeight 1", id: 1 },
-					{ name: "WidthHeight 2", id: 2 },
-					{ name: "WidthHeight 3", id: 3 },
-				];
-			},
-			getCategories(): any {
-				return [
-					{ name: "Category 1", id: 1 },
-					{ name: "Category 2", id: 2 },
-					{ name: "Category 3", id: 3 },
-				];
-			},
-			getlandingURLs(): any {
-				return [
-					{ name: "Landing URL 1", id: 1 },
-					{ name: "Landing URL 2", id: 2 },
-					{ name: "Landing URL 3", id: 3 },
-				];
-			},
-			getAdvertisers(): any {
-				return [
-					{ name: "Advertiser 1", id: 1 },
-					{ name: "Advertiser 2", id: 2 },
-					{ name: "Advertiser 3", id: 3 },
-				];
+
+			getAsset() {
+				return this.$store.state.creative.asset;
 			},
 		},
 		methods: {
-			toggleSecure() {},
-			toggleActive() {},
-			handleSubmit() {},
-			handleCancel() {},
-			/*updatefield(event: any, field: string) {
-						console.log("updatefield", { event: event, field: field });
-						this.$emit("update-model", this.campaign);
-					},
-					handleSubmit() {},
-					handleCancel() {},*/
+			updateCreativeTypeId(creative_type_id: number) {
+				this.creative.creative_type_id = creative_type_id;
+			},
+
+			async fetchCreativeTemplates() {
+				await this.setLoadingField(true);
+				await this.dispatchCreativeTypes();
+				await this.dispatchCreativeTemplates();
+				await this.setLoadingField(false);
+			},
+
+			async fetchCreativeSizes() {
+				await this.setLoadingField(true);
+				await this.dispatchCreativeSizes();
+				await this.setLoadingField(false);
+			},
+
+			async fetchCreativeAdvertisers() {
+				await this.setLoadingField(true);
+				await this.dispatchAdvertisers();
+				await this.fetchAdvertiserCategories();
+				await this.setLoadingField(false);
+			},
+
+			async fetchAdvertiserCategories() {
+				await this.setLoadingField(true);
+				await this.dispatchAdvertiserCategories();
+				await this.setLoadingField(false);
+			},
+
+			async fetchCreativeRules() {
+				await this.setLoadingField(true);
+				await this.dispatchCreativeRules();
+				await this.setLoadingField(false);
+			},
+
+			async fetchMimeTypes() {
+				await this.setLoadingField(true);
+				await this.dispatchMimeTypes();
+				await this.setLoadingField(false);
+			},
+
+			async fetchExpendableTypes() {
+				await this.setLoadingField(true);
+				await this.dispatchExpendableTypes();
+				await this.setLoadingField(false);
+			},
+
+			async fetchExpendableDirections() {
+				await this.setLoadingField(true);
+				await this.dispatchExpendableDirections();
+				await this.setLoadingField(false);
+			},
+
+			async fetchInBannerVideos() {
+				await this.setLoadingField(true);
+				await this.dispatchInBannerVideos();
+				await this.setLoadingField(false);
+			},
+
+			async fetchVendors() {
+				await this.setLoadingField(true);
+				await this.dispatchVendors();
+				await this.setLoadingField(false);
+			},
+
+			async fetchAddons() {
+				await this.setLoadingField(true);
+				await this.dispatchAddons();
+				await this.setLoadingField(false);
+			},
+
+			async fetchAssets() {
+				await this.setLoadingField(true);
+				await this.dispatchAssets();
+				await this.setLoadingField(false);
+			},
+
+			async createAsset(formData: FormData) {
+				try {
+					await this.setLoadingField(true);
+					await this.dispatchcreateAsset(formData);
+					await this.dispatchAssets();
+
+					this.creative.creative_ad_content.primary_asset_id =
+						this.getAsset.id;
+					this.creative.budget_type_id = 2;
+
+					await this.setLoadingField(false);
+				} catch (error) {
+					console.error("createAsset", { error: error });
+					await this.setLoadingField(false);
+				}
+			},
+
+			/**
+			 * Create Creative Image
+			 */
+			async createCreativeImage(creative: ImageDataCreate) {
+				try {
+					await this.setLoadingField(true);
+					await this.dispatchCreateImage(creative);
+					await this.setLoadingField(false);
+				} catch (error) {
+					console.error("createCreativeImage", { error: error });
+					await this.setLoadingField(false);
+				}
+			},
+
+			/**
+			 * Create Creative Js Tag
+			 */
+			async createCreativeJsTag(creative: JsTagDataCreate) {
+				try {
+					await this.setLoadingField(true);
+					await this.dispatchCreateJsTag(creative);
+					await this.setLoadingField(false);
+				} catch (error) {
+					console.error("createCreativeJsTag", { error: error });
+					await this.setLoadingField(false);
+				}
+			},
+
+			/**
+			 * Create Creative IframeTag
+			 */
+			async createCreativeIframeTag(creative: IframeTagDataCreate) {
+				try {
+					await this.setLoadingField(true);
+					await this.dispatchCreateIframeTag(creative);
+					await this.setLoadingField(false);
+				} catch (error) {
+					console.error("createCreativeIframeTag", { error: error });
+					await this.setLoadingField(false);
+				}
+			},
+
+			/**
+			 * Create Creative MraidTag
+			 */
+			async createCreativeMraidTag(creative: MraidTagDataCreate) {
+				try {
+					await this.setLoadingField(true);
+					await this.dispatchCreateMraidTag(creative);
+					await this.setLoadingField(false);
+				} catch (error) {
+					console.error("createCreativeMraidTag", { error: error });
+					await this.setLoadingField(false);
+				}
+			},
+
+			/**
+			 * Create Creative Html5
+			 */
+			async createCreativeHtml5(creative: Html5DataCreate) {
+				try {
+					await this.setLoadingField(true);
+					await this.dispatchCreateHtml5(creative);
+					await this.setLoadingField(false);
+				} catch (error) {
+					console.error("createCreativeHtml5", { error: error });
+					await this.setLoadingField(false);
+				}
+			},
+
+			/**
+			 * Create Creative Vast Inline
+			 */
+			async createCreativeVastInline(creative: Html5DataCreate) {
+				try {
+					await this.setLoadingField(true);
+					await this.dispatchCreateHtml5(creative);
+					await this.setLoadingField(false);
+				} catch (error) {
+					console.error("createCreativeVastInline", { error: error });
+					await this.setLoadingField(false);
+				}
+			},
+
+			findIndexByData(data: Array<any>, item: any) {
+				return data.findIndex(item);
+			},
+
+			getIndexByData(data: Array<string>, item: string) {
+				return data.indexOf(item);
+			},
+
+			/**
+			 * pixel
+			 */
+
+			addPixel(item: any) {
+				this.message_pixel = "";
+
+				if (isEmpty(item)) return;
+
+				if (!isUrl(item)) {
+					this.message_pixel = this.$t("domain");
+					return;
+				}
+
+				const index = this.getIndexByData(
+					this.creative.creative_addon_settings.pixels,
+					item
+				);
+
+				if (index > -1) {
+					this.message_pixel = this.$t("url-added");
+					return;
+				}
+
+				this.creative.creative_addon_settings.pixels.push(item);
+				this.creative.creative_addon_settings.pixel = "";
+			},
+
+			deletePixel(item: any) {
+				if (!item) return;
+				const index = this.getIndexByData(
+					this.creative.creative_addon_settings.pixels,
+					item
+				);
+				if (index < 0) return;
+				this.creative.creative_addon_settings.pixels.splice(index, 1);
+			},
+
+			/**
+			 * script
+			 */
+
+			addScript(item: any) {
+				this.message_script = "";
+
+				if (isEmpty(item)) return;
+
+				if (!isUrl(item)) {
+					this.message_script = this.$t("domain");
+					return;
+				}
+
+				const index = this.getIndexByData(
+					this.creative.creative_addon_settings.scripts,
+					item
+				);
+
+				if (index > -1) {
+					this.message_script = this.$t("url-added");
+					return;
+				}
+
+				this.creative.creative_addon_settings.scripts.push(item);
+				this.creative.creative_addon_settings.script = "";
+			},
+
+			addNewClickTracker(item: any) {
+				console.log("addNewClickTracker", {
+					item: item,
+					isEmpty: isEmpty(item),
+					isUrl: isUrl(item),
+				});
+
+				this.message_click_tracker = "";
+
+				if (isEmpty(item)) return;
+
+				if (!isUrl(item)) {
+					this.message_click_tracker = this.$t("domain");
+					return;
+				}
+
+				const index = this.getIndexByData(
+					this.creative.creative_addon_settings.click_trackers,
+					item
+				);
+
+				if (index > -1) {
+					this.message_click_tracker = this.$t("url-added");
+					return;
+				}
+
+				this.creative.creative_addon_settings.click_trackers.push(item);
+				this.creative.creative_addon_settings.click_tracker = "";
+			},
+
+			deleteScript(item: any) {
+				if (!item) return;
+				const index = this.getIndexByData(
+					this.creative.creative_addon_settings.scripts,
+					item
+				);
+				if (index < 0) return;
+				this.creative.creative_addon_settings.scripts.splice(index, 1);
+			},
+
+			deleteclickTracker(item: any) {
+				if (!item) return;
+				const index = this.getIndexByData(
+					this.creative.creative_addon_settings.click_trackers,
+					item
+				);
+				if (index < 0) return;
+				this.creative.creative_addon_settings.click_trackers.splice(
+					index,
+					1
+				);
+			},
+
+			selectedCreativeAdvertiser(creative_advertiser: any) {
+				this.creative.creative_advertiser = creative_advertiser;
+			},
+
+			/**
+			 * Fetch
+			 */
+
+			async setLoading(loading: boolean = false) {
+				return this.$store.dispatch("proccess/setLoading", loading);
+			},
+
+			async setLoadingField(loading: boolean = false) {
+				return this.$store.dispatch("proccess/setLoadingField", loading);
+			},
+
+			async dispatchAdvertisers() {
+				return this.$store.dispatch("advertiser/all");
+			},
+
+			async dispatchCreativeSizes() {
+				return this.$store.dispatch("creative/creativeSizes");
+			},
+			async dispatchCreativeTemplates() {
+				return this.$store.dispatch("creative/creativeTemplates");
+			},
+			async dispatchCreativeTypes() {
+				return this.$store.dispatch("creative/creativeTypes");
+			},
+			async dispatchAdvertiserCategories() {
+				return this.$store.dispatch("creative/advertiserCategories");
+			},
+			async dispatchCreativeRules() {
+				return this.$store.dispatch("creative/creativeRules");
+			},
+			async dispatchMimeTypes() {
+				return this.$store.dispatch("creative/mimeTypes");
+			},
+			async dispatchBudgetTypes() {
+				return this.$store.dispatch("custom_list/getBudgetTypes");
+			},
+			async dispatchExpendableTypes() {
+				return this.$store.dispatch("creative/expendableTypes");
+			},
+			async dispatchExpendableDirections() {
+				return this.$store.dispatch("creative/expendableDirections");
+			},
+			async dispatchInBannerVideos() {
+				return this.$store.dispatch("creative/inBannerVideos");
+			},
+
+			async dispatchVendors() {
+				return this.$store.dispatch("creative/vendors");
+			},
+			async dispatchAddons() {
+				return this.$store.dispatch("creative/addons");
+			},
+			async dispatchAssets() {
+				return this.$store.dispatch("creative/assets");
+			},
+
+			async dispatchcreateAsset(formData: FormData) {
+				return this.$store.dispatch("creative/creativeAssets", formData);
+			},
+
+			/**
+			 * Dispatch Create CreativeImage
+			 */
+			async dispatchCreateImage(creative: ImageDataCreate) {
+				return this.$store.dispatch("creative/CreateNewCreative", creative);
+			},
+
+			/**
+			 * Dispatch Create CreativeJsTag
+			 */
+			async dispatchCreateJsTag(creative: JsTagDataCreate) {
+				return this.$store.dispatch("creative/CreateNewCreative", creative);
+			},
+
+			/**
+			 * Dispatch Create CreativeIframeTag
+			 */
+			async dispatchCreateIframeTag(creative: IframeTagDataCreate) {
+				return this.$store.dispatch("creative/CreateNewCreative", creative);
+			},
+
+			/**
+			 * Dispatch Create CreativeMraidTag
+			 */
+			async dispatchCreateMraidTag(creative: MraidTagDataCreate) {
+				return this.$store.dispatch("creative/CreateNewCreative", creative);
+			},
+
+			/**
+			 * Dispatch Create dispatchCreateHtml5
+			 */
+			async dispatchCreateHtml5(creative: Html5DataCreate) {
+				return this.$store.dispatch("creative/CreateNewCreative", creative);
+			},
 		},
 	});
 </script>
