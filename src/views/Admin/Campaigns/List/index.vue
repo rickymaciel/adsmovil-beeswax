@@ -75,7 +75,7 @@
 				) {
 					return [];
 				}
-				return result.data;
+				return result.data.sort(function(a,b){return b.id-a.id});
 			},
 			prepareTableHeaders() {
 				return [

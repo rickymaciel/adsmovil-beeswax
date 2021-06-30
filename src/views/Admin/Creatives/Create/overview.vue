@@ -7,6 +7,7 @@
 	>
 		<!-- <v-card> {{ creative.start_date }} </v-card> -->
 		<!-- <v-card> {{ creative }} </v-card> -->
+		<!-- <v-card> {{ tag_rules }} </v-card> -->
 
 		<v-form
 			ref="form"
@@ -650,25 +651,6 @@
 						></CardAutocomplete>
 					</v-col>
 
-					<!-- tag -->
-					<v-col
-						class="pe-lg-16 pa-0"
-						v-show="showFieldByTemplateId('tag')"
-						cols="12"
-						sm="12"
-						md="4"
-						lg="4"
-					>
-						<CardTextField
-							v-model="creative.creative_ad_content.tag"
-							:rules="tag_rules"
-							hint="Tag"
-							reference="tag"
-							placeholder="Tag"
-							label="Tag"
-						></CardTextField>
-					</v-col>
-
 					<!-- creative_rule_id -->
 					<v-col
 						class="pe-lg-16 pa-0"
@@ -693,6 +675,28 @@
 							@click="fetchCreativeRules"
 							:required="true"
 						></CardAutocomplete>
+					</v-col>
+
+					<!-- tag -->
+					<v-col
+						class="pe-lg-16 pa-0"
+						v-show="showFieldByTemplateId('tag')"
+						cols="12"
+						sm="12"
+						md="4"
+						lg="4"
+					>
+						<CardTextarea
+							v-model="creative.creative_ad_content.tag"
+							:rules="tag_rules"
+							hint="Tag"
+							reference="tag"
+							placeholder="Tag"
+							label="Tag"
+							append_outer="mdi-tag-arrow-down"
+							btn_text="Validar Tag"
+							@click-append-outer="validateTag"
+						></CardTextarea>
 					</v-col>
 
 					<!-- creative_attributes  -->
@@ -1125,6 +1129,91 @@
 							@delete-item="deleteclickTracker"
 						></ArrayListItem>
 					</v-col>
+
+					<!-- DividerForm: Vast Events -->
+					<v-col
+						class="pe-lg-16 pa-0"
+						v-show="showFieldByTemplateId('vast_events')"
+						cols="12"
+						sm="12"
+						md="12"
+						lg="12"
+					>
+						<DividerForm name="Vast Events"></DividerForm>
+					</v-col>
+
+					<!-- vast_events -->
+					<v-col
+						class="pe-lg-16 pa-0"
+						v-show="showFieldByTemplateId('vast_events')"
+						cols="12"
+						sm="12"
+						md="12"
+						lg="12"
+					>
+						<v-layout class="my-4">
+							<v-btn
+								color="secondary"
+								outlined
+								rounded
+								@click="addRowVastEvent()"
+							>
+								<v-icon left color="secondary">
+									mdi-plus
+								</v-icon>
+								Add Vast Event
+							</v-btn>
+						</v-layout>
+						<VastEvent
+							:items="
+								creative.creative_addon_settings.vast_events
+							"
+							@delete-item="deleteVastEvent"
+						></VastEvent>
+					</v-col>
+
+					<!-- DividerForm: Vast Events -->
+					<v-col
+						class="pe-lg-16 pa-0"
+						v-show="showFieldByTemplateId('progress_events')"
+						cols="12"
+						sm="12"
+						md="12"
+						lg="12"
+					>
+						<DividerForm name="Progress Events"></DividerForm>
+					</v-col>
+
+					<!-- progress_events -->
+					<v-col
+						class="pe-lg-16 pa-0"
+						v-show="showFieldByTemplateId('progress_events')"
+						cols="12"
+						sm="12"
+						md="12"
+						lg="12"
+					>
+						<v-layout class="my-4">
+							<v-btn
+								color="secondary"
+								outlined
+								rounded
+								@click="addRowProgressEvent()"
+							>
+								<v-icon left color="secondary">
+									mdi-plus
+								</v-icon>
+								Add Progress Event
+							</v-btn>
+						</v-layout>
+						<ProgressEvent
+							:items="
+								creative.creative_addon_settings.progress_events
+							"
+							@delete-item="deleteProgressEvent"
+						></ProgressEvent>
+					</v-col>
+
 					<!-- <v-col class="pe-lg-16 pa-0" v-if="creative.creative_template_id" cols="12" sm="12" md="12" lg="12">
 						<DividerForm name="Associated Line"></DividerForm>
 					</v-col> -->
@@ -1205,13 +1294,17 @@
 		isValidUrl,
 		isFileMaxSize,
 		isUploaded,
+		isMustValidated,
 	} from "../../../../services/rule-services";
 	import DatePicker from "../../../../components/Content/DatePicker.vue";
 	import DividerForm from "../../../../components/Content/DividerForm.vue";
 	import CardTextField from "../../../../components/Content/CardTextField.vue";
+	import CardTextarea from "../../../../components/Content/CardTextarea.vue";
 	import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
 	import CardSwitch from "../../../../components/Content/CardSwitch.vue";
 	import ArrayListItem from "../../../../components/Content/ArrayListItem.vue";
+	import VastEvent from "../../../../components/Content/VastEvent.vue";
+	import ProgressEvent from "../../../../components/Content/ProgressEvent.vue";
 	import { find, isEmpty, isObject } from "lodash";
 	import {
 		hasFieldByTemplateId,
@@ -1244,14 +1337,21 @@
 				type: String,
 				default: "",
 			},
+			tag_validated: {
+				type: Boolean,
+				default: false,
+			},
 		},
 		components: {
 			DatePicker,
 			DividerForm,
 			CardTextField,
+			CardTextarea,
 			CardAutocomplete,
 			CardSwitch,
 			ArrayListItem,
+			VastEvent,
+			ProgressEvent,
 		},
 		data: () => ({
 			valid: true,
@@ -1511,11 +1611,20 @@
 				this.scripts_rules = [];
 			},
 
+			async addTagValidations() {
+				this.tag_rules = [
+					this.getRules.isRequired,
+					isMustValidated(this.tag_validated),
+				];
+			},
+
 			async addJsTagValidations() {
 				await this.addDateValidations();
 
 				// creative_ad_content
-				this.tag_rules = []; // check ins
+
+				await this.addTagValidations();
+
 				this.creative_rule_id_rules = [
 					this.getRules.isRequired,
 					this.getRules.isNumber,
@@ -1543,7 +1652,9 @@
 				await this.addDateValidations();
 
 				// creative_ad_content
-				this.tag_rules = []; // check ins
+
+				await this.addTagValidations();
+
 				this.creative_rule_id_rules = [
 					this.getRules.isRequired,
 					this.getRules.isNumber,
@@ -1571,7 +1682,9 @@
 				await this.addDateValidations();
 
 				// creative_ad_content
-				this.tag_rules = []; // check ins
+
+				await this.addTagValidations();
+
 				this.creative_rule_id_rules = [
 					this.getRules.isRequired,
 					this.getRules.isNumber,
@@ -1600,10 +1713,6 @@
 
 				// creative_ad_content
 				this.tag_rules = []; // check ins
-				this.creative_rule_id_rules = [
-					this.getRules.isRequired,
-					this.getRules.isNumber,
-				];
 
 				this.companion_html_rules = !this.creative.creative_ad_content
 					.secondary_asset_id
@@ -1638,10 +1747,6 @@
 
 				// creative_ad_content
 				this.tag_rules = []; // check ins
-				this.creative_rule_id_rules = [
-					this.getRules.isRequired,
-					this.getRules.isNumber,
-				];
 
 				this.companion_html_rules = !this.creative.creative_ad_content
 					.secondary_asset_id
@@ -1698,6 +1803,7 @@
 			 */
 			async handleSubmit() {
 				try {
+
 					await this.addCommonsValidations();
 
 					await this.validate();
@@ -1876,6 +1982,28 @@
 				this.$emit("delete-click-tracker", item);
 			},
 
+			addRowVastEvent() {
+				this.$emit("add-row-vast-event", {
+					event: "",
+					url: "",
+				});
+			},
+
+			addRowProgressEvent() {
+				this.$emit("add-row-progress-event", {
+					event: "",
+					url: "",
+				});
+			},
+
+			deleteVastEvent(item: any) {
+				this.$emit("delete-row-vast-event", item);
+			},
+
+			deleteProgressEvent(item: any) {
+				this.$emit("delete-row-progress-event", item);
+			},
+
 			async clickUpload() {
 				let formData = new FormData();
 				formData.append(
@@ -1884,6 +2012,10 @@
 				);
 				formData.append("file", this.creative.file);
 				this.$emit("create-asset", formData);
+			},
+
+			async validateTag() {
+				return this.$emit("validate-tag");
 			},
 		},
 	});

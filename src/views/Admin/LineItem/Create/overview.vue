@@ -177,51 +177,52 @@
 					</v-col>
 
 					<!-- Start Date -->
-					<v-col cols="12" sm="12" md="6" lg="4">
-						<DateTimePicker
-							:date="entity.start_date"
-							:time="start_time"
-							label_date="Start Date*"
-							label_time="Start Time*"
-							:min_date="min_date"
-							model_date="start_date"
-							model_time="start_time"
-							:open_date="openStartDate"
-							:open_time="openStartTime"
-							type_validate_date="min-todate"
-							@date="startDateUpdate"
-							@time="startTimeUpdate"
-							@close-date="closeOpenStartDate"
-							@close-time="closeOpenStartTime"
-							@selected-date="selectedStartDate"
-							@selected-time="selectedStartTime"
-							@set-open-date="setOpenDate"
-							@reset-date="resetStartDate"
-						></DateTimePicker>
+					<v-col
+						cols="12"
+						sm="12"
+						md="6"
+						lg="4"
+					>
+						<v-card
+							elevation="0"
+							class="pa-2"
+							outlined
+							tile
+							color="rgb(0, 0, 0, 0.0)"
+						>
+							<DatePicker
+								label="Start Date*"
+								v-model="entity.start_date"
+								:min_date="getMinDate"
+								:max_date="getMaxDate"
+								:rules="startDateRules"
+							></DatePicker>
+						</v-card>
 					</v-col>
 
 					<!-- End Date -->
-					<v-col cols="12" sm="12" md="6" lg="4">
-						<DateTimePicker
-							:date="entity.end_date"
-							:time="end_time"
-							label_date="End Date*"
-							label_time="End Time*"
-							:min_date="startDateTime"
-							model_date="end_date"
-							model_time="end_time"
-							:open_date="openEndDate"
-							:open_time="openEndTime"
-							type_validate_date="min-todate"
-							@date="endDateUpdate"
-							@time="endTimeUpdate"
-							@close-date="closeOpenEndDate"
-							@close-time="closeOpenEndTime"
-							@selected-date="selectedEndDate"
-							@selected-time="selectedEndTime"
-							@set-open-date="setOpenDate"
-							@reset-date="resetStartDate"
-						></DateTimePicker>
+					<v-col
+						cols="12"
+						sm="12"
+						md="6"
+						lg="4"
+					>
+						<v-card
+							elevation="0"
+							class="pa-2"
+							outlined
+							tile
+							color="rgb(0, 0, 0, 0.0)"
+						>
+							<DatePicker
+								label="End Date*"
+								v-model="entity.end_date"
+								:min_date="getMinDate"
+								:max_date="getMaxDate"
+								:rules="endDateRules"
+								:is_end="true"
+							></DatePicker>
+						</v-card>
 					</v-col>
 
 					<!-- Campaign Duration  -->
@@ -668,7 +669,7 @@
 					</v-col>
 
 					<!-- Line Pacing -->
-					<v-col cols="12" sm="12" md="6" lg="4">
+					<v-col cols="12" sm="12" md="6" lg="4" v-if="showCampaignPacing">
 						<v-card
 							elevation="0"
 							class="pa-2"
@@ -950,7 +951,7 @@
 		first,
 	} from "lodash";
 	import { AdvertiserList } from "../../../../interfaces/advertiser";
-	import DateTimePicker from "../../../../components/Content/DateTimePicker.vue";
+	import DatePicker from "../../../../components/Content/DatePicker.vue";
 	import { LineItemDataCreate } from "../../../../interfaces/line_item";
 	import { CampaingList, CampaignDataCreate, CampaingDataUpdate } from '@/interfaces/campaign';
 	import { LineTypeList } from "@/interfaces/line_type";
@@ -975,6 +976,11 @@
 	// Configs to Bid Strategy
 	const BID_STRATEGY_FIXED = "Fix";
 	const BID_STRATEGY_AUTOMATED = "Automated";
+
+	// Configs to Date
+	const DEFAULT_DATE_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
+	const DEFAULT_START_TIME = "00:00:00";
+	const DEFAULT_END_TIME = "00:59:59";
 
 	export default Vue.extend({
 		name: "Overview",
@@ -1044,7 +1050,7 @@
 				},
 			},
 		},
-		components: { DateTimePicker },
+		components: { DatePicker },
 		data: () => ({
 			title: "Overview",
 			valid: false,
@@ -1069,8 +1075,8 @@
 			openEndTime: false,
 			start_date: "",
 			end_date: "",
-			start_time: "00:00:00",
-			end_time: "00:59:59",
+			start_time: DEFAULT_START_TIME,
+			end_time: DEFAULT_END_TIME,
 			min_date: "",
 			max_date: "",
 
@@ -1102,13 +1108,21 @@
 			}, 1000);
 		},
 		computed: {
-			isEdit() {
-				return this.is_edit;
+			getMinDate() {
+				if( this.campaign?.start_date ){
+					return this.moment(this.campaign.start_date).format(
+						DEFAULT_DATE_TIME_FORMAT
+					);
+				}
+				return this.moment().format(DEFAULT_DATE_TIME_FORMAT);
 			},
 
-			startDateTime() {
-				if (!this.campaign.start_date) return "";
-				return `${this.campaign.start_date} ${this.start_time || ""}`;
+			getMaxDate() {
+				return this.campaign?.end_date ? this.moment(this.campaign?.end_date).format(DEFAULT_DATE_TIME_FORMAT) : "";
+			},
+
+			isEdit() {
+				return this.is_edit;
 			},
 
 			/**
@@ -1172,12 +1186,14 @@
 							}),
 					],
 					budget: [
+						(v: any) => Boolean(this.campaign?.budget) || this.$t("require-campaign"),
 						(v: any) => Boolean(v) || this.$t("fieldRequired"),
 						(v: any) =>
 							v <= this.campaign?.budget ||
 							this.$t("max", {
 								max: this.campaign?.budget,
 							}),
+						
 					],
 				};
 			},
@@ -1259,6 +1275,7 @@
 			 */
 			startDateRules() {
 				return [
+					//(v: any) => this.calculateDuration(this.moment(this.entity.start_date), this.moment(this.entity.end_date)) > 0 || this.$t("must-after-end"),
 					(v: string) =>
 						(!isUndefined(v) && !isNull(v) && !isEmpty(v)) ||
 						this.$t("fieldRequired"),
@@ -1266,6 +1283,7 @@
 			},
 			endDateRules() {
 				return [
+					//(v: any) => this.calculateDuration(this.moment(this.entity.start_date), this.moment(this.entity.end_date)) < 0 || this.$t("must-after-start"),
 					(v: string) =>
 						(!isUndefined(v) && !isNull(v) && !isEmpty(v)) ||
 						this.$t("fieldRequired"),
@@ -1337,7 +1355,13 @@
 					}
 				}
 				return false;
-			}
+			},
+
+			showCampaignPacing() {
+				return (
+					this.isAutomaticAllocation && this.isOptimizationStrategyById
+				);
+			},
 		},
 		methods: {
 			setBudgetText() : string {
@@ -1429,10 +1453,6 @@
 			async validate() {
 				let form = this.$refs.form;
 				const valid = await form.validate();
-				console.log("--- Validate Form content:",{
-					content: form,
-					valid: valid,
-				});
 				return await valid;
 			},
 
@@ -1483,8 +1503,8 @@
 					name: String(this.entity.name),
 					budget: Number(this.entity?.budget) !== NaN ? Number(this.entity.budget) : null,
 					daily_budget: Number(this.entity?.daily_budget) !== NaN ? Number(this.entity.daily_budget) : null,
-					start_date: `${this.entity.start_date} ${this.start_time}`,
-					end_date: `${this.entity.end_date} ${this.end_time}`,
+					start_date: this.moment(this.entity.start_date).format(DEFAULT_DATE_TIME_FORMAT),
+					end_date: this.moment(this.entity.end_date).format(DEFAULT_DATE_TIME_FORMAT),
 					active: this.entity?.active,
 					alternative_id: String(this.entity.alternative_id),
 					bid_strategy_id: Number(this.entity?.bid_strategy_id) !== NaN ? Number(this.entity.bid_strategy_id) : null,
@@ -1506,17 +1526,10 @@
 
 			getCalculateDuration() {
 				if (!this.isValidDates()) return;
-
-				const startDate = this.moment(
-					`${this.entity.start_date} ${this.start_time}`
-				);
-				const endDate = this.moment(
-					`${this.entity.end_date} ${this.end_time}`
-				);
-
+				const startDate = this.moment(this.entity.start_date);
+				const endDate = this.moment(this.entity.end_date);
 				let days = this.calculateDuration(startDate,endDate);
-
-				if (days < 0) {
+				if ( days < 0 ) {
 					this.entity.end_date = "";
 					this.entity.line_duration = undefined;
 					return;
@@ -1526,124 +1539,26 @@
 			},
 
 			calculateDuration(start: any, end: any){
+				console.log("--- Dates received: ",{
+					start: start,
+					end: end
+				});
+				
 				if( !(start.isValid() && end.isValid()) ){
+					console.log("--- Diferencia: ", -1);
 					return -1;
 				}
 				const diff = end.diff(start, "days");
 				const duration = this.moment.duration(end.diff(start));
+				console.log("--- Diferencia: ", Math.ceil(duration.asDays()));
+				
 				return Math.ceil(duration.asDays());
 			},
 
 			isValidDates() {
-				const startDate = this.moment(
-					`${this.entity.start_date} ${this.start_time}`
-				);
-				const endDate = this.moment(
-					`${this.entity.end_date} ${this.end_time}`
-				);
+				const startDate = this.moment(this.entity.start_date);
+				const endDate = this.moment(this.entity.end_date);
 				return startDate.isValid() && endDate.isValid();
-			},
-
-			onSelectedDate(input: string, date: any) {
-				this.entity[input] = date;
-				this.$refs[input].save(date);
-				this.getCalculateDuration();
-				switch (input) {
-					case "start_date":
-						this.openStartTime = true;
-						break;
-					default:
-						break;
-				}
-			},
-
-			onSelectedTime(input: string, time: any) {
-				this.entity[input] = time;
-				this.$refs[input].save(time);
-				this.getCalculateDuration();
-			},
-
-			/**
-			 * Start
-			 */
-			selectedStartDate(data: any) {
-				this.closeOpenStartDate();
-				this.openOpenStartTime();
-				this.getCalculateDuration();
-			},
-
-			selectedStartTime(data: any) {
-				this.closeOpenStartDate();
-				this.closeOpenStartTime();
-				this.getCalculateDuration();
-			},
-
-			closeOpenStartDate() {
-				this.openStartDate = false;
-			},
-
-			closeOpenStartTime() {
-				this.openStartTime = false;
-			},
-
-			openOpenStartTime() {
-				this.openStartTime = true;
-			},
-
-			startDateUpdate(data: any) {
-				this.entity.start_date = data;
-			},
-
-			startTimeUpdate(data: any) {
-				this.start_time = data;
-			},
-
-			setOpenDate(data: any) {
-				switch (data) {
-					case "start_date":
-						this.openStartDate = true;
-						break;
-					case "end_date":
-						this.openEndDate = true;
-						break;
-					default:
-						break;
-				}
-			},
-
-			resetStartDate() {
-				this.entity.start_date = "";
-			},
-
-			/**
-			 * End
-			 */
-			selectedEndDate(data: any) {
-				this.closeOpenEndDate();
-				this.openEndTime = true;
-				this.getCalculateDuration();
-			},
-
-			selectedEndTime(data: any) {
-				this.closeOpenEndDate();
-				this.closeOpenEndTime();
-				this.getCalculateDuration();
-			},
-
-			closeOpenEndDate() {
-				this.openEndDate = false;
-			},
-
-			closeOpenEndTime() {
-				this.openEndTime = false;
-			},
-
-			endDateUpdate(data: any) {
-				this.end_date = data;
-			},
-
-			endTimeUpdate(data: any) {
-				this.end_time = data;
 			},
 
 			addRowFrecuency() {
@@ -1657,7 +1572,7 @@
 			},
 
 			deleteRowFrecuency(index: number) {
-				if (this.entity.frequency_caps.length === 1) return;
+				if (this.entity.frequency_caps.length === 0) return;
 				this.entity.frequency_caps.splice(index, 1);
 			},
 
@@ -1683,20 +1598,14 @@
 				this.entity.alternative_id = campaign?.alternative_id != null ? String(campaign.alternative_id) : "";
 				this.entity.campaign_id = campaign?.id != null ? Number(campaign.id) : null;
 
-				this.entity.start_date = campaign?.start_date != null ? campaign.start_date.substr(0, 10) : "";
+				this.entity.start_date = campaign?.start_date != null ? campaign.start_date : "";
 				this.start_date = this.entity.start_date;
-				this.start_time = campaign?.start_date != null ? campaign.start_date.substr(11, 8) : "00:00:00";
-				this.entity.end_date = campaign?.end_date != null ? campaign.end_date.substr(0, 10) : "";
+				this.entity.end_date = campaign?.end_date != null ? campaign.end_date : "";
 				this.end_date = this.entity.end_date;
-				this.end_time = campaign?.end_date != null ? campaign.end_date.substr(11, 8) : "00:59:59";
-
+				
 				// Calcular la duración de Line Item
-				const startDate = this.moment(
-					`${this.entity.start_date} ${this.start_time}`
-				);
-				const endDate = this.moment(
-					`${this.entity.end_date} ${this.end_time}`
-				);
+				const startDate = this.moment(this.entity.start_date);
+				const endDate = this.moment(this.entity.end_date);
 				let days = this.calculateDuration(startDate,endDate);
 				if ( days > 0 ) {
 					this.entity.line_duration = days;
@@ -1744,7 +1653,6 @@
 				this.onChangeOptimizationStrategy();
 				this.entity.target_ecpc = campaign.target_ecpc != null ? Number(campaign.target_ecpc) : null;
 				this.entity.target_ctr = campaign.target_ctr != null ? Number(campaign.target_ctr) : null;
-				this.entity.frequency_caps = campaign.frequency_caps != null ? campaign.frequency_caps : [];
 				
 				// Optimization Strategy = By Campaing
 				/*
@@ -1781,11 +1689,11 @@
 
 			async onChangeOptimizationStrategy() {
 				//this.setTargets();
-				this.entity.target_ecpm = null;
-				this.entity.target_ecpc = null;
-				this.entity.target_ctr = null;
-				this.entity.target_ecpcv = null;
-				this.entity.target_cpcv = null;
+				this.entity.target_ecpm = undefined;
+				this.entity.target_ecpc = undefined;
+				this.entity.target_ctr = undefined;
+				this.entity.target_ecpcv = undefined;
+				this.entity.target_cpcv = undefined;
 				let total = this.entity?.budget ? Number(this.entity.budget) : null;
 				let kpi_objective = this.campaign?.kpi_objective ? Number(this.campaign.kpi_objective) : null ;
 				
@@ -1797,7 +1705,7 @@
 					this.setTargets(false, false, false, false, true, false);
 					if( kpi_objective !== null && total !== null ){
 						this.entity.target_ecpm = (total/kpi_objective/1000)?.toFixed(2);
-					}
+					}else{this.entity.target_ecpm = undefined}
 					return;
 				}
 
@@ -1809,7 +1717,7 @@
 					this.setTargets(true, true, false, false, false, false);
 					if( kpi_objective !== null && total !== null ){
 						this.entity.target_ecpc = (total/kpi_objective)?.toFixed(2);
-					}
+					}else{this.entity.target_ecpc = undefined}
 					return;
 				}
 
@@ -1821,7 +1729,7 @@
 					this.setTargets(false, false, true, false, false, true);
 					if( kpi_objective !== null && total !== null ){
 						this.entity.target_ecpcv = (total/kpi_objective)?.toFixed(2);
-					}
+					}else{this.entity.target_ecpcv = undefined}
 					return;
 				}
 			},
@@ -1842,6 +1750,7 @@
 					}
 				}
 			},
+			
 			"entity.line_pacing_id"(val, old){
 				let founded = this.checkSelectedIDByName(
 					this.getLinesPacing,
@@ -1859,6 +1768,14 @@
 					this.entity.daily_budget = null;
 					this.entity.daily_budget_suggested = null;
 				}
+			},
+
+			"entity.start_date"(val, old){
+				this.getCalculateDuration()
+			},
+
+			"entity.end_date"(val, old){
+				this.getCalculateDuration()
 			},
 		}
 	});

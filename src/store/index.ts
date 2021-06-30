@@ -31,6 +31,7 @@ import { ListItemFilters, ListItemOptions } from '@/interfaces/list_items'
 import { AxiosError } from 'axios'
 import { LineItem, LineItemDataCreate, LineItemFilters, LineItemOptions } from '@/interfaces/line_item';
 import lineItemTypeService from '@/services/line-item-type-service';
+import { TagCheck } from '@/interfaces/creative';
 
 /**
  * Hard Code Account
@@ -1498,6 +1499,16 @@ export default new Vuex.Store({
                                 to: "CreativesIndex"
                             } as Notification
                         );
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+                async validateTag({ commit }, tag: TagCheck) {
+                    try {
+                        const response = await CreativeService.validateTag(tag)
+                        commit('SET_ASSET', response)
                         return await Promise.resolve(response)
                     } catch (error) {
                         CatcherError(this.dispatch, error);

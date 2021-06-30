@@ -9,6 +9,10 @@ export function isRequired(v: any) {
     return Boolean(v) || i18n.t("fieldRequired")
 }
 
+export function isMustValidated(v: any) {
+    return Boolean(v) || i18n.t("must-be-validated")
+}
+
 export function isNumber(v: any) {
     return !isNaN(v) || i18n.t("must-be-numeric")
 }

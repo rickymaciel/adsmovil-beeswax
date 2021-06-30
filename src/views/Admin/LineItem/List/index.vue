@@ -41,7 +41,7 @@
 		ResultPaginate,
 	} from "../../../../interfaces/line_item";
 	import ParamService from "../../../../services/params-service";
-
+	
 	export default Vue.extend({
 		name: "LineItemList",
 		props: {},
@@ -70,7 +70,7 @@
 				) {
 					return [];
 				}
-				return result.data;
+				return result.data.sort(function(a,b){return b.id-a.id});
 			},
 			prepareTableHeaders() {
 				return [

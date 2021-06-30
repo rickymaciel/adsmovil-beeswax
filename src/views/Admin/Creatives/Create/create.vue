@@ -8,6 +8,7 @@
 					:message_pixel="message_pixel"
 					:message_script="message_script"
 					:message_click_tracker="message_click_tracker"
+					:tag_validated="tag_validated"
 					@update-creative-type-id="updateCreativeTypeId"
 					@fetch-creative-templates="fetchCreativeTemplates"
 					@fetch-creative-sizes="fetchCreativeSizes"
@@ -36,6 +37,12 @@
 					@create-creative-mraidtag="createCreativeMraidTag"
 					@create-creative-html5="createCreativeHtml5"
 					@create-creative-vast-inline="createCreativeVastInline"
+					@add-row-vast-event="addRowVastEvent"
+					@delete-row-vast-event="deleteRowVastEvent"
+					@add-row-progress-event="addRowProgressEvent"
+					@delete-row-progress-event="deleteRowProgressEvent"
+					@validate-tag="validateTag"
+					@must-validated="mustValidated"
 				></Overview>
 			</v-container>
 		</v-layout>
@@ -43,7 +50,7 @@
 </template>
 
 <script lang="ts">
-	import { isEmpty } from "lodash";
+	import { isEmpty, isUndefined } from "lodash";
 	import Vue from "vue";
 	import Alertize from "../../../../components/Alertize.vue";
 	import { isUrl } from "../../../../services/rule-services";
@@ -53,7 +60,9 @@
 	import { IframeTagDataCreate } from "../../../../interfaces/creativeBannerIframeTag";
 	import { MraidTagDataCreate } from "../../../../interfaces/creativeBannerMraidTag";
 	import { Html5DataCreate } from "../../../../interfaces/creativeBannerHtml5";
+	import { VastInlineDataCreate } from "../../../../interfaces/creativeVideoVastInline";
 	import { initCreative } from "../../../../utils/fields";
+	import { TagCheck } from "../../../../interfaces/creative";
 
 	export default Vue.extend({
 		name: "CreateCreative",
@@ -64,6 +73,7 @@
 			message_pixel: "",
 			message_script: "",
 			message_click_tracker: "",
+			tag_validated: false,
 		}),
 		created() {},
 		mounted() {},
@@ -245,10 +255,10 @@
 			/**
 			 * Create Creative Vast Inline
 			 */
-			async createCreativeVastInline(creative: Html5DataCreate) {
+			async createCreativeVastInline(creative: VastInlineDataCreate) {
 				try {
 					await this.setLoadingField(true);
-					await this.dispatchCreateHtml5(creative);
+					await this.dispatchCreateVastInline(creative);
 					await this.setLoadingField(false);
 				} catch (error) {
 					console.error("createCreativeVastInline", { error: error });
@@ -331,12 +341,6 @@
 			},
 
 			addNewClickTracker(item: any) {
-				console.log("addNewClickTracker", {
-					item: item,
-					isEmpty: isEmpty(item),
-					isUrl: isUrl(item),
-				});
-
 				this.message_click_tracker = "";
 
 				if (isEmpty(item)) return;
@@ -381,6 +385,87 @@
 					index,
 					1
 				);
+			},
+
+			/**
+			 * Vast Event
+			 */
+			addRowVastEvent(item: any) {
+				if (isEmpty(item)) return;
+
+				const index = this.getIndexByData(
+					this.creative.creative_addon_settings.vast_events,
+					item
+				);
+
+				if (index > -1) return;
+
+				this.creative.creative_addon_settings.vast_events.push(item);
+			},
+
+			deleteRowVastEvent(item: any) {
+				if (!item) return;
+				const index = this.getIndexByData(
+					this.creative.creative_addon_settings.vast_events,
+					item
+				);
+				if (index < 0) return;
+				this.creative.creative_addon_settings.vast_events.splice(index, 1);
+			},
+
+			/**
+			 * Progress Event
+			 */
+
+			addRowProgressEvent(item: any) {
+				if (isEmpty(item)) return;
+
+				const index = this.getIndexByData(
+					this.creative.creative_addon_settings.progress_events,
+					item
+				);
+
+				if (index > -1) return;
+
+				this.creative.creative_addon_settings.progress_events.push(item);
+			},
+
+			deleteRowProgressEvent(item: any) {
+				if (!item) return;
+				const index = this.getIndexByData(
+					this.creative.creative_addon_settings.progress_events,
+					item
+				);
+				if (index < 0) return;
+				this.creative.creative_addon_settings.progress_events.splice(
+					index,
+					1
+				);
+			},
+
+			async validateTag() {
+				try {
+					const tag: TagCheck = {
+						creative_rule_id:
+							this.creative.creative_ad_content.creative_rule_id,
+						creative_content_tag: this.creative.creative_ad_content.tag,
+					};
+					await this.setLoadingField(true);
+					const response = await this.dispatchValidateTag(tag);
+					const { content } = response;
+					await this.assignTag(content);
+					await this.setLoadingField(false);
+				} catch (error) {
+					console.error("create::validateTag", { error: error });
+					await this.setLoadingField(false);
+				}
+			},
+
+			async assignTag(tag: any) {
+				this.tag_validated = !isEmpty(tag) && !isUndefined(tag);
+				if (this.tag_validated) {
+					this.creative.creative_ad_content.tag = tag;
+				}
 			},
 
 			selectedCreativeAdvertiser(creative_advertiser: any) {
@@ -481,6 +566,20 @@
 			 */
 			async dispatchCreateHtml5(creative: Html5DataCreate) {
 				return this.$store.dispatch("creative/CreateNewCreative", creative);
+			},
+
+			/**
+			 * Dispatch Create dispatchCreateVastInline
+			 */
+			async dispatchCreateVastInline(creative: VastInlineDataCreate) {
+				return this.$store.dispatch("creative/CreateNewCreative", creative);
+			},
+
+			/**
+			 * Dispatch Validate Tag
+			 */
+			async dispatchValidateTag(tag: TagCheck) {
+				return this.$store.dispatch("creative/validateTag", tag);
 			},
 		},
 	});

@@ -48,6 +48,7 @@
 							:first-day-of-week="0"
 							locale="es"
 							:min="min_date"
+							:max="max_date"
 						></v-date-picker>
 					</v-tab-item>
 					<v-tab-item key="timer">
@@ -230,6 +231,10 @@
 				},
 			},
 			min_date: {
+				type: String,
+				default: "",
+			},
+			max_date: {
 				type: String,
 				default: "",
 			},

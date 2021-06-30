@@ -43,7 +43,8 @@
     "edit-campaign": "Editar campaña",
     "greaterOrEqual": "Este valor debe ser mayor o igual que {value}",
     "must-after": "Esta fecha debe ser posterior a hoy.",
-    "must-after-start": "This date must be after the start date",
+    "must-after-start": "Esta fecha debe ser posterior a la fecha de inicio",
+    "must-after-end": "Esta fecha debe ser anterior a la fecha de fin",
     "min-todate": "Esta fecha debe ser al menos la fecha y hora actual",
     "not-implemented-yet": "Mátodo aún no implementado",
     "must-be-numeric": "El valor debe ser un número",
@@ -52,5 +53,7 @@
     "filter": "Filtrar",
     "sort": "Ordenar",
     "url-added": "Esta Url ya está agregada",
-    "uploaded": "Este arquivo deve ser carregado primeiro"
+    "uploaded": "Este archivo debe cargarse primero",
+    "require-campaign": "Debes seleccionar una campaña",
+    "must-be-validated": "Debe ser validado"
 }

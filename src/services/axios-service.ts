@@ -77,6 +77,7 @@ export function AxiosPost(url: string, payload: any, has_file: boolean = false) 
             }
         };
     }
+    console.log("AxiosPost", { url: url, payload: payload, headers: headers, has_file: has_file });
     return axios.post(url, payload, headers)
 }
 

@@ -43,6 +43,8 @@ export function initCreative() {
             pixels: [],
             scripts: [],
             click_trackers: [],
+            vast_events: [],
+            progress_events: []
         },
         creative_attributes: {
             width: "",
@@ -95,10 +97,8 @@ export function fieldsCreative() {
                 'pixels',
                 'scripts',
                 'click_trackers',
-                'vast_events_event',
-                'vast_events_url',
-                'progress_events_time',
-                'progress_events_url',
+                'vast_events',
+                'progress_events'
 
             ]
         },
@@ -204,7 +204,6 @@ export function fieldsCreative() {
             fields: [
                 'start_date',
                 'end_date',
-                'tag',
                 'size_id',
                 'mime_type_id',
                 'expandable_type_id',

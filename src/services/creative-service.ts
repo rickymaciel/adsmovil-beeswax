@@ -1,3 +1,4 @@
+import { TagCheck } from '@/interfaces/creative';
 import { ImageDataCreate } from '@/interfaces/creativeBannerImage';
 import { AxiosGet, AxiosPost, GetData, GetErrors, GetMessage } from './axios-service';
 
@@ -14,6 +15,7 @@ export const CREATIVE_VENDORS = '/api/list/creative_vendors'
 export const CREATIVE_ADDONS = '/api/creative_addons'
 export const CREATIVE_ASSETS = '/api/creative_assets'
 export const CREATIVES = '/api/creatives'
+export const CREATIVE_TAG_ROUTE = 'api/creatives/check_tag'
 
 class CreativeService {
 
@@ -188,6 +190,20 @@ class CreativeService {
         }
     }
 
+    async validateTag(tag: TagCheck) {
+        try {
+            const response = await AxiosPost(`${CREATIVE_TAG_ROUTE}`, tag);
+            return Promise.resolve(GetData(response));
+        } catch (error) {
+            console.error("CreativeService::CreateNewCreative", { error: error });
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+
     /**
      * Creative
      * @param params
@@ -198,6 +214,7 @@ class CreativeService {
             const response = await AxiosPost(`${CREATIVES}`, params);
             return Promise.resolve(GetData(response));
         } catch (error) {
+            console.error("CreativeService::CreateNewCreative", { error: error });
             return Promise.reject({
                 success: false,
                 message: GetMessage(error),

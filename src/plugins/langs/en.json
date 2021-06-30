@@ -44,6 +44,7 @@
     "greaterOrEqual": "This value must be greater than or equal {value}",
     "must-after": "This date must be a date after today",
     "must-after-start": "This date must be after the start date",
+    "must-after-end": "This date must be before the end date",
     "min-todate": "This date must be at least the current date and time",
     "not-implemented-yet": "Method not yet implemented",
     "must-be-numeric": "Value must be a number",
@@ -52,5 +53,7 @@
     "filter": "Filter",
     "sort": "Sort",
     "url-added": "This URL is already added",
-    "uploaded": "This file must be uploaded first"
+    "uploaded": "This file must be uploaded first",
+    "require-campaign": "You must select a campaign",
+    "must-be-validated": "Must be validated"
 }
