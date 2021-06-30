@@ -39,10 +39,23 @@ const DOMAIN_LIST_ROUTE = 'api/list/custom_lists/domain'
 const AD_POSITION_ROUTE = 'api/list/ad_positions'
 const BID_SHADING_ROUTE = 'api/list/bid_shadings'
 const BID_STRATEGY_ROUTE = 'api/list/bid_strategy'
+const BID_RATE_ROUTE = 'api/list/video_bid_rates'
 const LINE_PACING_ROUTE = 'api/list/line_pacing'
 const LINE_ITEM_TYPE_ROUTE = 'api/list/line_items_types'
-const CREATIVE_METHOD_ROUTE = 'api/list/creatives_methods'
 const LINE_ITEMS_ROUTE = 'api/line_items'
+const CREATIVE_METHOD_ROUTE = 'api/list/creatives_methods'
+const CREATIVE_TYPE_ROUTE = 'api/list/creative_types'
+const CREATIVE_TEMPLATE_ROUTE = 'api/list/creative_templates'
+const CREATIVE_VENDOR_ROUTE = 'api/list/creative_vendors'
+const CREATIVE_RULE_ROUTE = 'api/list/creative_rules'
+const CREATIVE_MIME_ROUTE = 'api/list/mime_types'
+const CREATIVE_EXPANDABLE_TYPE_ROUTE = 'api/list/expandable_types'
+const CREATIVE_EXPANDABLE_DIRECTION_ROUTE = 'api/list/expandable_directions'
+const CREATIVE_VIDEO_ROUTE = 'api/list/inbanner_videos'
+const CREATIVE_APIS_ROUTE = 'api/list/video_apis'
+const CREATIVE_TAG_ROUTE = 'api/creatives/check_tag'
+const CREATIVE_ASSOCIATE_ROUTE = 'url_not_defined'
+const CREATIVE_ROUTE = 'api/creatives'
 
 module.exports = {
   ADVERTISER: {
@@ -64,7 +77,8 @@ module.exports = {
   },
   BID: {
     BID_SHADING_ROUTE,
-    BID_STRATEGY_ROUTE
+    BID_STRATEGY_ROUTE,
+    BID_RATE_ROUTE
   },
   BUDGET: {
     BUDGET_ROUTE
@@ -73,7 +87,19 @@ module.exports = {
     CAMPAING_ROUTE
   },
   CREATIVES: {
-    CREATIVE_METHOD_ROUTE
+    CREATIVE_ROUTE,
+    CREATIVE_METHOD_ROUTE,
+    CREATIVE_TYPE_ROUTE,
+    CREATIVE_TEMPLATE_ROUTE,
+    CREATIVE_VENDOR_ROUTE,
+    CREATIVE_RULE_ROUTE,
+    CREATIVE_TAG_ROUTE,
+    CREATIVE_MIME_ROUTE,
+    CREATIVE_EXPANDABLE_TYPE_ROUTE,
+    CREATIVE_EXPANDABLE_DIRECTION_ROUTE,
+    CREATIVE_VIDEO_ROUTE,
+    CREATIVE_APIS_ROUTE,
+    CREATIVE_ASSOCIATE_ROUTE
   },
   CURRENCY: {
     CURRENCY_ROUTE

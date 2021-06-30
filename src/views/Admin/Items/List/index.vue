@@ -102,7 +102,7 @@
 				}
 			},
 			getLists(): List[] {
-				/*const result: ResultPaginate = this.getResultPaginate;
+				const result: ResultPaginate = this.getResultPaginate;
 				if (
 					isUndefined(result) ||
 					isNull(result) ||
@@ -111,8 +111,8 @@
 				) {
 					return [];
 				}
-				return result.data;*/
-				return this.getResultPaginate.data;
+				return result.data.sort(function(a,b){return b.id-a.id});
+				//return this.getResultPaginate.data;
 			},
 			prepareTableHeaders() {
 				return [

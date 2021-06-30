@@ -118,7 +118,8 @@
 				) {
 					return [];
 				}
-				return result.data;
+				
+				return result.data.sort(function(a,b){return a.id-b.id});
 			},
 			prepareTableHeaders() {
 				return [

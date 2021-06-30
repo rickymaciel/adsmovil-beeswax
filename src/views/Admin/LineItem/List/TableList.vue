@@ -2,13 +2,13 @@
 	<section>
 		<v-data-table
 			:headers="headers"
-			:items="filteredData"
-			item-key="lineItem"
+			:items="items"
+			:items-per-page="limit"
+			item-key="lineitem"
 			class="elevation-1"
 			hide-default-footer
 			:mobile-breakpoint="null"
 		>
-
 			<!-- ID -->
 			<template v-slot:[`header.id`]="{ header }">
 				<v-menu :close-on-content-click="false">
@@ -26,17 +26,22 @@
 							<v-text-field
 								class="label-fixed no-top"
 								ref="id"
-								v-model="filter.id.value"
+								v-numeric
+								v-model="filters.id"
 								type="number"
 								:placeholder="header.text"
 								clearable
+								@input="debounceInput"
 							></v-text-field>
 						</v-list-item>
 
 						<v-divider></v-divider>
 
 						<v-list-item>
-							<v-radio-group v-model="filter.id.order">
+							<v-radio-group
+								v-model="options.order"
+								@change="debounceInput"
+							>
 								<v-radio color="secondary" value="asc">
 									<template v-slot:label>
 										<div>Ascending</div>
@@ -54,7 +59,7 @@
 			</template>
 
 			<!-- CAMPAIGN NAME -->
-			<template v-slot:[`header.campaignName`]="{ header }">
+			<template v-slot:[`header.campaign_name`]="{ header }">
 				<v-menu :close-on-content-click="false">
 					<template v-slot:activator="{ on, attrs }">
 						<div v-bind="attrs" v-on="on">
@@ -70,7 +75,8 @@
 							<v-text-field
 								class="label-fixed no-top"
 								ref="id"
-								v-model="filter.campaignName.value"
+								v-model="filters.campaign_name"
+								@input="debounceInput"
 								type="text"
 								:placeholder="header.text"
 								clearable
@@ -86,7 +92,7 @@
 								block
 								outlined
 								rounded
-								@click="removeFilterCampaignName()"
+								@click="removeFilter('campaign_name')"
 							>
 								Remove filter
 							</v-btn>
@@ -95,7 +101,7 @@
 				</v-menu>
 			</template>
 
-			<!-- LINE NAME -->
+			<!-- LINE ITEM NAME -->
 			<template v-slot:[`header.name`]="{ header }">
 				<v-menu :close-on-content-click="false">
 					<template v-slot:activator="{ on, attrs }">
@@ -112,7 +118,8 @@
 							<v-text-field
 								class="label-fixed no-top"
 								ref="id"
-								v-model="filter.name.value"
+								v-model="filters.name"
+								@input="debounceInput"
 								type="text"
 								:placeholder="header.text"
 								clearable
@@ -128,7 +135,7 @@
 								block
 								outlined
 								rounded
-								@click="removeFilterName()"
+								@click="removeFilter('name')"
 							>
 								Remove filter
 							</v-btn>
@@ -138,7 +145,7 @@
 			</template>
 
 			<!-- LINE ITEM TYPE -->
-			<template v-slot:[`header.lineItemType`]="{ header }">
+			<template v-slot:[`header.line_item_type_name`]="{ header }">
 				<v-menu :close-on-content-click="false">
 					<template v-slot:activator="{ on, attrs }">
 						<div v-bind="attrs" v-on="on">
@@ -154,7 +161,8 @@
 							<v-text-field
 								class="label-fixed no-top"
 								ref="id"
-								v-model="filter.lineItemType.value"
+								v-model="filters.line_item_type_name"
+								@input="debounceInput"
 								type="text"
 								:placeholder="header.text"
 								clearable
@@ -170,7 +178,7 @@
 								block
 								outlined
 								rounded
-								@click="removeFilterLineItemType()"
+								@click="removeFilter('line_item_type_name')"
 							>
 								Remove filter
 							</v-btn>
@@ -179,8 +187,8 @@
 				</v-menu>
 			</template>
 
-			<!-- LINE ITEM BUDGET -->
-			<template v-slot:[`header.lineItemBudget`]="{ header }">
+			<!-- BUDGET -->
+			<template v-slot:[`header.budget`]="{ header }">
 				<v-menu :close-on-content-click="false">
 					<template v-slot:activator="{ on, attrs }">
 						<div v-bind="attrs" v-on="on">
@@ -196,7 +204,8 @@
 							<v-text-field
 								class="label-fixed no-top"
 								ref="id"
-								v-model="filter.lineItemBudget.value"
+								v-model="filters.budget"
+								@input="debounceInput"
 								type="number"
 								:placeholder="header.text"
 								clearable
@@ -212,7 +221,7 @@
 								block
 								outlined
 								rounded
-								@click="removeFilterLineItemBudget()"
+								@click="removeFilter('budget')"
 							>
 								Remove filter
 							</v-btn>
@@ -222,7 +231,7 @@
 			</template>
 
 			<!-- START DATE -->
-			<template v-slot:[`header.startDate`]="{ header }">
+			<template v-slot:[`header.start_date`]="{ header }">
 				<v-menu :close-on-content-click="false">
 					<template v-slot:activator="{ on, attrs }">
 						<div v-bind="attrs" v-on="on">
@@ -238,7 +247,8 @@
 							<v-text-field
 								class="label-fixed no-top"
 								ref="id"
-								v-model="filter.startDate.value"
+								v-model="filters.start_date"
+								@input="debounceInput"
 								type="text"
 								:placeholder="header.text"
 								clearable
@@ -254,7 +264,7 @@
 								block
 								outlined
 								rounded
-								@click="removeFilterStartDate()"
+								@click="removeFilter('start_date')"
 							>
 								Remove filter
 							</v-btn>
@@ -264,7 +274,7 @@
 			</template>
 
 			<!-- END DATE -->
-			<template v-slot:[`header.endDate`]="{ header }">
+			<template v-slot:[`header.end_date`]="{ header }">
 				<v-menu :close-on-content-click="false">
 					<template v-slot:activator="{ on, attrs }">
 						<div v-bind="attrs" v-on="on">
@@ -280,7 +290,8 @@
 							<v-text-field
 								class="label-fixed no-top"
 								ref="id"
-								v-model="filter.endDate.value"
+								v-model="filters.end_date"
+								@input="debounceInput"
 								type="text"
 								:placeholder="header.text"
 								clearable
@@ -296,7 +307,7 @@
 								block
 								outlined
 								rounded
-								@click="removeFilterEndDate()"
+								@click="removeFilter('end_date')"
 							>
 								Remove filter
 							</v-btn>
@@ -305,8 +316,8 @@
 				</v-menu>
 			</template>
 
-			<!-- EASSOCIATED LI -->
-			<template v-slot:[`header.associatedLI`]="{ header }">
+			<!-- ASSOSIATED LINE ITEM -->
+			<template v-slot:[`header.assosiated_creatives`]="{ header }">
 				<v-menu :close-on-content-click="false">
 					<template v-slot:activator="{ on, attrs }">
 						<div v-bind="attrs" v-on="on">
@@ -322,7 +333,7 @@
 							<v-text-field
 								class="label-fixed no-top"
 								ref="id"
-								v-model="filter.associatedLI.value"
+								v-model="filters.assosiated_creatives"
 								type="number"
 								:placeholder="header.text"
 								clearable
@@ -338,7 +349,7 @@
 								block
 								outlined
 								rounded
-								@click="removeFilterAssociatedLI()"
+								@click="removeFilter('assosiated_creatives')"
 							>
 								Remove filter
 							</v-btn>
@@ -356,9 +367,9 @@
 					{{ getActiveText(item.active) }}
 				</strong>
 			</template>
-			
-			<!-- BUDGET REMAIN -->
-			<template v-slot:[`header.budgetRemain`]="{ header }">
+
+			<!-- BUDGET REMAINING -->
+			<template v-slot:[`header.budget_remaining`]="{ header }">
 				<v-menu :close-on-content-click="false">
 					<template v-slot:activator="{ on, attrs }">
 						<div v-bind="attrs" v-on="on">
@@ -374,8 +385,8 @@
 							<v-text-field
 								class="label-fixed no-top"
 								ref="id"
-								v-model="filter.budgetRemain.value"
-								type="text"
+								v-model="header.budget_remaining"
+								type="number"
 								:placeholder="header.text"
 								clearable
 							></v-text-field>
@@ -390,7 +401,7 @@
 								block
 								outlined
 								rounded
-								@click="removeFilterBudgetRemain()"
+								@click="removeFilter('budget_remaining')"
 							>
 								Remove filter
 							</v-btn>
@@ -399,8 +410,8 @@
 				</v-menu>
 			</template>
 
-			<!-- WINNING N. -->
-			<template v-slot:[`header.winningN`]="{ header }">
+			<!-- WINNING -->
+			<template v-slot:[`header.winning`]="{ header }">
 				<v-menu :close-on-content-click="false">
 					<template v-slot:activator="{ on, attrs }">
 						<div v-bind="attrs" v-on="on">
@@ -416,7 +427,7 @@
 							<v-text-field
 								class="label-fixed no-top"
 								ref="id"
-								v-model="filter.winningN.value"
+								v-model="header.winning"
 								type="text"
 								:placeholder="header.text"
 								clearable
@@ -432,7 +443,7 @@
 								block
 								outlined
 								rounded
-								@click="removeFilterWinningN()"
+								@click="removeFilter('winning')"
 							>
 								Remove filter
 							</v-btn>
@@ -458,7 +469,7 @@
 							<v-text-field
 								class="label-fixed no-top"
 								ref="id"
-								v-model="filter.bidding.value"
+								v-model="header.bidding"
 								type="text"
 								:placeholder="header.text"
 								clearable
@@ -474,7 +485,7 @@
 								block
 								outlined
 								rounded
-								@click="removeFilterBidding()"
+								@click="removeFilter('bidding')"
 							>
 								Remove filter
 							</v-btn>
@@ -483,7 +494,6 @@
 				</v-menu>
 			</template>
 
-			<!-- ACTIONS -->
 			<template v-slot:[`item.actions`]="{ item }">
 				<v-card-actions>
 					<v-btn
@@ -494,6 +504,10 @@
 						rounded
 						text
 						icon
+						:to="{
+							name: '',
+							params: { id: item.id },
+						}"
 					>
 						<v-icon small class="secondary--text">
 							mdi-pencil
@@ -501,26 +515,29 @@
 					</v-btn>
 				</v-card-actions>
 			</template>
-
 		</v-data-table>
 
-		<!-- PAGINATE --->
+		<!-- PAGINATION -->
 		<div v-if="items.length" class="text-center py-8">
 			<v-pagination
-				v-model="current_page"
+				v-model="currentPage"
 				:length="getLength"
+				@input="updatePaginate"
 			></v-pagination>
 		</div>
-
 	</section>
 </template>
 
 <script lang="ts">
-	import { isNull, orderBy } from "lodash";
+	import { debounce, isEmpty, isNull } from "lodash";
 	import Vue from "vue";
+	import {
+		LineItemFilters,
+		LineItemOptions,
+	} from "../../../../interfaces/line_item";
 
 	export default Vue.extend({
-		name: "LineItemTable",
+		name: "TableList",
 		props: {
 			current_page: {
 				type: Number,
@@ -551,249 +568,156 @@
 				type: Array,
 				default: [],
 			},
+			limit: {
+				type: Number,
+				default: 25,
+			},
+			options: {
+				type: Object,
+				default: function () {
+					return {
+						sort: "",
+						order: "asc",
+					} as LineItemOptions;
+				},
+			},
+			filters_init: {
+				type: Object,
+				default: function () {
+					return {
+						id: undefined,
+						name: undefined,
+						alternative_id: undefined,
+						start_date: undefined,
+						end_date: undefined,
+						budget: undefined,
+						daily_budget: undefined,
+						fix_cpm: undefined,
+						cpm_bid: undefined,
+						target_ecpc: undefined,
+						target_ctr: undefined,
+						target_vcr: undefined,
+						active: undefined,
+						external_id: undefined,
+						spend: undefined,
+						created_by: undefined,
+						updated_by: undefined,
+						deleted_by: undefined,
+						created_at: undefined,
+						updated_at: undefined,
+						deleted_at: undefined,
+						account_id: undefined,
+						advertiser_id: undefined,
+						campaign_id: undefined,
+						line_item_type_id: undefined,
+						budget_type_id: undefined,
+						strategy_id: undefined,
+						bid_strategy_id: undefined,
+						line_pacing_id: undefined,
+						bid_shading_id: undefined,
+						creative_method_id: undefined,
+						advertiser_name: undefined,
+						budget_type: undefined,
+						campaign_name: undefined,
+						line_item_type_name: undefined,
+						strategy_name: undefined,
+						line_pacing_name: undefined,
+						bid_strategy_name: undefined,
+						bid_shading_name: undefined,
+						creative_method_name: undefined,
+						budget_remaining: undefined,
+						clicks: undefined,
+						conversion_orders: undefined,
+						conversion_value: undefined,
+						conversions: undefined,
+						cost_per_acquisition: undefined,
+						cost_per_acquisition_usd: undefined,
+						cpm: undefined,
+						ctr: undefined,
+						gross_margin: undefined,
+						impressions: undefined,
+						net_margin: undefined,
+						update_date: undefined,
+						vcpm: undefined,
+						video_complete_percent: undefined,
+						video_completes: undefined,
+						video_plays: undefined,
+						viewable_impressions: undefined,
+						viewable_percent: undefined,
+						clicks_lifetime: undefined,
+						conversion_orders_lifetime: undefined,
+						conversion_value_lifetime: undefined,
+						conversions_lifetime: undefined,
+						cost_per_acquisition_lifetime: undefined,
+						cost_per_acquisition_lifetime_usd: undefined,
+						cpm_lifetime: undefined,
+						ctr_lifetime: undefined,
+						gross_margin_lifetime: undefined,
+						impressions_lifetime: undefined,
+						net_margin_lifetime: undefined,
+						spend_lifetime: undefined,
+						vcpm_lifetime: undefined,
+						video_complete_percent_lifetime: undefined,
+						video_completes_lifetime: undefined,
+						video_plays_lifetime: undefined,
+						viewable_impressions_lifetime: undefined,
+						viewable_percent_lifetime: undefined
+					} as LineItemFilters;
+				},
+			},
 		},
 		components: {},
-		data: () => ({
-			radios: false,
-			filter: {
-				id: {
-					value: "",
-					order: "asc",
+		data: function () {
+			return {
+				radios: false,
+				filters: this.filters_init,
+			};
+		},
+		created() {},
+		mounted() {},
+		computed: {
+			currentPage: {
+				set(val) {
+					this.$emit("update-current-page", val);
 				},
-				campaignName: {
-					value: "",
-					order: "asc",
-				},
-				name: {
-					value: "",
-					order: "asc",
-				},
-				lineItemType: {
-					value: "",
-					order: "asc",
-				},
-				lineItemBudget: {
-					value: "",
-					order: "asc",
-				},
-				startDate: {
-					value: "",
-					order: "asc",
-				},
-				endDate: {
-					value: "",
-					order: "asc",
-				},
-				associatedLI: {
-					value: "",
-					order: "asc",
-				},
-				active: {
-					value: "",
-					order: "asc",
-				},
-				budgetRemain: {
-					value: "",
-					order: "asc",
-				},
-				winningN: {
-					value: "",
-					order: "asc",
-				},
-				bidding: {
-					value: "",
-					order: "asc",
+				get() {
+					return this.current_page;
 				},
 			},
-			filtered: [],
-		}),
-
-		created() {},
-
-		mounted() {},
-
-		computed: {
 			getLength() {
 				return Math.ceil(this.total / this.per_page);
-			},
-
-			getTotalFiltered() {
-				return this.filtered.length;
-			},
-
-			filteredData() {
-				this.filtered = this.items;
-				
-				// filter by id
-				if (!isNull(this.filter.id.value)) {
-					this.filtered = this.filtered.filter((item: { id: string }) => {
-						return String(item.id)
-							.toLowerCase()
-							.includes(this.filter.id.value.toLowerCase());
-					});
-				}
-
-				// filter by campaign name
-				if (!isNull(this.filter.campaignName.value)) {
-					this.filtered = this.filtered.filter(
-						(item: { campaignName: string }) => {
-							return item.campaignName
-								.toLowerCase()
-								.includes(this.filter.campaignName.value.toLowerCase());
-						}
-					);
-				}
-
-				// filter by line name
-				if (!isNull(this.filter.name.value)) {
-					this.filtered = this.filtered.filter(
-						(item: { name: string }) => {
-							return item.name
-								.toLowerCase()
-								.includes(this.filter.name.value.toLowerCase());
-						}
-					);
-				}
-
-				// filter by line item type
-				if (!isNull(this.filter.lineItemType.value)) {
-					this.filtered = this.filtered.filter(
-						(item: { lineItemType: string }) => {
-							return item.lineItemType
-								.toLowerCase()
-								.includes(this.filter.lineItemType.value.toLowerCase());
-						}
-					);
-				}
-
-				// filter by line item budget
-				if (!isNull(this.filter.lineItemBudget.value)) {
-					this.filtered = this.filtered.filter(
-						(item: { lineItemBudget: string }) => {
-							return item.lineItemBudget.toString()
-								.toLowerCase()
-								.includes(this.filter.lineItemBudget.value.toLowerCase());
-						}
-					);
-				}
-
-				// filter by start date
-				if (!isNull(this.filter.startDate.value)) {
-					this.filtered = this.filtered.filter(
-						(item: { startDate: string }) => {
-							return item.startDate
-								.toLowerCase()
-								.includes(this.filter.startDate.value.toLowerCase());
-						}
-					);
-				}
-
-				// filter by end date
-				if (!isNull(this.filter.endDate.value)) {
-					this.filtered = this.filtered.filter(
-						(item: { endDate: string }) => {
-							return item.endDate
-								.toLowerCase()
-								.includes(this.filter.endDate.value.toLowerCase());
-						}
-					);
-				}
-
-				// filter by associated LI
-				if (!isNull(this.filter.associatedLI.value)) {
-					this.filtered = this.filtered.filter(
-						(item: { associatedLI: string }) => {
-							return item.associatedLI.toString()
-								.toLowerCase()
-								.includes(this.filter.endDate.value.toLowerCase());
-						}
-					);
-				}
-
-				// filter by budget remain
-				if (!isNull(this.filter.budgetRemain.value)) {
-					this.filtered = this.filtered.filter(
-						(item: { budgetRemain: string }) => {
-							return item.budgetRemain
-								.toLowerCase()
-								.includes(this.filter.budgetRemain.value.toLowerCase());
-						}
-					);
-				}
-
-				// filter by wining N.
-				if (!isNull(this.filter.winningN.value)) {
-					this.filtered = this.filtered.filter(
-						(item: { winningN: string }) => {
-							return item.winningN
-								.toLowerCase()
-								.includes(this.filter.winningN.value.toLowerCase());
-						}
-					);
-				}
-
-				// filter by bidding
-				if (!isNull(this.filter.bidding.value)) {
-					this.filtered = this.filtered.filter(
-						(item: { bidding: string }) => {
-							return item.bidding
-								.toLowerCase()
-								.includes(this.filter.bidding.value.toLowerCase());
-						}
-					);
-				}
-
-				this.sorteredData();
-				return this.filtered;
 			},
 		},
 
 		methods: {
-			sorteredData() {
-				this.filtered = orderBy(
-					this.filtered,
-					["name"],
-					[this.filter.name.order]
-				);
-
-				this.filtered = orderBy(
-					this.filtered,
-					["id"],
-					[this.filter.id.order]
-				);
-			},
 			getColor(active: Boolean) {
 				return active ? "green--text" : "red--text";
 			},
 			getActiveText(active: Boolean) {
 				return active ? "Active" : "Inactive";
 			},
-			removeFilterName() {
-				this.filter.name.value = "";
+			updatePaginate(data: Number) {
+				this.$emit("update-paginate", data);
 			},
-			removeFilterLineItemType() {
-				this.filter.lineItemType.value = "";
+
+			getFilter(value: any): any {
+				return !isNull(value) && !isEmpty(value) ? value : undefined;
 			},
-			removeFilterLineItemBudget() {
-				this.filter.lineItemBudget.value = "";
+
+			debounceInput: debounce(function async(e) {
+				this.emitParams();
+			}, 500),
+
+			emitParams() {
+				this.$emit("update-params", {
+					filters: (this as any).filters,
+					options: (this as any).options,
+				});
 			},
-			removeFilterStartDate() {
-				this.filter.startDate.value = "";
-			},
-			removeFilterEndDate() {
-				this.filter.endDate.value = "";
-			},
-			removeFilterAssociatedLI() {
-				this.filter.associatedLI.value = "";
-			},
-			removeFilterBudgetRemain() {
-				this.filter.budgetRemain.value = "";
-			},
-			removeFilterWinningN() {
-				this.filter.winningN.value = "";
-			},
-			removeFilterBidding() {
-				this.filter.bidding.value = "";
+
+			removeFilter(input: any) {
+				(this as any).filters[input] = undefined;
+				(this as any).emitParams();
 			},
 		},
 	});

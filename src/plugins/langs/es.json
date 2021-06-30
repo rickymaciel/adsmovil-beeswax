@@ -23,6 +23,7 @@
     "fieldRequired": "Este campo es obligatorio",
     "minLength": "Este campo debe tener al menos {min} caracteres",
     "maxLength": "Este campo no puede tener más de {max} caracteres.",
+    "file-max-size": "El archivo no debe pesar más de {max} MB.",
     "invalidEmail": "El correo electrónico debe ser válido",
     "backLogin": "Atrás para iniciar sesión",
     "Search": "Buscar",
@@ -42,11 +43,17 @@
     "edit-campaign": "Editar campaña",
     "greaterOrEqual": "Este valor debe ser mayor o igual que {value}",
     "must-after": "Esta fecha debe ser posterior a hoy.",
+    "must-after-start": "Esta fecha debe ser posterior a la fecha de inicio",
+    "must-after-end": "Esta fecha debe ser anterior a la fecha de fin",
     "min-todate": "Esta fecha debe ser al menos la fecha y hora actual",
     "not-implemented-yet": "Mátodo aún no implementado",
     "must-be-numeric": "El valor debe ser un número",
     "domain": "URL no válida. Ejemplo: http(s)://www.example.com",
     "appbundle": "Paquete de aplicación no válido",
     "filter": "Filtrar",
-    "sort": "Ordenar"
+    "sort": "Ordenar",
+    "url-added": "Esta Url ya está agregada",
+    "uploaded": "Este archivo debe cargarse primero",
+    "require-campaign": "Debes seleccionar una campaña",
+    "must-be-validated": "Debe ser validado"
 }

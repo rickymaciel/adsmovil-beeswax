@@ -112,21 +112,9 @@ class AdvertiserService {
         }
     }
 
-    async list(filters?: AdvertiserFilters, options?: AdvertiserOptions) {
+    async list() {
         try {
-            let filter = ''
-            let option = ''
-
-            if (!isUndefined(filters)) {
-                filter = getFilters(filters)
-            }
-
-            if (!isUndefined(options)) {
-                option += getOptions(options, 'list')
-            }
-
-            const url = getURL(filter, option)
-            const response = await AxiosGet(`${ADVERTISER_ROUTE}/${url}`);
+            const response = await AxiosGet(`${ADVERTISER_ROUTE}?mode=list`);
             return Promise.resolve(GetData(response));
         } catch (error) {
             return Promise.reject({

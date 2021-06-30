@@ -164,52 +164,51 @@
 						</v-card>
 					</v-col>
 
-					<!-- Start Date* ✔ -->
-					<v-col cols="12" sm="12" md="6" lg="4">
-						<DateTimePicker
-							:date="campaign.start_date"
-							:time="start_time"
-							label_date="Start Date*"
-							label_time="Start Time*"
-							:min_date="today"
-							model_date="start_date"
-							model_time="start_time"
-							:open_date="openStartDate"
-							:open_time="openStartTime"
-							type_validate_date="min-todate"
-							@date="startDateUpdate"
-							@time="startTimeUpdate"
-							@close-date="closeOpenStartDate"
-							@close-time="closeOpenStartTime"
-							@selected-date="selectedStartDate"
-							@selected-time="selectedStartTime"
-							@set-open-date="setOpenDate"
-							@reset-date="resetStartDate"
-						></DateTimePicker>
+					<!-- Start Date -->
+					<v-col
+						cols="12"
+						sm="12"
+						md="6"
+						lg="4"
+					>
+						<v-card
+							elevation="0"
+							class="pa-2"
+							outlined
+							tile
+							color="rgb(0, 0, 0, 0.0)"
+						>
+							<DatePicker
+								label="Start Date*"
+								v-model="campaign.start_date"
+								:min_date="getMinDate"
+								:rules="startDateRules"
+							></DatePicker>
+						</v-card>
 					</v-col>
 
-					<!-- End Date* ✔ -->
-					<v-col cols="12" sm="12" md="6" lg="4">
-						<DateTimePicker
-							:date="campaign.end_date"
-							:time="end_time"
-							label_date="End Date*"
-							label_time="End Time*"
-							:min_date="startDateTime"
-							model_date="end_date"
-							model_time="end_time"
-							:open_date="openEndDate"
-							:open_time="openEndTime"
-							type_validate_date="must-after"
-							@date="endDateUpdate"
-							@time="endTimeUpdate"
-							@close-date="closeOpenEndDate"
-							@close-time="closeOpenEndTime"
-							@selected-date="selectedEndDate"
-							@selected-time="selectedEndTime"
-							@set-open-date="setOpenDate"
-							@reset-date="resetStartDate"
-						></DateTimePicker>
+					<!-- End Date -->
+					<v-col
+						cols="12"
+						sm="12"
+						md="6"
+						lg="4"
+					>
+						<v-card
+							elevation="0"
+							class="pa-2"
+							outlined
+							tile
+							color="rgb(0, 0, 0, 0.0)"
+						>
+							<DatePicker
+								label="End Date*"
+								v-model="campaign.end_date"
+								:min_date="getMinDate"
+								:rules="endDateRules"
+								:is_end="true"
+							></DatePicker>
+						</v-card>
 					</v-col>
 
 					<!-- Campaign Duration* Calculo en dias entre el inicio y fin de campaña ✔ -->
@@ -224,7 +223,6 @@
 							<v-text-field
 								v-model.number="campaign_duration"
 								v-numeric
-								:rules="getRules.number"
 								hint="Campaign Duration"
 								ref="campaign_duration"
 								placeholder="Campaign Duration"
@@ -396,7 +394,7 @@
 					</v-col>
 
 					<!-- Campaign Pacing* -->
-					<v-col cols="12" sm="12" md="6" lg="4">
+					<v-col cols="12" sm="12" md="6" lg="4" v-if="showCampaignPacing">
 						<v-card
 							elevation="0"
 							class="pa-2"
@@ -529,7 +527,7 @@
 					</v-col>
 
 					<!-- Biding Strategy* -->
-					<v-col cols="12" sm="12" md="6" lg="4">
+					<v-col cols="12" sm="12" md="6" lg="4" v-if="isOptimizationStrategyById">
 						<v-card
 							elevation="0"
 							class="pa-2"
@@ -887,7 +885,7 @@
 		first,
 	} from "lodash";
 	import { AdvertiserList } from "../../../../interfaces/advertiser";
-	import DateTimePicker from "../../../../components/Content/DateTimePicker.vue";
+	import DatePicker from "../../../../components/Content/DatePicker.vue";
 	import { CampaignDataCreate } from "../../../../interfaces/campaign";
 
 	const BY_CAMPAIGN = "By Campaign";
@@ -900,6 +898,11 @@
 	const OPTIMIZED_CPM = "Optimized CPM";
 	const OPTIMIZED_CPC = "Optimized CPC";
 	const OPTIMIZED_VCR = "Optimized VCR";
+
+	// Configs to Date
+	const DEFAULT_DATE_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
+	const DEFAULT_START_TIME = "00:00:00";
+	const DEFAULT_END_TIME = "00:59:59";
 
 	export default Vue.extend({
 		name: "Overview",
@@ -969,7 +972,7 @@
 				},
 			},
 		},
-		components: { DateTimePicker },
+		components: { DatePicker },
 		data: () => ({
 			title: "Overview",
 			valid: false,
@@ -998,12 +1001,12 @@
 			}, 1000);
 		},
 		computed: {
+			getMinDate() {
+				return this.moment().format(DEFAULT_DATE_TIME_FORMAT);
+			},
+
 			isEdit() {
 				return this.is_edit;
-			},
-			startDateTime() {
-				if (!this.campaign.start_date) return "";
-				return `${this.campaign.start_date} ${this.start_time || ""}`;
 			},
 
 			/**
@@ -1127,7 +1130,7 @@
 				) {
 					this.$emit("init-frequency-caps");
 				}
-				this.calcCampaignDuration();
+				this.calculateDuration();
 			},
 
 			showCampaignPacing() {
@@ -1231,10 +1234,10 @@
 					this.setTargets(false, false, false);
 
 					this.expected_label = "eCPM";
-					this.expected_value = (
-						this.campaign.budget /
-						(this.campaign.kpi_objective / 1000)
-					).toFixed(2);
+					let value = (this.campaign.budget / (this.campaign.kpi_objective / 1000));
+					if( !isNaN(value) && value !== Infinity ){
+						this.expected_value = (value).toFixed(2);
+					}else{this.expected_value = undefined}
 				}
 
 				/**
@@ -1245,9 +1248,10 @@
 					this.setTargets(true, true, false);
 
 					this.expected_label = "eCPC";
-					this.expected_value = (
-						this.campaign.budget / this.campaign.kpi_objective
-					).toFixed(2);
+					let value = (this.campaign.budget / this.campaign.kpi_objective);
+					if( !isNaN(value) && value !== Infinity ){
+						this.expected_value = (value).toFixed(2);
+					}else{this.expected_value = undefined}
 				}
 
 				/**
@@ -1258,9 +1262,11 @@
 					this.setTargets(false, false, true);
 
 					this.expected_label = "eCPCV";
-					this.expected_value = (
-						this.campaign.budget / this.campaign.kpi_objective
-					).toFixed(2);
+					let value = (this.campaign.budget / this.campaign.kpi_objective);
+					
+					if( !isNaN(value) && value !== Infinity){
+						this.expected_value = (value).toFixed(2);
+					}else{this.expected_value = undefined}
 				}
 
 				return this.expected_show;
@@ -1284,6 +1290,7 @@
 						this.$t("fieldRequired"),
 				];
 			},
+
 			endDateRules() {
 				return [
 					(v: string) =>
@@ -1301,6 +1308,7 @@
 					? `${this.account.currency.key} (${this.account.currency.glyph})`
 					: "N/A";
 			},
+			
 			getTimezone() {
 				return !isUndefined(this.account.timezone) &&
 					!isEmpty(this.account.timezone)
@@ -1418,8 +1426,8 @@
 					name: String(this.campaign.name),
 					advertiser_id: Number(this.campaign.advertiser_id),
 					budget: Number(this.campaign.budget),
-					start_date: `${this.campaign.start_date} ${this.start_time}`,
-					end_date: `${this.campaign.end_date} ${this.end_time}`,
+					start_date: this.moment(this.campaign.start_date).format(DEFAULT_DATE_TIME_FORMAT),
+					end_date: this.moment(this.campaign.end_date).format(DEFAULT_DATE_TIME_FORMAT),
 					frequency_caps: this.campaign.frequency_caps,
 					alternative_id: String(this.campaign.alternative_id),
 					active: 1,
@@ -1443,132 +1451,12 @@
 				} as CampaignDataCreate;
 			},
 
-			calcCampaignDuration() {
-				const startDate = this.moment(
-					`${this.campaign.start_date} ${this.start_time}`
-				);
-				const endDate = this.moment(
-					`${this.campaign.end_date} ${this.end_time}`
-				);
-
-				if (!this.isValidDates()) return;
-
-				const diff = endDate.diff(startDate, "days");
-
-				const duration = this.moment.duration(endDate.diff(startDate));
-
-				var days = duration.asDays();
-
-				if (days < 0) {
-					this.campaign.end_date = "";
-					this.campaign_duration = undefined;
-					return;
-				}
-
-				this.campaign_duration = Math.ceil(days);
-			},
 			isValidDates() {
-				const startDate = this.moment(
-					`${this.campaign.start_date} ${this.start_time}`
-				);
-				const endDate = this.moment(
-					`${this.campaign.end_date} ${this.end_time}`
-				);
+				const startDate = this.moment(this.campaign.start_date);
+				const endDate = this.moment(this.campaign.end_date);
 				return startDate.isValid() && endDate.isValid();
 			},
-			onSelectedDate(input: string, date: any) {
-				this.campaign[input] = date;
-				this.$refs[input].save(date);
-				this.calcCampaignDuration();
-				switch (input) {
-					case "start_date":
-						this.openStartTime = true;
 
-						break;
-
-					default:
-						break;
-				}
-			},
-			onSelectedTime(input: string, time: any) {
-				this.campaign[input] = time;
-				this.$refs[input].save(time);
-				this.calcCampaignDuration();
-			},
-
-			/**
-			 * Start
-			 */
-			selectedStartDate(data: any) {
-				this.closeOpenStartDate();
-				this.openOpenStartTime();
-				this.calcCampaignDuration();
-			},
-			selectedStartTime(data: any) {
-				this.closeOpenStartDate();
-				this.closeOpenStartTime();
-				this.calcCampaignDuration();
-			},
-			closeOpenStartDate() {
-				this.openStartDate = false;
-			},
-			closeOpenStartTime() {
-				this.openStartTime = false;
-			},
-			openOpenStartTime() {
-				this.openStartTime = true;
-			},
-			startDateUpdate(data: any) {
-				this.campaign.start_date = data;
-			},
-			startTimeUpdate(data: any) {
-				this.start_time = data;
-			},
-			setOpenDate(data: any) {
-				switch (data) {
-					case "start_date":
-						this.openStartDate = true;
-
-						break;
-
-					case "end_date":
-						this.openEndDate = true;
-
-						break;
-
-					default:
-						break;
-				}
-			},
-			resetStartDate() {
-				this.campaign.start_date = "";
-			},
-
-			/**
-			 * End
-			 */
-			selectedEndDate(data: any) {
-				this.closeOpenEndDate();
-				this.openEndTime = true;
-				this.calcCampaignDuration();
-			},
-			selectedEndTime(data: any) {
-				this.closeOpenEndDate();
-				this.closeOpenEndTime();
-				this.calcCampaignDuration();
-			},
-			closeOpenEndDate() {
-				this.openEndDate = false;
-			},
-			closeOpenEndTime() {
-				this.openEndTime = false;
-			},
-			endDateUpdate(data: any) {
-				this.campaign.end_date = data;
-			},
-			endTimeUpdate(data: any) {
-				this.end_time = data;
-			},
 			addRowFrecuency() {
 				if (isUndefined(this.campaign.frequency_caps)) return;
 				this.$emit("init-frequency-caps");
@@ -1578,10 +1466,47 @@
 					unit_time_id: undefined,
 				});
 			},
+
 			deleteRowFrecuency(index: number) {
 				if (this.campaign.frequency_caps.length === 1) return;
 				this.campaign.frequency_caps.splice(index, 1);
 			},
+
+			getCalculateDuration() {
+				if (!this.isValidDates()) return;
+				
+				const startDate = this.moment(this.campaign.start_date);
+				const endDate = this.moment(this.campaign.end_date);
+				
+				let days = this.calculateDuration(startDate,endDate);
+				
+				if ( days < 0 ) {
+					this.campaign.end_date = "";
+					this.campaign_duration = undefined;
+					return;
+				}
+
+				this.campaign_duration = days;
+			},
+
+			calculateDuration(start: any, end: any){
+				if( !(start.isValid() && end.isValid()) ){
+					return -1;
+				}
+				const diff = end.diff(start, "days");
+				const duration = this.moment.duration(end.diff(start));
+				return Math.ceil(duration.asDays());
+			},
+
 		},
+		watch:{
+			"campaign.start_date"(val, old){
+				this.getCalculateDuration()
+			},
+
+			"campaign.end_date"(val, old){
+				this.getCalculateDuration()
+			},
+		}
 	});
 </script>
