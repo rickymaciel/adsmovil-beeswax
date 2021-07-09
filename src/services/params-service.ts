@@ -3,11 +3,6 @@ import { isObject } from "lodash";
 class ParamService {
 
     async getParams(paginated?: {}, filters?: {}, options?: {}) {
-        console.log('ParamService::getParams', {
-            paginated: paginated,
-            filters: filters,
-            options: options
-        })
         var params = {};
         if (
             isObject(paginated) &&

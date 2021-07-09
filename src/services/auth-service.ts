@@ -3,7 +3,10 @@ import { AxiosPost, GetData, GetErrors, GetMessage } from '@/services/axios-serv
 import { isUndefined } from 'lodash'
 
 export const LOGIN_ROUTE = '/api/auth/login'
+export const INIT_ROUTE = '/api/auth/init'
 export const LOGOUT_ROUTE = '/api/auth/logout'
+export const FORGOT_PASSWORD_ROUTE = '/api/auth/password/forgot'
+export const PASSWORD_RESET_ROUTE = '/api/auth/password/reset'
 
 class AuthService {
 
@@ -23,9 +26,56 @@ class AuthService {
         }
     }
 
+    async init(initData: any) {
+        try {
+            const response = await AxiosPost(`${INIT_ROUTE}/${initData.init_token}`, initData)
+            return Promise.resolve({
+                success: true,
+                token: ProviderToken(response)
+            });
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+
     async logout() {
         try {
             const response = await AxiosPost(LOGOUT_ROUTE, null)
+            return Promise.resolve(GetData(response));
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+
+    async forgotPassword(email) {
+        try {
+            const response = await AxiosPost(FORGOT_PASSWORD_ROUTE, {email})
+            return Promise.resolve(GetData(response));
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }        
+    }
+
+    async resetPassword({email, password, password_confirmation, token}) {
+        try {
+            const response = await AxiosPost(PASSWORD_RESET_ROUTE, {
+                email,
+                password,
+                password_confirmation,
+                token
+            });
             return Promise.resolve(GetData(response));
         } catch (error) {
             return Promise.reject({

@@ -11,10 +11,8 @@
         "item7": "Tools"
     },
     "Unauthorized": "Please enter a valid credential",
-    "login": "Login",
     "email": "Email",
     "password": "Password",
-    "forgotPassword": "Forgot Password",
     "resetPassword": "Reset Password",
     "rememberMe": "Keep me Logged in",
     "enterEmail": "Enter email",
@@ -48,12 +46,87 @@
     "min-todate": "This date must be at least the current date and time",
     "not-implemented-yet": "Method not yet implemented",
     "must-be-numeric": "Value must be a number",
+    "invalid-email": "Invalid email address",
     "domain": "Invalid URL. Example: http(s)://www.example.com",
     "appbundle": "Invalid App Bundle",
     "filter": "Filter",
     "sort": "Sort",
     "url-added": "This URL is already added",
     "uploaded": "This file must be uploaded first",
+    "common":{
+        "limits": {
+            "25": "25 rows",
+            "50": "50 rows",
+            "100": "100 rows"
+        },
+        "actions": {
+            "create": "Create new",
+            "save": "Save",
+            "cancel": "Cancel",
+            "backToLogin": "Back to Login",
+            "goToLogin": "Go to Login"
+        },
+        "labels": {
+            "mandatory": "* Mandatory fields"
+        },
+        "fields":{
+            "active": "Active",
+            "inactive": "Inactive"
+        }
+    },
+    "login": {
+        "title": "Login",
+        "actions": {
+            "submit": "Login"
+        }
+    },
+    "init": {
+        "title": "Activate your account",
+        "actions": {
+            "submit": "Activate account"
+        },
+        "messages": {
+            "success": "Your account was successfully activated."
+        }
+    },
+    "users": {
+        "breadcrumb": "Users",
+        "list": {
+            "title": "Users list"
+        },
+        "create": {
+            "title": "Create new user"
+        },        
+        "edit": {
+            "title": "Edit user"
+        }, 
+        "fields":{
+            "id": "User ID",
+            "name": "Name",
+            "last_name": "Last Name",
+            "role": "Role",    
+            "password": "Password",    
+            "password_confirmation": "Password confirmation"    
+        }
+    },
+    "forgotPassword": {
+        "title": "Forgot password",
+        "actions": {
+            "submit": "Request password reset"
+        },
+        "messages": {
+            "success": "A password reset link have been sent to your email"
+        }
+    },
+    "passwordReset": {
+        "title": "Enter your new password",
+        "actions": {
+            "submit": "Reset password"
+        },
+        "messages": {
+            "success": "Your password have been changed"
+        }
+    },
     "require-campaign": "You must select a campaign",
     "must-be-validated": "Must be validated"
 }

@@ -4,7 +4,11 @@ import { Timezone } from '@/interfaces/timezone'
 export interface User {
     id: number;
     account_id: number;
-    email: string;
+    name?: string,
+    last_name?: string,
+    email?:string
+    role_description?: string,
+    active?: boolean
 }
 
 export interface Profile {
@@ -32,7 +36,7 @@ export interface Role {
     id: number,
     name: string,
     description: string,
-    pivot: Pivot
+    pivot?: Pivot
 }
 
 export interface Account_scheme_1 {
@@ -80,9 +84,12 @@ export interface UserList {
 }
 
 export interface UserFilters {
-    first_name?: string;
+    id?: number,
+    name?: string;
     last_name?: string;
     email?: string;
+    role_description?: string;
+    active?: number;
 }
 
 export interface UserOptions {
@@ -93,4 +100,19 @@ export interface UserOptions {
 export interface UserPaginated {
     page: number;
     limit: number;
+}
+
+export interface ResultPaginate {
+    current_page: number;
+    data: User[]
+    first_page_url: string;
+    from: number;
+    last_page: number;
+    last_page_url: string;
+    next_page_url: string;
+    path: string;
+    per_page: number;
+    prev_page_url: string;
+    to: number;
+    total: number;
 }

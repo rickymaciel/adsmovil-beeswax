@@ -20,6 +20,7 @@
 			:item-value="item_value"
 			:disabled="disabled"
 			@click="clickEvent"
+			@change="changeEvent"
 			:chips="chips"
 			:deletable-chips="deletable_chips"
 			:multiple="multiple"
@@ -158,6 +159,9 @@
 		methods: {
 			clickEvent(e: any) {
 				this.$emit("click", e);
+			},
+			changeEvent(e: any) {
+				this.$emit("change", e);
 			},
 		},
 		watch: {},

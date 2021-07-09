@@ -17,6 +17,15 @@ export function isNumber(v: any) {
     return !isNaN(v) || i18n.t("must-be-numeric")
 }
 
+export function isEmail(v: any) {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(v).toLowerCase()) || i18n.t("invalid-email");
+}
+
+export function isMinPassword(v: any) {
+    return (v && v.length >= 8) || i18n.t("minLength", { min: 8 })
+}
+
 export function isMinLength(v: any) {
     return (v && v.length >= MIN_LENGTH) || i18n.t("minLength", { min: MIN_LENGTH })
 }

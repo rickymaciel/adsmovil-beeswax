@@ -9,156 +9,129 @@
 			lazy-validation
 		>
 			<v-container>
-
 				<v-row dense>
 					<!-- Campaign: campaign_id -->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-autocomplete
-								class="label-fixed"
-								:class="{ disabled: isEdit }"
-								v-model.number="entity.campaing_id"
-								v-numeric
-								:rules="getRules.required"
-								:hint="`Campaing`"
-								:items="getCampaings"
-								ref="campaing_id"
-								item-text="value"
-								item-value="id"
-								label="Campaing*"
-								placeholder="Select Campaing"
-								:disabled="isEdit"
-								@change="onChangeCampaing"
-							></v-autocomplete>
-						</v-card>
+						<CardAutocomplete
+							v-model="entity.campaing_id"
+							v-numeric
+							:rules="getRules.required"
+							:items="getCampaings"
+							item_text="value"
+							item_value="id"
+							hint="Campaing"
+							reference="campaing_id"
+							placeholder="Select Campaing"
+							label="Campaing"
+							:chips="true"
+							:deletable_chips="true"
+							:multiple="false"
+							:small_chips="true"
+							:dense="false"
+							:required="true"
+							:class="{ disabled: isEdit }"
+							:disabled="isEdit"
+							@change="onChangeCampaing"
+						></CardAutocomplete>
 					</v-col>
 
 					<!-- Advertiser: advertiser_id -->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-autocomplete
-								class="label-fixed"
-								:class="{ disabled: isEdit }"
-								v-model.number="entity.advertiser_id"
-								v-numeric
-								:rules="getRules.required"
-								:hint="`Advertiser`"
-								:items="getAdvertisers"
-								ref="advertiser_id"
-								item-text="value"
-								item-value="id"
-								label="Advertiser*"
-								placeholder="Select Advertiser"
-								:disabled="isEdit"
-							></v-autocomplete>
-						</v-card>
+						<CardAutocomplete
+							v-model="entity.advertiser_id"
+							v-numeric
+							:rules="getRules.required"
+							:items="getAdvertisers"
+							item_text="value"
+							item_value="id"
+							hint="Advertiser"
+							reference="advertiser_id"
+							placeholder="Select Advertiser"
+							label="Advertiser"
+							:chips="true"
+							:deletable_chips="true"
+							:multiple="false"
+							:small_chips="true"
+							:dense="false"
+							:required="true"
+							:class="{ disabled: isEdit }"
+							:disabled="isEdit"
+						></CardAutocomplete>
 					</v-col>
 
 					<!-- Name -->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="entity.name"
-								hint="Name"
-								ref="name"
-								placeholder="Add Name"
-								label="Name"
-								class="label-fixed"
-							></v-text-field>
-						</v-card>
+						<CardTextField
+							v-model="entity.name"
+							hint="Name"
+							reference="name"
+							:rules="getRules.required"
+							label="Name"
+							placeholder="Add Name"
+							:required="true"
+						></CardTextField>
 					</v-col>
 				</v-row>
 
 				<v-row dense>
 					<!-- Line Type -->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-autocomplete
-								class="label-fixed"
-								:class="{ disabled: isEdit }"
-								v-model.number="entity.line_item_type_id"
-								v-numeric
-								:rules="getRules.required"
-								:hint="`Line type`"
-								:items="getLineTypes"
-								ref="line_item_type_id"
-								item-text="value"
-								item-value="id"
-								label="Line Type*"
-								placeholder="Select Line Type"
-								:disabled="isEdit"
-							></v-autocomplete>
-						</v-card>
+						<CardAutocomplete
+							v-model="entity.line_item_type_id"
+							v-numeric
+							:rules="getRules.required"
+							:items="getLineTypes"
+							item_text="value"
+							item_value="id"
+							hint="Line type"
+							reference="line_item_type_id"
+							placeholder="Select Line type"
+							label="Line type"
+							:chips="true"
+							:deletable_chips="true"
+							:multiple="false"
+							:small_chips="true"
+							:dense="false"
+							:required="true"
+							:class="{ disabled: isEdit }"
+							:disabled="isEdit"
+						></CardAutocomplete>
 					</v-col>
 
 					<!-- Alternative ID -->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="entity.alternative_id"
-								hint="Alternative ID"
-								ref="alternative_id"
-								placeholder="Alternative ID"
-								label="Alternative ID"
-								class="label-fixed"
-							></v-text-field>
-						</v-card>
+						<CardTextField
+							v-model="entity.alternative_id"
+							hint="Alternative ID"
+							reference="alternative_id"
+							label="Alternative ID"
+							placeholder="Alternative ID"
+							:required="false"
+						></CardTextField>
 					</v-col>
 
 					<!-- Creative Weighting Method  -->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-autocomplete
-								class="label-fixed"
-								:class="{ disabled: isEdit }"
-								v-model.number="entity.creative_method_id"
-								v-numeric
-								:hint="`Creative Weighting Method`"
-								:items="getCreativeWeightingMethods"
-								ref="creative_method_id"
-								item-text="value"
-								item-value="id"
-								label="Creative Weighting Method*"
-								placeholder="Select Creative Weighting Method"
-								:disabled="isEdit"
-							></v-autocomplete>
-						</v-card>
+						<CardAutocomplete
+							v-model="entity.creative_method_id"
+							v-numeric
+							:rules="getRules.required"
+							:items="getCreativeWeightingMethods"
+							item_text="value"
+							item_value="id"
+							hint="Creative Weighting Method"
+							reference="creative_method_id"
+							placeholder="Select Creative Weighting Method"
+							label="Creative Weighting Method"
+							:chips="true"
+							:deletable_chips="true"
+							:multiple="false"
+							:small_chips="true"
+							:dense="false"
+							:required="true"
+							:class="{ disabled: isEdit }"
+							:disabled="isEdit"
+						></CardAutocomplete>
 					</v-col>
 				</v-row>
 
@@ -227,24 +200,16 @@
 
 					<!-- Campaign Duration  -->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model.number="entity.line_duration"
-								v-numeric
-								hint="Line Duration"
-								ref="line_duration"
-								placeholder="Line Duration"
-								label="Line Duration*"
-								class="label-fixed disabled"
-								disabled
-							></v-text-field>
-						</v-card>
+						<CardTextField
+							v-model="entity.line_duration"
+							hint="Line Duration"
+							reference="line_duration"
+							label="Line Duration"
+							placeholder="Line Duration"
+							:required="true"
+							:disabled="true"
+							class="disabled"
+						></CardTextField>
 					</v-col>
 				</v-row>
 
@@ -273,7 +238,7 @@
 						>
 							<v-layout>
 								<v-label class="v-label theme--light">
-									Budget Type*
+									Budget Type <span class="red--text"><strong>*</strong></span>
 								</v-label>
 							</v-layout>
 							<v-layout>
@@ -298,27 +263,17 @@
 
 					<!-- Total Budget*  -->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model.number="entity.budget"
-								v-numeric
-								type="text"
-								:rules="getRules.budget"
-								:hint="getBudgetText"
-								ref="budget"
-								:label="getBudgetText"
-								:placeholder="getBudgetText"
-								class="label-fixed"
-								:disabled="!getBudgetContentStatus"
-								:class="{ disabled: !getBudgetContentStatus }"
-							></v-text-field>
-						</v-card>
+						<CardTextField
+							v-model="entity.budget"
+							:rules="getRules.budget"
+							:hint="getBudgetText"
+							reference="budget"
+							:label="getBudgetText"
+							:placeholder="getBudgetText"
+							:required="true"
+							:disabled="!getBudgetContentStatus"
+							:class="{ disabled: !getBudgetContentStatus }"
+						></CardTextField>
 					</v-col>
 				</v-row>
 
@@ -337,13 +292,7 @@
 					</v-col>
 
 					<!-- Bid Strategy -->
-					<v-col
-						cols="4"
-						sm="4"
-						md="4"
-						lg="4"
-						class="pl-4"
-					>
+					<v-col cols="4" sm="4" md="4" lg="4" class="pl-4">
 						<v-card
 							elevation="0"
 							class="pa-2"
@@ -353,7 +302,7 @@
 						>
 							<v-layout class="mt-2">
 								<v-label class="v-label theme--light">
-									Bid Strategy*
+									Bid Strategy <span class="red--text"><strong>*</strong></span>
 								</v-label>
 							</v-layout>
 							<v-layout>
@@ -375,55 +324,39 @@
 					</v-col>
 
 					<!-- Fix CPM -->
-					<v-col
-						cols="4"
-						sm="4"
-						md="4"
-						lg="4"
-					>
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="entity.fix_cpm"
-								ref="fix_cpm"
-								:rules="getRules.cpm_bid"
-								hint="Fix CPM"
-								placeholder="Fix CPM"
-								label="Fix CPM*"
-								class="label-fixed"
-								counter="255"
-								:disabled="!can_edit_fix_cpm"
-								:class="{ disabled: !can_edit_fix_cpm }"
-							></v-text-field>
-						</v-card>
+					<v-col cols="4" sm="4" md="4" lg="4" v-if="can_edit_fix_cpm">
+						<CardTextField
+							v-model="entity.fix_cpm"
+							:rules="getRules.cpm_bid"
+							hint="Fix CPM"
+							reference="fix_cpm"
+							label="Fix CPM"
+							placeholder="Fix CPM"
+							:required="true"
+							:disabled="!can_edit_fix_cpm"
+							:class="{ disabled: !can_edit_fix_cpm }"
+						></CardTextField>
 					</v-col>
 
 					<!-- Bidding Shading -->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-autocomplete
-								class="label-fixed"
-								v-model.number="entity.bid_shading_id"
-								hint="Bidding Shading"
-								:items="getBiddingShadings"
-								ref="bid_shading_id"
-								item-text="value"
-								item-value="id"
-								label="Bidding Shading"
-								placeholder="Select Bidding Shading"
-							></v-autocomplete>
-						</v-card>
+						<CardAutocomplete
+							v-model="entity.bid_shading_id"
+							v-numeric
+							:items="getBiddingShadings"
+							item_text="value"
+							item_value="id"
+							hint="Bidding Shading"
+							reference="bid_shading_id"
+							placeholder="Select Bidding Shading"
+							label="Bidding Shading"
+							:chips="true"
+							:deletable_chips="true"
+							:multiple="false"
+							:small_chips="true"
+							:dense="false"
+							:required="false"
+						></CardAutocomplete>
 					</v-col>
 				</v-row>
 
@@ -444,212 +377,117 @@
 
 					<!-- Optimization Strategy -->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-autocomplete
-								class="label-fixed"
-								v-model.number="entity.strategy_id"
-								v-numeric
-								:rules="getRules.required"
-								:hint="`Strategy`"
-								:items="getStrategies"
-								ref="strategy_id"
-								item-text="value"
-								item-value="id"
-								label="Strategy*"
-								placeholder="Select Strategy"
-								@change="onChangeOptimizationStrategy"
-							></v-autocomplete>
-						</v-card>
+						<CardAutocomplete
+							v-model="entity.strategy_id"
+							v-numeric
+							:rules="getRules.required"
+							:items="getStrategies"
+							item_text="value"
+							item_value="id"
+							hint="Strategy"
+							reference="strategy_id"
+							placeholder="Select Strategy"
+							label="Strategy"
+							:chips="true"
+							:deletable_chips="true"
+							:multiple="false"
+							:small_chips="true"
+							:dense="false"
+							:required="true"
+							@change="onChangeOptimizationStrategy"
+						></CardAutocomplete>
 					</v-col>
 
 					<!-- CPM Bid -->
 					<v-col cols="12" sm="12" md="6" lg="2">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model.number="entity.cpm_bid"
-								v-numeric
-								:rules="getRules.cpm_bid"
-								hint="CPM Bid"
-								ref="cpm_bid"
-								placeholder="CPM Bid"
-								label="CPM Bid"
-								class="label-fixed"
-								max="25000"
-							></v-text-field>
-						</v-card>
+						<CardTextField
+							v-model="entity.cpm_bid"
+							:rules="getRules.cpm_bid"
+							hint="CPM Bid"
+							reference="cpm_bid"
+							label="CPM Bid"
+							placeholder="CPM Bid"
+							:required="true"
+						></CardTextField>
 					</v-col>
 
 					<!-- Target eCPC -->
-					<v-col
-						v-if="show_target_ecpc"
-						cols="12"
-						sm="12"
-						md="6"
-						lg="2"
-					>
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="entity.target_ecpc"
-								hint="Target eCPC"
-								ref="target_ecpc"
-								placeholder="Target eCPC"
-								label="Target eCPC"
-								class="label-fixed disabled"
-								disabled
-							></v-text-field>
-						</v-card>
+					<v-col v-if="show_target_ecpc" cols="12" sm="12" md="6" lg="2">
+						<CardTextField
+							v-model="entity.target_ecpc"
+							hint="Target eCPC"
+							reference="target_ecpc"
+							label="Target eCPC"
+							placeholder="Target eCPC"
+							:required="false"
+							class="disabled"
+							:disabled="true"
+						></CardTextField>
 					</v-col>
 
 					<!-- Target eCPM -->
-					<v-col
-						v-if="show_target_ecpm"
-						cols="12"
-						sm="12"
-						md="6"
-						lg="2"
-					>
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="entity.target_ecpm"
-								hint="Target eCPM"
-								ref="target_ecpm"
-								placeholder="Target eCPM"
-								label="Target eCPM"
-								class="label-fixed disabled"
-								disabled
-							></v-text-field>
-						</v-card>
+					<v-col v-if="show_target_ecpm" cols="12" sm="12" md="6" lg="2">
+						<CardTextField
+							v-model="entity.target_ecpm"
+							hint="Target eCPM"
+							reference="target_ecpm"
+							label="Target eCPM"
+							placeholder="Target eCPM"
+							:required="false"
+							class="disabled"
+							:disabled="true"
+						></CardTextField>
 					</v-col>
 
 					<!-- Target CTR -->
-					<v-col
-						v-if="show_target_ctr"
-						cols="12"
-						sm="12"
-						md="6"
-						lg="2"
-					>
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="entity.target_ctr"
-								:rules="getRules.target_ctr"
-								hint="Target CTR"
-								ref="target_ctr"
-								placeholder="Target CTR"
-								label="Target CTR"
-								class="label-fixed"
-							></v-text-field>
-						</v-card>
+					<v-col v-if="show_target_ctr" cols="12" sm="12" md="6" lg="2">
+						<CardTextField
+							v-model="entity.target_ctr"
+							hint="Target CTR"
+							reference="target_ctr"
+							label="Target CTR"
+							placeholder="Target CTR"
+							:required="false"
+							:rules="getRules.target_ctr"
+						></CardTextField>
 					</v-col>
 
 					<!-- Target eCPCV -->
-					<v-col
-						v-if="show_target_ecpcv"
-						cols="12"
-						sm="12"
-						md="6"
-						lg="2"
-					>
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="entity.target_ecpcv"
-								hint="Target eCPCV"
-								ref="target_ecpcv"
-								placeholder="Target eCPCV"
-								label="Target eCPCV"
-								class="label-fixed disabled"
-								disabled
-							></v-text-field>
-						</v-card>
+					<v-col v-if="show_target_ecpcv" cols="12" sm="12" md="6" lg="2">
+						<CardTextField
+							v-model="entity.target_ecpcv"
+							hint="Target eCPCV"
+							reference="target_ecpcv"
+							label="Target eCPCV"
+							placeholder="Target eCPCV"
+							:required="false"
+							class="disabled"
+							:disabled="true"
+						></CardTextField>
 					</v-col>
 
 					<!-- Target CPCV -->
-					<v-col
-						v-if="show_target_cpcv"
-						cols="12"
-						sm="12"
-						md="6"
-						lg="2"
-					>
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="entity.target_cpcv"
-								hint="Target CPCV"
-								ref="target_cpcv"
-								placeholder="Target CPCV"
-								label="Target CPCV"
-								class="label-fixed"
-							></v-text-field>
-						</v-card>
+					<v-col v-if="show_target_cpcv" cols="12" sm="12" md="6" lg="2">
+						<CardTextField
+							v-model="entity.target_cpcv"
+							hint="Target CPCV"
+							reference="target_cpcv"
+							label="Target CPCV"
+							placeholder="Target CPCV"
+							:required="false"
+						></CardTextField>
 					</v-col>
 
 					<!-- Target VCR -->
-					<v-col
-						v-if="show_target_vcr"
-						cols="12"
-						sm="12"
-						md="6"
-						lg="2"
-					>
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="entity.target_vcr"
-								:rules="getRules.target_vcr"
-								hint="Target VCR"
-								ref="target_vcr"
-								placeholder="Target VCR"
-								label="Target VCR"
-								class="label-fixed"
-							></v-text-field>
-						</v-card>
+					<v-col v-if="show_target_vcr" cols="12" sm="12" md="6" lg="2">
+						<CardTextField
+							v-model="entity.target_vcr"
+							hint="Target VCR"
+							reference="target_vcr"
+							label="Target VCR"
+							placeholder="Target VCR"
+							:required="false"
+						></CardTextField>
 					</v-col>
 
 				</v-row>
@@ -670,78 +508,59 @@
 
 					<!-- Line Pacing -->
 					<v-col cols="12" sm="12" md="6" lg="4" v-if="showCampaignPacing">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-autocomplete
-								class="label-fixed"
-								v-model.number="entity.line_pacing_id"
-								v-numeric
-								:hint="`Line Pacing`"
-								:items="getLinesPacing"
-								ref="line_pacing_id"
-								item-text="value"
-								item-value="id"
-								label="Line Pacing*"
-								placeholder="Select Line Pacing"
-							></v-autocomplete>
-						</v-card>
+						<CardAutocomplete
+							v-model="entity.line_pacing_id"
+							v-numeric
+							:rules="getRules.required"
+							:items="getLinesPacing"
+							item_text="value"
+							item_value="id"
+							hint="Line Pacing"
+							reference="line_pacing_id"
+							placeholder="Select Line Pacing"
+							label="Line Pacing"
+							:chips="true"
+							:deletable_chips="true"
+							:multiple="false"
+							:small_chips="true"
+							:dense="false"
+							:required="true"
+						></CardAutocomplete>
 					</v-col>
 
 					<!-- Daily Budget -->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model.number="entity.daily_budget"
-								v-numeric
-								:rules="getRules.daily_budget"
-								:hint="getError('daily_budget')"
-								ref="daily_budget"
-								placeholder="Daily Budget"
-								label="Daily Budget"
-								class="label-fixed p-prefix"
-								:suffix="getSuggested"
-								:persistent-hint="hasError('daily_budget')"
-								:disabled="!can_edit_daily_budget"
-								:class="{ disabled: !can_edit_daily_budget }"
-							>
-							</v-text-field>
-						</v-card>
+						<CardTextField
+							v-model="entity.daily_budget"
+							v-numeric
+							:rules="getRules.daily_budget"
+							:hint="getError('daily_budget')"
+							reference="daily_budget"
+							label="Daily Budget"
+							placeholder="Daily Budget"
+							:required="false"
+							class="p-prefix"
+							:suffix="getSuggested"
+							:persistent-hint="hasError('daily_budget')"
+							:disabled="!can_edit_daily_budget"
+							:class="{ disabled: !can_edit_daily_budget }"
+						></CardTextField>
 					</v-col>
 
 					<!-- Daily Budget Suggested -->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model.number="entity.daily_budget_suggested"
-								v-numeric
-								:hint="getError('daily_budget_suggested')"
-								ref="daily_budget_suggested"
-								placeholder="Daily Budget Suggested"
-								label="Daily Budget Suggested"
-								class="label-fixed p-prefix disabled"
-								:suffix="getSuggested"
-								:persistent-hint="hasError('daily_budget_suggested')"
-								disabled
-							>
-							</v-text-field>
-						</v-card>
+						<CardTextField
+							v-model.number="entity.daily_budget_suggested"
+							v-numeric
+							:hint="getError('daily_budget_suggested')"
+							reference="daily_budget_suggested"
+							placeholder="Daily Budget Suggested"
+							label="Daily Budget Suggested"
+							class="p-prefix disabled"
+							:suffix="getSuggested"
+							:persistent-hint="hasError('daily_budget_suggested')"
+							:disabled="true"
+						></CardTextField>
 					</v-col>
 
 				</v-row>
@@ -772,7 +591,7 @@
 					>
 						<v-layout>
 							<v-label class="v-label theme--light">
-								Frecuency Cup*
+								Frecuency Cup <span class="red--text"><strong>*</strong></span>
 							</v-label>
 						</v-layout>
 						<v-layout class="mt-3">
@@ -800,68 +619,50 @@
 				>
 					<!-- impressions -->
 					<v-col cols="12" sm="12" md="4" lg="3">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="frequency_cap.impressions"
-								:rules="getRules.required"
-								hint="Impressions"
-								ref="impressions"
-								placeholder="Impressions"
-								label="Impressions*"
-								class="label-fixed"
-							></v-text-field>
-						</v-card>
+						<CardTextField
+							v-model="frequency_cap.impressions"
+							:rules="getRules.required"
+							hint="Impressions"
+							reference="impressions"
+							placeholder="Impressions"
+							label="Impressions"
+							:required="true"
+						></CardTextField>
 					</v-col>
 
 					<!-- every_time -->
 					<v-col cols="12" sm="12" md="4" lg="3">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="frequency_cap.every_time"
-								:rules="getRules.required"
-								hint="Every Time"
-								ref="every_time"
-								placeholder="Every Time"
-								label="Every Time*"
-								class="label-fixed"
-							></v-text-field>
-						</v-card>
+						<CardTextField
+							v-model="frequency_cap.every_time"
+							:rules="getRules.required"
+							hint="Every Time"
+							reference="every_time"
+							placeholder="Every Time"
+							label="Every Time"
+							:required="true"
+						></CardTextField>
 					</v-col>
 
 					<!-- unit_time_id -->
 					<v-col cols="12" sm="12" md="4" lg="3">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-autocomplete
-								class="label-fixed"
-								v-model="frequency_cap.unit_time_id"
-								:rules="getRules.required"
-								:hint="`Unit Time`"
-								:items="getUnitTimes"
-								:ref="`unit_time_id_${frequency_cap.unit_time_id}`"
-								item-text="value"
-								item-value="id"
-								label="Unit Time*"
-								placeholder="Unit Time"
-							></v-autocomplete>
-						</v-card>
+						<CardAutocomplete
+							v-model="frequency_cap.unit_time_id"
+							:rules="getRules.required"
+							hint="Unit Time"
+							:items="getUnitTimes"
+							:reference="`unit_time_id_${frequency_cap.unit_time_id}`"
+							item-text="value"
+							item-value="id"
+							label="Unit Time"
+							placeholder="Unit Time"
+							v-numeric
+							:chips="true"
+							:deletable_chips="true"
+							:multiple="false"
+							:small_chips="true"
+							:dense="false"
+							:required="true"
+						></CardAutocomplete>
 					</v-col>
 
 					<!-- unit_time_id -->
@@ -957,6 +758,9 @@
 	import { LineTypeList } from "@/interfaces/line_type";
 	import { CreativeWeightingMethodList } from "@/interfaces/creativeWeightingMethod";
 	import { initLineItem } from "../../../../utils/initData";
+	import CardTextField from "../../../../components/Content/CardTextField.vue";
+	import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
+	import CardSwitch from "../../../../components/Content/CardSwitch.vue";
 
 	const BY_CAMPAIGN = "By Campaign";
 	const DAILY = "Daily";
@@ -1050,7 +854,12 @@
 				},
 			},
 		},
-		components: { DatePicker },
+		components: {
+			CardTextField,
+			CardAutocomplete,
+			CardSwitch,
+			DatePicker,
+		},
 		data: () => ({
 			title: "Overview",
 			valid: false,
@@ -1138,9 +947,9 @@
 					id: this.entity.budget_type_id,
 				});
 				if( result ){
-					this.budgetText = `Total ${result.value}*`;
+					this.budgetText = `Total ${result.value}`;
 				}else{
-					this.budgetText = "Total*";
+					this.budgetText = "Total";
 				}
 				return this.budgetText;
 			},
@@ -1462,7 +1271,7 @@
 
 			async handleSave() {
 				try {
-					//if (!(await this.validate())) return;
+					if (!(await this.validate())) return;
 					let entity = this.prepareDataCreate();
 					const emit = this.isEdit
 						? "update-lineItem"
@@ -1539,18 +1348,12 @@
 			},
 
 			calculateDuration(start: any, end: any){
-				console.log("--- Dates received: ",{
-					start: start,
-					end: end
-				});
 				
 				if( !(start.isValid() && end.isValid()) ){
-					console.log("--- Diferencia: ", -1);
 					return -1;
 				}
 				const diff = end.diff(start, "days");
 				const duration = this.moment.duration(end.diff(start));
-				console.log("--- Diferencia: ", Math.ceil(duration.asDays()));
 				
 				return Math.ceil(duration.asDays());
 			},

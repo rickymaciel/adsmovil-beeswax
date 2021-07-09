@@ -47,6 +47,7 @@
 			class="mb-2 d-flex justify-space-between align-center align-self-center"
 		>
 			<v-btn
+				v-if="false"
 				class="me-4 mb-1"
 				color="secondary"
 				outlined
@@ -170,7 +171,8 @@
 </template>
 
 <script lang="ts">
-	import { find } from "lodash";
+	import i18n from "@/plugins/i18n";
+import { find } from "lodash";
 	import Vue from "vue";
 
 	export default Vue.extend({
@@ -209,15 +211,15 @@
 				return [
 					{
 						value: 25,
-						text: "25 rows",
+						text: i18n.t("common.limits.25"),
 					},
 					{
 						value: 50,
-						text: "50 rows",
+						text: i18n.t("common.limits.50"),
 					},
 					{
 						value: 100,
-						text: "100 rows",
+						text: i18n.t("common.limits.100"),
 					},
 				];
 			},

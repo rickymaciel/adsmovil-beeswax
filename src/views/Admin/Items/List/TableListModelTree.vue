@@ -106,17 +106,25 @@
 			</template>
 			
 			<template v-slot:[`item.list_item_prefix`]="{ item }">
-				<v-autocomplete
+				<CardAutocomplete
 					v-model="item.list_item_prefix"
 					:rules="getRules.required"
-					placeholder="Prefix"
-					class="label-fixed"
 					:items="getListItemsPrefix"
-					item-text="abbreviation"
-					item-value="id"
+					item_text="abbreviation"
+					item_value="id"
+					:reference="`list_item_prefix_${item.list_item_prefix}`"
+					placeholder="Prefix"
+					hint="Prefix"
+					label="Prefix"
+					:chips="true"
+					:deletable_chips="true"
+					:multiple="false"
+					:small_chips="true"
+					:dense="false"
+					:required="true"
 					:disabled="item.id > 0"
 					:class="{ disabled: item.id > 0 }"
-				></v-autocomplete>
+				></CardAutocomplete>
 			</template>
 
 			<!-- LIST ITEM -->
@@ -131,14 +139,17 @@
 			</template>
 			
 			<template v-slot:[`item.list_item_value`]="{ item }">
-				<v-text-field
+				<CardTextField
 					v-model="item.list_item_value"
 					:rules="getRules.required"
-					placeholder="Value"
-					class="label-fixed"
+					reference="list_item_value"
+					placeholder="List Item"
+					hint="List Item"
+					label="List Item"
+					:required="true"
 					:disabled="item.id > 0"
 					:class="{ disabled: item.id > 0 }"
-				></v-text-field>
+				></CardTextField>
 			</template>
 
 			<!-- VALUE -->
@@ -183,13 +194,16 @@
 			</template>
 
 			<template v-slot:[`item.value`]="{ item }">
-				<v-text-field
+				<CardTextField
 					v-model="item.value"
 					:rules="getRules.value"
+					reference="value"
 					placeholder="Value"
-					class="label-fixed"
+					hint="Value"
+					label="Value"
+					:required="true"
 					@change="hasChanged(item)"
-				></v-text-field>
+				></CardTextField>
 			</template>
 
 			<!-- LIST ITEM NAME -->
@@ -234,13 +248,16 @@
 			</template>
 
 			<template v-slot:[`item.name`]="{ item }">
-				<v-text-field
+				<CardTextField
 					v-model="item.name"
 					:rules="getRules.required"
+					reference="name"
 					placeholder="Name"
-					class="label-fixed"
+					hint="Name"
+					label="Name"
+					:required="true"
 					@change="hasChanged(item)"
-				></v-text-field>
+				></CardTextField>
 			</template>
 
 			<template v-slot:[`item.actions`]="{ item, index }">
@@ -328,6 +345,8 @@
 	import Vue from "vue";
 	import { isEmpty, isNull, isUndefined, isNaN } from "lodash";
 	import { ListItemDataCreate } from "@/interfaces/list_items";
+	import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
+	import CardTextField from "../../../../components/Content/CardTextField.vue";
 
 	export default Vue.extend({
 		name: "TableListModelTwo",
@@ -349,7 +368,10 @@
 				default: {},
 			},
 		},
-		components: {},
+		components: {
+			CardAutocomplete,
+			CardTextField,
+		},
 		data: () => ({
 			records: Array,
 			entity: {} as ListItemDataCreate,
@@ -384,9 +406,6 @@
 			await this.dispatchListItemsPrefix().then((response) =>{
 				this.listPrefixes = response ? response : [];
 			});
-			/*this.setLoading(true);
-			this.records await this.dispatchEntities(this?.customList?.id);
-			this.setLoading(false);*/
 		},
 
 		computed: {
@@ -402,7 +421,7 @@
 					required: [(v: any) => Boolean(v) || this.$t("fieldRequired")],
 					number: [(v: number) => !isNaN(v) || this.$t("fieldRequired")],
 					value: [
-						(v: any) => Boolean(v) || this.$t("fieldRequired"),
+						(v: number) => !isNaN(v) || this.$t("must-be-numeric"),
 						(v: number) => v >= 0 || this.$t("min", { min: 0 }),
 						(v: number) => v <= 100 || this.$t("max", { max: 100 }),
 					],

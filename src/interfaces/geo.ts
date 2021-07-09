@@ -13,6 +13,14 @@ export interface Region {
   country_id: number
 }
 
+export interface City {
+  id: number,
+  name: string,
+  prefix: string,
+  country_id: number,
+  region_id: number
+}
+
 export interface Lat_Long {
   id: number,
   account_id: number,
@@ -24,4 +32,11 @@ export interface Lat_Long {
   notes: string,
   active: boolean,
   terms_count: number
+}
+
+export interface LocationType {
+  id: number,
+  type: string,
+  description: string,
+  extra: string
 }

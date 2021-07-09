@@ -13,140 +13,98 @@
 				<v-row dense>
 					<!-- Name: name ✔-->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="campaign.name"
-								:rules="nameRules"
-								hint="Name"
-								ref="name"
-								placeholder="Name"
-								label="Name*"
-								class="label-fixed"
-								counter="255"
-							></v-text-field>
-						</v-card>
+						<CardTextField
+							v-model="campaign.name"
+							:rules="nameRules"
+							hint="Name"
+							reference="name"
+							placeholder="Name"
+							label="Name"
+							:required="true"
+						></CardTextField>
 					</v-col>
 
 					<!-- Advertiser: advertiser_id ✔ -->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-autocomplete
-								class="label-fixed"
-								:class="{ disabled: isEdit }"
-								v-model.number="campaign.advertiser_id"
-								v-numeric
-								:rules="getRules.required"
-								:hint="`Advertiser`"
-								:items="getAdvertisers"
-								ref="advertiser_id"
-								item-text="value"
-								item-value="id"
-								label="Advertiser*"
-								placeholder="Advertiser"
-								:disabled="isEdit"
-							></v-autocomplete>
-						</v-card>
+						<CardAutocomplete
+							v-model="campaign.advertiser_id"
+							:rules="getRules.required"
+							:items="getAdvertisers"
+							item_text="value"
+							item_value="id"
+							hint="Advertiser"
+							reference="advertiser_id"
+							placeholder="Advertiser"
+							label="Advertiser"
+							:chips="true"
+							:deletable_chips="true"
+							:multiple="false"
+							:small_chips="true"
+							:dense="false"
+							:required="true"
+							:disabled="isEdit"
+						></CardAutocomplete>
 					</v-col>
 
 					<!-- Owner: trafficker_id ✔ -->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-autocomplete
-								class="label-fixed"
-								v-model.number="campaign.trafficker_id"
-								v-numeric
-								:rules="getRules.required"
-								:hint="`Owner`"
-								:items="owners"
-								ref="trafficker_id"
-								item-text="value"
-								item-value="id"
-								label="Owner*"
-								placeholder="Owner"
-							></v-autocomplete>
-						</v-card>
+						<CardAutocomplete
+							v-model="campaign.trafficker_id"
+							:rules="getRules.required"
+							:items="owners"
+							item_text="value"
+							item_value="id"
+							hint="Owner"
+							reference="trafficker_id"
+							placeholder="Owner"
+							label="Owner"
+							:chips="true"
+							:deletable_chips="true"
+							:multiple="false"
+							:small_chips="true"
+							:dense="false"
+							:required="true"
+							:disabled="isEdit"
+						></CardAutocomplete>
 					</v-col>
 				</v-row>
 
 				<v-row dense>
 					<!-- Solo mostrar dato de la cuenta: Currency ✔ -->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="getCurrency"
-								hint="Currency"
-								ref="currency"
-								placeholder="Currency"
-								label="Currency"
-								class="label-fixed disabled"
-								disabled
-							></v-text-field>
-						</v-card>
+						<CardTextField
+							v-model="getCurrency"
+							hint="Currency"
+							reference="currency"
+							placeholder="Currency"
+							label="Currency"
+							:required="false"
+							:disabled="true"
+						></CardTextField>
 					</v-col>
 
 					<!-- Solo mostrar dato de la cuenta: Timezone ✔ -->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="getTimezone"
-								hint="Timezone"
-								ref="timezone"
-								placeholder="Timezone"
-								label="Timezone"
-								class="label-fixed disabled"
-								disabled
-							></v-text-field>
-						</v-card>
+						<CardTextField
+							v-model="getTimezone"
+							hint="Timezone"
+							reference="timezone"
+							placeholder="Timezone"
+							label="Timezone"
+							:required="false"
+							:disabled="true"
+						></CardTextField>
 					</v-col>
 
 					<!-- Alternative ID ✔ -->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="campaign.alternative_id"
-								hint="Alternative ID"
-								ref="AlternativeID"
-								placeholder="Alternative ID"
-								label="Alternative ID"
-								class="label-fixed"
-							></v-text-field>
-						</v-card>
+						<CardTextField
+							v-model="campaign.alternative_id"
+							hint="Alternative ID"
+							reference="AlternativeID"
+							placeholder="Alternative ID"
+							label="Alternative ID"
+						></CardTextField>
 					</v-col>
 				</v-row>
 
@@ -179,10 +137,11 @@
 							color="rgb(0, 0, 0, 0.0)"
 						>
 							<DatePicker
-								label="Start Date*"
+								label="Start Date"
 								v-model="campaign.start_date"
 								:min_date="getMinDate"
 								:rules="startDateRules"
+								:required="true"
 							></DatePicker>
 						</v-card>
 					</v-col>
@@ -202,35 +161,26 @@
 							color="rgb(0, 0, 0, 0.0)"
 						>
 							<DatePicker
-								label="End Date*"
+								label="End Date"
 								v-model="campaign.end_date"
 								:min_date="getMinDate"
 								:rules="endDateRules"
 								:is_end="true"
+								:required="true"
 							></DatePicker>
 						</v-card>
 					</v-col>
 
 					<!-- Campaign Duration* Calculo en dias entre el inicio y fin de campaña ✔ -->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model.number="campaign_duration"
-								v-numeric
-								hint="Campaign Duration"
-								ref="campaign_duration"
-								placeholder="Campaign Duration"
-								label="Campaign Duration*"
-								class="label-fixed disabled"
-								disabled
-							></v-text-field>
-						</v-card>
+						<CardTextField
+							v-model="campaign_duration"
+							hint="Campaign Duration"
+							reference="campaign_duration"
+							placeholder="Campaign Duration"
+							label="Campaign Duration"
+							:disabled="true"
+						></CardTextField>
 					</v-col>
 				</v-row>
 
@@ -259,7 +209,7 @@
 						>
 							<v-layout>
 								<v-label class="v-label theme--light">
-									Budget Type*
+									Budget Type <span class="red--text"><strong>*</strong></span>
 								</v-label>
 							</v-layout>
 							<v-layout>
@@ -284,26 +234,17 @@
 
 					<!-- Total Impressions* ✔  -->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model.number="campaign.budget"
-								v-numeric
-								type="text"
-								:rules="getRules.required"
-								:hint="getBudgetText"
-								ref="budget"
-								:label="getBudgetText"
-								:placeholder="getBudgetText"
-								class="label-fixed"
-								:disabled="!getBudgetText"
-							></v-text-field>
-						</v-card>
+						<CardTextField
+							v-model.number="campaign.budget"
+							v-numeric
+							:rules="getRules.required"
+							:hint="getBudgetText"
+							ref="budget"
+							:label="getBudgetText"
+							:placeholder="getBudgetText"
+							:disabled="!getBudgetText"
+							:required="true"
+						></CardTextField>
 					</v-col>
 
 					<!-- Automatic Allocation* ✔ -->
@@ -317,7 +258,7 @@
 						>
 							<v-layout>
 								<v-label class="v-label theme--light">
-									Automatic Allocation*
+									Automatic Allocation <span class="red--text"><strong>*</strong></span>
 								</v-label>
 							</v-layout>
 							<v-layout>
@@ -366,7 +307,7 @@
 						>
 							<v-layout>
 								<v-label class="v-label theme--light">
-									Optimization Strategy*
+									Optimization Strategy <span class="red--text"><strong>*</strong></span>
 								</v-label>
 							</v-layout>
 							<v-layout>
@@ -395,27 +336,24 @@
 
 					<!-- Campaign Pacing* -->
 					<v-col cols="12" sm="12" md="6" lg="4" v-if="showCampaignPacing">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-autocomplete
-								class="label-fixed"
-								v-model.number="campaign.campaign_pacing_id"
-								v-numeric
-								:rules="getRules.required"
-								:hint="`Campaign Pacing`"
-								:items="getCampaignsPacing"
-								ref="campaign_pacing_id"
-								item-text="value"
-								item-value="id"
-								label="Campaign Pacing*"
-								placeholder="Campaign Pacing"
-							></v-autocomplete>
-						</v-card>
+						<CardAutocomplete
+							v-model="campaign.campaign_pacing_id"
+							v-numeric
+							:rules="getRules.required"
+							:items="getCampaignsPacing"
+							item_text="value"
+							item_value="id"
+							hint="Campaign Pacing"
+							reference="campaign_pacing_id"
+							placeholder="Campaign Pacing"
+							label="Campaign Pacing"
+							:chips="true"
+							:deletable_chips="true"
+							:multiple="false"
+							:small_chips="true"
+							:dense="false"
+							:required="true"
+						></CardAutocomplete>
 					</v-col>
 
 					<!-- Daily Budget* -->
@@ -426,27 +364,18 @@
 						lg="4"
 						v-if="showDailyBudget"
 					>
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model.number="campaign.daily_budget"
-								v-numeric
-								:rules="getRules.daily_budget"
-								:hint="getError('daily_budget')"
-								ref="daily_budget"
-								placeholder="Daily Budget"
-								label="Daily Budget"
-								class="label-fixed p-prefix"
-								:suffix="getSuggested"
-								:persistent-hint="hasError('daily_budget')"
-							>
-							</v-text-field>
-						</v-card>
+						<CardTextField
+							v-model.number="campaign.daily_budget"
+							v-numeric
+							:rules="getRules.daily_budget"
+							:hint="getError('daily_budget')"
+							ref="daily_budget"
+							label = "Daily Budget"
+							placeholder = "Daily Budget"
+							:suffix="getSuggested"
+							:persistent-hint="hasError('daily_budget')"
+							:required="true"
+						></CardTextField>
 					</v-col>
 				</v-row>
 
@@ -466,49 +395,38 @@
 
 					<!-- KPI Campaign* -->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-autocomplete
-								class="label-fixed"
-								v-model.number="campaign.kpi_campaign_id"
-								v-numeric
-								:rules="getRules.required"
-								:hint="`KPI Campaign`"
-								:items="getKpiCampaigns"
-								ref="kpi_campaign_id"
-								item-text="value"
-								item-value="id"
-								label="KPI Campaign*"
-								placeholder="KPI Campaign"
-							></v-autocomplete>
-						</v-card>
+						<CardAutocomplete
+							v-model="campaign.kpi_campaign_id"
+							v-numeric
+							:rules="getRules.required"
+							:items="getKpiCampaigns"
+							item_text="value"
+							item_value="id"
+							hint="KPI Campaign"
+							reference="kpi_campaign_id"
+							placeholder="KPI Campaign"
+							label="KPI Campaign"
+							:chips="true"
+							:deletable_chips="true"
+							:multiple="false"
+							:small_chips="true"
+							:dense="false"
+							:required="true"
+						></CardAutocomplete>
 					</v-col>
 
 					<!-- kpi Objective* -->
 					<v-col cols="12" sm="12" md="6" lg="4">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model.number="campaign.kpi_objective"
-								v-numeric
-								:rules="getRules.required"
-								:hint="getKpiObjectiveLabel"
-								ref="kpi_objective"
-								:placeholder="getKpiObjectiveLabel"
-								:label="getKpiObjectiveLabel"
-								class="label-fixed"
-							></v-text-field>
-						</v-card>
+						<CardTextField
+							v-model.number="campaign.kpi_objective"
+							v-numeric
+							:rules="getRules.required"
+							:hint="getKpiObjectiveLabel"
+							ref="kpi_objective"
+							:label = "getKpiObjectiveLabel"
+							:placeholder = "getKpiObjectiveLabel"
+							:required="true"
+						></CardTextField>
 					</v-col>
 				</v-row>
 
@@ -528,50 +446,38 @@
 
 					<!-- Biding Strategy* -->
 					<v-col cols="12" sm="12" md="6" lg="4" v-if="isOptimizationStrategyById">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-autocomplete
-								class="label-fixed"
-								v-model.number="campaign.strategy_id"
-								v-numeric
-								:rules="getRules.required"
-								:hint="`Biding Strategy`"
-								:items="getStrategies"
-								ref="strategy_id"
-								item-text="value"
-								item-value="id"
-								label="Biding Strategy*"
-								placeholder="Biding Strategy"
-							></v-autocomplete>
-						</v-card>
+						<CardAutocomplete
+							v-model="campaign.strategy_id"
+							v-numeric
+							:rules="getRules.required"
+							:items="getStrategies"
+							item_text="value"
+							item_value="id"
+							hint="Biding Strategy"
+							reference="strategy_id"
+							placeholder="Biding Strategy"
+							label="Biding Strategy"
+							:chips="true"
+							:deletable_chips="true"
+							:multiple="false"
+							:small_chips="true"
+							:dense="false"
+							:required="true"
+						></CardAutocomplete>
 					</v-col>
 
 					<!-- Bid CPM* -->
 					<v-col cols="12" sm="12" md="6" lg="2">
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model.number="campaign.cpm_bid"
-								v-numeric
-								:rules="getRules.cpm_bid"
-								hint="Bid CPM"
-								ref="cpm_bid"
-								placeholder="Bid CPM"
-								label="Bid CPM"
-								class="label-fixed"
-								max="25000"
-							></v-text-field>
-						</v-card>
+						<CardTextField
+							v-model.number="campaign.cpm_bid"
+							v-numeric
+							:rules="getRules.cpm_bid"
+							hint="Bid CPM"
+							ref="cpm_bid"
+							label = "Bid CPM"
+							placeholder = "Bid CPM"
+							:required="true"
+						></CardTextField>
 					</v-col>
 
 					<!-- Expected* -->
@@ -582,21 +488,17 @@
 						md="6"
 						lg="2"
 					>
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								:hint="getExpectedLabel"
-								:placeholder="getExpectedLabel"
-								:label="getExpectedLabel"
-								class="label-fixed"
-								:value="getExpectedValue"
-							></v-text-field>
-						</v-card>
+						<CardTextField
+							v-model.number="campaign.cpm_bid"
+							v-numeric
+							:rules="getRules.cpm_bid"
+							:hint="getExpectedLabel"
+							ref="cpm_bid"
+							:label = "getExpectedLabel"
+							:placeholder = "getExpectedLabel"
+							:required="true"
+							:valueText="getExpectedValue"
+						></CardTextField>
 					</v-col>
 
 					<!-- Target eCPCV* -->
@@ -607,23 +509,16 @@
 						md="6"
 						lg="2"
 					>
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="campaign.target_ecpc"
-								:rules="getRules.target_ecpc"
-								hint="Target eCPCV"
-								ref="target_ecpc"
-								placeholder="Target eCPCV"
-								label="Target eCPCV"
-								class="label-fixed"
-							></v-text-field>
-						</v-card>
+						<CardTextField
+							v-model.number="campaign.target_ecpc"
+							v-numeric
+							:rules="getRules.target_ecpc"
+							hint="Target eCPCV"
+							ref="target_ecpc"
+							label = "Target eCPCV"
+							placeholder = "Target eCPCV"
+							:required="true"
+						></CardTextField>
 					</v-col>
 
 					<!-- Target CTR* -->
@@ -634,23 +529,16 @@
 						md="6"
 						lg="2"
 					>
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="campaign.target_ctr"
-								:rules="getRules.target_ctr"
-								hint="Target CTR"
-								ref="target_ctr"
-								placeholder="Target CTR"
-								label="Target CTR"
-								class="label-fixed"
-							></v-text-field>
-						</v-card>
+						<CardTextField
+							v-model.number="campaign.target_ctr"
+							v-numeric
+							:rules="getRules.target_ctr"
+							hint="Target CTR"
+							ref="target_ctr"
+							label = "Target CTR"
+							placeholder = "Target CTR"
+							:required="true"
+						></CardTextField>
 					</v-col>
 
 					<!-- Target VCR* -->
@@ -661,23 +549,16 @@
 						md="6"
 						lg="2"
 					>
-						<v-card
-							elevation="0"
-							class="pa-2"
-							outlined
-							tile
-							color="rgb(0, 0, 0, 0.0)"
-						>
-							<v-text-field
-								v-model="campaign.target_vcr"
-								:rules="getRules.target_vcr"
-								hint="Target VCR"
-								ref="target_vcr"
-								placeholder="Target VCR"
-								label="Target VCR"
-								class="label-fixed"
-							></v-text-field>
-						</v-card>
+						<CardTextField
+							v-model.number="campaign.target_vcr"
+							v-numeric
+							:rules="getRules.target_vcr"
+							hint="Target VCR"
+							ref="target_vcr"
+							label = "Target VCR"
+							placeholder = "Target VCR"
+							:required="true"
+						></CardTextField>
 					</v-col>
 				</v-row>
 
@@ -707,7 +588,7 @@
 					>
 						<v-layout>
 							<v-label class="v-label theme--light">
-								Frecuency Cup*
+								Frecuency Cup <span class="red--text"><strong>*</strong></span>
 							</v-label>
 						</v-layout>
 						<v-layout class="mt-3">
@@ -742,15 +623,15 @@
 							tile
 							color="rgb(0, 0, 0, 0.0)"
 						>
-							<v-text-field
+							<CardTextField
 								v-model="frequency_cap.impressions"
 								:rules="getRules.required"
 								hint="Impressions"
 								ref="Impressions"
-								placeholder="Impressions"
-								label="Impressions*"
-								class="label-fixed"
-							></v-text-field>
+								label = "Impressions"
+								placeholder = "Impressions"
+								:required="true"
+							></CardTextField>
 						</v-card>
 					</v-col>
 
@@ -763,15 +644,15 @@
 							tile
 							color="rgb(0, 0, 0, 0.0)"
 						>
-							<v-text-field
+							<CardTextField
 								v-model="frequency_cap.every_time"
 								:rules="getRules.required"
 								hint="Every Time"
 								ref="every_time"
-								placeholder="Every Time"
-								label="Every Time*"
-								class="label-fixed"
-							></v-text-field>
+								label = "Every Time"
+								placeholder = "Every Time"
+								:required="true"
+							></CardTextField>
 						</v-card>
 					</v-col>
 
@@ -784,18 +665,24 @@
 							tile
 							color="rgb(0, 0, 0, 0.0)"
 						>
-							<v-autocomplete
-								class="label-fixed"
+							<CardAutocomplete
 								v-model="frequency_cap.unit_time_id"
+								v-numeric
 								:rules="getRules.required"
-								:hint="`Unit Time`"
 								:items="getUnitTimes"
-								:ref="`unit_time_id_${frequency_cap.unit_time_id}`"
-								item-text="value"
-								item-value="id"
-								label="Unit Time*"
+								item_text="value"
+								item_value="id"
+								hint="Unit Time"
+								:reference="`unit_time_id_${frequency_cap.unit_time_id}`"
 								placeholder="Unit Time"
-							></v-autocomplete>
+								label="Unit Time"
+								:chips="true"
+								:deletable_chips="true"
+								:multiple="false"
+								:small_chips="true"
+								:dense="false"
+								:required="true"
+							></CardAutocomplete>
 						</v-card>
 					</v-col>
 
@@ -887,6 +774,8 @@
 	import { AdvertiserList } from "../../../../interfaces/advertiser";
 	import DatePicker from "../../../../components/Content/DatePicker.vue";
 	import { CampaignDataCreate } from "../../../../interfaces/campaign";
+	import CardTextField from "../../../../components/Content/CardTextField.vue";
+	import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
 
 	const BY_CAMPAIGN = "By Campaign";
 	const DAILY = "Daily";
@@ -972,7 +861,11 @@
 				},
 			},
 		},
-		components: { DatePicker },
+		components: {
+			DatePicker,
+			CardTextField,
+			CardAutocomplete,
+		},
 		data: () => ({
 			title: "Overview",
 			valid: false,
@@ -1018,7 +911,7 @@
 				const result = find(this.getBudgetType, {
 					id: this.campaign.budget_type_id,
 				});
-				return result ? `Total ${result.value}*` : "Total*";
+				return result ? `Total ${result.value}` : "Total";
 			},
 
 			getRules() {

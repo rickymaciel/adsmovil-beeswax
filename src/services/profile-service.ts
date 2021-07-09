@@ -8,7 +8,6 @@ class ProfileService {
     async profile() {
         try {
             const response = await AxiosPost(PROFILE_ROUTE, {});
-            console.log("@Actions:profile", { response: response });
             return Promise.resolve(GetData(response));
 
         } catch (error) {
