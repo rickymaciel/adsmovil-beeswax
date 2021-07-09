@@ -79,7 +79,6 @@ class ListItemService {
 
     async create(listItem: any, customListType: string) {
         try {
-            console.log("(SERVICE) --> create(params): ", {listItem: listItem, customListType: customListType});
             const response = await AxiosPost(LIST_ITEM_ROUTE, {...listItem, customListType: customListType});
             return Promise.resolve(GetData(response));
         } catch (error) {
@@ -106,7 +105,6 @@ class ListItemService {
 
     async update(listItem: ListItemDataUpdate, customListType: string) {
         try {
-            console.log("(SERVICE) --> update(params): ", {listItem: listItem, customListType: customListType});
             const response = await AxiosPatch(`${LIST_ITEM_ROUTE}/${listItem.id}`, {...listItem, customListType: customListType});
             return Promise.resolve(GetData(response));
         } catch (error) {

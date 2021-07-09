@@ -1,7 +1,7 @@
 <template>
 	<v-app id="app">
 		<v-main class="grey lighten-3">
-			<AppBar :items="navSecundaryItems" />
+			<AppBar :items="getNavItems" />
 			<v-layout>
 				<router-view></router-view>
 			</v-layout>
@@ -23,41 +23,54 @@
 		},
 		components: { AppBar },
 		data: () => ({
-			navSecundaryItems: [
+			navSecondaryItems: [
 				{
 					text: "Dashboard",
 					disabled: false,
 					href: "/admin/dashboard",
+					roles: ["account-admin","account-operator"],
+				},
+				{
+					text: "Users",
+					disabled: false,
+					href: "/admin/users/index",
+					roles: ["account-admin"]
 				},
 				{
 					text: "Adsvertisers",
 					disabled: false,
 					href: "/admin/advertisers/index",
+					roles: ["account-admin","account-operator"]
 				},
 				{
 					text: "Campaigns",
 					disabled: false,
 					href: "/admin/campaigns/index",
+					roles: ["account-admin","account-operator"]
 				},
 				{
 					text: "Line Item",
 					disabled: false,
 					href: "/admin/lineitem/index",
+					roles: ["account-admin","account-operator"]
 				},
 				{
 					text: "Creatives",
 					disabled: false,
 					href: "/admin/creatives/index",
+					roles: ["account-admin","account-operator"]
 				},
 				{
 					text: "Reporting",
 					disabled: true,
 					href: "/admin/reporting/index",
+					roles: ["account-admin","account-operator"]
 				},
 				{
 					text: "Tools",
 					disabled: false,
 					href: "#",
+					roles: ["account-admin","account-operator"],
 					children: [
 						{
 							text: "Event",
@@ -88,12 +101,21 @@
 				},
 			],
 		}),
-		created() {
-			// console.log("Using LayoutAdmin", {
-			// 	profile: this.$store.state.profile.profile,
-			// });
+		mounted() {
+			this.loadUsers();
 		},
-		computed: {},
-		methods: {},
+		computed: {
+			getNavItems() {
+				const profile = this.$store.state.profile.profile;
+				return !!profile ? this.navSecondaryItems.filter((item) => {
+					return item.roles.indexOf(profile.roles[0].name) != -1;
+				}) : [];
+			}
+		},
+		methods: {
+			loadUsers(){
+				this.$store.dispatch('profile/fetchProfile');
+			}
+		},
 	});
 </script>

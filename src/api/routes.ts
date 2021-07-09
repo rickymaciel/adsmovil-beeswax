@@ -34,6 +34,7 @@ const COUNTRY_ROUTE = 'api/list/countries'
 const REGION_ROUTE = 'api/list/regions'
 const CITY_ROUTE = 'api/list/city'
 const LAT_LONG_ROUTE = 'api/list/custom_lists/lat_long'
+const LOCATION_TYPE_ROUTE = 'api/list/targeting_location_types'
 const CREATIVE_SIZE_ROUTE = 'api/list/creative_sizes'
 const DOMAIN_LIST_ROUTE = 'api/list/custom_lists/domain'
 const AD_POSITION_ROUTE = 'api/list/ad_positions'
@@ -54,8 +55,23 @@ const CREATIVE_EXPANDABLE_DIRECTION_ROUTE = 'api/list/expandable_directions'
 const CREATIVE_VIDEO_ROUTE = 'api/list/inbanner_videos'
 const CREATIVE_APIS_ROUTE = 'api/list/video_apis'
 const CREATIVE_TAG_ROUTE = 'api/creatives/check_tag'
-const CREATIVE_ASSOCIATE_ROUTE = 'url_not_defined'
+const CREATIVE_ASSOCIATE_ROUTE = 'api/creative_line_associations'
+const CREATIVE_ADDONS_ROUTE = 'api/creative_addons'
+const CREATIVE_ASSETS_ROUTE = 'api/creative_assets'
 const CREATIVE_ROUTE = 'api/creatives'
+const APP_BUNDLE_LIST_ROUTE = 'api/list/custom_lists/app_bundle'
+const APP_ID_ROUTE = 'api/list/custom_lists/app_id'
+const APP_NAME_ROUTE = 'api/list/app_name'
+const DEAL_ID_ROUTE = 'undefined_url'
+const DEAL_ID_LIST_ROUTE = 'api/list/custom_lists/deal_id'
+const DOMAIN_ROUTE = 'api/list/custom_lists/domain'
+const PLACEMENT_ROUTE = 'api/list/custom_lists/placement_id'
+const PUBLISER_ID_ROUTE = 'undefined_url'
+const PUBLISER_ID_LIST_ROUTE = 'api/list/custom_lists/publisher_id'
+const SITE_ROUTE = 'api/list/site_id'
+const SITE_LIST_ROUTE = 'api/list/custom_lists/site_id'
+const AUCTION_TYPE_ROUTE = 'api/list/auction_types'
+const INVENTORY_SOURCE_ROUTE = 'api/list/inventory_sources'
 
 module.exports = {
   ADVERTISER: {
@@ -64,6 +80,19 @@ module.exports = {
   },
   AD_SIZE: {
     CREATIVE_SIZE_ROUTE
+  },
+  APP_SITE: {
+    APP_BUNDLE_LIST_ROUTE,
+    APP_ID_ROUTE,
+    APP_NAME_ROUTE,
+    DEAL_ID_ROUTE,
+    DEAL_ID_LIST_ROUTE,
+    DOMAIN_ROUTE,
+    PLACEMENT_ROUTE,
+    PUBLISER_ID_ROUTE,
+    PUBLISER_ID_LIST_ROUTE,
+    SITE_ROUTE,
+    SITE_LIST_ROUTE
   },
   AUTH: {
     LOGIN_ROUTE,
@@ -99,7 +128,9 @@ module.exports = {
     CREATIVE_EXPANDABLE_DIRECTION_ROUTE,
     CREATIVE_VIDEO_ROUTE,
     CREATIVE_APIS_ROUTE,
-    CREATIVE_ASSOCIATE_ROUTE
+    CREATIVE_ASSOCIATE_ROUTE,
+    CREATIVE_ADDONS_ROUTE,
+    CREATIVE_ASSETS_ROUTE
   },
   CURRENCY: {
     CURRENCY_ROUTE
@@ -113,11 +144,16 @@ module.exports = {
   DOMAIN: {
     DOMAIN_LIST_ROUTE
   },
+  EXCHANGE: {
+    AUCTION_TYPE_ROUTE,
+    INVENTORY_SOURCE_ROUTE
+  },
   GEO: {
     COUNTRY_ROUTE,
     REGION_ROUTE,
     CITY_ROUTE,
-    LAT_LONG_ROUTE
+    LAT_LONG_ROUTE,
+    LOCATION_TYPE_ROUTE
   },
   INVENTORY: {
     AD_POSITION_ROUTE

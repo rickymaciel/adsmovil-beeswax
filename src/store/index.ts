@@ -21,7 +21,8 @@ import { Credential } from '@/interfaces/credential'
 import { Advertiser, AdvertiserDataCreate, AdvertiserDataUpdate, AdvertiserList, Category, ResultPaginate } from '@/interfaces/advertiser'
 import { MessageTypes, Notification } from '@/interfaces/proccess'
 import { isEmpty, isNull, isUndefined } from 'lodash'
-import { CustomList, CustomListDataCreate, CustomListFilters, CustomListOptions, CustomListPaginated, CustomListResultPaginate, List, Type } from '@/interfaces/custom_list'
+import { CustomList, CustomListDataCreate, CustomListFilters, CustomListOptions, CustomListPaginated, List, Type } from '@/interfaces/custom_list'
+import { ResultPaginate as UserResultPaginate, UserDataCreate, User} from '@/interfaces/user'
 
 import { getCreativeTypeByTemplateId, resolveList, resolveListParams, resolveTemplates } from '../utils/resolveObjectArray'
 import { Campaign, CampaignDataCreate, CampaingList } from '@/interfaces/campaign'
@@ -31,6 +32,7 @@ import { ListItemFilters, ListItemOptions } from '@/interfaces/list_items'
 import { AxiosError } from 'axios'
 import { LineItem, LineItemDataCreate, LineItemFilters, LineItemOptions } from '@/interfaces/line_item';
 import lineItemTypeService from '@/services/line-item-type-service';
+import { UserDataUpdate } from '../interfaces/user';
 import { TagCheck } from '@/interfaces/creative';
 
 /**
@@ -155,15 +157,71 @@ export default new Vuex.Store({
                 },
             },
             actions: {
+                async init({}, initData: any) {
+                    try {
+                        const response = await AuthService.init(initData)
+                        CreateNotification(
+                            this.dispatch,
+                            {
+                                type: MessageTypes.SUCCESS,
+                                title: i18n.t('title-success'),
+                                message: i18n.t('init.messages.success'),
+                                btn_text: 'Go to Login',
+                                to: "Login"
+                            } as Notification
+                        );
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+                async forgotPassword({}, {email}) {
+                    try {
+                        const response = await AuthService.forgotPassword(email)
+                        CreateNotification(
+                            this.dispatch,
+                            {
+                                type: MessageTypes.SUCCESS,
+                                title: i18n.t('title-success'),
+                                message: i18n.t("forgotPassword.messages.success"),
+                                btn_text: i18n.t("continue"),
+                            } as Notification
+                        );
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+                async resetPassword({}, {email, password, password_confirmation, token}) {
+                    try{
+                        const response = await AuthService.resetPassword({
+                            email,
+                            password,
+                            password_confirmation,
+                            token
+                        });
+                        CreateNotification(this.dispatch,{
+                            type: MessageTypes.SUCCESS,
+                            title: i18n.t('title-success'),
+                            message: i18n.t('passwordReset.messages.success'),
+                            btn_text: i18n.t("continue"),
+                        } as Notification);   
+                    }
+                    catch(error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
                 async logIn({ commit }, credential: Credential) {
                     try {
                         const response = await AuthService.login(credential)
                         commit('SET_TOKEN', response.token)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        console.error("@@Actions:logIn", { error: error });
                         commit('SET_TOKEN')
-                        CatcherError(this.dispatch, error, { to: "Root" });
+                        CatcherError(this.dispatch, error);
                         return await Promise.reject(error)
                     }
                 },
@@ -175,7 +233,7 @@ export default new Vuex.Store({
                         window.location.href = '/'
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error, { to: "Root" });
+                        CatcherError(this.dispatch, error);
                         return await Promise.reject(error)
                     }
                 }
@@ -876,33 +934,117 @@ export default new Vuex.Store({
                 },
             }
         },
-        users: {
+        user: {
             namespaced: true,
             state: () => ({
-                custom_list_result_paginate: {} as CustomListResultPaginate,
+                result_paginate: {} as UserResultPaginate,
                 users: [],
+                user: {} as User,
+                roles: []
             }),
             mutations: {
-                SET_CUSTOM_LIST_RESULT_PAGINATED(state, _custom_list_result_paginate: CustomListResultPaginate) {
-                    state.custom_list_result_paginate = _custom_list_result_paginate
+                SET_RESULT_PAGINATED(state, _result_paginate: UserResultPaginate) {
+                    state.result_paginate = _result_paginate
                 },
                 SET_USERS(state, _users = []) {
                     state.users = _users;
                 },
+                SET_USER(state, _user: User = {} as User) {
+                    state.user = _user
+                },
+                SET_ROLES(state, _roles = []) {
+                    state.roles = _roles;
+                }
             },
             getters: {
             },
             actions: {
+
+                async paginated({ commit }, params) {
+                    try {
+                        const response = await UserService.paginated(params)
+                        commit('SET_RESULT_PAGINATED', response)
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+
                 async getUsers({ commit }, params) {
                     try {
                         const response = await UserService.list(params.filters, params.options);
                         commit('SET_USERS', resolveList(response))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error, { to: "AdvertisersIndex" });
+                        CatcherError(this.dispatch, error);
                         return await Promise.reject(error)
                     }
                 },
+
+                async listRoles({ commit }) {
+                    try {
+                        const response = await UserService.listRoles();
+                        commit('SET_ROLES', response)
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+
+                async create({}, user: UserDataCreate) {
+                    try {
+                        const response = await UserService.create(user);
+                        CreateNotification(
+                            this.dispatch,
+                            {
+                                type: MessageTypes.SUCCESS,
+                                title: i18n.t('title-success'),
+                                message: i18n.t('success'),
+                                btn_text: i18n.t('continue'),
+                                to: "UsersIndex"
+                            } as Notification
+                        );
+                        return Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return Promise.reject(error)
+                    }
+                },
+
+                async update({ commit }, params: { user: UserDataUpdate, id: number }) {
+                    try {
+                        const response = await UserService.update(params.user, params.id);
+                        commit('SET_USER', response);
+                        CreateNotification(
+                            this.dispatch,
+                            {
+                                type: MessageTypes.SUCCESS,
+                                title: i18n.t('title-success'),
+                                message: i18n.t('success'),
+                                btn_text: i18n.t('continue'),
+                                to: "UsersIndex"
+                            } as Notification
+                        );
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+
+                async show({ commit }, id: number) {
+                    try {
+                        const response = await UserService.show(id);
+                        commit('SET_USER', response);
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+
             }
         },
         campaign: {

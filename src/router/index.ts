@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
 import store from '@/store/index'
+import i18n from '@/plugins/i18n'
 
 Vue.use(VueRouter)
 
@@ -40,11 +41,43 @@ const routes: Array<RouteConfig> = [
                 path: 'login',
                 name: 'Login',
                 component: () => import('@/views/Login/Login.vue')
+            }
+        ]
+    },
+
+    /** 
+     * Init
+     */
+    {
+        path: '/',
+        name: 'InitRoot',
+        component: () => import('@/views/Layouts/Auth.vue'),
+        children: [
+            {
+                path: 'init/:token',
+                name: 'Init',
+                component: () => import('@/views/Init/index.vue')
+            }
+        ]
+    },
+
+    /** 
+     * ForgotPassword
+     */
+    {
+        path: '/',
+        name: 'Password',
+        component: () => import('@/views/Layouts/Auth.vue'),
+        children: [
+            {
+                path: 'password/forgot',
+                name: 'ForgotPassword',                
+                component: () => import('@/views/ForgotPassword/forgot.vue'),
             },
             {
-                path: 'forgot-password',
-                name: 'ForgotPassword',
-                component: () => import('@/views/ForgotPassword/index.vue')
+                path: 'password/reset/:token',
+                name: 'ResetPassword',
+                component: () => import('@/views/ForgotPassword/reset.vue'),
             }
         ]
     },
@@ -118,6 +151,44 @@ const routes: Array<RouteConfig> = [
                         meta: {
                             requiresAuth: true,
                             breadcrumb: "Edit Advertiser"
+                        },
+                    }
+                ]
+            },
+            {
+                path: 'users',
+                name: 'Users',
+                component: () => import('@/views/Admin/Users/index.vue'),
+                meta: {
+                    requiresAuth: true,
+                    breadcrumb: i18n.t("users.breadcrumb")
+                },
+                children: [
+                    {
+                        path: 'index',
+                        name: 'UsersIndex',
+                        component: () => import('@/views/Admin/Users/List/index.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: i18n.t("users.list.title")
+                        },
+                    },
+                    {
+                        path: 'create',
+                        name: 'UserCreate',
+                        component: () => import('@/views/Admin/Users/Create/create.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: i18n.t("users.create.title")
+                        },
+                    },
+                    {
+                        path: 'edit/:id',
+                        name: 'UserEdit',
+                        component: () => import('@/views/Admin/Users/Edit/edit.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: i18n.t("users.edit.title")
                         },
                     }
                 ]

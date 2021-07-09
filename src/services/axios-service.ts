@@ -6,7 +6,7 @@ import axios, { AxiosError, AxiosResponse } from 'axios'
 import { HasProviderToken, ProviderToken } from './auth-service'
 import { ValidateToken } from '@/services/jwt-service'
 
-axios.defaults.baseURL = 'https://dsp-api-testing.adsmovil.com'
+axios.defaults.baseURL = 'http://dsp-api.localhost.com'
 
 axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*'
 axios.defaults.headers.common['Access-Control-Allow-Headers'] = "Origin, Content-Type, X-Auth-Token"
@@ -50,14 +50,7 @@ axios.interceptors.response.use(function (response) {
     }
 
     return response
-}, function (error) {
-    console.error('AxiosService.interceptors', {
-        success: false,
-        message: GetMessage(error),
-        errors: GetErrors(error)
-    })
-    return Promise.reject(error)
-})
+}, undefined)
 
 /**
  * POST

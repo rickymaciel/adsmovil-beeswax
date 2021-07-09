@@ -17,12 +17,12 @@
 						v-model="filter"
 						:ref="field_name"
 					>
-						<v-radio color="secondary" :value="true">
+						<v-radio color="secondary" :value="1">
 							<template v-slot:label>
 								<div>Active</div>
 							</template>
 						</v-radio>
-						<v-radio color="secondary" :value="false">
+						<v-radio color="secondary" :value="0">
 							<template v-slot:label>
 								<div>Inactive</div>
 							</template>
@@ -112,13 +112,14 @@
 		computed: {},
 		methods: {
 			selectedOption: debounce(function () {
-				this.$emit("selected-option", {
+				const options = {
 					option: {
 						sort: (this as any).field_name,
 						order: (this as any).option.order,
 					} as SortingOption,
 					filter: this.filter,
-				});
+				};
+				this.$emit("selected-option", options);
 			}, 500),
 		},
 	});

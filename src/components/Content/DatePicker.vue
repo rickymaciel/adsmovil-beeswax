@@ -6,7 +6,6 @@
 				v-bind="textFieldProps"
 				:disabled="disabled"
 				:loading="loading"
-				:label="label"
 				:value="formattedDatetime"
 				:hint="dateTimeFormat"
 				v-on="on"
@@ -23,6 +22,12 @@
 						></v-progress-linear>
 					</slot>
 				</template>
+				<template #label>
+				{{ label }}
+				<span class="red--text" v-if="required">
+					<strong>*</strong>
+				</span>
+			</template>
 			</v-text-field>
 		</template>
 
@@ -247,6 +252,10 @@
 				default: function () {
 					return [];
 				},
+			},
+			required: {
+				type: Boolean,
+				default: false,
 			},
 		},
 		data() {

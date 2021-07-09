@@ -106,14 +106,17 @@
 			</template>
 			
 			<template v-slot:[`item.latitude`]="{ item }">
-				<v-text-field
+				<CardTextField
 					v-model="item.latitude"
 					:rules="getRules.lat"
+					hint="Latitude"
+					reference="latitude"
 					placeholder="Latitude"
-					class="label-fixed"
+					label="Latitude"
+					:required="true"
 					:disabled="item.id > 0"
 					:class="{ disabled: item.id > 0 }"
-				></v-text-field>
+				></CardTextField>
 			</template>
 			
 			<!-- LONGITUDE -->
@@ -158,14 +161,17 @@
 			</template>
 			
 			<template v-slot:[`item.longitude`]="{ item }">
-				<v-text-field
+				<CardTextField
 					v-model="item.longitude"
 					:rules="getRules.long"
+					hint="Longitude"
+					reference="longitude"
 					placeholder="Longitude"
-					class="label-fixed"
+					label="Longitude"
+					:required="true"
 					:disabled="item.id > 0"
 					:class="{ disabled: item.id > 0 }"
-				></v-text-field>
+				></CardTextField>
 			</template>
 
 			<!-- RADIUS -->
@@ -210,14 +216,17 @@
 			</template>
 
 			<template v-slot:[`item.radius`]="{ item }">
-				<v-text-field
+				<CardTextField
 					v-model="item.radius"
 					:rules="getRules.radius_km"
+					hint="Radius"
+					reference="radius"
 					placeholder="Radius"
-					class="label-fixed"
+					label="Radius"
+					:required="true"
 					:disabled="item.id > 0"
 					:class="{ disabled: item.id > 0 }"
-				></v-text-field>
+				></CardTextField>
 			</template>
 
 			<!-- VALUE -->
@@ -262,13 +271,15 @@
 			</template>
 
 			<template v-slot:[`item.value`]="{ item }">
-				<v-text-field
+				<CardTextField
 					v-model="item.value"
 					:rules="getRules.value"
+					hint="Value"
+					reference="value"
 					placeholder="Value"
-					class="label-fixed"
+					label="Value"
 					@change="hasChanged(item)"
-				></v-text-field>
+				></CardTextField>
 			</template>
 
 			<!-- LIST ITEM NAME -->
@@ -313,13 +324,16 @@
 			</template>
 
 			<template v-slot:[`item.name`]="{ item }">
-				<v-text-field
+				<CardTextField
 					v-model="item.name"
 					:rules="getRules.required"
+					hint="Name"
+					reference="name"
 					placeholder="Name"
-					class="label-fixed"
+					label="Name"
+					:required="true"
 					@change="hasChanged(item)"
-				></v-text-field>
+				></CardTextField>
 			</template>
 
 			<template v-slot:[`item.actions`]="{ item, index }">
@@ -407,6 +421,7 @@
 	import Vue from "vue";
 	import { isEmpty, isNull, isUndefined, isNaN } from "lodash";
 	import { ListItemDataCreate } from "@/interfaces/list_items";
+	import CardTextField from "../../../../components/Content/CardTextField.vue";
 
 	export default Vue.extend({
 		name: "TableListModelTwo",
@@ -428,7 +443,9 @@
 				default: {},
 			}
 		},
-		components: {},
+		components: {
+			CardTextField,
+		},
 		data: () => ({
 			records: Array,
 			entity: {} as ListItemDataCreate,
@@ -466,9 +483,6 @@
 
 		mounted() {
 			this.records = this.initialicerecords(this.items);
-			/*this.setLoading(true);
-			this.records await this.dispatchEntities(this?.customList?.id);
-			this.setLoading(false);*/
 		},
 
 		computed: {

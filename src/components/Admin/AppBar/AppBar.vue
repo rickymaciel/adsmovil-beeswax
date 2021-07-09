@@ -21,11 +21,12 @@
 
 					<v-spacer></v-spacer>
 
-					<v-btn icon medium>
+					<v-btn v-if="false" icon medium>
 						<img src="@/assets/icons/tools_icon.svg" alt="Tools" />
 					</v-btn>
 
 					<v-badge
+						v-if="false"
 						dot
 						overlap
 						color="red"

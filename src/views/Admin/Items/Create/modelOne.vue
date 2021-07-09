@@ -10,10 +10,6 @@
 <script lang="ts">
 	import TableListModelOne from "./../List/TableListModelOne.vue";
 	import Vue from "vue";
-	/*import {
-				List,
-				ResultPaginate,
-			} from "../../../../interfaces/list";*/
 	import { isNull, isUndefined } from "lodash";
 
 	export interface ListItemModelOne {

@@ -1,8 +1,10 @@
-import { UserFilters, UserOptions, UserPaginated } from '@/interfaces/user'
-import { AxiosGet, GetData, GetErrors, GetMessage } from '@/services/axios-service'
+import { UserDataCreate, UserFilters, UserOptions, UserPaginated } from '@/interfaces/user'
+import { AxiosGet, AxiosPatch, AxiosPost, GetData, GetErrors, GetMessage } from '@/services/axios-service'
 import { isEmpty, isUndefined } from 'lodash'
+import { UserDataUpdate } from '../interfaces/user';
 
 export const USERS_ROUTE = '/api/users'
+export const ROLES_ROUTE = '/api/list/roles'
 
 class UserService {
 
@@ -57,16 +59,106 @@ class UserService {
             });
         }
     }
+
+    async paginated(params: { paginated?: UserPaginated, filters?: UserFilters, options?: UserOptions }) {
+        try {
+            let filter = ''
+            let option = ''
+
+            if (!isUndefined(params.filters)) {
+                filter = getFilters(params.filters)
+            }
+
+            if (!isUndefined(params.options)) {
+                option += getOptions(params.options, 'paginated', params.paginated)
+            }
+
+            const url = getURL(filter, option)
+            const response = await AxiosGet(USERS_ROUTE + url)
+            return Promise.resolve(GetData(response));
+
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    } 
+
+    async listRoles() {
+        try {
+            const response = await AxiosGet(ROLES_ROUTE);
+            return Promise.resolve(GetData(response));
+        }
+        catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+    
+    async create(user: UserDataCreate) {
+        try {
+            const response = await AxiosPost(USERS_ROUTE, user);
+            return Promise.resolve(GetData(response));
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+
+    async show(id: number) {
+        try {
+            const response = await AxiosGet(`${USERS_ROUTE}/${id}`);
+            return Promise.resolve(GetData(response));
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+
+    async update(user: UserDataUpdate, id: number) {
+        try {
+            const response = await AxiosPatch(`${USERS_ROUTE}/${id}`, user);
+            return Promise.resolve(GetData(response));
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+
 }
 
 function getFilters(filters: UserFilters): string {
     let filter = ''
 
-    const first_name = (isUndefined(filters.first_name)) ? '' : filters.first_name
+    const id = (isUndefined(filters.id)) ? '' : filters.id
+    const name = (isUndefined(filters.name)) ? '' : filters.name
     const last_name = (isUndefined(filters.last_name)) ? '' : filters.last_name
     const email = (isUndefined(filters.email)) ? '' : filters.email
+    const role_description = (isUndefined(filters.role_description)) ? '' : filters.role_description
+    
+    const active = (typeof filters.active === "undefined") ? '' : filters.active
 
-    filter += 'filters[name]=' + first_name + '&filters[last_name]=' + last_name + '&filters[email]=' + email
+    filter += 'filters[users.id]=' + id +
+              '&filters[users.name]=' + name +
+              '&filters[users.name]=' + name + 
+              '&filters[users.last_name]=' + last_name + 
+              '&filters[users.email]=' + email + 
+              '&filters[roles.description]=' + role_description + 
+              '&filters[users_roles.active]=' + active; 
 
     return filter
 }

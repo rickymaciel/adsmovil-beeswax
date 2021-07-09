@@ -12,13 +12,17 @@ import { account, forgot, initialize, login, logout, permissions, profile, reset
 //import { create } from '@/api/creatives/banner/MraidTagApi'
 //import { create } from '@/api/creatives/banner/Html5Api'
 //import { create } from '@/api/creatives/video/VastInlineApi'
-import { create } from '@/api/creatives/video/VastWrapper'
+//import { create } from '@/api/creatives/video/VastWrapper'
+//import { all, paginated, list } from '@/api/creatives/CreativeApi'
+//import { all, paginated, list } from '@/api/creatives/AddonApi'
+//import { all, paginated, list } from '@/api/creatives/AssetApi'
+//import { create, deleted } from '@/api/creatives/AssociateApi'
 import { UserInit } from '@/interfaces/user'
 //import { check } from './creatives/TagApi'
 //import { adPositions } from '@/api/inventory/InventoryApi'
 //import { domainList } from '@/api/domain/DomainApi'
 //import { creativeSize } from '@/api/ad_size/AdSizeApi'
-//import { countries, lat_long, regions } from '@/api/geo/GeoApi'
+//import { countries, lat_long, locationTypes, regions } from '@/api/geo/GeoApi'
 //import { CampaingDataCreate, CampaingDataUpdate } from '@/interfaces/campaing'
 // import { FrecuencyCaps, FrecuencyCapsDataCreate } from '@/interfaces/frecuency_caps'
 // import { LineItemDataCreate, LineItemDataUpdate } from '@/interfaces/line_item'
@@ -43,7 +47,9 @@ import { UserInit } from '@/interfaces/user'
 //import { list } from '@/api/creatives/RuleApi'
 //import { list } from '@/api/creatives/MimeApi'
 //import { types, direction } from '@/api/creatives/ExpandableApi'
-import { inBanner, apis } from '@/api/creatives/VideoApi'
+//import { inBanner, apis } from '@/api/creatives/VideoApi'
+// import { appNames, appSites, sites } from '@/api/app_site/AppSiteApi'
+import { inventorySources, auctionTypes } from '@/api/exchange/ExchangeApi'
 
 /* -------- BEGIN AUTH -------- */
 const test_login = {
@@ -1145,7 +1151,8 @@ const test_change_status_campaing = {
     }).then(async value => {
       // const data_geo = await countries(value)
       // const data_geo = await regions(value)
-      const data_geo = await lat_long(value)
+      // const data_geo = await lat_long(value)
+      const data_geo = await locationTypes(value)
 
       console.log('GEO', data_geo)
 
@@ -1157,6 +1164,49 @@ const test_change_status_campaing = {
   }
 }*/
 /* -------- END GEO -------- */
+
+/* -------- BEGIN APP SITE -------- */
+/*const test_app_site = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      // const data_app_site = await appSites('app_name', value)
+      // const data_app_site = await sites('test', 'site_name', value)
+      const data_app_site = await appNames('test', 'app_name', value)
+
+      console.log('APP SITE', data_app_site)
+
+      return data_app_site
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}*/
+/* -------- END APP SITE -------- */
+
+/* -------- BEGIN EXCHANGE -------- */
+const test_exchange = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_exchange = await auctionTypes(value)
+      // const data_exchange = await inventorySources(value)
+
+      console.log('EXCHANGE', data_exchange)
+
+      return data_exchange
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+/* -------- END EXCHANGE -------- */
 
 /* -------- BEGIN AD SIZE -------- */
 /*const test_ad_size = {
@@ -1967,7 +2017,7 @@ const test_create_creative_vast_inline = {
       return null
     })
   }
-}*/
+}
 
 const test_create_creative_vast_wrapper = {
   data: function () {
@@ -2044,8 +2094,113 @@ const test_create_creative_vast_wrapper = {
       return null
     })
   }
+}*/
+
+/*const test_get_creatives = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      // const data_creatives = await all(value,{}, { sort: 'name', order: 'asc' })
+      const data_creatives = await paginated(value, { page: 1, limit: 15 }, { name: 'polaco' }, { sort: 'name', order: 'asc' })
+      // const data_creatives = await list(value, {}, { sort: 'name', order: 'asc' })
+      // const data_creatives = await show(59, value)
+
+      console.log('CRATIVES', data_creatives)
+
+      return data_creatives
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
 }
+
+const test_get_creatives_addons = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      // const data_creatives = await all(value,{}, { sort: 'name', order: 'asc' })
+      // const data_creatives = await paginated(value, { page: 1, limit: 15 }, { name: 'polaco' }, { sort: 'name', order: 'asc' })
+      const data_creatives = await list(value, {}, { sort: 'name', order: 'asc' })
+      // const data_creatives = await show(59, value)
+
+      console.log('CRATIVES ADDONS', data_creatives)
+
+      return data_creatives
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_create_association = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_association = await create({
+        creative_id: 24,
+        line_item_id: 24,
+        start_date: '2021-06-30 00:00:00',
+        end_date: '2021-07-02 23:59:59',
+        active: true
+      }, value)
+
+      console.log('CREATE ASSOCIATION', data_association)
+
+      return data_association
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_delete_association = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const eliminar = await deleted(45, value)
+
+      console.log('DELETE ASSOCIATION', eliminar)
+
+      return eliminar
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_get_creatives_assets = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      // const data_creatives = await all(value,{}, { sort: 'name', order: 'asc' })
+      // const data_creatives = await paginated(value, { page: 1, limit: 15 }, { name: 'banner' }, { sort: 'name', order: 'asc' })
+      const data_creatives = await list(value, {}, { sort: 'name', order: 'asc' })
+      // const data_creatives = await show(59, value)
+
+      console.log('CRATIVES ASSETS', data_creatives)
+
+      return data_creatives
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}*/
 
 /* -------- END CREATIVES -------- */
 
-export default test_create_creative_vast_wrapper
+export default test_exchange

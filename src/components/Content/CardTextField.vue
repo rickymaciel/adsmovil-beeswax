@@ -14,17 +14,20 @@
 			:ref="reference"
 			:placeholder="placeholder"
 			:label="label"
-			:class="customClass"
+			:class="getCustomClass"
 			:persistent-hint="persistent_hint"
 			:append-icon="icon_add ? 'mdi-plus-circle' : ''"
 			:clearable="clearable"
 			:error="!isEmpty(messages)"
 			:messages="messages"
 			@click:append="clickAppend"
+			@change="changeEvent"
 			:validate-on-blur="false"
 			:loading="isLoading"
 			:type="type"
 			:step="type === 'time' ? 2 : 1"
+			:disabled="disabled"
+			:value="getValue"
 		>
 			<!-- <template v-slot:prepend-inner>
 				<v-fade-transition leave-absolute>
@@ -155,6 +158,18 @@
 				type: String,
 				default: "text",
 			},
+			disabled: {
+				type: Boolean,
+				default: false,
+			},
+			valueNumber: {
+				type: Number,
+				default: undefined,
+			},
+			valueText: {
+				type: String,
+				default: undefined,
+			}
 		},
 		data: function () {
 			return {};
@@ -172,6 +187,18 @@
 					return this.model_data;
 				},
 			},
+			getCustomClass() {
+				if( this.disabled ){
+					return this.customClass + " disabled";
+				}else{
+					return this.customClass;
+				}
+			},
+			getValue(){
+				if( this.valueNumber ) return this.valueNumber;
+				if( this.valueText ) return this.valueText;
+				return undefined;
+			}
 		},
 		methods: {
 			isEmpty(data: any) {
@@ -186,6 +213,9 @@
 					modelData: this.modelData,
 				});
 				this.$emit("click-append", this.modelData);
+			},
+			changeEvent(e: any) {
+				this.$emit("change", e);
 			},
 		},
 		watch: {},

@@ -106,14 +106,17 @@
 			</template>
 			
 			<template v-slot:[`item.list_item`]="{ item }">
-				<v-text-field
+				<CardTextField
 					v-model="item.list_item"
 					:rules="getRules.required"
+					hint="List Item"
+					reference="list_item"
 					placeholder="List Item"
-					class="label-fixed"
+					label="List Item"
+					:required="true"
 					:disabled="item.id > 0"
 					:class="{ disabled: item.id > 0 }"
-				></v-text-field>
+				></CardTextField>
 			</template>
 
 			<!-- VALUE -->
@@ -158,13 +161,16 @@
 			</template>
 
 			<template v-slot:[`item.value`]="{ item }">
-				<v-text-field
+				<CardTextField
 					v-model="item.value"
 					:rules="getRules.value"
+					hint="Value"
+					reference="value"
 					placeholder="Value"
-					class="label-fixed"
+					label="Value"
+					:required="true"
 					@change="hasChanged(item)"
-				></v-text-field>
+				></CardTextField>
 			</template>
 
 			<!-- LIST ITEM NAME -->
@@ -209,12 +215,16 @@
 			</template>
 
 			<template v-slot:[`item.name`]="{ item }">
-				<v-text-field
+				<CardTextField
 					v-model="item.name"
+					:rules="getRules.required"
+					hint="Name"
+					reference="name"
 					placeholder="Name"
-					class="label-fixed"
+					label="Name"
+					:required="true"
 					@change="hasChanged(item)"
-				></v-text-field>
+				></CardTextField>
 			</template>
 
 			<template v-slot:[`item.actions`]="{ item, index }">
@@ -305,6 +315,7 @@
 	import Vue from "vue";
 	import { isEmpty, isNull, isUndefined, isNaN } from "lodash";
 	import { ListItemDataCreate } from "@/interfaces/list_items";
+	import CardTextField from "../../../../components/Content/CardTextField.vue";
 
 	export default Vue.extend({
 		name: "TableListModelOne",
@@ -326,7 +337,9 @@
 				default: {},
 			}
 		},
-		components: {},
+		components: {
+			CardTextField,
+		},
 		data: () => ({
 			records: Array,
 			entity: {} as ListItemDataCreate,
@@ -356,9 +369,6 @@
 
 		async mounted() {
 			this.records = this.initialicerecords(this.items);
-			/*this.setLoading(true);
-			this.records await this.dispatchEntities(this?.customList?.id);
-			this.setLoading(false);*/
 		},
 
 		computed: {
@@ -370,12 +380,11 @@
 				return {
 					required: [(v: any) => Boolean(v) || this.$t("fieldRequired")],
 					number: [(v: number) => !isNaN(v) || this.$t("fieldRequired")],
-					/*value: [
-						(v: any) => Boolean(v) || this.$t("fieldRequired"),
+					value: [
+						(v: number) => !isNaN(v) || this.$t("must-be-numeric"),
 						(v: number) => v >= 0 || this.$t("min", { min: 0 }),
 						(v: number) => v <= 100 || this.$t("max", { max: 100 }),
 					],
-					name: [(v: any) => Boolean(v) || this.$t("fieldRequired")],*/
 				};
 			},
 		},
@@ -388,51 +397,39 @@
 					{ root: true }
 				);
 			},
+
 			redirectTo() {
 				this.setNotification({ title: "", message: "", type: "" });
 				this.$router.push({ name: "CustomList" });
 			},
+
 			initialicerecords(oldRecords) {
-				/*const newRecords = oldRecords.map((r) => {
-					return r;
-				});*/
 				return oldRecords;
 			},
+
 			validateEntity(entity: any): boolean {
 
 				if( isUndefined(entity) || isNull(entity) ){
 					return false;
-					//entity = {errors: ["Item cannot be empty."]};
-				}//else{entity.errors = new Array;}
+				}
 
 				if( isUndefined(entity.list_item) || isNull(entity.list_item)  || entity.list_item == "" ){
 					return false;
-					//entity.errors?.push("The List Item field is required.");
 				}
 
 				if( !isUndefined(entity.value) ){
 					let tempotalValue = parseInt(entity.value);
 					if( isNaN(tempotalValue) ){
 						return false;
-						//entity.errors?.push(this.$t("must-be-numeric"));
 					}else if( tempotalValue < 0 ){
 						return false;
-						//entity.errors?.push(this.$t("min", { min: 0 }));
 					}else if( tempotalValue > 100 ){
 						return false;
-						//entity.errors?.push(this.$t("max", { max: 100 }));
 					}
 				}
-
-				/*if( isUndefined(entity.name) || isNull(entity.name) || entity.name == "" ){
-					entity.errors?.push("The Name field is required.");
-				}*/
-
-				/*if( entity && entity.errors ){
-					return !( entity.errors.length > 0);
-				}else{return false;}*/
 				return true;
 			},
+
 			validate(entities: any[]): boolean {
 				if( isUndefined(entities) || isNull(entities) || isEmpty(entities) ){return false;}
 				let valid = true;
@@ -444,6 +441,7 @@
 				}
 				return valid;
 			},
+
 			async handleSubmit() {
 				try {
 					if ( !(await this.validate(this.records)) ) return;
@@ -464,12 +462,15 @@
 					this.setLoading(false);
 				}
 			},
+
 			setLoading(_loading: Boolean) {
 				this.$store.state.proccess.loading = _loading;
 			},
+
 			handleCancel() {
 				this.$router.push({ name: "CustomListIndex" });
 			},
+
 			handleAddItem() {
 				let item: any;
 				item = {
@@ -486,18 +487,11 @@
 				let result = this.validate(this.records);
 				if( result || this.records.length == 0 ){this.records.push(item);}
 			},
+
 			async handleDelete(index) {
-				/*let result = await this.delete(this.records[index].id);
-				if( result && result.success ){
-					this.records.splice(index, 1);
-				}*/
 				this.records.splice(index, 1);
 			},
-			/*async dispatchEntities(id: number) {
-				return this.$store.dispatch("listItem/getAll", id, {
-					root: true,
-				});
-			},*/
+
 			async handleAction(item: any) {
 				this.entity = {
 					id: item?.id,
@@ -521,6 +515,7 @@
 				}
 				return result;
 			},
+
 			async delete(id: number) {				
 				if( id && id > 0 ){
 					return await this.$store.dispatch("listItem/delete", id, {
@@ -529,6 +524,7 @@
 				}
 				return {success: true};
 			},
+
 			hasChanged(entity: any){
 				entity.edited = true;
 				return entity;

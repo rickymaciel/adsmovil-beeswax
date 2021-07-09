@@ -77,11 +77,17 @@
 	import Alertize from "../../../../components/Alertize.vue";
 	import CustomListInput from "../customListInput.vue";
 	import { CustomListDataCreate } from "../../../../interfaces/custom_list";
+	import {
+		isRequired,
+	} from "../../../../services/rule-services";
 
 	export default Vue.extend({
 		name: "ListCreate",
 		props: {},
-		components: { Alertize, CustomListInput },
+		components: {
+			Alertize,
+			CustomListInput,
+		},
 		data: () => ({
 			title: "Create",
 			message: "",
@@ -102,6 +108,11 @@
 					Object.keys(this.type_selected).length > 0 &&
 					this.type_selected.key === "lat_long"
 				);
+			},
+			getRules() {
+				return {
+					isRequired,
+				};
 			},
 		},
 		methods: {

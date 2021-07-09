@@ -13,160 +13,84 @@
 					<v-row no-gutters>
 						<!-- Advertiser Name -->
 						<v-col cols="12" sm="12" md="6" lg="3">
-							<v-card
-								elevation="0"
-								class="pa-2"
-								outlined
-								tile
-								color="rgb(0, 0, 0, 0.0)"
-							>
-								<v-text-field
-									v-model="name"
-									:rules="[
-										getRules.isRequired,
-										getRules.isMinLength,
-										getRules.isMaxLength,
-									]"
-									hint="Advertiser Name"
-									ref="name"
-									placeholder="Advertiser Name"
-									label="Advertiser Name*"
-									class="label-fixed"
-									counter="255"
-								></v-text-field>
-							</v-card>
+							<CardTextField
+								v-model="name"
+								:rules="[
+									getRules.isRequired,
+									getRules.isMinLength,
+									getRules.isMaxLength,
+								]"
+								hint="Advertiser Name"
+								reference="name"
+								placeholder="Advertiser Name"
+								label="Advertiser Name"
+								:required="true"
+							></CardTextField>
 						</v-col>
 
 						<!-- Advertiser Category -->
 						<v-col cols="12" sm="12" md="6" lg="3">
-							<v-card
-								elevation="0"
-								class="pa-2"
-								outlined
-								tile
-								color="rgb(0, 0, 0, 0.0)"
-							>
-								<v-autocomplete
-									class="label-fixed"
-									v-model="category_id"
-									:rules="[
-										getRules.isRequired,
-										getRules.isNumber,
-									]"
-									:hint="`Advertiser Category`"
-									:items="getCategories"
-									ref="category_id"
-									item-text="name"
-									item-value="id"
-									label="Advertiser Category*"
-									placeholder="Advertiser Category"
-								></v-autocomplete>
-							</v-card>
+							<CardAutocomplete
+								v-model="category_id"
+								:rules="[
+									getRules.isRequired,
+									getRules.isNumber,
+								]"
+								:items="getCategories"
+								item_text="name"
+								item_value="id"
+								hint="Advertiser Category"
+								reference="category_id"
+								placeholder="Advertiser Category"
+								label="Advertiser Category"
+								:chips="true"
+								:deletable_chips="true"
+								:multiple="false"
+								:small_chips="true"
+								:dense="false"
+								:required="true"
+							></CardAutocomplete>
 						</v-col>
 					</v-row>
 
 					<v-row no-gutters>
 						<!-- Advertiser Domain -->
 						<v-col cols="12" sm="12" md="6" lg="3">
-							<v-card
-								elevation="0"
-								class="pa-2"
-								outlined
-								tile
-								color="rgb(0, 0, 0, 0.0)"
-							>
-								<v-tooltip
-									color="#3A4972"
-									max-width="221px"
-									v-model="show_tooltip_domain"
-									right
-								>
-									<!-- getRules.isDomain, -->
-									<template v-slot:activator="{}">
-										<v-text-field
-											v-model="domain"
-											ref="domain"
-											:rules="[
-												getRules.isRequired,
-												getRules.isDomain,
-											]"
-											hint="Advertiser Domain"
-											placeholder="Advertiser Domain"
-											label="Advertiser Domain*"
-											class="label-fixed"
-											append-outer-icon="mdi-help-circle-outline"
-											@click:append-outer="
-												toggleTooltipDomain()
-											"
-										></v-text-field>
-									</template>
-									<span>
-										The advertiser’s primary domain. This is
-										recuerde by many exchanges
-									</span>
-								</v-tooltip>
-							</v-card>
+							<CardTextField
+								v-model="domain"
+								:rules="[
+									getRules.isRequired,
+									getRules.isDomain,
+								]"
+								hint="Advertiser Domain"
+								reference="domain"
+								placeholder="Advertiser Domain"
+								label="Advertiser Domain"
+								:required="true"
+							></CardTextField>
 						</v-col>
 
 						<!-- Advertiser App Bundle -->
 						<v-col cols="12" sm="12" md="6" lg="3">
-							<v-card
-								elevation="0"
-								class="pa-2"
-								outlined
-								tile
-								color="rgb(0, 0, 0, 0.0)"
-							>
-								<v-tooltip
-									color="#3A4972"
-									max-width="221px"
-									v-model="show_tooltip_app_bundle"
-									right
-								>
-									<template v-slot:activator="{}">
-										<v-text-field
-											v-model="app_bundle"
-											:rules="[getRules.isRequired]"
-											ref="app_bundle"
-											hint="Advertiser App Bundle"
-											placeholder="Advertiser App Bundle"
-											label="Advertiser App Bundle*"
-											class="label-fixed"
-											counter="255"
-											append-outer-icon="mdi-help-circle-outline"
-											@click:append-outer="
-												toggleTooltipAppBundle()
-											"
-										></v-text-field>
-									</template>
-									<span>
-										The advertiser’s primary domain. This is
-										recuerde by many exchanges
-									</span>
-								</v-tooltip>
-							</v-card>
+							<CardTextField
+								v-model="app_bundle"
+								:rules="[getRules.isRequired]"
+								hint="Advertiser App Bundle"
+								reference="app_bundle"
+								placeholder="Advertiser App Bundle"
+								label="Advertiser App Bundle"
+								:required="true"
+							></CardTextField>
 						</v-col>
 
 						<!-- Status -->
 						<v-col cols="12" sm="12" md="6" lg="3">
-							<v-card
-								elevation="0"
-								outlined
-								tile
-								color="rgb(0, 0, 0, 0.0)"
-							>
-								<v-switch
-									color="success"
-									class="v-input--reverse--column"
-									inset
-									flat
-									hide-details
-									v-model="active"
-									:label="`${active ? 'Active' : 'Inactive'}`"
-									@change="toggleStatus"
-								>
-								</v-switch>
-							</v-card>
+							<CardSwitch
+								v-model="active"
+								reference="active"
+								label="Active"
+								color="success"
+							></CardSwitch>
 						</v-col>
 					</v-row>
 					<v-divider class="ma-4"></v-divider>
@@ -231,7 +155,9 @@
 		Category,
 	} from "../../../../interfaces/advertiser";
 	import Alertize from "../../../../components/Alertize.vue";
-
+	import CardTextField from "../../../../components/Content/CardTextField.vue";
+	import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
+	import CardSwitch from "../../../../components/Content/CardSwitch.vue";
 	import {
 		isRequired,
 		isNumber,
@@ -243,7 +169,12 @@
 	export default Vue.extend({
 		name: "AdvertiserCreate",
 		props: {},
-		components: { Alertize },
+		components: {
+			Alertize,
+			CardTextField,
+			CardAutocomplete,
+			CardSwitch,
+		},
 		data: () => ({
 			title: "Create",
 			advertiser: {} as AdvertiserDataCreate,
