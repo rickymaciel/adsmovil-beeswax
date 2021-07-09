@@ -263,7 +263,7 @@ export async function resendEmail(userId: number, token: string) {
 function getFilters(filters: UserFilters): string {
     let filter = ''
 
-    const first_name = (isUndefined(filters.first_name)) ? '' : filters.first_name
+    const first_name = (isUndefined(filters.name)) ? '' : filters.name
     const last_name = (isUndefined(filters.last_name)) ? '' : filters.last_name
     const email = (isUndefined(filters.email)) ? '' : filters.email
 
