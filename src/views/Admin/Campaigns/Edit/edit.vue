@@ -132,7 +132,7 @@
 				return this.$store.state.custom_list.unit_times;
 			},
 			getUsers() {
-				return this.$store.state.users.users;
+				return this.$store.state.user.users;
 			},
 		},
 		methods: {
@@ -234,7 +234,7 @@
 
 			async dispatchUsers() {
 				return this.$store.dispatch(
-					"users/getUsers",
+					"user/getUsers",
 					{
 						filters: undefined,
 						options: {},
