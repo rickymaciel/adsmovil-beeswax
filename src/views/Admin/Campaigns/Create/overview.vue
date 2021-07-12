@@ -112,7 +112,14 @@
 				<v-row dense>
 					<v-col cols="12" sm="12" md="12" lg="12">
 						<v-card
-							class="grey lighten-3 d-flex justify-start align-center mt-4"
+							class="
+								grey
+								lighten-3
+								d-flex
+								justify-start
+								align-center
+								mt-4
+							"
 							elevation="0"
 							flat
 							tile
@@ -123,12 +130,7 @@
 					</v-col>
 
 					<!-- Start Date -->
-					<v-col
-						cols="12"
-						sm="12"
-						md="6"
-						lg="4"
-					>
+					<v-col cols="12" sm="12" md="6" lg="4">
 						<v-card
 							elevation="0"
 							class="pa-2"
@@ -147,12 +149,7 @@
 					</v-col>
 
 					<!-- End Date -->
-					<v-col
-						cols="12"
-						sm="12"
-						md="6"
-						lg="4"
-					>
+					<v-col cols="12" sm="12" md="6" lg="4">
 						<v-card
 							elevation="0"
 							class="pa-2"
@@ -188,7 +185,14 @@
 				<v-row dense>
 					<v-col cols="12" sm="12" md="12" lg="12">
 						<v-card
-							class="grey lighten-3 d-flex justify-start align-center mt-4"
+							class="
+								grey
+								lighten-3
+								d-flex
+								justify-start
+								align-center
+								mt-4
+							"
 							elevation="0"
 							flat
 							tile
@@ -209,7 +213,10 @@
 						>
 							<v-layout>
 								<v-label class="v-label theme--light">
-									Budget Type <span class="red--text"><strong>*</strong></span>
+									Budget Type
+									<span class="red--text"
+										><strong>*</strong></span
+									>
 								</v-label>
 							</v-layout>
 							<v-layout>
@@ -258,7 +265,10 @@
 						>
 							<v-layout>
 								<v-label class="v-label theme--light">
-									Automatic Allocation <span class="red--text"><strong>*</strong></span>
+									Automatic Allocation
+									<span class="red--text"
+										><strong>*</strong></span
+									>
 								</v-label>
 							</v-layout>
 							<v-layout>
@@ -286,7 +296,14 @@
 				<v-row dense v-if="campaign.automatic_allocation">
 					<v-col cols="12" sm="12" md="12" lg="12">
 						<v-card
-							class="grey lighten-3 d-flex justify-start align-center mt-4"
+							class="
+								grey
+								lighten-3
+								d-flex
+								justify-start
+								align-center
+								mt-4
+							"
 							elevation="0"
 							flat
 							tile
@@ -307,7 +324,10 @@
 						>
 							<v-layout>
 								<v-label class="v-label theme--light">
-									Optimization Strategy <span class="red--text"><strong>*</strong></span>
+									Optimization Strategy
+									<span class="red--text"
+										><strong>*</strong></span
+									>
 								</v-label>
 							</v-layout>
 							<v-layout>
@@ -335,7 +355,13 @@
 					</v-col>
 
 					<!-- Campaign Pacing* -->
-					<v-col cols="12" sm="12" md="6" lg="4" v-if="showCampaignPacing">
+					<v-col
+						cols="12"
+						sm="12"
+						md="6"
+						lg="4"
+						v-if="showCampaignPacing"
+					>
 						<CardAutocomplete
 							v-model="campaign.campaign_pacing_id"
 							v-numeric
@@ -370,8 +396,8 @@
 							:rules="getRules.daily_budget"
 							:hint="getError('daily_budget')"
 							ref="daily_budget"
-							label = "Daily Budget"
-							placeholder = "Daily Budget"
+							label="Daily Budget"
+							placeholder="Daily Budget"
 							:suffix="getSuggested"
 							:persistent-hint="hasError('daily_budget')"
 							:required="true"
@@ -383,7 +409,14 @@
 				<v-row dense>
 					<v-col cols="12" sm="12" md="12" lg="12">
 						<v-card
-							class="grey lighten-3 d-flex justify-start align-center mt-4"
+							class="
+								grey
+								lighten-3
+								d-flex
+								justify-start
+								align-center
+								mt-4
+							"
 							elevation="0"
 							flat
 							tile
@@ -423,8 +456,8 @@
 							:rules="getRules.required"
 							:hint="getKpiObjectiveLabel"
 							ref="kpi_objective"
-							:label = "getKpiObjectiveLabel"
-							:placeholder = "getKpiObjectiveLabel"
+							:label="getKpiObjectiveLabel"
+							:placeholder="getKpiObjectiveLabel"
 							:required="true"
 						></CardTextField>
 					</v-col>
@@ -434,7 +467,14 @@
 				<v-row dense>
 					<v-col cols="12" sm="12" md="12" lg="12">
 						<v-card
-							class="grey lighten-3 d-flex justify-start align-center mt-4"
+							class="
+								grey
+								lighten-3
+								d-flex
+								justify-start
+								align-center
+								mt-4
+							"
 							elevation="0"
 							flat
 							tile
@@ -445,7 +485,13 @@
 					</v-col>
 
 					<!-- Biding Strategy* -->
-					<v-col cols="12" sm="12" md="6" lg="4" v-if="isOptimizationStrategyById">
+					<v-col
+						cols="12"
+						sm="12"
+						md="6"
+						lg="4"
+						v-if="isOptimizationStrategyById"
+					>
 						<CardAutocomplete
 							v-model="campaign.strategy_id"
 							v-numeric
@@ -474,8 +520,8 @@
 							:rules="getRules.cpm_bid"
 							hint="Bid CPM"
 							ref="cpm_bid"
-							label = "Bid CPM"
-							placeholder = "Bid CPM"
+							label="Bid CPM"
+							placeholder="Bid CPM"
 							:required="true"
 						></CardTextField>
 					</v-col>
@@ -494,8 +540,8 @@
 							:rules="getRules.cpm_bid"
 							:hint="getExpectedLabel"
 							ref="cpm_bid"
-							:label = "getExpectedLabel"
-							:placeholder = "getExpectedLabel"
+							:label="getExpectedLabel"
+							:placeholder="getExpectedLabel"
 							:required="true"
 							:valueText="getExpectedValue"
 						></CardTextField>
@@ -515,8 +561,8 @@
 							:rules="getRules.target_ecpc"
 							hint="Target eCPCV"
 							ref="target_ecpc"
-							label = "Target eCPCV"
-							placeholder = "Target eCPCV"
+							label="Target eCPCV"
+							placeholder="Target eCPCV"
 							:required="true"
 						></CardTextField>
 					</v-col>
@@ -535,8 +581,8 @@
 							:rules="getRules.target_ctr"
 							hint="Target CTR"
 							ref="target_ctr"
-							label = "Target CTR"
-							placeholder = "Target CTR"
+							label="Target CTR"
+							placeholder="Target CTR"
 							:required="true"
 						></CardTextField>
 					</v-col>
@@ -555,8 +601,8 @@
 							:rules="getRules.target_vcr"
 							hint="Target VCR"
 							ref="target_vcr"
-							label = "Target VCR"
-							placeholder = "Target VCR"
+							label="Target VCR"
+							placeholder="Target VCR"
 							:required="true"
 						></CardTextField>
 					</v-col>
@@ -566,7 +612,14 @@
 				<v-row dense>
 					<v-col cols="12" sm="12" md="12" lg="12">
 						<v-card
-							class="grey lighten-3 d-flex justify-start align-center mt-4"
+							class="
+								grey
+								lighten-3
+								d-flex
+								justify-start
+								align-center
+								mt-4
+							"
 							elevation="0"
 							flat
 							tile
@@ -588,7 +641,10 @@
 					>
 						<v-layout>
 							<v-label class="v-label theme--light">
-								Frecuency Cup <span class="red--text"><strong>*</strong></span>
+								Frecuency Cup
+								<span class="red--text"
+									><strong>*</strong></span
+								>
 							</v-label>
 						</v-layout>
 						<v-layout class="mt-3">
@@ -628,8 +684,8 @@
 								:rules="getRules.required"
 								hint="Impressions"
 								ref="Impressions"
-								label = "Impressions"
-								placeholder = "Impressions"
+								label="Impressions"
+								placeholder="Impressions"
 								:required="true"
 							></CardTextField>
 						</v-card>
@@ -649,8 +705,8 @@
 								:rules="getRules.required"
 								hint="Every Time"
 								ref="every_time"
-								label = "Every Time"
-								placeholder = "Every Time"
+								label="Every Time"
+								placeholder="Every Time"
 								:required="true"
 							></CardTextField>
 						</v-card>
@@ -1127,10 +1183,13 @@
 					this.setTargets(false, false, false);
 
 					this.expected_label = "eCPM";
-					let value = (this.campaign.budget / (this.campaign.kpi_objective / 1000));
-					if( !isNaN(value) && value !== Infinity ){
-						this.expected_value = (value).toFixed(2);
-					}else{this.expected_value = undefined}
+					let value =
+						this.campaign.budget / (this.campaign.kpi_objective / 1000);
+					if (!isNaN(value) && value !== Infinity) {
+						this.expected_value = value.toFixed(2);
+					} else {
+						this.expected_value = undefined;
+					}
 				}
 
 				/**
@@ -1141,10 +1200,12 @@
 					this.setTargets(true, true, false);
 
 					this.expected_label = "eCPC";
-					let value = (this.campaign.budget / this.campaign.kpi_objective);
-					if( !isNaN(value) && value !== Infinity ){
-						this.expected_value = (value).toFixed(2);
-					}else{this.expected_value = undefined}
+					let value = this.campaign.budget / this.campaign.kpi_objective;
+					if (!isNaN(value) && value !== Infinity) {
+						this.expected_value = value.toFixed(2);
+					} else {
+						this.expected_value = undefined;
+					}
 				}
 
 				/**
@@ -1155,11 +1216,13 @@
 					this.setTargets(false, false, true);
 
 					this.expected_label = "eCPCV";
-					let value = (this.campaign.budget / this.campaign.kpi_objective);
-					
-					if( !isNaN(value) && value !== Infinity){
-						this.expected_value = (value).toFixed(2);
-					}else{this.expected_value = undefined}
+					let value = this.campaign.budget / this.campaign.kpi_objective;
+
+					if (!isNaN(value) && value !== Infinity) {
+						this.expected_value = value.toFixed(2);
+					} else {
+						this.expected_value = undefined;
+					}
 				}
 
 				return this.expected_show;
@@ -1201,7 +1264,7 @@
 					? `${this.account.currency.key} (${this.account.currency.glyph})`
 					: "N/A";
 			},
-			
+
 			getTimezone() {
 				return !isUndefined(this.account.timezone) &&
 					!isEmpty(this.account.timezone)
@@ -1319,8 +1382,12 @@
 					name: String(this.campaign.name),
 					advertiser_id: Number(this.campaign.advertiser_id),
 					budget: Number(this.campaign.budget),
-					start_date: this.moment(this.campaign.start_date).format(DEFAULT_DATE_TIME_FORMAT),
-					end_date: this.moment(this.campaign.end_date).format(DEFAULT_DATE_TIME_FORMAT),
+					start_date: this.moment(this.campaign.start_date).format(
+						DEFAULT_DATE_TIME_FORMAT
+					),
+					end_date: this.moment(this.campaign.end_date).format(
+						DEFAULT_DATE_TIME_FORMAT
+					),
 					frequency_caps: this.campaign.frequency_caps,
 					alternative_id: String(this.campaign.alternative_id),
 					active: 1,
@@ -1367,13 +1434,13 @@
 
 			getCalculateDuration() {
 				if (!this.isValidDates()) return;
-				
+
 				const startDate = this.moment(this.campaign.start_date);
 				const endDate = this.moment(this.campaign.end_date);
-				
-				let days = this.calculateDuration(startDate,endDate);
-				
-				if ( days < 0 ) {
+
+				let days = this.calculateDuration(startDate, endDate);
+
+				if (days < 0) {
 					this.campaign.end_date = "";
 					this.campaign_duration = undefined;
 					return;
@@ -1382,24 +1449,29 @@
 				this.campaign_duration = days;
 			},
 
-			calculateDuration(start: any, end: any){
-				if( !(start.isValid() && end.isValid()) ){
+			calculateDuration(start: any, end: any) {
+				console.log("calculateDuration", {
+					start: start,
+					end: end,
+					typeof: typeof start,
+				});
+				if (isUndefined(start) || isUndefined(end)) return;
+				if (!(start.isValid() && end.isValid())) {
 					return -1;
 				}
 				const diff = end.diff(start, "days");
 				const duration = this.moment.duration(end.diff(start));
 				return Math.ceil(duration.asDays());
 			},
-
 		},
-		watch:{
-			"campaign.start_date"(val, old){
-				this.getCalculateDuration()
+		watch: {
+			"campaign.start_date"(val, old) {
+				this.getCalculateDuration();
 			},
 
-			"campaign.end_date"(val, old){
-				this.getCalculateDuration()
+			"campaign.end_date"(val, old) {
+				this.getCalculateDuration();
 			},
-		}
+		},
 	});
 </script>
