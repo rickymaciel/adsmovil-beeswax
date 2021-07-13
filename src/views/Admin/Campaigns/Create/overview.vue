@@ -1389,7 +1389,7 @@
 						DEFAULT_DATE_TIME_FORMAT
 					),
 					frequency_caps: this.campaign.frequency_caps,
-					alternative_id: String(this.campaign.alternative_id),
+					alternative_id: this.campaign.alternative_id,
 					active: 1,
 					trafficker_id: Number(this.campaign.trafficker_id),
 					budget_type_id: Number(this.campaign.budget_type_id),
@@ -1404,7 +1404,9 @@
 					strategy_id: Number(this.campaign.strategy_id),
 					campaign_pacing_id: Number(this.campaign.campaign_pacing_id),
 					daily_budget: Number(this.campaign.daily_budget),
-					cpm_bid: Number(this.campaign.cpm_bid),
+					cpm_bid: this.campaign.cpm_bid
+						? Number(this.campaign.cpm_bid)
+						: null,
 					target_ecpc: Number(this.campaign.target_ecpc),
 					target_ctr: Number(this.campaign.target_ctr),
 					target_vcr: Number(this.campaign.target_vcr),

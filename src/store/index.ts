@@ -22,7 +22,7 @@ import { Advertiser, AdvertiserDataCreate, AdvertiserDataUpdate, AdvertiserList,
 import { MessageTypes, Notification } from '@/interfaces/proccess'
 import { isEmpty, isNull, isUndefined } from 'lodash'
 import { CustomList, CustomListDataCreate, CustomListFilters, CustomListOptions, CustomListPaginated, List, Type } from '@/interfaces/custom_list'
-import { ResultPaginate as UserResultPaginate, UserDataCreate, User} from '@/interfaces/user'
+import { ResultPaginate as UserResultPaginate, UserDataCreate, User } from '@/interfaces/user'
 
 import { getCreativeTypeByTemplateId, resolveList, resolveListParams, resolveTemplates } from '../utils/resolveObjectArray'
 import { Campaign, CampaignDataCreate, CampaingList } from '@/interfaces/campaign'
@@ -34,6 +34,7 @@ import { LineItem, LineItemDataCreate, LineItemFilters, LineItemOptions } from '
 import lineItemTypeService from '@/services/line-item-type-service';
 import { UserDataUpdate } from '../interfaces/user';
 import { TagCheck } from '@/interfaces/creative';
+import { AssociationDataCreate } from '@/interfaces/creativeAssociation';
 
 /**
  * Hard Code Account
@@ -89,6 +90,7 @@ export default new Vuex.Store({
                     state.notification = _notification;
                 },
                 SET_ERRORS(state, _errors: Object = {}) {
+                    console.log("SET_ERRORS", { _errors: _errors })
                     state.errors = _errors;
                 },
             },
@@ -157,7 +159,7 @@ export default new Vuex.Store({
                 },
             },
             actions: {
-                async init({}, initData: any) {
+                async init({ }, initData: any) {
                     try {
                         const response = await AuthService.init(initData)
                         CreateNotification(
@@ -176,7 +178,7 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
-                async forgotPassword({}, {email}) {
+                async forgotPassword({ }, { email }) {
                     try {
                         const response = await AuthService.forgotPassword(email)
                         CreateNotification(
@@ -194,22 +196,22 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
-                async resetPassword({}, {email, password, password_confirmation, token}) {
-                    try{
+                async resetPassword({ }, { email, password, password_confirmation, token }) {
+                    try {
                         const response = await AuthService.resetPassword({
                             email,
                             password,
                             password_confirmation,
                             token
                         });
-                        CreateNotification(this.dispatch,{
+                        CreateNotification(this.dispatch, {
                             type: MessageTypes.SUCCESS,
                             title: i18n.t('title-success'),
                             message: i18n.t('passwordReset.messages.success'),
                             btn_text: i18n.t("continue"),
-                        } as Notification);   
+                        } as Notification);
                     }
-                    catch(error) {
+                    catch (error) {
                         CatcherError(this.dispatch, error);
                         return await Promise.reject(error)
                     }
@@ -993,7 +995,7 @@ export default new Vuex.Store({
                     }
                 },
 
-                async create({}, user: UserDataCreate) {
+                async create({ }, user: UserDataCreate) {
                     try {
                         const response = await UserService.create(user);
                         CreateNotification(
@@ -1370,6 +1372,18 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
+
+                async all({ commit }, params: { filters: LineItemFilters, options: LineItemOptions }) {
+                    try {
+                        const response = await LineItemService.all(params)
+                        console.log('@store.line_item::all', { response: response });
+                        commit('SET_LINE_ITEMS', response)
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
             }
         },
         line_item_type: {
@@ -1413,7 +1427,7 @@ export default new Vuex.Store({
             namespaced: true,
             state: () => ({
                 result_paginate: {} as ResultPaginate,
-                creative: {},
+                creative: null,
                 asset: {},
                 responseTemplates: {},
                 creative_sizes: [],
@@ -1422,8 +1436,8 @@ export default new Vuex.Store({
                 advertiser_categories: [],
                 mime_types: [],
                 creative_rules: [],
-                expendable_types: [],
-                expendable_directions: [],
+                expandable_types: [],
+                expandable_directions: [],
                 in_banner_videos: [],
                 vendors: [],
                 addons: [],
@@ -1433,7 +1447,8 @@ export default new Vuex.Store({
                 SET_RESULT_PAGINATED(state, _result_paginate: ResultPaginate = {} as ResultPaginate) {
                     state.result_paginate = _result_paginate
                 },
-                SET_CREATIVE(state, _creative) {
+                SET_CREATIVE(state, _creative = null) {
+                    console.log('@Actions::SET_CREATIVE', { _creative: _creative });
                     state.creative = _creative;
                 },
                 SET_CREATIVE_SIZES(state, _sizes) {
@@ -1460,11 +1475,11 @@ export default new Vuex.Store({
                 SET_CREATIVE_RULES(state, _creative_rules) {
                     state.creative_rules = _creative_rules
                 },
-                SET_EXPENDABLE_TYPES(state, _expendable_types) {
-                    state.expendable_types = _expendable_types
+                SET_Expandable_TYPES(state, _expandable_types) {
+                    state.expandable_types = _expandable_types
                 },
-                SET_EXPENDABLE_DIRECTIONS(state, _expendable_directions) {
-                    state.expendable_directions = _expendable_directions
+                SET_Expandable_DIRECTIONS(state, _expandable_directions) {
+                    state.expandable_directions = _expandable_directions
                 },
                 SET_IN_BANNER_VIDEOS(state, _in_banner_videos) {
                     state.in_banner_videos = _in_banner_videos
@@ -1485,6 +1500,10 @@ export default new Vuex.Store({
             getters: {
             },
             actions: {
+
+                /**
+                 * GET AUXILIARY METHODS
+                 */
                 async creativeSizes({ commit }) {
                     try {
                         const response = await CreativeService.creativeSizes()
@@ -1556,20 +1575,20 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
-                async expendableTypes({ commit }) {
+                async expandableTypes({ commit }) {
                     try {
-                        const response = await CreativeService.expendableTypes()
-                        commit('SET_EXPENDABLE_TYPES', resolveListParams(response, "id", "description"))
+                        const response = await CreativeService.expandableTypes()
+                        commit('SET_Expandable_TYPES', resolveListParams(response, "id", "description"))
                         return await Promise.resolve(response)
                     } catch (error) {
                         CatcherError(this.dispatch, error);
                         return await Promise.reject(error)
                     }
                 },
-                async expendableDirections({ commit }) {
+                async expandableDirections({ commit }) {
                     try {
-                        const response = await CreativeService.expendableDirections()
-                        commit('SET_EXPENDABLE_DIRECTIONS', resolveListParams(response, "id", "description"))
+                        const response = await CreativeService.expandableDirections()
+                        commit('SET_Expandable_DIRECTIONS', resolveListParams(response, "id", "description"))
                         return await Promise.resolve(response)
                     } catch (error) {
                         CatcherError(this.dispatch, error);
@@ -1626,9 +1645,10 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
-                async CreateNewCreative({ commit }, params: any) {
+                async CreateNewCreative({ commit }, params) {
                     try {
-                        const response = await CreativeService.CreateNewCreative(params)
+                        console.log('@Actions::CreateNewCreative', { params: params });
+                        const response = await CreativeService.CreateNewCreative(params.creative)
                         console.log("CreateNewCreative", { params: params, response: response });
                         commit('SET_CREATIVE', response)
                         CreateNotification(
@@ -1637,8 +1657,8 @@ export default new Vuex.Store({
                                 type: MessageTypes.SUCCESS,
                                 title: i18n.t('title-success'),
                                 message: i18n.t('success'),
-                                btn_text: i18n.t('continue'),
-                                to: "CreativesIndex"
+                                btn_text: params.continue ? i18n.t('continue') : i18n.t('close'),
+                                to: params.continue ? "" : "CreativesIndex"
                             } as Notification
                         );
                         return await Promise.resolve(response)
@@ -1651,6 +1671,16 @@ export default new Vuex.Store({
                     try {
                         const response = await CreativeService.validateTag(tag)
                         commit('SET_ASSET', response)
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+                async associateLineItem({ commit }, association: AssociationDataCreate) {
+                    try {
+                        const response = await CreativeService.associateLineItem(association)
+                        //commit('SET_CREATIVE', response)
                         return await Promise.resolve(response)
                     } catch (error) {
                         CatcherError(this.dispatch, error);

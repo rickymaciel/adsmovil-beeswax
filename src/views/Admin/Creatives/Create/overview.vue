@@ -5,9 +5,12 @@
 		align="center"
 		class="grey lighten-3 py-4 my-4"
 	>
-		<!-- <v-card> {{ creative.start_date }} </v-card> -->
-		<!-- <v-card> {{ creative }} </v-card> -->
-		<!-- <v-card> {{ tag_rules }} </v-card> -->
+		<!-- <v-card>
+			<v-card-title>creative_attributes: </v-card-title>
+			<v-card-text>
+				{{ creative.creative_attributes || "Not selected" }}
+			</v-card-text>
+		</v-card> -->
 
 		<v-form
 			ref="form"
@@ -41,6 +44,7 @@
 							placeholder="Creative Name"
 							label="Creative Name"
 							:required="true"
+							:error_messages="getError('name')"
 						></CardTextField>
 					</v-col>
 
@@ -65,6 +69,7 @@
 								v-model="creative.start_date"
 								:min_date="getToday"
 								:rules="start_date_rules"
+								:error_messages="getError('start_date')"
 							></DatePicker>
 						</v-card>
 					</v-col>
@@ -91,6 +96,7 @@
 								:min_date="getMinDate"
 								:rules="end_date_rules"
 								:is_end="true"
+								:error_messages="getError('end_date')"
 							></DatePicker>
 						</v-card>
 					</v-col>
@@ -109,6 +115,7 @@
 							reference="alternative_id"
 							placeholder="Alternative ID"
 							label="Alternative ID"
+							:error_messages="getError('alternative_id')"
 						></CardTextField>
 					</v-col>
 
@@ -180,7 +187,6 @@
 					>
 						<CardAutocomplete
 							v-model="creative.creative_attributes.size_id"
-							:model="creative.creative_attributes.size_id"
 							:rules="size_id_rules"
 							:items="getCreativeSizes"
 							item_text="value"
@@ -298,7 +304,7 @@
 						></CardAutocomplete>
 					</v-col>
 
-					<!-- app_undle -->
+					<!-- app_bundle -->
 					<v-col
 						class="pe-lg-16 pa-0"
 						cols="12"
@@ -399,6 +405,9 @@
 							placeholder="Select Primary Asset"
 							label="Primary Asset"
 							@click="fetchAssets"
+							:error_messages="
+								getError('creative_ad_content.primary_asset_id')
+							"
 						></CardAutocomplete>
 					</v-col>
 
@@ -427,6 +436,11 @@
 							placeholder="Select Secondary Asset"
 							label="Secondary Asset"
 							@click="fetchAssets"
+							:error_messages="
+								getError(
+									'creative_ad_content.secondary_asset_id'
+								)
+							"
 						></CardAutocomplete>
 					</v-col>
 
@@ -545,6 +559,9 @@
 							placeholder="Click Url"
 							label="Click Url"
 							:required="true"
+							:error_messages="
+								getError('creative_ad_content.click_url')
+							"
 						></CardTextField>
 					</v-col>
 
@@ -566,6 +583,9 @@
 							reference="video_duration"
 							placeholder="Video Duration"
 							label="Video Duration"
+							:error_messages="
+								getError('creative_ad_content.video_duration')
+							"
 						></CardTextField>
 					</v-col>
 
@@ -587,6 +607,9 @@
 							reference="companion_html"
 							placeholder="Companion Html"
 							label="Companion Html"
+							:error_messages="
+								getError('creative_ad_content.companion_html')
+							"
 						></CardTextField>
 					</v-col>
 
@@ -648,6 +671,11 @@
 							label="Companion Size"
 							@click="fetchCreativeSizes"
 							:required="false"
+							:error_messages="
+								getError(
+									'creative_ad_content.companion_size_id'
+								)
+							"
 						></CardAutocomplete>
 					</v-col>
 
@@ -674,6 +702,9 @@
 							label="Creative Rule"
 							@click="fetchCreativeRules"
 							:required="true"
+							:error_messages="
+								getError('creative_ad_content.creative_rule_id')
+							"
 						></CardAutocomplete>
 					</v-col>
 
@@ -696,6 +727,9 @@
 							append_outer="mdi-tag-arrow-down"
 							btn_text="Validar Tag"
 							@click-append-outer="validateTag"
+							:error_messages="
+								getError('creative_ad_content.tag')
+							"
 						></CardTextarea>
 					</v-col>
 
@@ -721,6 +755,9 @@
 							placeholder="Select Myme Type"
 							label="Myme Type"
 							@click="fetchMimeTypes"
+							:error_messages="
+								getError('creative_attributes.mime_type_id')
+							"
 						></CardAutocomplete>
 					</v-col>
 
@@ -738,14 +775,19 @@
 								creative.creative_attributes.expandable_type_id
 							"
 							:rules="expandable_type_id_rules"
-							:items="getExpendableTypes"
+							:items="getExpandableTypes"
 							item_text="value"
 							item_value="id"
 							hint="Expandable Type"
 							reference="expandable_type_id"
 							placeholder="Expandable Type"
 							label="Expandable Type"
-							@click="fetchExpendableTypes"
+							@click="fetchExpandableTypes"
+							:error_messages="
+								getError(
+									'creative_attributes.expandable_type_id'
+								)
+							"
 						></CardAutocomplete>
 					</v-col>
 
@@ -764,19 +806,24 @@
 									.expandable_directions
 							"
 							:rules="expandable_directions_rules"
-							:items="getExpendableDirections"
+							:items="getExpandableDirections"
 							item_text="value"
 							item_value="id"
 							hint="Expandable Directions"
 							reference="expandable_directions"
 							placeholder="Expandable Directions"
 							label="Expandable Directions"
-							@click="fetchExpendableDirections"
+							@click="fetchExpandableDirections"
 							:chips="true"
 							:deletable_chips="true"
 							:multiple="true"
 							:small_chips="true"
 							:dense="false"
+							:error_messages="
+								getError(
+									'creative_attributes.expandable_directions'
+								)
+							"
 						></CardAutocomplete>
 					</v-col>
 
@@ -831,6 +878,9 @@
 							placeholder="Skip Offset"
 							label="Skip Offset"
 							type="time"
+							:error_messages="
+								getError('creative_attributes.skip_offset')
+							"
 						></CardTextField>
 					</v-col>
 
@@ -856,6 +906,11 @@
 							placeholder="In Banner video"
 							label="In Banner video"
 							@click="fetchBannerVideos"
+							:error_messages="
+								getError(
+									'creative_attributes.in_banner_video_id'
+								)
+							"
 						></CardAutocomplete>
 					</v-col>
 
@@ -898,6 +953,9 @@
 							:multiple="true"
 							:small_chips="true"
 							:persistent_hint="true"
+							:error_messages="
+								getError('creative_exchange_options.vendors')
+							"
 						></CardAutocomplete>
 					</v-col>
 
@@ -921,6 +979,11 @@
 							placeholder="Add Landing Page URL"
 							label="Landing Page URL"
 							:persistent_hint="true"
+							:error_messages="
+								getError(
+									'creative_exchange_options.landing_page_url'
+								)
+							"
 						></CardTextField>
 					</v-col>
 
@@ -972,6 +1035,11 @@
 							placeholder="Thumbnail"
 							label="Thumbnail"
 							@click="fetchAssets"
+							:error_messages="
+								getError(
+									'creative_exchange_options.thumbnail_id'
+								)
+							"
 						></CardAutocomplete>
 					</v-col>
 
@@ -1014,6 +1082,9 @@
 							:multiple="true"
 							:small_chips="true"
 							:dense="false"
+							:error_messages="
+								getError('creative_addon_settings.addons')
+							"
 						></CardAutocomplete>
 					</v-col>
 
@@ -1261,6 +1332,7 @@
 									rounded
 									color="secondary"
 									class="ma-2 px-8"
+									@click="handleSubmitContinue"
 								>
 									{{ $t("save-continue") }}
 								</v-btn>
@@ -1305,7 +1377,7 @@
 	import ArrayListItem from "../../../../components/Content/ArrayListItem.vue";
 	import VastEvent from "../../../../components/Content/VastEvent.vue";
 	import ProgressEvent from "../../../../components/Content/ProgressEvent.vue";
-	import { find, isEmpty, isObject } from "lodash";
+	import { find, isEmpty, isNull, isObject, isUndefined } from "lodash";
 	import {
 		hasFieldByTemplateId,
 		parseDataCreativeHtml5,
@@ -1315,6 +1387,7 @@
 		parseDataCreativeMraidTag,
 		parseDataCreativeVastInline,
 	} from "../../../../utils/fields";
+	import { getError } from "../../../../utils/resolveObjectArray";
 
 	export default Vue.extend({
 		name: "CreativeOverview",
@@ -1390,7 +1463,11 @@
 			companion_html_rules: [],
 		}),
 		created() {},
-		mounted() {},
+		mounted() {
+			setTimeout(async () => {
+				await this.loadResources();
+			}, 1000);
+		},
 		computed: {
 			/**
 			 * Getters
@@ -1416,6 +1493,24 @@
 					isFileMaxSize,
 					isUploaded,
 				};
+			},
+			getID() {
+				return this.creative.id;
+			},
+			hasID() {
+				return (
+					!isUndefined(this.getID) &&
+					!isNull(this.getID) &&
+					this.getID > 0
+				);
+			},
+
+			getErrors() {
+				return this.$store.state.proccess.errors;
+			},
+
+			getCreative() {
+				return this.$store.state.creative.creative;
 			},
 			getCreativeSizes() {
 				return this.$store.state.creative.creative_sizes;
@@ -1444,11 +1539,11 @@
 			getMimeTypes() {
 				return this.$store.state.creative.mime_types;
 			},
-			getExpendableTypes() {
-				return this.$store.state.creative.expendable_types;
+			getExpandableTypes() {
+				return this.$store.state.creative.expandable_types;
 			},
-			getExpendableDirections() {
-				return this.$store.state.creative.expendable_directions;
+			getExpandableDirections() {
+				return this.$store.state.creative.expandable_directions;
 			},
 			getVendors() {
 				return this.$store.state.creative.vendors;
@@ -1472,6 +1567,63 @@
 			},
 		},
 		methods: {
+			getError(index: any) {
+				return getError(this.getErrors, index);
+			},
+
+			async loadResources() {
+				if (this.hasID) {
+					this.$emit("fetch-creative-sizes");
+
+					if (this.creative.creative_template_id) {
+						this.$emit("fetch-creative-templates");
+					}
+
+					if (this.creative.creative_advertiser.category_id) {
+						this.$emit("fetch-advertiser-categories");
+					}
+
+					if (this.creative.creative_ad_content.creative_rule_id) {
+						this.$emit("fetch-creative-rules");
+					}
+
+					if (this.creative.creative_advertiser.advertiser_id) {
+						this.$emit("fetch-creative-advertisers");
+					}
+
+					if (this.creative.creative_attributes.mime_type_id) {
+						this.$emit("fetch-mime-types");
+					}
+
+					if (this.creative.creative_attributes.expandable_type_id) {
+						this.$emit("fetch-expandable-types");
+					}
+
+					if (this.creative.creative_attributes.expandable_directions) {
+						this.$emit("fetch-expandable-directions");
+					}
+
+					if (this.creative.creative_exchange_options.vendors) {
+						this.$emit("fetch-vendors");
+					}
+
+					if (this.creative.creative_addon_settings.addons) {
+						this.$emit("fetch-addons");
+					}
+
+					if (
+						this.creative.creative_ad_content.primary_asset_id ||
+						this.creative.creative_ad_content.secondary_asset_id
+					) {
+						this.$emit("fetch-assets");
+					}
+
+					if (this.creative.creative_attributes.in_banner_video_id) {
+						this.$emit("fetch-banner-videos");
+					}
+				}
+			},
+
 			showFieldByTemplateId(input: string) {
 				return hasFieldByTemplateId(
 					this.creative.creative_template_id,
@@ -1513,14 +1665,14 @@
 				this.$emit("fetch-mime-types");
 			},
 
-			async fetchExpendableTypes(e: any) {
-				if (!isEmpty(this.getExpendableTypes)) return;
-				this.$emit("fetch-expendable-types");
+			async fetchExpandableTypes(e: any) {
+				if (!isEmpty(this.getExpandableTypes)) return;
+				this.$emit("fetch-expandable-types");
 			},
 
-			async fetchExpendableDirections(e: any) {
-				if (!isEmpty(this.getExpendableDirections)) return;
-				this.$emit("fetch-expendable-directions");
+			async fetchExpandableDirections(e: any) {
+				if (!isEmpty(this.getExpandableDirections)) return;
+				this.$emit("fetch-expandable-directions");
 			},
 
 			async fetchVendors(e: any) {
@@ -1594,12 +1746,16 @@
 					];
 				}
 				if (this.creative.budget_type_id === 2) {
-					this.primary_asset_id_rules = [this.getRules.isNumber];
+					this.primary_asset_id_rules = [];
 				}
 				this.click_url_rules = [
 					this.getRules.isRequired,
 					this.getRules.isValidUrl,
 				];
+
+				this.thumbnail_id_rules = [];
+
+				this.mime_type_id_rules = [];
 
 				// creative_exchange_options
 				this.vendors_rules = [];
@@ -1746,21 +1902,20 @@
 				await this.addDateValidations();
 
 				// creative_ad_content
-				this.tag_rules = []; // check ins
 
-				this.companion_html_rules = !this.creative.creative_ad_content
-					.secondary_asset_id
-					? [this.getRules.isRequired]
-					: [];
+				await this.addTagValidations();
 
-				this.companion_size_id_rules = this.creative.creative_ad_content
-					.companion_html
-					? [this.getRules.isRequired]
-					: [];
+				this.creative_rule_id_rules = [
+					this.getRules.isRequired,
+					this.getRules.isNumber,
+				];
 
 				// creative_attributes
 				this.size_id_rules = []; // validar width & height
-				this.mime_type_id_rules = [this.getRules.isNumber]; // (jpeg,gif,png,javascript)
+				this.mime_type_id_rules = [
+					this.getRules.isRequired,
+					this.getRules.isNumber,
+				]; // (jpeg,gif,png,javascript)
 				this.expandable_type_id_rules = [this.getRules.isNumber];
 				this.expandable_directions_rules = []; // validar multiple number
 				this.in_banner_video_id = [this.getRules.isNumber];
@@ -1798,133 +1953,207 @@
 			},
 
 			/**
+			 * Store
+			 * Submit Creative
+			 */
+			async submitCreative(_continue: boolean = false) {
+				const templateSelected = await this.getCreativeTypeByTemplateId();
+
+				if (!templateSelected) return;
+
+				switch (templateSelected.name) {
+					case "Image template": //1
+						await this.addImageValidations();
+
+						const creative_image = parseDataCreativeImage(
+							this.creative
+						);
+
+						if (!(await this.validate())) return;
+
+						this.$emit("create-creative-image", {
+							continue: _continue,
+							creative: creative_image,
+						});
+
+						break;
+
+					case "VAST InLine": //3
+						await this.addVastInlineValidations();
+
+						const creative_vast_inline = parseDataCreativeVastInline(
+							this.creative
+						);
+
+						if (!(await this.validate())) return;
+
+						this.$emit("create-creative-vast-inline", {
+							continue: _continue,
+							creative: creative_vast_inline,
+						});
+						break;
+
+					case "JS Tag": // 4
+						await this.addJsTagValidations();
+
+						const creative_js_tag = parseDataCreativeJsTag(
+							this.creative
+						);
+
+						if (!(await this.validate())) return;
+
+						this.$emit("create-creative-jstag", {
+							continue: _continue,
+							creative: creative_js_tag,
+						});
+
+						break;
+
+					case "iFrame Tag": // 5
+						await this.addIframeTagValidations();
+
+						const creative_iframe_tag = parseDataCreativeIframeTag(
+							this.creative
+						);
+
+						if (!(await this.validate())) return;
+
+						this.$emit("create-creative-iframetag", {
+							continue: _continue,
+							creative: creative_iframe_tag,
+						});
+						break;
+
+					case "VAST and VPAID Wrapper": // 6
+						break;
+
+					case "MRAID Tag": // 13
+						await this.addMraidTagValidations();
+
+						const creative_mraid_tag = parseDataCreativeMraidTag(
+							this.creative
+						);
+
+						if (!(await this.validate())) return;
+
+						this.$emit("create-creative-mraidtag", {
+							continue: _continue,
+							creative: creative_mraid_tag,
+						});
+						break;
+
+					case "Native Image App Install": // 14
+						break;
+
+					case "Native Video App Install": // 15
+						break;
+
+					case "Native Image Content": // 16
+						break;
+
+					case "Native Video Content": // 17
+						break;
+
+					case "Native Video App Install (VAST/VPAID Wrapper)": // 18
+						break;
+
+					case "Native Video Content (VAST/VPAID Wrapper)": // 19
+						break;
+
+					case "VAST Wrapper with MOAT Viewability": // 20
+						break;
+
+					case "HTML5 Creative": // 21
+						await this.addHtml5Validations();
+
+						const creative_html5 = parseDataCreativeHtml5(
+							this.creative
+						);
+
+						if (!(await this.validate())) return;
+
+						this.$emit("create-creative-html5", {
+							continue: _continue,
+							creative: creative_html5,
+						});
+						break;
+
+					case "App Promo Icon": // 22
+						break;
+
+					default:
+						console.log("default", {
+							validate: await this.validate(),
+						});
+						break;
+				}
+
+				this.pushErrors();
+			},
+
+			pushErrors() {
+				setTimeout(() => {
+					this.primary_asset_id_rules = [
+						!isUndefined(
+							this.getError("creative_ad_content.primary_asset_id")
+						)
+							? this.getError(
+									"creative_ad_content.primary_asset_id"
+							  )[0]
+							: "",
+					];
+
+					this.thumbnail_id_rules = [
+						!isUndefined(
+							this.getError("creative_exchange_options.thumbnail_id")
+						)
+							? this.getError(
+									"creative_exchange_options.thumbnail_id"
+							  )[0]
+							: "",
+					];
+
+					this.mime_type_id_rules = [
+						this.getRules.isRequired,
+						this.getRules.isNumber,
+						!isUndefined(
+							this.getError("creative_attributes.mime_type_id")
+						)
+							? this.getError("creative_attributes.mime_type_id")[0]
+							: "",
+					];
+				}, 2000);
+			},
+
+			/**
 			 * Actions
 			 * handleSubmit
 			 */
 			async handleSubmit() {
 				try {
-
 					await this.addCommonsValidations();
 
 					await this.validate();
 
-					const templateSelected =
-						await this.getCreativeTypeByTemplateId();
-
-					if (!templateSelected) return;
-
-					switch (templateSelected.name) {
-						case "Image template": //1
-							await this.addImageValidations();
-
-							const creative_image = parseDataCreativeImage(
-								this.creative
-							);
-
-							if (!(await this.validate())) return;
-
-							this.$emit("create-creative-image", creative_image);
-
-							break;
-
-						case "VAST InLine": //3
-							await this.addVastInlineValidations();
-
-							const creative_vast_inline =
-								parseDataCreativeVastInline(this.creative);
-
-							if (!(await this.validate())) return;
-
-							this.$emit(
-								"create-creative-vast-inline",
-								creative_vast_inline
-							);
-							break;
-
-						case "JS Tag": // 4
-							await this.addJsTagValidations();
-
-							const creative_js_tag = parseDataCreativeJsTag(
-								this.creative
-							);
-
-							if (!(await this.validate())) return;
-
-							this.$emit("create-creative-jstag", creative_js_tag);
-
-							break;
-
-						case "iFrame Tag": // 5
-							await this.addIframeTagValidations();
-
-							const creative_iframe_tag = parseDataCreativeIframeTag(
-								this.creative
-							);
-
-							if (!(await this.validate())) return;
-
-							this.$emit(
-								"create-creative-iframetag",
-								creative_iframe_tag
-							);
-							break;
-
-						case "VAST and VPAID Wrapper": // 6
-							break;
-
-						case "MRAID Tag": // 13
-							await this.addMraidTagValidations();
-
-							const creative_mraid_tag = parseDataCreativeMraidTag(
-								this.creative
-							);
-
-							if (!(await this.validate())) return;
-
-							this.$emit(
-								"create-creative-mraidtag",
-								creative_mraid_tag
-							);
-							break;
-
-						case "Native Image App Install": // 14
-							break;
-
-						case "Native Video App Install": // 15
-							break;
-
-						case "Native Image Content": // 16
-							break;
-
-						case "Native Video Content": // 17
-							break;
-
-						case "Native Video App Install (VAST/VPAID Wrapper)": // 18
-							break;
-
-						case "Native Video Content (VAST/VPAID Wrapper)": // 19
-							break;
-
-						case "VAST Wrapper with MOAT Viewability": // 20
-							break;
-
-						case "HTML5 Creative": // 21
-							await this.addHtml5Validations();
-
-							const creative_html5 = parseDataCreativeHtml5(
-								this.creative
-							);
-
-							if (!(await this.validate())) return;
-
-							this.$emit("create-creative-html5", creative_html5);
-							break;
-
-						case "App Promo Icon": // 22
-							break;
-					}
+					await this.submitCreative(false);
 				} catch (error) {
 					console.error("handleSubmit", { error: error });
+				}
+			},
+
+			/**
+			 * Actions
+			 * handleSubmitContinue
+			 */
+			async handleSubmitContinue() {
+				try {
+					await this.addCommonsValidations();
+
+					await this.validate();
+
+					await this.submitCreative(true);
+				} catch (error) {
+					console.error("handleSubmitContinue", { error: error });
 				}
 			},
 
@@ -1934,12 +2163,12 @@
 			},
 
 			selectedWidthHeight(size_id: number) {
+				console.log("overview::selectedWidthHeight", { size_id: size_id });
 				const selectedSize = find(this.getCreativeSizes, function (s) {
 					return s.id === size_id;
 				});
 				if (selectedSize) {
-					this.creative.creative_attributes.width = selectedSize.width;
-					this.creative.creative_attributes.height = selectedSize.height;
+					this.$emit("selected-size", selectedSize);
 				}
 			},
 

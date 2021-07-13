@@ -139,6 +139,7 @@ export interface LineItemFilters {
     end_date?: string,
     spend?: number,
     alternative_id?: number,
+    advertiser_id?: number,
     advertiser?: {
         name: string
     },

@@ -28,6 +28,7 @@
 			:step="type === 'time' ? 2 : 1"
 			:disabled="disabled"
 			:value="getValue"
+			:error-messages="error_messages"
 		>
 			<!-- <template v-slot:prepend-inner>
 				<v-fade-transition leave-absolute>
@@ -140,7 +141,7 @@
 			},
 			clearable: {
 				type: Boolean,
-				default: false,
+				default: true,
 			},
 			error: {
 				type: Boolean,
@@ -169,7 +170,13 @@
 			valueText: {
 				type: String,
 				default: undefined,
-			}
+			},
+			error_messages: {
+				type: Array,
+				default: function () {
+					return [];
+				},
+			},
 		},
 		data: function () {
 			return {};
@@ -188,17 +195,17 @@
 				},
 			},
 			getCustomClass() {
-				if( this.disabled ){
+				if (this.disabled) {
 					return this.customClass + " disabled";
-				}else{
+				} else {
 					return this.customClass;
 				}
 			},
-			getValue(){
-				if( this.valueNumber ) return this.valueNumber;
-				if( this.valueText ) return this.valueText;
+			getValue() {
+				if (this.valueNumber) return this.valueNumber;
+				if (this.valueText) return this.valueText;
 				return undefined;
-			}
+			},
 		},
 		methods: {
 			isEmpty(data: any) {

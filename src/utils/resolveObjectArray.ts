@@ -1,4 +1,4 @@
-import { orderBy } from "lodash";
+import { isArray, isObject, isString, orderBy } from "lodash";
 
 interface ComboListOptions {
     id?: Number,
@@ -67,4 +67,9 @@ export function resolveTemplates(response: any, creativeTypes: Array<any>): Arra
 
 export function getCreativeTypeByTemplateId(creativeTypes: Array<any>, creative_template_id: Number): any {
     return creativeTypes.find(type => type.id === creative_template_id);
+}
+
+export function getError(errors: Object, index: string) {
+    if (!errors.hasOwnProperty(index)) return;
+    return errors[index]
 }
