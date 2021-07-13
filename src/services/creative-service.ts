@@ -1,4 +1,5 @@
 import { TagCheck } from '@/interfaces/creative';
+import { AssociationDataCreate } from '@/interfaces/creativeAssociation';
 import { ImageDataCreate } from '@/interfaces/creativeBannerImage';
 import { AxiosGet, AxiosPost, GetData, GetErrors, GetMessage } from './axios-service';
 
@@ -8,14 +9,15 @@ export const CREATIVE_TYPES_ROUTE = '/api/list/creative_types'
 export const CREATIVE_CATEGORIES_ROUTE = '/api/list/advertiser_categories'
 export const CREATIVE_MIME_TYPES_ROUTE = '/api/list/mime_types'
 export const CREATIVE_CREATIVE_RULES_ROUTE = '/api/list/creative_rules'
-export const CREATIVE_EXPENDABLE_TYPES = '/api/list/expandable_types'
-export const CREATIVE_EXPENDABLE_DIRECTIONS = '/api/list/expandable_directions'
+export const CREATIVE_EXPANDABLE_TYPES = '/api/list/expandable_types'
+export const CREATIVE_EXPANDABLE_DIRECTIONS = '/api/list/expandable_directions'
 export const CREATIVE_IN_BANNER_VIDEOS = '/api/list/inbanner_videos'
 export const CREATIVE_VENDORS = '/api/list/creative_vendors'
 export const CREATIVE_ADDONS = '/api/creative_addons'
 export const CREATIVE_ASSETS = '/api/creative_assets'
 export const CREATIVES = '/api/creatives'
 export const CREATIVE_TAG_ROUTE = 'api/creatives/check_tag'
+export const CREATIVE_ASSOCIATE_ROUTE = 'api/creative_line_associations'
 
 class CreativeService {
 
@@ -97,9 +99,9 @@ class CreativeService {
         }
     }
 
-    async expendableTypes() {
+    async expandableTypes() {
         try {
-            const response = await AxiosGet(`${CREATIVE_EXPENDABLE_TYPES}?mode=list`);
+            const response = await AxiosGet(`${CREATIVE_EXPANDABLE_TYPES}?mode=list`);
             return Promise.resolve(GetData(response));
         } catch (error) {
             return Promise.reject({
@@ -110,9 +112,9 @@ class CreativeService {
         }
     }
 
-    async expendableDirections() {
+    async expandableDirections() {
         try {
-            const response = await AxiosGet(`${CREATIVE_EXPENDABLE_DIRECTIONS}?mode=list`);
+            const response = await AxiosGet(`${CREATIVE_EXPANDABLE_TYPES}?mode=list`);
             return Promise.resolve(GetData(response));
         } catch (error) {
             return Promise.reject({
@@ -215,6 +217,35 @@ class CreativeService {
             return Promise.resolve(GetData(response));
         } catch (error) {
             console.error("CreativeService::CreateNewCreative", { error: error });
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+
+
+    async show(id: number) {
+        try {
+            const response = await AxiosGet(`${CREATIVES}/${id}`);
+            return Promise.resolve(GetData(response));
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+
+    async associateLineItem(association: AssociationDataCreate) {
+        try {
+            const response = await AxiosPost(`${CREATIVE_ASSOCIATE_ROUTE}`, association);
+            console.log("CreativeService::associateLineItem", { response: response });
+            return Promise.resolve(GetData(response));
+        } catch (error) {
+            console.error("CreativeService::associateLineItem", { error: error });
             return Promise.reject({
                 success: false,
                 message: GetMessage(error),

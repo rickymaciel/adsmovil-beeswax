@@ -28,6 +28,7 @@
 			:dense="dense"
 			validate-on-blur
 			:persistent-hint="persistent_hint"
+			:clearable="clearable"
 		>
 			<!-- <template v-slot:prepend-inner>
 				<v-fade-transition leave-absolute>
@@ -134,6 +135,10 @@
 			required: {
 				type: Boolean,
 				default: false,
+			},
+			clearable: {
+				type: Boolean,
+				default: true,
 			},
 		},
 		data: function () {

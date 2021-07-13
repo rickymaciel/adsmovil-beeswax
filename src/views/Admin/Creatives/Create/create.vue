@@ -3,8 +3,16 @@
 		<Alertize></Alertize>
 		<v-layout class="d-block ma-0 pa-0">
 			<v-container class="my-0 py-0">
+				<!-- <v-card>
+					<v-card-title>creative: </v-card-title>
+					<v-card-text>{{ getCreative }}</v-card-text>
+				</v-card> -->
+				<!-- <v-card>
+					<v-card-title>getErrors: </v-card-title>
+					<v-card-text>{{ getErrors }}</v-card-text>
+				</v-card> -->
 				<Overview
-					:creative="creative"
+					:creative="getCreative"
 					:message_pixel="message_pixel"
 					:message_script="message_script"
 					:message_click_tracker="message_click_tracker"
@@ -17,8 +25,8 @@
 					@fetch-mime-types="fetchMimeTypes"
 					@fetch-creative-advertisers="fetchCreativeAdvertisers"
 					@selected-creative-advertiser="selectedCreativeAdvertiser"
-					@fetch-expendable-types="fetchExpendableTypes"
-					@fetch-expendable-directions="fetchExpendableDirections"
+					@fetch-expandable-types="fetchExpandableTypes"
+					@fetch-expandable-directions="fetchExpandableDirections"
 					@fetch-banner-videos="fetchInBannerVideos"
 					@fetch-vendors="fetchVendors"
 					@fetch-addons="fetchAddons"
@@ -42,15 +50,19 @@
 					@add-row-progress-event="addRowProgressEvent"
 					@delete-row-progress-event="deleteRowProgressEvent"
 					@validate-tag="validateTag"
-					@must-validated="mustValidated"
+					@selected-size="selectedSize"
 				></Overview>
+				<AssociatedLineForm
+					v-if="hasID"
+					:creative="getCreative"
+				></AssociatedLineForm>
 			</v-container>
 		</v-layout>
 	</v-layout>
 </template>
 
 <script lang="ts">
-	import { isEmpty, isUndefined } from "lodash";
+	import { isEmpty, isNull, isUndefined } from "lodash";
 	import Vue from "vue";
 	import Alertize from "../../../../components/Alertize.vue";
 	import { isUrl } from "../../../../services/rule-services";
@@ -64,18 +76,23 @@
 	import { initCreative } from "../../../../utils/fields";
 	import { TagCheck } from "../../../../interfaces/creative";
 
+	import AssociatedLineForm from "./associatedLineForm.vue";
+
 	export default Vue.extend({
 		name: "CreateCreative",
 		props: {},
-		components: { Alertize, Overview },
+		components: { Alertize, Overview, AssociatedLineForm },
 		data: () => ({
-			creative: initCreative(),
+			init_creative: null,
 			message_pixel: "",
 			message_script: "",
 			message_click_tracker: "",
 			tag_validated: false,
 		}),
-		created() {},
+		async created() {
+			this.init_creative = initCreative();
+			//this.init_creative = await getCreativeData();
+		},
 		mounted() {},
 		computed: {
 			getResponseTemplates() {
@@ -85,10 +102,36 @@
 			getAsset() {
 				return this.$store.state.creative.asset;
 			},
+
+			hasCreative() {
+				return (
+					!isUndefined(this.$store.state.creative.creative) &&
+					!isNull(this.$store.state.creative.creative)
+				);
+			},
+
+			hasID() {
+				return (
+					!isUndefined(this.getCreative.id) &&
+					!isNull(this.getCreative.id) &&
+					this.getCreative.id > 0
+				);
+			},
+
+			getCreative() {
+				if (this.hasCreative) {
+					return this.$store.state.creative.creative;
+				}
+				return this.init_creative;
+			},
+
+			getErrors() {
+				return this.$store.state.proccess.errors;
+			},
 		},
 		methods: {
 			updateCreativeTypeId(creative_type_id: number) {
-				this.creative.creative_type_id = creative_type_id;
+				this.init_creative.creative_type_id = creative_type_id;
 			},
 
 			async fetchCreativeTemplates() {
@@ -129,15 +172,15 @@
 				await this.setLoadingField(false);
 			},
 
-			async fetchExpendableTypes() {
+			async fetchExpandableTypes() {
 				await this.setLoadingField(true);
-				await this.dispatchExpendableTypes();
+				await this.dispatchExpandableTypes();
 				await this.setLoadingField(false);
 			},
 
-			async fetchExpendableDirections() {
+			async fetchExpandableDirections() {
 				await this.setLoadingField(true);
-				await this.dispatchExpendableDirections();
+				await this.dispatchExpandableDirections();
 				await this.setLoadingField(false);
 			},
 
@@ -171,9 +214,9 @@
 					await this.dispatchcreateAsset(formData);
 					await this.dispatchAssets();
 
-					this.creative.creative_ad_content.primary_asset_id =
+					this.init_creative.creative_ad_content.primary_asset_id =
 						this.getAsset.id;
-					this.creative.budget_type_id = 2;
+					this.init_creative.budget_type_id = 2;
 
 					await this.setLoadingField(false);
 				} catch (error) {
@@ -185,10 +228,13 @@
 			/**
 			 * Create Creative Image
 			 */
-			async createCreativeImage(creative: ImageDataCreate) {
+			async createCreativeImage(params: {
+				continue: boolean;
+				creative: ImageDataCreate;
+			}) {
 				try {
 					await this.setLoadingField(true);
-					await this.dispatchCreateImage(creative);
+					await this.dispatchCreative(params);
 					await this.setLoadingField(false);
 				} catch (error) {
 					console.error("createCreativeImage", { error: error });
@@ -199,10 +245,13 @@
 			/**
 			 * Create Creative Js Tag
 			 */
-			async createCreativeJsTag(creative: JsTagDataCreate) {
+			async createCreativeJsTag(params: {
+				continue: boolean;
+				creative: JsTagDataCreate;
+			}) {
 				try {
 					await this.setLoadingField(true);
-					await this.dispatchCreateJsTag(creative);
+					await this.dispatchCreative(params);
 					await this.setLoadingField(false);
 				} catch (error) {
 					console.error("createCreativeJsTag", { error: error });
@@ -213,10 +262,13 @@
 			/**
 			 * Create Creative IframeTag
 			 */
-			async createCreativeIframeTag(creative: IframeTagDataCreate) {
+			async createCreativeIframeTag(params: {
+				continue: boolean;
+				creative: IframeTagDataCreate;
+			}) {
 				try {
 					await this.setLoadingField(true);
-					await this.dispatchCreateIframeTag(creative);
+					await this.dispatchCreative(params);
 					await this.setLoadingField(false);
 				} catch (error) {
 					console.error("createCreativeIframeTag", { error: error });
@@ -227,10 +279,13 @@
 			/**
 			 * Create Creative MraidTag
 			 */
-			async createCreativeMraidTag(creative: MraidTagDataCreate) {
+			async createCreativeMraidTag(params: {
+				continue: boolean;
+				creative: MraidTagDataCreate;
+			}) {
 				try {
 					await this.setLoadingField(true);
-					await this.dispatchCreateMraidTag(creative);
+					await this.dispatchCreative(params);
 					await this.setLoadingField(false);
 				} catch (error) {
 					console.error("createCreativeMraidTag", { error: error });
@@ -241,10 +296,13 @@
 			/**
 			 * Create Creative Html5
 			 */
-			async createCreativeHtml5(creative: Html5DataCreate) {
+			async createCreativeHtml5(params: {
+				continue: boolean;
+				creative: Html5DataCreate;
+			}) {
 				try {
 					await this.setLoadingField(true);
-					await this.dispatchCreateHtml5(creative);
+					await this.dispatchCreative(params);
 					await this.setLoadingField(false);
 				} catch (error) {
 					console.error("createCreativeHtml5", { error: error });
@@ -255,10 +313,13 @@
 			/**
 			 * Create Creative Vast Inline
 			 */
-			async createCreativeVastInline(creative: VastInlineDataCreate) {
+			async createCreativeVastInline(params: {
+				continue: boolean;
+				creative: VastInlineDataCreate;
+			}) {
 				try {
 					await this.setLoadingField(true);
-					await this.dispatchCreateVastInline(creative);
+					await this.dispatchCreative(params);
 					await this.setLoadingField(false);
 				} catch (error) {
 					console.error("createCreativeVastInline", { error: error });
@@ -289,7 +350,7 @@
 				}
 
 				const index = this.getIndexByData(
-					this.creative.creative_addon_settings.pixels,
+					this.init_creative.creative_addon_settings.pixels,
 					item
 				);
 
@@ -298,18 +359,18 @@
 					return;
 				}
 
-				this.creative.creative_addon_settings.pixels.push(item);
-				this.creative.creative_addon_settings.pixel = "";
+				this.init_creative.creative_addon_settings.pixels.push(item);
+				this.init_creative.creative_addon_settings.pixel = "";
 			},
 
 			deletePixel(item: any) {
 				if (!item) return;
 				const index = this.getIndexByData(
-					this.creative.creative_addon_settings.pixels,
+					this.init_creative.creative_addon_settings.pixels,
 					item
 				);
 				if (index < 0) return;
-				this.creative.creative_addon_settings.pixels.splice(index, 1);
+				this.init_creative.creative_addon_settings.pixels.splice(index, 1);
 			},
 
 			/**
@@ -327,7 +388,7 @@
 				}
 
 				const index = this.getIndexByData(
-					this.creative.creative_addon_settings.scripts,
+					this.init_creative.creative_addon_settings.scripts,
 					item
 				);
 
@@ -336,8 +397,8 @@
 					return;
 				}
 
-				this.creative.creative_addon_settings.scripts.push(item);
-				this.creative.creative_addon_settings.script = "";
+				this.init_creative.creative_addon_settings.scripts.push(item);
+				this.init_creative.creative_addon_settings.script = "";
 			},
 
 			addNewClickTracker(item: any) {
@@ -351,7 +412,7 @@
 				}
 
 				const index = this.getIndexByData(
-					this.creative.creative_addon_settings.click_trackers,
+					this.init_creative.creative_addon_settings.click_trackers,
 					item
 				);
 
@@ -360,28 +421,30 @@
 					return;
 				}
 
-				this.creative.creative_addon_settings.click_trackers.push(item);
-				this.creative.creative_addon_settings.click_tracker = "";
+				this.init_creative.creative_addon_settings.click_trackers.push(
+					item
+				);
+				this.init_creative.creative_addon_settings.click_tracker = "";
 			},
 
 			deleteScript(item: any) {
 				if (!item) return;
 				const index = this.getIndexByData(
-					this.creative.creative_addon_settings.scripts,
+					this.init_creative.creative_addon_settings.scripts,
 					item
 				);
 				if (index < 0) return;
-				this.creative.creative_addon_settings.scripts.splice(index, 1);
+				this.init_creative.creative_addon_settings.scripts.splice(index, 1);
 			},
 
 			deleteclickTracker(item: any) {
 				if (!item) return;
 				const index = this.getIndexByData(
-					this.creative.creative_addon_settings.click_trackers,
+					this.init_creative.creative_addon_settings.click_trackers,
 					item
 				);
 				if (index < 0) return;
-				this.creative.creative_addon_settings.click_trackers.splice(
+				this.init_creative.creative_addon_settings.click_trackers.splice(
 					index,
 					1
 				);
@@ -394,23 +457,26 @@
 				if (isEmpty(item)) return;
 
 				const index = this.getIndexByData(
-					this.creative.creative_addon_settings.vast_events,
+					this.init_creative.creative_addon_settings.vast_events,
 					item
 				);
 
 				if (index > -1) return;
 
-				this.creative.creative_addon_settings.vast_events.push(item);
+				this.init_creative.creative_addon_settings.vast_events.push(item);
 			},
 
 			deleteRowVastEvent(item: any) {
 				if (!item) return;
 				const index = this.getIndexByData(
-					this.creative.creative_addon_settings.vast_events,
+					this.init_creative.creative_addon_settings.vast_events,
 					item
 				);
 				if (index < 0) return;
-				this.creative.creative_addon_settings.vast_events.splice(index, 1);
+				this.init_creative.creative_addon_settings.vast_events.splice(
+					index,
+					1
+				);
 			},
 
 			/**
@@ -421,23 +487,25 @@
 				if (isEmpty(item)) return;
 
 				const index = this.getIndexByData(
-					this.creative.creative_addon_settings.progress_events,
+					this.init_creative.creative_addon_settings.progress_events,
 					item
 				);
 
 				if (index > -1) return;
 
-				this.creative.creative_addon_settings.progress_events.push(item);
+				this.init_creative.creative_addon_settings.progress_events.push(
+					item
+				);
 			},
 
 			deleteRowProgressEvent(item: any) {
 				if (!item) return;
 				const index = this.getIndexByData(
-					this.creative.creative_addon_settings.progress_events,
+					this.init_creative.creative_addon_settings.progress_events,
 					item
 				);
 				if (index < 0) return;
-				this.creative.creative_addon_settings.progress_events.splice(
+				this.init_creative.creative_addon_settings.progress_events.splice(
 					index,
 					1
 				);
@@ -447,8 +515,9 @@
 				try {
 					const tag: TagCheck = {
 						creative_rule_id:
-							this.creative.creative_ad_content.creative_rule_id,
-						creative_content_tag: this.creative.creative_ad_content.tag,
+							this.init_creative.creative_ad_content.creative_rule_id,
+						creative_content_tag:
+							this.init_creative.creative_ad_content.tag,
 					};
 					await this.setLoadingField(true);
 					const response = await this.dispatchValidateTag(tag);
@@ -461,15 +530,21 @@
 				}
 			},
 
+			selectedSize(selectedSize: { width: any; height: any; id: any }) {
+				this.init_creative.creative_attributes.size_id = selectedSize.id;
+				this.init_creative.creative_attributes.width = selectedSize.width;
+				this.init_creative.creative_attributes.height = selectedSize.height;
+			},
+
 			async assignTag(tag: any) {
 				this.tag_validated = !isEmpty(tag) && !isUndefined(tag);
 				if (this.tag_validated) {
-					this.creative.creative_ad_content.tag = tag;
+					this.init_creative.creative_ad_content.tag = tag;
 				}
 			},
 
 			selectedCreativeAdvertiser(creative_advertiser: any) {
-				this.creative.creative_advertiser = creative_advertiser;
+				this.init_creative.creative_advertiser = creative_advertiser;
 			},
 
 			/**
@@ -509,11 +584,11 @@
 			async dispatchBudgetTypes() {
 				return this.$store.dispatch("custom_list/getBudgetTypes");
 			},
-			async dispatchExpendableTypes() {
-				return this.$store.dispatch("creative/expendableTypes");
+			async dispatchExpandableTypes() {
+				return this.$store.dispatch("creative/expandableTypes");
 			},
-			async dispatchExpendableDirections() {
-				return this.$store.dispatch("creative/expendableDirections");
+			async dispatchExpandableDirections() {
+				return this.$store.dispatch("creative/expandableDirections");
 			},
 			async dispatchInBannerVideos() {
 				return this.$store.dispatch("creative/inBannerVideos");
@@ -534,45 +609,11 @@
 			},
 
 			/**
-			 * Dispatch Create CreativeImage
+			 * Dispatch Create
 			 */
-			async dispatchCreateImage(creative: ImageDataCreate) {
-				return this.$store.dispatch("creative/CreateNewCreative", creative);
-			},
-
-			/**
-			 * Dispatch Create CreativeJsTag
-			 */
-			async dispatchCreateJsTag(creative: JsTagDataCreate) {
-				return this.$store.dispatch("creative/CreateNewCreative", creative);
-			},
-
-			/**
-			 * Dispatch Create CreativeIframeTag
-			 */
-			async dispatchCreateIframeTag(creative: IframeTagDataCreate) {
-				return this.$store.dispatch("creative/CreateNewCreative", creative);
-			},
-
-			/**
-			 * Dispatch Create CreativeMraidTag
-			 */
-			async dispatchCreateMraidTag(creative: MraidTagDataCreate) {
-				return this.$store.dispatch("creative/CreateNewCreative", creative);
-			},
-
-			/**
-			 * Dispatch Create dispatchCreateHtml5
-			 */
-			async dispatchCreateHtml5(creative: Html5DataCreate) {
-				return this.$store.dispatch("creative/CreateNewCreative", creative);
-			},
-
-			/**
-			 * Dispatch Create dispatchCreateVastInline
-			 */
-			async dispatchCreateVastInline(creative: VastInlineDataCreate) {
-				return this.$store.dispatch("creative/CreateNewCreative", creative);
+			async dispatchCreative(params: { continue: boolean; creative: any }) {
+				console.error("dispatchCreative", { params: params });
+				return this.$store.dispatch("creative/CreateNewCreative", params);
 			},
 
 			/**

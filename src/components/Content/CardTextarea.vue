@@ -102,7 +102,7 @@
 			},
 			clearable: {
 				type: Boolean,
-				default: false,
+				default: true,
 			},
 			error: {
 				type: Boolean,
