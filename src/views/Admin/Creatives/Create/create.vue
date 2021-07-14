@@ -3,14 +3,14 @@
 		<Alertize></Alertize>
 		<v-layout class="d-block ma-0 pa-0">
 			<v-container class="my-0 py-0">
-				<v-card>
+				<!-- <v-card>
 					<v-card-title>creative: </v-card-title>
 					<v-card-text>{{ getCreative }}</v-card-text>
 				</v-card>
 				<v-card>
 					<v-card-title>getErrors: </v-card-title>
 					<v-card-text>{{ getErrors }}</v-card-text>
-				</v-card>
+				</v-card> -->
 				<Overview
 					:creative="getCreative"
 					:message_pixel="message_pixel"
