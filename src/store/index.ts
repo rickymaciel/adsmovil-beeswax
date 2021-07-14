@@ -417,7 +417,6 @@ export default new Vuex.Store({
                 async all({ commit }) {
                     try {
                         const response = await AdvertiserService.all(undefined, { order: 'asc', sort: 'name' })
-                        console.log('advertiser::all', { response: response });
                         commit('SET_ADVERTISERS_LIST', response)
                         return await Promise.resolve(response)
                     } catch (error) {
@@ -504,10 +503,9 @@ export default new Vuex.Store({
             },
             getters: {},
             actions: {
-
-                async paginated({ commit }, paginated: CustomListPaginated, filters?: CustomListFilters, options?: CustomListOptions) {
+                async paginated({ commit }, params) {
                     try {
-                        const response = await CustomListService.paginated(paginated, filters, options)
+                        const response = await CustomListService.paginated(params?.paginated, params?.filters, params?.options)
                         commit('SET_RESULT_PAGINATED', response)
                         return await Promise.resolve(response)
                     } catch (error) {
@@ -1188,9 +1186,9 @@ export default new Vuex.Store({
                 },
             },
             actions: {
-                async paginated({ commit }, filters?: ModifierFilters, options?: ModifierOptions) {
+                async paginated({ commit }, params) {
                     try {
-                        const response = await ModifierService.paginated(filters, options)
+                        const response = await ModifierService.paginated(params?.paginated, params?.filters, params?.options)
                         commit('SET_RESULT_PAGINATED', response)
                         return await Promise.resolve(response)
                     } catch (error) {
@@ -1352,7 +1350,7 @@ export default new Vuex.Store({
 
                 async paginated({ commit }, params) {
                     try {
-                        const response = await LineItemService.paginated(params)
+                        const response = await LineItemService.paginated(params?.paginated, params?.filters, params?.options)
                         commit('SET_RESULT_PAGINATED', response)
                         return await Promise.resolve(response)
                     } catch (error) {
@@ -1451,6 +1449,10 @@ export default new Vuex.Store({
                     console.log('@Actions::SET_CREATIVE', { _creative: _creative });
                     state.creative = _creative;
                 },
+                PUSH_LINE_ASSOCIATION(state, _line_association = null) {
+                    console.log('@Actions::PUSH_LINE_ASSOCIATION', { _line_association: _line_association });
+                    state.creative.line_associations.push(_line_association);
+                },
                 SET_CREATIVE_SIZES(state, _sizes) {
                     state.creative_sizes = _sizes
                 },
@@ -1514,6 +1516,7 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
+
                 async creativeTemplates({ commit, state }) {
                     try {
                         const response = await CreativeService.creativeTemplates()
@@ -1525,6 +1528,7 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
+
                 async creativeTypes({ commit }) {
                     try {
                         const response = await CreativeService.creativeTypes()
@@ -1535,6 +1539,7 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
+
                 async advertiserCategories({ commit }) {
                     try {
                         const response = await CreativeService.advertiserCategories()
@@ -1545,6 +1550,7 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
+
                 async getCreativeTypeByTemplateId({ }, params: { creativeTypes: Array<any>, creative_template_id: Number }) {
                     try {
                         if (isEmpty(params.creativeTypes) && params.creative_template_id < 1) return await Promise.resolve();
@@ -1555,6 +1561,7 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
+
                 async mimeTypes({ commit }) {
                     try {
                         const response = await CreativeService.mimeTypes()
@@ -1565,6 +1572,7 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
+
                 async creativeRules({ commit }) {
                     try {
                         const response = await CreativeService.creativeRules()
@@ -1595,6 +1603,7 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
+
                 async inBannerVideos({ commit }) {
                     try {
                         const response = await CreativeService.inBannerVideos()
@@ -1605,6 +1614,7 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
+
                 async vendors({ commit }) {
                     try {
                         const response = await CreativeService.vendors()
@@ -1615,6 +1625,7 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
+
                 async addons({ commit }) {
                     try {
                         const response = await CreativeService.addons()
@@ -1625,6 +1636,7 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
+
                 async assets({ commit }) {
                     try {
                         const response = await CreativeService.assets()
@@ -1635,6 +1647,7 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
+
                 async creativeAssets({ commit }, params) {
                     try {
                         const response = await CreativeService.creativeAssets(params)
@@ -1645,11 +1658,10 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
-                async CreateNewCreative({ commit }, params) {
+
+                async CreateNewCreative({ commit }, params: { continue: Boolean, creative: any }) {
                     try {
-                        console.log('@Actions::CreateNewCreative', { params: params });
                         const response = await CreativeService.CreateNewCreative(params.creative)
-                        console.log("CreateNewCreative", { params: params, response: response });
                         commit('SET_CREATIVE', response)
                         CreateNotification(
                             this.dispatch,
@@ -1667,6 +1679,7 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
+
                 async validateTag({ commit }, tag: TagCheck) {
                     try {
                         const response = await CreativeService.validateTag(tag)
@@ -1680,7 +1693,17 @@ export default new Vuex.Store({
                 async associateLineItem({ commit }, association: AssociationDataCreate) {
                     try {
                         const response = await CreativeService.associateLineItem(association)
-                        //commit('SET_CREATIVE', response)
+                        commit('PUSH_LINE_ASSOCIATION', response)
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+                async paginated({ commit }, params) {
+                    try {
+                        const response = await CreativeService.paginated(params?.filters, params?.options, params?.paginated);
+                        commit('SET_RESULT_PAGINATED', response)
                         return await Promise.resolve(response)
                     } catch (error) {
                         CatcherError(this.dispatch, error);

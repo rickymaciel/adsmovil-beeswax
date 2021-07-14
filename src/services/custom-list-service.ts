@@ -26,7 +26,7 @@ class CustomListService {
             }
 
             if (!isUndefined(options)) {
-                option += getOptions(options, 'all')
+                option += getOptions(options, 'paginated', paginated)
             }
 
             const url = getURL(filter, option)

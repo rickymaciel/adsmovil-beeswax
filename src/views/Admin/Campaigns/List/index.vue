@@ -20,9 +20,10 @@
 				:total="Number(getResultPaginate.total)"
 				:headers="prepareTableHeaders"
 				:items="prepareTableContent"
-				:option="option"
+				:option="options"
 				:filters="filters"
 				@selected-option="selectedOption"
+				@update-paginate="updatePaginate"
 			></TableList>
 		</v-layout>
 	</v-container>
@@ -52,7 +53,7 @@
 				limit: 25,
 			} as Paginated,
 			filters: {},
-			option: {
+			options: {
 				sort: "",
 				order: "asc",
 			} as SortingOption,
@@ -232,7 +233,7 @@
 				option: SortingOption;
 			}) {
 				this.filters = params.filters;
-				this.option = params.option;
+				this.options = params.option;
 				this.updatePaginate(1);
 				await this.getPaginated();
 			},

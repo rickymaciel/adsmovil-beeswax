@@ -23,6 +23,7 @@
 				:option="option"
 				:filters="filters"
 				@selected-option="selectedOption"
+				@update-paginate="updatePaginate"
 			></TableList>
 		</v-layout>
 	</v-container>

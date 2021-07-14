@@ -310,6 +310,7 @@ export function initCreative() {
             responsive: false,
             in_banner_video_id: "",
         },
+        line_associations: [],
     }
 };
 

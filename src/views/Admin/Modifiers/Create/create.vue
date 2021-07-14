@@ -246,7 +246,6 @@
 		async mounted() {
 			this.setLoading(true);
 			const result = await this.dispatchCategories();
-			console.log("mounted:dispatchCategories", { result: result });
 			this.setLoading(false);
 		},
 		computed: {
@@ -312,18 +311,12 @@
 			async validate() {
 				let form = this.$refs.form;
 				const valid = await form.validate();
-				console.log("validate", {
-					form: form,
-					validate: valid,
-					advertiser: this.advertiser,
-				});
 				return await valid;
 			},
 			async handleSubmit() {
 				if (!(await this.validate())) return;
 				this.setLoading(true);
 				const result = await this.dispatchAdvertiser();
-				console.log("handleSubmit", { result: result });
 
 				if (isUndefined(result) || isNull(result) || isEmpty(result)) {
 					this.setNotification({
@@ -357,7 +350,6 @@
 				this.show_tooltip_domain = !this.show_tooltip_domain;
 			},
 			toggleStatus(status: boolean) {
-				console.log(status);
 				this.active = Boolean(status);
 			},
 			async dispatchCategories() {
@@ -373,7 +365,6 @@
 					app_bundle: this.app_bundle,
 					active: this.active,
 				} as AdvertiserDataCreate;
-				console.log("dispatchAdvertiser", { advertiser: this.advertiser });
 				return this.$store.dispatch(
 					"advertiser/createAdvertiser",
 					this.advertiser,

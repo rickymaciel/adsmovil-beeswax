@@ -1,4 +1,4 @@
-import { TagCheck } from '@/interfaces/creative';
+import { CreativeFilters, CreativeOptions, CreativePaginated, TagCheck } from '@/interfaces/creative';
 import { AssociationDataCreate } from '@/interfaces/creativeAssociation';
 import { ImageDataCreate } from '@/interfaces/creativeBannerImage';
 import { AxiosGet, AxiosPost, GetData, GetErrors, GetMessage } from './axios-service';
@@ -17,9 +17,35 @@ export const CREATIVE_ADDONS = '/api/creative_addons'
 export const CREATIVE_ASSETS = '/api/creative_assets'
 export const CREATIVES = '/api/creatives'
 export const CREATIVE_TAG_ROUTE = 'api/creatives/check_tag'
+import { isEmpty, isUndefined } from 'lodash'
 export const CREATIVE_ASSOCIATE_ROUTE = 'api/creative_line_associations'
 
 class CreativeService {
+
+    async paginated(filters?: CreativeFilters, options?: CreativeOptions, paginated?: CreativePaginated) {
+        try {
+            let filter = ''
+            let option = ''
+            
+            if ( !isUndefined(filters) ) {
+                filter = getFilters(filters)
+            }
+
+            if ( !isUndefined(options) ) {
+                option += getOptions(options, 'paginated', paginated);
+            }
+
+            const url = getURL(filter, option)
+            const response = await AxiosGet(CREATIVES + url)
+            return Promise.resolve(GetData(response));
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
 
     async creativeSizes() {
         try {
@@ -254,5 +280,49 @@ class CreativeService {
         }
     }
 }
+
+function getFilters(filters: CreativeFilters): string {
+    let filter = '';
+
+    const external_id = (isUndefined(filters.external_id)) ? '' : filters.external_id
+    const alternative_id = (isUndefined(filters.alternative_id)) ? '' : filters.alternative_id
+    const name = (isUndefined(filters.name)) ? '' : filters.name
+    const model_type_id = (isUndefined(filters.model_type_id)) ? '' : filters.model_type_id
+    const active = (isUndefined(filters.active)) ? '' : filters.active
+
+    filter += 'filters[external_id]=' + external_id + '&filters[alternative_id]=' + alternative_id + '&filters[name]=' + name + '&filters[model_type_id]=' + model_type_id + '&filters[active]=' + active
+
+    return filter
+}
+
+function getOptions(options: CreativeOptions, mode: string, paginated?: CreativePaginated): string {
+    let option = ''
+
+    const sort = (isUndefined(options.sort)) ? '' : options.sort
+    const order = (isUndefined(options.order)) ? '' : options.order
+
+    option += 'sort=' + sort + '&order=' + order + '&mode=' + mode
+
+    if (mode == 'paginated') {
+        option += '&page=' + paginated?.page + '&limit=' + paginated?.limit
+    }
+
+    return option
+}
+
+function getURL(filters: string, options: string): string {
+    let url = '';
+    
+    if (!isEmpty(filters) && !isEmpty(options)) {
+        url = '?' + filters + '&' + options
+    } else if (!isEmpty(filters)) {
+        url = '?' + filters
+    } else if (!isEmpty(options)) {
+        url = '?' + options
+    }
+
+    return url
+}
+
 
 export default new CreativeService()

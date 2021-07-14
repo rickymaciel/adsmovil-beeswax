@@ -9,7 +9,6 @@ class ListItemService {
     async upload(listItem: any) {
         try {
             const response = await AxiosPost(LIST_ITEM_UPLOAD, listItem)
-            console.log('ListItemService:upload: ', { response: response })
             if (response.status < 200 && response.status > 300) {
                 return null
             }

@@ -61,7 +61,6 @@ export function resolveTemplates(response: any, creativeTypes: Array<any>): Arra
         ordered.push(l);
     })
 
-    //console.log("resolveTemplates", { ordered: ordered }); sortBy(ordered, ['value'], ['asc'])
     return ordered;
 }
 

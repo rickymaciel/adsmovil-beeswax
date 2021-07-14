@@ -1348,13 +1348,11 @@
 			},
 
 			calculateDuration(start: any, end: any){
-				
 				if( !(start.isValid() && end.isValid()) ){
 					return -1;
 				}
 				const diff = end.diff(start, "days");
 				const duration = this.moment.duration(end.diff(start));
-				
 				return Math.ceil(duration.asDays());
 			},
 

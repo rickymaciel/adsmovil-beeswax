@@ -12,7 +12,7 @@ export const MODIFIER_ROUTE = '/api/modifiers'
 
 class ModifierService {
 
-    async paginated(filters?: ModifierFilters, options?: ModifierOptions) {
+    async paginated(paginated?: ModifierPaginated, filters?: ModifierFilters, options?: ModifierOptions ) {
         try {
             let filter = ''
             let option = ''
@@ -22,7 +22,7 @@ class ModifierService {
             }
 
             if (!isUndefined(options)) {
-                option += getOptions(options, 'paginated')
+                option += getOptions(options, 'paginated', paginated)
             }
 
             const url = getURL(filter, option)

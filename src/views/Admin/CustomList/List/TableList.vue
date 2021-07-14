@@ -174,15 +174,17 @@
 		</v-data-table>
 		<div v-if="items.length" class="text-center py-8">
 			<v-pagination
-				v-model="current_page"
+				v-model="currentPage"
 				:length="getLength"
+				@input="updatePaginate"
 			></v-pagination>
 		</div>
 	</section>
 </template>
 
 <script lang="ts">
-	import { isNull, orderBy } from "lodash";
+	import { SortingOption } from "@/interfaces/paginated";
+import { isNull, orderBy } from "lodash";
 	import Vue from "vue";
 
 	export default Vue.extend({
@@ -217,6 +219,18 @@
 				type: Array,
 				default: [],
 			},
+			option: {
+				type: Object,
+				default: function () {
+					return {};
+				},
+			},
+			filters: {
+				type: Object,
+				default: function () {
+					return {};
+				},
+			},
 		},
 		components: {},
 		data: () => ({
@@ -239,6 +253,15 @@
 		mounted() {},
 
 		computed: {
+			currentPage: {
+				set(val) {
+					this.$emit("update-current-page", val);
+				},
+				get() {
+					return this.current_page;
+				},
+			},
+
 			getLength() {
 				return Math.ceil(this.total / this.per_page);
 			},
@@ -295,6 +318,15 @@
 			},
 			removeFilterName() {
 				this.filter.name.value = "";
+			},
+			updatePaginate(data: Number) {
+				this.$emit("update-paginate", data);
+			},
+			selectedOption(params: { option: SortingOption; filter: string }) {
+				this.$emit("selected-option", {
+					option: params.option,
+					filter: params.filter,
+				});
 			},
 		},
 
