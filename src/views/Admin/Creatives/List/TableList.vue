@@ -266,6 +266,15 @@
 			<template v-slot:[`item.thumbail`]="{ item }">
 				<v-card-actions>
 					<v-img
+						v-if="item.thumbail"
+						style="borderRadius: 5px"
+						:lazy-src="item.thumbail"
+						max-height="45"
+						max-width="45"
+						:src="item.thumbail"
+					></v-img>
+					<v-img
+						v-else
 						style="borderRadius: 5px"
 						lazy-src="https://picsum.photos/id/11/10/6"
 						max-height="45"
@@ -322,8 +331,9 @@
 		<!-- PAGINATE --->
 		<div v-if="items.length" class="text-center py-8">
 			<v-pagination
-				v-model="current_page"
+				v-model="currentPage"
 				:length="getLength"
+				@input="updatePaginate"
 			></v-pagination>
 		</div>
 
@@ -408,6 +418,15 @@
 		mounted() {},
 
 		computed: {
+			currentPage: {
+				set(val) {
+					this.$emit("update-current-page", val);
+				},
+				get() {
+					return this.current_page;
+				},
+			},
+
 			getLength() {
 				return Math.ceil(this.total / this.per_page);
 			},
@@ -440,7 +459,7 @@
 				}
 
 				// filter by size
-				if (!isNull(this.filter.size.value)) {
+				/*if (!isNull(this.filter.size.value)) {
 					this.filtered = this.filtered.filter(
 						(item: { size: string }) => {
 							return item.size
@@ -448,10 +467,10 @@
 								.includes(this.filter.size.value.toLowerCase());
 						}
 					);
-				}
+				}*/
 
 				// filter by type
-				if (!isNull(this.filter.type.value)) {
+				/*if (!isNull(this.filter.type.value)) {
 					this.filtered = this.filtered.filter(
 						(item: { type: string }) => {
 							return item.type
@@ -459,10 +478,10 @@
 								.includes(this.filter.type.value.toLowerCase());
 						}
 					);
-				}
+				}*/
 
 				// filter by line items
-				if (!isNull(this.filter.lineItems.value)) {
+				/*if (!isNull(this.filter.lineItems.value)) {
 					this.filtered = this.filtered.filter(
 						(item: { lineItems: string }) => {
 							return item.lineItems.toString()
@@ -470,10 +489,10 @@
 								.includes(this.filter.lineItems.value.toLowerCase());
 						}
 					);
-				}
+				}*/
 
 				// filter by thumbail
-				if (!isNull(this.filter.thumbail.value)) {
+				/*if (!isNull(this.filter.thumbail.value)) {
 					this.filtered = this.filtered.filter(
 						(item: { thumbail: string }) => {
 							return item.thumbail
@@ -481,7 +500,7 @@
 								.includes(this.filter.thumbail.value.toLowerCase());
 						}
 					);
-				}
+				}*/
 
 				this.sorteredData();
 				return this.filtered;
@@ -507,6 +526,9 @@
 			},
 			getActiveText(active: Boolean) {
 				return active ? "Active" : "Inactive";
+			},
+			updatePaginate(data: Number) {
+				this.$emit("update-paginate", data);
 			},
 			removeFilterName() {
 				this.filter.name.value = "";

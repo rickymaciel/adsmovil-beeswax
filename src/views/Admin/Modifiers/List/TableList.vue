@@ -341,6 +341,18 @@
 				type: Array,
 				default: [],
 			},
+			option: {
+				type: Object,
+				default: function () {
+					return {};
+				},
+			},
+			filters: {
+				type: Object,
+				default: function () {
+					return {};
+				},
+			},
 		},
 		components: {},
 		data: () => ({
@@ -495,16 +507,5 @@
 				this.filter.advertiserId.value = "";
 			},
 		},
-
-		// watch: {
-		// 	"filter.id.order": function (data) {
-		// 		this.filtered = this.filteredData;
-		// 		console.log("watch:id:order", {
-		// 			data: data,
-		// 			list: this.filtered,
-		// 			filter: this.filter,
-		// 		});
-		// 	},
-		// },
 	});
 </script>

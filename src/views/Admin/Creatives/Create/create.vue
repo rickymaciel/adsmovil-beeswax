@@ -3,14 +3,14 @@
 		<Alertize></Alertize>
 		<v-layout class="d-block ma-0 pa-0">
 			<v-container class="my-0 py-0">
-				<!-- <v-card>
+				<v-card>
 					<v-card-title>creative: </v-card-title>
 					<v-card-text>{{ getCreative }}</v-card-text>
-				</v-card> -->
-				<!-- <v-card>
+				</v-card>
+				<v-card>
 					<v-card-title>getErrors: </v-card-title>
 					<v-card-text>{{ getErrors }}</v-card-text>
-				</v-card> -->
+				</v-card>
 				<Overview
 					:creative="getCreative"
 					:message_pixel="message_pixel"
@@ -18,6 +18,7 @@
 					:message_click_tracker="message_click_tracker"
 					:tag_validated="tag_validated"
 					@update-creative-type-id="updateCreativeTypeId"
+					@update-creative-type="updateCreativeType"
 					@fetch-creative-templates="fetchCreativeTemplates"
 					@fetch-creative-sizes="fetchCreativeSizes"
 					@fetch-advertiser-categories="fetchAdvertiserCategories"
@@ -130,7 +131,17 @@
 			},
 		},
 		methods: {
+			updateCreativeType(data: { creative_type_id: number }) {
+				console.log("updateCreativeType", {
+					data: data,
+				});
+				this.init_creative.creative_type_id = data.creative_type_id;
+			},
+
 			updateCreativeTypeId(creative_type_id: number) {
+				console.log("updateCreativeTypeId", {
+					creative_type_id: creative_type_id,
+				});
 				this.init_creative.creative_type_id = creative_type_id;
 			},
 
@@ -612,7 +623,7 @@
 			 * Dispatch Create
 			 */
 			async dispatchCreative(params: { continue: boolean; creative: any }) {
-				console.error("dispatchCreative", { params: params });
+				console.log("dispatchCreative", { params: params });
 				return this.$store.dispatch("creative/CreateNewCreative", params);
 			},
 

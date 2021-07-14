@@ -48,16 +48,12 @@ class CampaignService {
 
     async paginated(params: { paginated?: CampaingPaginated, filters?: CampaingFilters, options?: CampaingOptions }) {
         try {
-
-            console.log('CampaignService::paginated', { params: params });
-
             let filter = ''
             let option = ''
 
             if (!isUndefined(params.filters)) {
                 filter = getFilters(params.filters)
             }
-            console.log('CampaignService::paginated', { filter: filter });
 
             if (!isUndefined(params.options)) {
                 option += getOptions(params.options, 'paginated', params.paginated)

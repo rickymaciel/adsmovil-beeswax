@@ -1,7 +1,11 @@
 <template>
 	<v-container class="my-0">
 		<v-layout column>
-			<Buttons></Buttons>
+			<Buttons
+				:limit="paginated.limit"
+				@selected-limit="selectedLimit"
+				to="/admin/modifiers/create"
+			></Buttons>
 		</v-layout>
 		<v-layout column>
 			<TableList
@@ -14,6 +18,11 @@
 				:total="Number(getResultPaginate.total)"
 				:headers="prepareTableHeaders"
 				:items="prepareTableContent"
+				:filters="filters"
+				:options="options"
+				:limit="paginated.limit"
+				@selected-option="selectedOption"
+				@update-paginate="updatePaginate"
 			></TableList>
 		</v-layout>
 	</v-container>
@@ -21,7 +30,7 @@
 
 <script lang="ts">
 	import TableList from "./TableList.vue";
-	import Buttons from "../List/Buttons.vue";
+	import Buttons from "../../Commons/Buttons.vue";
 	import Vue from "vue";
 	import {
 		Modifier,
@@ -30,12 +39,24 @@
 		ResultPaginate,
 	} from "../../../../interfaces/modifier";
 	import { isNull, isUndefined } from "lodash";
+	import { Paginated, SortingOption } from "@/interfaces/paginated";
+	import ParamService from "../../../../services/params-service";
+
 	export default Vue.extend({
 		name: "ModifiersList",
 		props: {},
 		components: { TableList, Buttons },
 		data: () => ({
 			title: "List",
+			paginated: {
+					page: 1,
+					limit: 25,
+				} as Paginated,
+				filters: {},
+				options: {
+					sort: "",
+					order: "asc",
+				} as SortingOption,
 		}),
 		created() {},
 		async mounted() {
@@ -135,14 +156,14 @@
 			setLoading(_loading: Boolean) {
 				this.$store.state.proccess.loading = _loading;
 			},
-			async getPaginated(
-				filters?: ModifierFilters,
-				options?: ModifierOptions
-			) {
+			async getPaginated() {
 				return this.$store.dispatch(
 					"modifier/paginated",
-					filters,
-					options,
+					await ParamService.getParams(
+						this.paginated,
+						this.filters,
+						this.options
+					),
 					{
 						root: true,
 					}
@@ -155,6 +176,44 @@
 				// Aquí sugiero que si hay un App Settings
 				// tengamos la cadena de formato para fechas y/o Horas establecidas como parámetro global
 				return this.moment(d).format("YYYY-MM-DD HH:mm:ss");
+			},
+			async selectedOption(params: {
+				option: SortingOption;
+				filter: string;
+			}) {
+				this.setFilter({ key: params.option.sort, value: params.filter });
+				this.updatePaginate(1);
+				await this.updateParams({
+					filters: this.filters,
+					option: params.option,
+				});
+			},
+			updatePaginate(data: any) {
+				this.paginated.page = data;
+			},
+			async selectedLimit(limit: number) {
+				this.paginated.limit = limit;
+				this.updatePaginate(1);
+				await this.getPaginated();
+			},
+			async updateParams(params: {
+				filters: ModifierFilters;
+				options: SortingOption;
+			}) {
+				this.filters = params.filters;
+				this.options = params.options;
+				this.updatePaginate(1);
+				await this.getPaginated();
+			},
+		},
+		watch: {
+			"paginated.page"(val, old) {
+				if (val !== old) {
+					this.getPaginated();
+				}
+			},
+			filters(val, old) {
+				console.log("index::watch:filters", { val: val, old: old });
 			},
 		},
 	});

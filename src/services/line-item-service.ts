@@ -11,7 +11,7 @@ export const LINE_ITEM_ROUTE = '/api/line_items'
 
 class LineItemService {
 
-    async paginated(filters?: LineItemFilters, options?: LineItemOptions) {
+    async paginated(paginated?: LineItemPaginated, filters?: LineItemFilters, options?: LineItemOptions ) {
         try {
             let filter = ''
             let option = ''
@@ -21,7 +21,7 @@ class LineItemService {
             }
 
             if (!isUndefined(options)) {
-                option += getOptions(options, 'paginated')
+                option += getOptions(options, 'paginated', paginated)
             }
 
             const url = getURL(filter, option)

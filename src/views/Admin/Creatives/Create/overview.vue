@@ -203,7 +203,7 @@
 					<!-- creative_type_id: [hidden] | obtained by selecting creative_template_id -->
 					<v-col
 						class="pe-lg-16 pa-0"
-						v-if="false"
+						v-if="true"
 						cols="12"
 						sm="12"
 						md="4"
@@ -1697,8 +1697,12 @@
 
 			async updateTemplate(params: any) {
 				const response = await this.getCreativeTypeByTemplateId();
-				if (!response && !response.creative_type_id) return;
-				this.$emit("update-creative-type-id", response.creative_type_id);
+				console.log("updateTemplate", {
+					response: response,
+					params: params,
+				});
+				if (!response) return;
+				this.$emit("update-creative-type", response);
 			},
 
 			async addDateValidations() {
@@ -1937,9 +1941,6 @@
 					{
 						creativeTypes: this.getResponseTemplates,
 						creative_template_id: this.creative.creative_template_id,
-					},
-					{
-						root: true,
 					}
 				);
 			},
