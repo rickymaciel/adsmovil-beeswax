@@ -10,17 +10,21 @@ export async function matchings (token: string) {
 
     const matchings = [] as any
 
-    if (!isEmpty(response) && Object.keys(response).length > 0) {
-      Object.keys(response).forEach(function (key) {
-        const matching = {
-          id: parseInt(key),
-          name: response[key]
-        } as Matching
+    if (response.success) {
+      let data = response.content
 
-        matchings.push(matching)
-      })
+      if (Object.keys(data).length > 0) {
+        Object.keys(data).forEach(function (key) {
+          const matching = {
+            id: parseInt(key),
+            name: response[key]
+          } as Matching
 
-      return matchings
+          matchings.push(matching)
+        })
+
+        return matchings
+      }
     }
 
     return null

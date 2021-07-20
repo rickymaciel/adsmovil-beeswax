@@ -22,6 +22,7 @@
 			:messages="messages"
 			@click:append="clickAppend"
 			@change="changeEvent"
+			@blur="blurEvent"
 			:validate-on-blur="false"
 			:loading="isLoading"
 			:type="type"
@@ -29,6 +30,7 @@
 			:disabled="disabled"
 			:value="getValue"
 			:error-messages="error_messages"
+			v-on:keyup.enter="enterHandler"
 		>
 			<!-- <template v-slot:prepend-inner>
 				<v-fade-transition leave-absolute>
@@ -212,17 +214,19 @@
 				return isEmpty(data);
 			},
 			clickAppendOuter(params: any) {
-				console.log("CardTextField::clickAppendOuter", { params: params });
 				this.$emit("click-append-outer", params);
 			},
 			clickAppend() {
-				console.log("CardTextField::clickAppend", {
-					modelData: this.modelData,
-				});
 				this.$emit("click-append", this.modelData);
 			},
 			changeEvent(e: any) {
 				this.$emit("change", e);
+			},
+			blurEvent(e: any) {
+				this.$emit("blur", this.modelData);
+			},
+			enterHandler(e: any) {
+				this.$emit("enter", e);
 			},
 		},
 		watch: {},

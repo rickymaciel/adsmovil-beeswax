@@ -10,8 +10,10 @@ export async function domainList (token: string) {
 
     const domains = [] as any
 
-    if (!isEmpty(response) && response.length > 0) {
-      forEach(response, function (value, key) {
+    if (response.success) {
+      const data = response.content
+
+      forEach(data, function (value, key) {
         const dl = {
           id: value.id,
           account_id: value.account_id,

@@ -1,38 +1,23 @@
 export interface CustomList {
     id: number,
-    account_id: number,
     external_id: number,
     name: string,
-    custom_list_type_id: number,
+    type_id: number,
+    type_name: string,
+    type_key: string,
+    delimiter: string,
+    default_radius_km: number,
+    notes: string,
+    custom_list_items_count: number,
+    active: boolean,
     type?: {
         id: number,
         key: string,
         name: string
-    },
-    delimiter: string,
-    default_radius_km: number,
-    notes: string,
-    active: boolean,
-    created_by: {
-        id: number;
-        first_name: string;
-        last_name: string;
-        email: string;
-    },
-    updated_by: {
-        id: number;
-        first_name: string;
-        last_name: string;
-        email: string;
-    },
-    deleted_by: {
-        id: number;
-        first_name: string;
-        last_name: string;
-        email: string;
-    },
-    created_at: string,
-    updated_at: string,
+    }
+}
+
+/*
     clicks?: number,
     conversion_orders?: number,
     conversion_value?: number,
@@ -70,7 +55,7 @@ export interface CustomList {
     video_plays_lifetime?: number,
     viewable_impressions_lifetime?: number,
     viewable_percent_lifetime?: number
-}
+*/
 
 export interface CustomListDataCreate {
     name: string,
@@ -105,9 +90,9 @@ export interface List {
 }
 
 export interface CustomListFilters {
+    id?: number,
     name?: string,
-    external_id?: number,
-    custom_list_type_id?: number,
+    type_name?: string,
     active?: boolean
 }
 

@@ -1,7 +1,8 @@
-import { isArray, isObject, isString, orderBy } from "lodash";
+import { Term } from "@/interfaces/targeting";
+import { isArray, isEmpty, isObject, isString, join, orderBy } from "lodash";
 
 interface ComboListOptions {
-    id?: Number,
+    id?: Number | String,
     value?: String,
     header?: String | undefined,
     group?: String | undefined,
@@ -26,7 +27,7 @@ export function resolveListParams(response: any, customKey: any = "id", customVa
     const list: Array<ComboListOptions> = [];
 
     response.map((item: any) => {
-        const obj = { id: Number(item[customKey]), value: String(item[customValue]) }
+        const obj = { id: item[customKey], value: String(item[customValue]) }
         if (item.width) {
             obj['width'] = item.width;
         }
@@ -71,4 +72,38 @@ export function getCreativeTypeByTemplateId(creativeTypes: Array<any>, creative_
 export function getError(errors: Object, index: string) {
     if (!errors.hasOwnProperty(index)) return;
     return errors[index]
+}
+
+export function prepareTargetingDataCreate(targeting: any) {
+
+    var targeting_terms: Array<Term> = [];
+    const keys = Object.keys(targeting);
+
+    keys.forEach((key) => {
+        if (key === 'app_site') {
+
+            var t = targeting[key];
+
+            Object.keys(t).forEach(appSiteKey => {
+                const term = t[appSiteKey];
+                if (!isEmpty(term.targeting_terms)) {
+                    if (isArray(term.targeting_terms[0].value)) {
+                        term.targeting_terms[0].value.forEach((v: any) => {
+                            targeting_terms.push({
+                                value: v,
+                                targeting_key_id: term.targeting_terms[0].targeting_key_id,
+                                targeting_predicate_id: term.targeting_terms[0].targeting_predicate_id
+                            } as Term);
+                        });
+                    } else {
+                        term.targeting_terms.forEach((targeting_term: Term) => {
+                            targeting_terms.push(targeting_term);
+                        });
+                    }
+                }
+            });
+        }
+    });
+
+    return targeting_terms
 }

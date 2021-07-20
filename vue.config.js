@@ -1,12 +1,16 @@
 module.exports = {
-    lintOnSave: false,
+  lintOnSave: false,
 
-    transpileDependencies: ["vuetify"],
+  transpileDependencies: ["vuetify"],
 
-    chainWebpack: config => {
-        config.plugin("html").tap(args => {
-            args[0].title = "Adsmovil Beeswax";
-            return args;
-        });
-    }
+  devServer: {
+    // host: "dsp-frontend.localhost.com"
+  },
+
+  chainWebpack: config => {
+    config.plugin("html").tap(args => {
+      args[0].title = "Adsmovil Beeswax";
+      return args;
+    });
+  }
 };

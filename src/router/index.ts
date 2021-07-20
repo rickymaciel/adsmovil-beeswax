@@ -123,7 +123,7 @@ const routes: Array<RouteConfig> = [
                 component: () => import('@/views/Admin/Advertisers/index.vue'),
                 meta: {
                     requiresAuth: true,
-                    breadcrumb: "Advertisers"
+                    breadcrumb: i18n.t("advertisers.breadcrumb")
                 },
                 children: [
                     {
@@ -132,7 +132,7 @@ const routes: Array<RouteConfig> = [
                         component: () => import('@/views/Admin/Advertisers/List/index.vue'),
                         meta: {
                             requiresAuth: true,
-                            breadcrumb: "Advertisers List"
+                            breadcrumb: i18n.t("advertisers.list.title")
                         },
                     },
                     {
@@ -141,7 +141,7 @@ const routes: Array<RouteConfig> = [
                         component: () => import('@/views/Admin/Advertisers/Create/create.vue'),
                         meta: {
                             requiresAuth: true,
-                            breadcrumb: "Create New Advertiser"
+                            breadcrumb: i18n.t("advertisers.create.title")
                         },
                     },
                     {
@@ -150,7 +150,7 @@ const routes: Array<RouteConfig> = [
                         component: () => import('@/views/Admin/Advertisers/Edit/edit.vue'),
                         meta: {
                             requiresAuth: true,
-                            breadcrumb: "Edit Advertiser"
+                            breadcrumb: i18n.t("advertisers.edit.title")
                         },
                     }
                 ]
@@ -199,7 +199,7 @@ const routes: Array<RouteConfig> = [
                 component: () => import('@/views/Admin/CustomList/index.vue'),
                 meta: {
                     requiresAuth: true,
-                    breadcrumb: "Custom List"
+                    breadcrumb: i18n.t("customList.list.title")
                 },
                 children: [
                     {
@@ -208,7 +208,7 @@ const routes: Array<RouteConfig> = [
                         component: () => import('@/views/Admin/CustomList/List/index.vue'),
                         meta: {
                             requiresAuth: true,
-                            breadcrumb: "List of custom lists"
+                            breadcrumb: i18n.t("customList.list.title")
                         },
                     },
                     {
@@ -217,7 +217,16 @@ const routes: Array<RouteConfig> = [
                         component: () => import('@/views/Admin/CustomList/Create/create.vue'),
                         meta: {
                             requiresAuth: true,
-                            breadcrumb: "Create New Custom List"
+                            breadcrumb: i18n.t("customList.create.title")
+                        },
+                    },
+                    {
+                        path: 'edit/:id',
+                        name: 'CustomListEdit',
+                        component: () => import('@/views/Admin/CustomList/Edit/edit.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: i18n.t("customList.edit.title")
                         },
                     },
                     {
@@ -226,16 +235,7 @@ const routes: Array<RouteConfig> = [
                         component: () => import('@/views/Admin/CustomList/Show/show.vue'),
                         meta: {
                             requiresAuth: true,
-                            breadcrumb: "Add List Items"
-                        },
-                    },
-                    {
-                        path: 'edit/:id',
-                        name: 'ListsEdit',
-                        //component: () => import('@/views/Admin/CustomList/Edit/edit.vue'),
-                        meta: {
-                            requiresAuth: true,
-                            breadcrumb: "Edit Custom List"
+                            breadcrumb: i18n.t("customList.add.title")
                         },
                     }
                 ]
@@ -352,15 +352,15 @@ const routes: Array<RouteConfig> = [
                             breadcrumb: "Create New Line Item"
                         },
                     },
-                    /*{
+                    {
                         path: 'edit/:id',
                         name: 'LineItemEdit',
                         component: () => import('@/views/Admin/LineItem/Edit/edit.vue'),
                         meta: {
                             requiresAuth: true,
-                            breadcrumb: "edit-campaign"
+                            breadcrumb: "Edit Line Item"
                         },
-                    }*/
+                    }
                 ]
             },
             {

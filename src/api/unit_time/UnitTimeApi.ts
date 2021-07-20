@@ -10,17 +10,21 @@ export async function list (token: string) {
 
     const unit_times = [] as any
 
-    if (!isEmpty(response) && Object.keys(response).length > 0) {
-      Object.keys(response).forEach(function (key) {
-        const time = {
-          id: parseInt(key),
-          name: response[key]
-        } as UnitTime
+    if (response.success) {
+      let data = response.content
 
-        unit_times.push(time)
-      })
+      if (Object.keys(data).length > 0) {
+        Object.keys(data).forEach(function (key) {
+          const time = {
+            id: parseInt(key),
+            name: response[key]
+          } as UnitTime
 
-      return unit_times
+          unit_times.push(time)
+        })
+
+        return unit_times
+      }
     }
 
     return null

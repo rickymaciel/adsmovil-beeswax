@@ -130,14 +130,19 @@ class AdvertiserService {
 function getFilters(filters: AdvertiserFilters): string {
     let filter = ''
 
-    const name = (isUndefined(filters.name)) ? '' : filters.name
-    const category_id = (isUndefined(filters.category_id)) ? '' : filters.category_id
-    const domain = (isUndefined(filters.domain)) ? '' : filters.domain
-    const app_bundle = (isUndefined(filters.app_bundle)) ? '' : filters.app_bundle
-    const external_id = (isUndefined(filters.external_id)) ? '' : filters.external_id
-    const active = (isUndefined(filters.active)) ? '' : filters.active
+    const id = !!filters.id ? filters.id : '';
+    const name = !!filters.name ? filters.name : '';
+    const category = !!filters.category ? filters.category : '';
+    const domain = !!filters.domain ? filters.domain : '';
+    const app_bundle = !!filters.app_bundle ? filters.app_bundle : '';
+    const active = (typeof filters.active === "undefined") ? '' : filters.active
 
-    filter += 'filters[name]=' + name + '&filters[category_id]=' + category_id + '&filters[domain]=' + domain + '&filters[app_bundle]=' + app_bundle + '&filters[external_id]=' + external_id + '&filters[active]=' + active
+    filter += 'filters[advertisers.id]=' + id 
+            + '&filters[advertisers.name]=' + name 
+            + '&filters[categories.name]=' + category 
+            + '&filters[advertisers.domain]=' + domain 
+            + '&filters[advertisers.app_bundle]=' + app_bundle 
+            + '&filters[advertisers.active]=' + active
 
     return filter
 }

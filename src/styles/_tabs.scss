@@ -1,4 +1,27 @@
+.theme--light {
+    &.v-tabs > {
+        .v-tabs-bar {
+            background-color: transparent !important;
+        }
+    }
+}
+
 .v-tab {
+        background: transparent !important;
+
+    &.v-tab--fluid {
+        max-width: 100% !important;
+    }
+
+    &.v-tab--justify-center {
+        justify-content: center !important;
+    }
+
+    &.v-tab--justify-start {
+        justify-content: left !important;
+    }
+
+
     &.v-tab--main {
         text-align: left;
         font-family: Gotham;
@@ -37,6 +60,31 @@
             font-style: initial;
             font-weight: bold !important;
             text-align: left;
+        }
+    }
+    &.v-tab--targeting {
+        text-align: left;
+        font-family: Gotham;
+        font-style: normal;
+        font-variant: normal;
+        font-weight: normal;
+        background: transparent;
+        letter-spacing: 0px !important;
+        text-transform: capitalize;
+        color: $secondary !important;
+        opacity: 1;
+        border-top: 1px solid rgba(0, 0, 0, 0.12) !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
+
+        &.v-tab--active {
+            color: $secondary !important;
+            font-style: initial;
+            font-weight: bold !important;
+            background: white !important;
+            vertical-align: auto;
+            opacity: 1;
+            //align-items: flex-start;
+            //padding-top: 1rem;
         }
     }
 }

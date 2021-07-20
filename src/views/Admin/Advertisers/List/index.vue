@@ -1,8 +1,6 @@
 <template>
 	<v-container class="my-0">
 		<v-layout column>
-			<!-- <v-card>option: {{ option }}</v-card>
-			<v-card>filters: {{ filters }}</v-card> -->
 			<Buttons
 				:limit="paginated.limit"
 				@selected-limit="selectedLimit"
@@ -33,10 +31,7 @@
 	import TableList from "./TableList.vue";
 	import Buttons from "../../Commons/Buttons.vue";
 	import Vue from "vue";
-	import {
-		Advertiser,
-		AdvertiserFilters,
-	} from "../../../../interfaces/advertiser";
+	import { Advertiser, AdvertiserFilters } from "../../../../interfaces/advertiser";
 	import {
 		SortingOption,
 		Paginated,
@@ -44,6 +39,7 @@
 	} from "../../../../interfaces/paginated";
 	import { isNull, isUndefined } from "lodash";
 	import ParamService from "../../../../services/params-service";
+	import i18n from "@/plugins/i18n";
 
 	export default Vue.extend({
 		name: "AdvertiserList",
@@ -84,59 +80,59 @@
 				) {
 					return [];
 				}
-				return result.data.sort(function(a,b){return b.id-a.id});
+				return result.data;
 			},
 			prepareTableHeaders() {
 				return [
 					{
-						text: "Id",
+						text: i18n.t("advertisers.fields.id"),
 						align: "center",
-						sortable: false,
+						sortable: true,
 						filterable: true,
 						value: "id",
 						//width: "5%",
 					},
 					{
-						text: "Advertiser Name",
+						text: i18n.t("advertisers.fields.name"),
 						align: "start",
-						sortable: false,
+						sortable: true,
 						filterable: true,
 						value: "name",
 						//width: "20%",
 					},
 					{
-						text: "Active",
+						text: i18n.t("common.fields.active"),
 						align: "start",
-						sortable: false,
+						sortable: true,
 						filterable: true,
 						value: "active",
 					},
 					{
-						text: "Advertiser Category",
+						text: i18n.t("advertisers.fields.category"),
 						align: "start",
-						sortable: false,
+						sortable: true,
 						filterable: true,
 						value: "category",
 					},
 					{
-						text: "Advertiser Domain",
+						text: i18n.t("advertisers.fields.domain"),
 						align: "start",
-						sortable: false,
+						sortable: true,
 						filterable: true,
 						value: "domain",
 					},
 					{
-						text: "Advertiser App Bundle",
+						text: i18n.t("advertisers.fields.appBundle"),
 						align: "start",
-						sortable: false,
+						sortable: true,
 						filterable: true,
-						value: "appbundle",
+						value: "app_bundle",
 					},
 					{
-						text: "Default Currency",
+						text: i18n.t("advertisers.fields.currency"),
 						align: "start",
-						sortable: false,
-						filterable: true,
+						sortable: true,
+						filterable: false,
 						value: "currency",
 					},
 					,
@@ -161,7 +157,7 @@
 						active: advertiser.active,
 						category: advertiser.category.name,
 						domain: advertiser.domain,
-						appbundle: advertiser.app_bundle,
+						app_bundle: advertiser.app_bundle,
 						currency: `${advertiser.currency.glyph} (${advertiser.currency.name})`,
 					};
 				});
@@ -191,12 +187,9 @@
 			},
 			setFilter(params: { key: string | number; value: any }) {
 				this.filters = {};
-				this.filters[params.key] = params.value || "";
+				this.filters[params.key] = typeof params.value !== "undefined" ? params.value : "";
 			},
-			async selectedOption(params: {
-				option: SortingOption;
-				filter: string;
-			}) {
+			async selectedOption(params: {option: SortingOption; filter: any;}) {
 				this.setFilter({ key: params.option.sort, value: params.filter });
 				this.updatePaginate(1);
 				await this.updateParams({

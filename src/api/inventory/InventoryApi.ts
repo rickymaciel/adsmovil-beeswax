@@ -10,8 +10,10 @@ export async function adPositions (token: string) {
 
     const positions = [] as any
 
-    if (!isEmpty(response) && response.length > 0) {
-      forEach(response, function (value, key) {
+    if (response.success) {
+      const data = response.content
+
+      forEach(data, function (value, key) {
         const dl = {
           id: value.id,
           type: value.type,

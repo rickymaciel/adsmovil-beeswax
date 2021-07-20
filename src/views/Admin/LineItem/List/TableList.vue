@@ -505,7 +505,7 @@
 						text
 						icon
 						:to="{
-							name: '',
+							name: 'LineItemEdit',
 							params: { id: item.id },
 						}"
 					>

@@ -181,7 +181,7 @@ export async function changeStatus (id: number, status: boolean, token: string) 
     const active = status ? 1 : 0
     const response = await AxiosPatch(ROUTES.LIST_ITEM_ROUTE + '/' + id + '/set/' + active, {}, token)
 
-    if (!isEmpty(response) && !isUndefined(response.id)) {
+    if (response.success) {
       return true
     }
 
@@ -198,7 +198,7 @@ export async function deleted (id: number, token: string) {
   try {
     const response = await AxiosDelete(ROUTES.LIST_ITEM_ROUTE + '/' + id, token)
 
-    if (response.length == 0) {
+    if (response.success) {
       return true
     }
 
@@ -215,7 +215,7 @@ export async function clear (id: number, token: string) {
   try {
     const response = await AxiosDelete(ROUTES.LIST_ITEM_ROUTE + '/clear/' + id, token)
 
-    if (response.length == 0) {
+    if (response.success) {
       return true
     }
 
@@ -246,8 +246,10 @@ export async function all (token: string, filters?: ListItemFilters, options?: L
 
     const list_items = [] as any
 
-    if (!isEmpty(response) && response.length > 0) {
-      forEach(response, function (value, key) {
+    if (response.success) {
+      const data = response.content
+
+      forEach(data, function (value, key) {
         const list_item = {
           id: value.id,
           external_id: value.external_id,
@@ -297,8 +299,10 @@ export async function paginated (token: string, paginated: ListItemPaginated, fi
 
     const list_items = [] as any
 
-    if (!isEmpty(response) && !isUndefined(response.data) && response.data.length > 0) {
-      forEach(response.data, function (value, key) {
+    if (response.success) {
+      const data = response.content.data
+
+      forEach(data, function (value, key) {
         const list_item = {
           id: value.id,
           external_id: value.external_id,

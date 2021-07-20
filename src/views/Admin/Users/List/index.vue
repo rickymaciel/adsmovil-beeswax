@@ -184,6 +184,7 @@ import i18n from "@/plugins/i18n";
 			},
 			setFilter(params: { key: string | number, value: any }) {
 				this.filters = {};
+				console.log('setFilter', params.key, params.value )
 				this.filters[params.key] = typeof params.value !== "undefined" ? params.value : "";
 			},
 			async selectedOption(params: {option: SortingOption, filter: any}) {
@@ -212,9 +213,7 @@ import i18n from "@/plugins/i18n";
 					this.getPaginated();
 				}
 			},
-			filters(val, old) {
-				console.log("index::watch:filters", { val, old });
-			},
+			filters(val, old) {},
 		},
 	});
 </script>

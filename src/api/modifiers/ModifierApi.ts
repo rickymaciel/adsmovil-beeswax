@@ -19,10 +19,11 @@ export async function create (modifier: ModifierDataCreate, token: string) {
   try {
     const response = await AxiosPost(ROUTES.MODIFIER_ROUTE, modifier, token)
 
-    if (!isEmpty(response) && !isUndefined(response.id)) {
+    if (response.success) {
+      const data = response.content
       let terms = [] as any
 
-      forEach(response.terms, function (value, key) {
+      forEach(data.terms, function (value, key) {
         const term = {
           id: value.id,
           modifier_id: value.modifier_id,
@@ -50,40 +51,40 @@ export async function create (modifier: ModifierDataCreate, token: string) {
       })
 
       return {
-        id: response.id,
-        external_id: response.external_id,
-        alternative_id: response.alternative_id,
-        account_id: response.account_id,
-        advertiser_id: response.advertiser_id,
-        name: response.name,
-        modifier_type_id: response.modifier_type_id,
-        active: response.active,
-        created_by: response.created_by,
-        updated_by: response.updated_by,
-        deleted_by: response.deleted_by,
-        created_at: response.created_at,
-        updated_at: response.updated_at,
+        id: data.id,
+        external_id: data.external_id,
+        alternative_id: data.alternative_id,
+        account_id: data.account_id,
+        advertiser_id: data.advertiser_id,
+        name: data.name,
+        modifier_type_id: data.modifier_type_id,
+        active: data.active,
+        created_by: data.created_by,
+        updated_by: data.updated_by,
+        deleted_by: data.deleted_by,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
         advertiser: {
-          id: response.advertiser.id,
-          external_id: response.advertiser.external_id,
-          account_id: response.advertiser.account_id,
-          name: response.advertiser.name,
-          domain: response.advertiser.domain,
-          category_id: response.advertiser.category_id,
-          app_bundle: response.advertiser.app_bundle,
-          currency_id: response.advertiser.currency_id,
-          active: response.advertiser.active,
-          created_by: response.advertiser.created_by,
-          updated_by: response.advertiser.updated_by,
-          deleted_by: response.advertiser.deleted_by,
-          created_at: response.advertiser.created_at,
-          updated_at: response.advertiser.updated_at
+          id: data.advertiser.id,
+          external_id: data.advertiser.external_id,
+          account_id: data.advertiser.account_id,
+          name: data.advertiser.name,
+          domain: data.advertiser.domain,
+          category_id: data.advertiser.category_id,
+          app_bundle: data.advertiser.app_bundle,
+          currency_id: data.advertiser.currency_id,
+          active: data.advertiser.active,
+          created_by: data.advertiser.created_by,
+          updated_by: data.advertiser.updated_by,
+          deleted_by: data.advertiser.deleted_by,
+          created_at: data.advertiser.created_at,
+          updated_at: data.advertiser.updated_at
         },
         type: {
-          id: response.type.id,
-          type: response.type.type,
-          description: response.type.description,
-          extra: response.type.extra
+          id: data.type.id,
+          type: data.type.type,
+          description: data.type.description,
+          extra: data.type.extra
         },
         terms: terms
       } as Modifier
@@ -102,10 +103,12 @@ export async function update (modifier: ModifierDataUpdate, token: string) {
   try {
     const response = await AxiosPatch(ROUTES.MODIFIER_ROUTE + '/' + modifier.id, modifier, token)
 
-    if (!isEmpty(response) && !isUndefined(response.id)) {
+    if (response.success) {
+      const data = response.content
+
       let terms = [] as any
 
-      forEach(response.terms, function (value, key) {
+      forEach(data.terms, function (value, key) {
         const term = {
           id: value.id,
           modifier_id: value.modifier_id,
@@ -133,40 +136,40 @@ export async function update (modifier: ModifierDataUpdate, token: string) {
       })
 
       return {
-        id: response.id,
-        external_id: response.external_id,
-        alternative_id: response.alternative_id,
-        account_id: response.account_id,
-        advertiser_id: response.advertiser_id,
-        name: response.name,
-        modifier_type_id: response.modifier_type_id,
-        active: response.active,
-        created_by: response.created_by,
-        updated_by: response.updated_by,
-        deleted_by: response.deleted_by,
-        created_at: response.created_at,
-        updated_at: response.updated_at,
+        id: data.id,
+        external_id: data.external_id,
+        alternative_id: data.alternative_id,
+        account_id: data.account_id,
+        advertiser_id: data.advertiser_id,
+        name: data.name,
+        modifier_type_id: data.modifier_type_id,
+        active: data.active,
+        created_by: data.created_by,
+        updated_by: data.updated_by,
+        deleted_by: data.deleted_by,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
         advertiser: {
-          id: response.advertiser.id,
-          external_id: response.advertiser.external_id,
-          account_id: response.advertiser.account_id,
-          name: response.advertiser.name,
-          domain: response.advertiser.domain,
-          category_id: response.advertiser.category_id,
-          app_bundle: response.advertiser.app_bundle,
-          currency_id: response.advertiser.currency_id,
-          active: response.advertiser.active,
-          created_by: response.advertiser.created_by,
-          updated_by: response.advertiser.updated_by,
-          deleted_by: response.advertiser.deleted_by,
-          created_at: response.advertiser.created_at,
-          updated_at: response.advertiser.updated_at
+          id: data.advertiser.id,
+          external_id: data.advertiser.external_id,
+          account_id: data.advertiser.account_id,
+          name: data.advertiser.name,
+          domain: data.advertiser.domain,
+          category_id: data.advertiser.category_id,
+          app_bundle: data.advertiser.app_bundle,
+          currency_id: data.advertiser.currency_id,
+          active: data.advertiser.active,
+          created_by: data.advertiser.created_by,
+          updated_by: data.advertiser.updated_by,
+          deleted_by: data.advertiser.deleted_by,
+          created_at: data.advertiser.created_at,
+          updated_at: data.advertiser.updated_at
         },
         type: {
-          id: response.type.id,
-          type: response.type.type,
-          description: response.type.description,
-          extra: response.type.extra
+          id: data.type.id,
+          type: data.type.type,
+          description: data.type.description,
+          extra: data.type.extra
         },
         terms: terms
       } as Modifier
@@ -185,10 +188,11 @@ export async function show (id: number, token: string) {
   try {
     const response = await AxiosGet(ROUTES.MODIFIER_ROUTE + '/' + id, token)
 
-    if (!isEmpty(response) && !isUndefined(response.id)) {
+    if (response.success) {
+      const data = response.content
       let terms = [] as any
 
-      forEach(response.terms, function (value, key) {
+      forEach(data.terms, function (value, key) {
         const term = {
           id: value.id,
           modifier_id: value.modifier_id,
@@ -209,40 +213,40 @@ export async function show (id: number, token: string) {
       })
 
       return {
-        id: response.id,
-        external_id: response.external_id,
-        alternative_id: response.alternative_id,
-        account_id: response.account_id,
-        advertiser_id: response.advertiser_id,
-        name: response.name,
-        modifier_type_id: response.modifier_type_id,
-        active: response.active,
-        created_by: response.created_by,
-        updated_by: response.updated_by,
-        deleted_by: response.deleted_by,
-        created_at: response.created_at,
-        updated_at: response.updated_at,
+        id: data.id,
+        external_id: data.external_id,
+        alternative_id: data.alternative_id,
+        account_id: data.account_id,
+        advertiser_id: data.advertiser_id,
+        name: data.name,
+        modifier_type_id: data.modifier_type_id,
+        active: data.active,
+        created_by: data.created_by,
+        updated_by: data.updated_by,
+        deleted_by: data.deleted_by,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
         advertiser: {
-          id: response.advertiser.id,
-          external_id: response.advertiser.external_id,
-          account_id: response.advertiser.account_id,
-          name: response.advertiser.name,
-          domain: response.advertiser.domain,
-          category_id: response.advertiser.category_id,
-          app_bundle: response.advertiser.app_bundle,
-          currency_id: response.advertiser.currency_id,
-          active: response.advertiser.active,
-          created_by: response.advertiser.created_by,
-          updated_by: response.advertiser.updated_by,
-          deleted_by: response.advertiser.deleted_by,
-          created_at: response.advertiser.created_at,
-          updated_at: response.advertiser.updated_at
+          id: data.advertiser.id,
+          external_id: data.advertiser.external_id,
+          account_id: data.advertiser.account_id,
+          name: data.advertiser.name,
+          domain: data.advertiser.domain,
+          category_id: data.advertiser.category_id,
+          app_bundle: data.advertiser.app_bundle,
+          currency_id: data.advertiser.currency_id,
+          active: data.advertiser.active,
+          created_by: data.advertiser.created_by,
+          updated_by: data.advertiser.updated_by,
+          deleted_by: data.advertiser.deleted_by,
+          created_at: data.advertiser.created_at,
+          updated_at: data.advertiser.updated_at
         },
         type: {
-          id: response.type.id,
-          type: response.type.type,
-          description: response.type.description,
-          extra: response.type.extra
+          id: data.type.id,
+          type: data.type.type,
+          description: data.type.description,
+          extra: data.type.extra
         },
         terms: terms
       } as Modifier
@@ -275,8 +279,10 @@ export async function all (token: string, filters?: ModifierFilters, options?: M
 
     const modifiers = [] as any
 
-    if (!isEmpty(response) && response.length > 0) {
-      forEach(response, function (value, key) {
+    if (response.success) {
+      const data = response.content
+
+      forEach(data, function (value, key) {
         const modifier = {
           id: value.id,
           external_id: value.external_id,
@@ -348,8 +354,10 @@ export async function paginated (token: string, paginated: ModifierPaginated, fi
 
     const modifiers = [] as any
 
-    if (!isEmpty(response) && !isUndefined(response.data) && response.data.length > 0) {
-      forEach(response.data, function (value, key) {
+    if (response.success) {
+      const data = response.content.data
+
+      forEach(data, function (value, key) {
         const modifier = {
           id: value.id,
           external_id: value.external_id,
@@ -424,8 +432,10 @@ export async function list (token: string, filters?: ModifierFilters, options?: 
 
     const list = [] as any
 
-    if (!isEmpty(response)) {
-      forEach(response, function (value, key) {
+    if (response.success) {
+      const data = response.content
+
+      forEach(data, function (value, key) {
         const item = {
           id: parseInt(key),
           value: value
@@ -452,17 +462,21 @@ export async function types (token: string) {
 
     const types = [] as any
 
-    if (!isEmpty(response) && Object.keys(response).length > 0) {
-      Object.keys(response).forEach(function (key) {
-        const type = {
-          id: parseInt(key),
-          name: response[key]
-        } as ModifierType
+    if (response.success) {
+      let data = response.content
 
-        types.push(type)
-      })
+      if (Object.keys(data).length > 0) {
+        Object.keys(data).forEach(function (key) {
+          const type = {
+            id: parseInt(key),
+            name: response[key]
+          } as ModifierType
 
-      return types
+          types.push(type)
+        })
+
+        return types
+      }
     }
 
     return null
@@ -478,17 +492,21 @@ export async function modules (token: string) {
 
     const modules = [] as any
 
-    if (!isEmpty(response) && Object.keys(response).length > 0) {
-      Object.keys(response).forEach(function (key) {
-        const module = {
-          id: parseInt(key),
-          name: response[key]
-        } as ModifierModule
+    if (response.success) {
+      let data = response.content
 
-        modules.push(module)
-      })
+      if (Object.keys(data).length > 0) {
+        Object.keys(data).forEach(function (key) {
+          const module = {
+            id: parseInt(key),
+            name: response[key]
+          } as ModifierModule
 
-      return modules
+          modules.push(module)
+        })
+
+        return modules
+      }
     }
 
     return null

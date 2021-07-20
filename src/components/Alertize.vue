@@ -139,7 +139,7 @@
 				const to = this.getRedirectTo;
 				await this.resetNotification();
 				if (to) {
-					return this.$router.push({ name: to });
+					return this.$router.push(typeof to == "object" ? to : { name: to });
 				}
 				return;
 			},

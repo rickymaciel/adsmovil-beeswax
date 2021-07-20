@@ -17,6 +17,8 @@ import { account, forgot, initialize, login, logout, permissions, profile, reset
 //import { all, paginated, list } from '@/api/creatives/AddonApi'
 //import { all, paginated, list } from '@/api/creatives/AssetApi'
 //import { create, deleted } from '@/api/creatives/AssociateApi'
+//import { all, paginated, list, show } from '@/api/targeting/KeyApi'
+//import { create, all, paginated, list, show, update } from '@/api/targeting/TargetingApi'
 import { UserInit } from '@/interfaces/user'
 //import { check } from './creatives/TagApi'
 //import { adPositions } from '@/api/inventory/InventoryApi'
@@ -24,8 +26,8 @@ import { UserInit } from '@/interfaces/user'
 //import { creativeSize } from '@/api/ad_size/AdSizeApi'
 //import { countries, lat_long, locationTypes, regions } from '@/api/geo/GeoApi'
 //import { CampaingDataCreate, CampaingDataUpdate } from '@/interfaces/campaing'
-// import { FrecuencyCaps, FrecuencyCapsDataCreate } from '@/interfaces/frecuency_caps'
-// import { LineItemDataCreate, LineItemDataUpdate } from '@/interfaces/line_item'
+//import { FrecuencyCaps, FrecuencyCapsDataCreate } from '@/interfaces/frecuency_caps'
+//import { LineItemDataCreate, LineItemDataUpdate } from '@/interfaces/line_item'
 //import { list } from './timezone/timezoneAPI'
 //import { list } from './currency/CurrencyAPI'
 //import { list } from './custom_list/ExchangesAPI'
@@ -48,8 +50,12 @@ import { UserInit } from '@/interfaces/user'
 //import { list } from '@/api/creatives/MimeApi'
 //import { types, direction } from '@/api/creatives/ExpandableApi'
 //import { inBanner, apis } from '@/api/creatives/VideoApi'
-// import { appNames, appSites, sites } from '@/api/app_site/AppSiteApi'
-import { inventorySources, auctionTypes } from '@/api/exchange/ExchangeApi'
+//import { appNames, appSites, sites } from '@/api/app_site/AppSiteApi'
+//import { inventorySources, auctionTypes } from '@/api/exchange/ExchangeApi'
+//import { list } from '@/api/targeting/PredicateApi'
+//import { list } from '@/api/targeting/LocationTypeApi'
+//import { list } from '@/api/targeting/ModuleApi'
+import { enviroments } from '@/api/enviroment/EnviromentApi'
 
 /* -------- BEGIN AUTH -------- */
 const test_login = {
@@ -1188,7 +1194,7 @@ const test_change_status_campaing = {
 /* -------- END APP SITE -------- */
 
 /* -------- BEGIN EXCHANGE -------- */
-const test_exchange = {
+/*const test_exchange = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
@@ -1205,7 +1211,7 @@ const test_exchange = {
       return null
     })
   }
-}
+}*/
 /* -------- END EXCHANGE -------- */
 
 /* -------- BEGIN AD SIZE -------- */
@@ -1322,7 +1328,6 @@ const test_bid_rates = {
     })
   }
 }*/
-
 /* -------- END BID -------- */
 
 /* -------- BEGIN LINE ITEMS -------- */
@@ -2094,9 +2099,9 @@ const test_create_creative_vast_wrapper = {
       return null
     })
   }
-}*/
+}
 
-/*const test_get_creatives = {
+const test_get_creatives = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
@@ -2200,7 +2205,198 @@ const test_get_creatives_assets = {
     })
   }
 }*/
-
 /* -------- END CREATIVES -------- */
 
-export default test_exchange
+/* -------- BEGIN TARGETING -------- */
+/*const test_targeting_predicates = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_targeting_predicates = await list(value)
+
+      console.log('TARGETING PREDICATES', data_targeting_predicates)
+
+      return data_targeting_predicates
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_targeting_location_types = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_targeting_lt = await list(value)
+
+      console.log('TARGETING LOCATION TYPES', data_targeting_lt)
+
+      return data_targeting_lt
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_targeting_modules = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_targeting_modules = await list(value)
+
+      console.log('TARGETING MODULES', data_targeting_modules)
+
+      return data_targeting_modules
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_targeting_keys = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      // const data_targeting_keys = await all(value, {}, { sort: 'name', order: 'asc' })
+      // const data_targeting_keys = await paginated(value, { page: 1, limit: 15 }, { name: 'app_bundle_list' }, { sort: 'name', order: 'asc' })
+      // const data_targeting_keys = await list(value, {}, { sort: 'name', order: 'asc' })
+      const data_targeting_keys = await show(1, value)
+
+      console.log('TARGETING KEYS', data_targeting_keys)
+
+      return data_targeting_keys
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_create_targeting = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const term = [
+        {
+          value: '2785610',
+          targeting_key_id: 13,
+          targeting_predicate_id: 1823
+        },
+        {
+          value: '2801314',
+          targeting_key_id: 13,
+          targeting_predicate_id: 1823
+        }
+      ]
+
+      const data = {
+        line_item_id: 22,
+        active: true,
+        targeting_terms: term
+      }
+
+      const data_targeting = await create(data, value)
+
+      console.log('TARGETING', data_targeting)
+
+      return data_targeting
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_update_targeting = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const term = [
+        {
+          value: '2785610',
+          targeting_key_id: 13,
+          targeting_predicate_id: 1823
+        },
+        {
+          value: '2801314',
+          targeting_key_id: 13,
+          targeting_predicate_id: 1823
+        }
+      ]
+
+      const data = {
+        id: 1,
+        active: false,
+        targeting_terms: term
+      }
+
+      const data_targeting = await update(data, value)
+
+      console.log('TARGETING UPDATE', data_targeting)
+
+      return data_targeting
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_targeting = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      // const data_targeting = await all(value, {}, { sort: 'name', order: 'asc' })
+      // const data_targeting = await paginated(value, { page: 1, limit: 15 }, { active: true }, { sort: 'name', order: 'asc' })
+      // const data_targeting = await list(value, {}, { sort: 'name', order: 'asc' })
+      const data_targeting = await show(1, value)
+
+      console.log('TARGETING', data_targeting)
+
+      return data_targeting
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}*/
+/* -------- END TARGETING -------- */
+
+/* -------- BEGIN ENVIROMENT -------- */
+const test_enviroment = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_enviroments = await enviroments('environment_type', value)
+
+      console.log('ENVIROMENT', data_enviroments)
+
+      return data_enviroments
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+/* -------- END ENVIROMENT -------- */
+
+export default test_enviroment

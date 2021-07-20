@@ -9,42 +9,15 @@
 				v-model="valid"
 				lazy-validation
 			>
-				<CustomListInput
+				<CustomListForm
 					:custom_list="custom_list"
 					:is_edit="custom_list.id > 0"
 					:enable_radius_field="enableRadiusField"
 					@update-type-selected="updateTypeSelected"
-				></CustomListInput>
+				></CustomListForm>
 
 				<v-divider class="my-4"></v-divider>
 
-				<!-- <v-card>
-					<v-card-text>
-						getModelView: {{ getModelView }}
-					</v-card-text>
-					<v-card-text>
-						enableRadiusField: {{ enableRadiusField }}
-					</v-card-text>
-					<v-card-text> custom_list: {{ custom_list }} </v-card-text>
-					<v-card-text>
-						option_selected: {{ option_selected }}
-					</v-card-text>
-					<v-card-text>
-						type_selected: {{ type_selected }}
-					</v-card-text>
-					<v-card-text>
-						hasTypeSelected: {{ hasTypeSelected }}
-					</v-card-text>
-					<v-card-text>
-						getCustomList: {{ getCustomList }}
-					</v-card-text>
-					<v-card-text> getId: {{ getId }} </v-card-text>
-				</v-card> -->
-
-				<!-- <v-divider class="my-4"></v-divider> -->
-
-				<!-- btn group -->
-				<!-- <v-row no-gutters align="center" justify="center">
 					<v-col cols="12" sm="12" md="6" lg="8">
 						<v-card
 							elevation="0"
@@ -138,17 +111,14 @@
 	import { Type } from "../../../../interfaces/list";
 	import Alertize from "../../../../components/Alertize.vue";
 	import CreateItem from "./../../Items/Create/create.vue";
-	import CustomListInput from "../customListInput.vue";
-	import {
-		CustomListDataCreate,
-		CustomList,
-	} from "../../../../interfaces/custom_list";
+	import CustomListForm from "../CustomListForm.vue";
+	import { CustomListDataCreate, CustomList } from "../../../../interfaces/custom_list";
 	import { last, toNumber } from "lodash";
 
 	export default Vue.extend({
 		name: "ListShow",
 		props: {},
-		components: { Alertize, CreateItem, CustomListInput },
+		components: { Alertize, CreateItem, CustomListForm },
 		data: () => ({
 			title: "Show",
 			message: "",

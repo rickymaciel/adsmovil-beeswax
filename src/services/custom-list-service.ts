@@ -1,8 +1,11 @@
 import { CustomListPaginated, CustomListFilters, CustomListOptions, Type, CustomListDataCreate } from '@/interfaces/custom_list'
-import { AxiosGet, AxiosPost, GetData, GetErrors, GetMessage } from '@/services/axios-service'
+import { Paginated } from '@/interfaces/paginated'
+import { AxiosGet, AxiosPost,  AxiosPatch, GetData, GetErrors, GetMessage, AxiosUpload } from '@/services/axios-service'
 import { isUndefined, isEmpty } from 'lodash'
+import { SortingOption } from '../interfaces/paginated';
 
 export const CUSTOM_LIST_ROUTE = '/api/custom_lists'
+export const CUSTOM_LIST_ITEMS_ROUTE = '/api/custom_list_items'
 export const BUDGET_TYPE_ROUTE = '/api/list/budget_types'
 export const CAMPAING_PACING_ROUTE = 'api/list/campaign_pacing'
 export const STRATEGY_OPTIMIZATION_ROUTE = 'api/list/optimization_strategies'
@@ -16,22 +19,57 @@ export const BID_SHADING_ROUTE = 'api/list/bid_shadings'
 
 class CustomListService {
 
-    async paginated(paginated: CustomListPaginated, filters?: CustomListFilters, options?: CustomListOptions) {
+    async paginated(params: { paginated?: Paginated, filters?: CustomListFilters, options?: SortingOption }) {
         try {
             let filter = ''
             let option = ''
 
-            if (!isUndefined(filters)) {
-                filter = getFilters(filters)
+            if (!isUndefined(params.filters)) {
+                filter = getFilters(params.filters)
             }
 
-            if (!isUndefined(options)) {
-                option += getOptions(options, 'paginated', paginated)
+            if (!isUndefined(params.options)) {
+                option += getOptions(params.options, 'paginated', params.paginated)
             }
 
             const url = getURL(filter, option)
             const response = await AxiosGet(CUSTOM_LIST_ROUTE + url)
             return Promise.resolve(GetData(response));
+
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }  
+
+    async update({id, name, active, edited, deleted, created}) {
+        try {
+            const response = await AxiosPatch(`${CUSTOM_LIST_ROUTE}/${id}/with_items`, {
+                name,
+                active,
+                edited,
+                deleted,
+                created
+            })
+            return Promise.resolve(GetData(response));
+
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }  
+    
+    async uploadItems(payload, callback) {
+        try {
+            const response = await AxiosUpload(`${CUSTOM_LIST_ITEMS_ROUTE}/upload`, payload, callback);
+            return Promise.resolve(GetData(response));
+
         } catch (error) {
             return Promise.reject({
                 success: false,
@@ -225,12 +263,15 @@ class CustomListService {
 function getFilters(filters: CustomListFilters): string {
     let filter = ''
 
-    const name = (isUndefined(filters.name)) ? '' : filters.name
-    const external_id = (isUndefined(filters.external_id)) ? '' : filters.external_id
-    const type_id = (isUndefined(filters.custom_list_type_id)) ? '' : filters.custom_list_type_id
-    const active = (isUndefined(filters.active)) ? '' : filters.active
+    const id = !!filters.id ? filters.id : '';
+    const name = !!filters.name ? filters.name : '';
+    const type = !!filters.type_name ? filters.type_name : '';
+    const active = (typeof filters.active === "undefined") ? '' : filters.active
 
-    filter += 'filters[name]=' + name + '&filters[external_id]=' + external_id + '&filters[custom_list_type_id]=' + type_id + '&filters[active]=' + active
+    filter += 'filters[custom_lists.id]=' + id 
+            + '&filters[custom_lists.name]=' + name 
+            + '&filters[list_types.name]=' + type 
+            + '&filters[custom_lists.active]=' + active;
 
     return filter
 }
@@ -277,7 +318,7 @@ function ModelTwoList() {
     ];
 };
 
-function ModelTreeList() {
+function ModelThreeList() {
     return [
         {id: 1, key: "app_bundle"},
         {id: 2, key: "app_id"},
@@ -300,7 +341,7 @@ async function MatchedView(key: string) {
         modelView = 'ModelTwo'
     }
 
-    if (ModelTreeList().find( m => m.key == key)) {
+    if (ModelThreeList().find( m => m.key == key)) {
         modelView = 'ModelTree'
     }
     
@@ -318,7 +359,7 @@ async function MatchedViewById(id: number) {
         modelView = 'ModelTwo'
     }
 
-    if (ModelTreeList().find( m => m.id == id)) {
+    if (ModelThreeList().find( m => m.id == id)) {
         modelView = 'ModelTree'
     }
 

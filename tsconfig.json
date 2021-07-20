@@ -20,6 +20,8 @@
             "./node_modules/vuetify/types"
         ],
         "types": [
+            "ts-node",
+            "node",
             "webpack-env",
             "jest",
             "vuetify"

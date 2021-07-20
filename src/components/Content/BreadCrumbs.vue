@@ -12,7 +12,7 @@
 					exact
 					:disabled="item.disabled"
 				>
-					{{ $t(item.text) }}
+					{{ item.text }}
 				</v-breadcrumbs-item>
 			</template>
 		</v-breadcrumbs>

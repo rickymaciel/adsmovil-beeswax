@@ -351,7 +351,7 @@
 				} as UserDataUpdate;
 
 				return this.$store.dispatch(
-					"users/update",
+					"user/update",
 					{
 						user: this.user,
 						id: this.id,

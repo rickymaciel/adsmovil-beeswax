@@ -1,7 +1,11 @@
 <template>
 	<v-container class="my-0">
 		<v-layout column>
-			<Buttons></Buttons>
+			<Buttons
+				:limit="paginated.limit"
+				@selected-limit="selectedLimit"
+				to="/admin/custom_lists/create"
+			></Buttons>
 		</v-layout>
 		<v-layout column>
 			<TableList
@@ -14,30 +18,28 @@
 				:total="Number(getResultPaginate.total)"
 				:headers="prepareTableHeaders"
 				:items="prepareTableContent"
-				:filters_init="filters"
-				:options="options"
-				:limit="paginated.limit"
+				:option="option"
+				:filters="filters"
 				@selected-option="selectedOption"
-				@update-paginate="updatePaginate"
-			></TableList>
+				@update-current-page="updateCurrentPage"
+			></TableList>			
 		</v-layout>
 	</v-container>
 </template>
 
 <script lang="ts">
 	import TableList from "./TableList.vue";
-	import Buttons from "../List/Buttons.vue";
+	import Buttons from "../../Commons/Buttons.vue";
 	import Vue from "vue";
 	import { isNull, isUndefined } from "lodash";
 	import {
 		CustomList,
 		CustomListFilters,
-		CustomListOptions,
-		CustomListPaginated,
 		CustomListResultPaginate,
 	} from "../../../../interfaces/custom_list";
-	import { SortingOption } from "@/interfaces/paginated";
+	import i18n from "@/plugins/i18n";
 	import ParamService from "../../../../services/params-service";
+	import { Paginated, SortingOption } from "@/interfaces/paginated";
 
 	export default Vue.extend({
 		name: "Lists",
@@ -47,10 +49,10 @@
 			title: "Lists",
 			paginated: {
 				page: 1,
-				limit: 25
-			} as CustomListPaginated,
+				limit: 25,
+			} as Paginated,
 			filters: {},
-			options: {
+			option: {
 				sort: "",
 				order: "asc",
 			} as SortingOption,
@@ -73,42 +75,42 @@
 				) {
 					return [];
 				}
-				return result.data.sort(function(a,b){return b.id-a.id});
+				return result.data;
 			},
 			prepareTableHeaders() {
 				return [
 					{
-						text: "List Id",
+						text: i18n.t("customList.fields.id"),
 						align: "center",
-						sortable: false,
+						sortable: true,
 						filterable: true,
 						value: "id",
 					},
 					{
-						text: "List Name",
+						text: i18n.t("customList.fields.name"),
 						align: "start",
-						sortable: false,
+						sortable: true,
 						filterable: true,
 						value: "name",
 					},
 					{
-						text: "Type",
+						text: i18n.t("customList.fields.type"),
 						align: "start",
-						sortable: false,
+						sortable: true,
 						filterable: true,
-						value: "type",
+						value: "type_name",
 					},
 					{
-						text: "Associated List Items",
+						text: i18n.t("customList.fields.items"),
 						align: "start",
-						sortable: false,
-						filterable: true,
-						value: "external_id",
+						sortable: true,
+						filterable: false,
+						value: "custom_list_items_count",
 					},
 					{
-						text: "Active",
+						text: i18n.t("common.fields.active"),
 						align: "start",
-						sortable: false,
+						sortable: true,
 						filterable: true,
 						value: "active",
 					},
@@ -128,8 +130,8 @@
 					return {
 						id: item.id,
 						name: item.name,
-						type: item.type ? item.type.name : "",
-						external_id: item.external_id,
+						type_name: item.type_name,
+						custom_list_items_count: item.custom_list_items_count,
 						active: item.active,
 					};
 				});
@@ -141,29 +143,29 @@
 			},
 			async getPaginated() {
 				this.setLoading(true);
-				await this.$store.dispatch(
-					"custom_list/paginated",
-					await ParamService.getParams(
-						this.paginated,
-						this.filters,
-						this.options
-					),
-					{
-						root: true,
-					}
-				);
+				const params = await ParamService.getParams(this.paginated,this.filters,this.option);
+				await this.$store.dispatch("custom_list/paginated", params, {root: true});
 				this.setLoading(false);
+			},			
+			updatePaginate(data: any) {
+				this.paginated.page = data;
 			},
-
-			setFilter(params: { key: string | number; value: any }) {
+			setFilter(params: { key: string | number, value: any }) {
 				this.filters = {};
-				this.filters[params.key] = params.value || "";
+				this.filters[params.key] = typeof params.value !== "undefined" ? params.value : "";
 			},
-
-			async selectedOption(params: {
-				option: SortingOption;
-				filter: string;
-			}) {
+			async updateParams(params: {filters: CustomListFilters, option: SortingOption}) {
+				this.filters = params.filters;
+				this.option = params.option;
+				this.updatePaginate(1);
+				await this.getPaginated();
+			},
+			async selectedLimit(limit: number) {
+				this.paginated.limit = limit;
+				this.updatePaginate(1);
+				await this.getPaginated();
+			},			
+			async selectedOption(params: {option: SortingOption, filter: any}) {
 				this.setFilter({ key: params.option.sort, value: params.filter });
 				this.updatePaginate(1);
 				await this.updateParams({
@@ -171,21 +173,10 @@
 					option: params.option,
 				});
 			},
-
-			updatePaginate(data: any) {
-				this.paginated.page = data;
-			},
-
-			async updateParams(params: {
-				filters: CustomListFilters;
-				options: CustomListOptions;
-			}) {
-				this.filters = params.filters;
-				this.options = params.options;
-				this.updatePaginate(1);
+			async updateCurrentPage(page) {
+				this.updatePaginate(page);
 				await this.getPaginated();
-			},
-
+			}
 		},
 		watch: {
 			"paginated.page"(val, old) {
@@ -193,9 +184,7 @@
 					this.getPaginated();
 				}
 			},
-			filters(val, old) {
-				console.log("index::watch:filters", { val: val, old: old });
-			},
-		},
+			filters(val, old) {},
+		},		
 	});
 </script>

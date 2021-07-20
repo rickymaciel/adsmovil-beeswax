@@ -71,9 +71,9 @@
 			</template>
 
 			<!-- appbundle -->
-			<template v-slot:[`header.appbundle`]="{ header }">
+			<template v-slot:[`header.app_bundle`]="{ header }">
 				<Filterable
-					field_name="appbundle"
+					field_name="app_bundle"
 					type="text"
 					:filters="filters"
 					:header="header"
@@ -139,6 +139,7 @@
 </template>
 
 <script lang="ts">
+	import i18n from "@/plugins/i18n";
 	import { isEmpty } from "lodash";
 	import Vue from "vue";
 	import Filterable from "../../../../components/Header/Tables/Filterable.vue";
@@ -222,12 +223,12 @@
 				return active ? "green--text" : "red--text";
 			},
 			getActiveText(active: Boolean) {
-				return active ? "Active" : "Inactive";
+				return active ? i18n.t("common.fields.active") : i18n.t("common.fields.inactive");
 			},
 			updatePaginate(data: Number) {
 				this.$emit("update-paginate", data);
 			},
-			selectedOption(params: { option: SortingOption; filter: string }) {
+			selectedOption(params: { option: SortingOption; filter: any }) {
 				this.$emit("selected-option", {
 					option: params.option,
 					filter: params.filter,
