@@ -18,33 +18,58 @@
 			:class="getClass"
 			:item-text="item_text"
 			:item-value="item_value"
-			:disabled="disabled"
-			@click="clickEvent"
-			@change="changeEvent"
 			:chips="chips"
 			:deletable-chips="deletable_chips"
 			:multiple="multiple"
 			:small-chips="small_chips"
 			:dense="dense"
-			validate-on-blur
 			:persistent-hint="persistent_hint"
 			:clearable="clearable"
+			:search-input.sync="searchInputSync"
+			:disabled="isLoading || disabled"
+			validate-on-blur
+			hide-no-data
+			:loading="isLoading"
+			@click="clickEvent"
+			@change="changeEvent"
+			@focus="focusEvent"
+			@click:clear="clearHandler"
 		>
-			<!-- <template v-slot:prepend-inner>
-				<v-fade-transition leave-absolute>
-					<v-progress-circular
-						v-if="isLoading"
-						size="24"
-						color="secondary"
-						indeterminate
-						class="ms-2"
-					></v-progress-circular>
-				</v-fade-transition>
-			</template> -->
+			<template v-slot:prepend-inner>
+				<v-progress-circular
+					v-if="isLoading"
+					size="24"
+					color="secondary"
+					indeterminate
+					class="ms-1"
+				></v-progress-circular>
+			</template>
+
+			<template v-slot:no-data>
+				<v-list-item>
+					<v-list-item-title>
+						{{ placeholder }}
+					</v-list-item-title>
+				</v-list-item>
+			</template>
 			<template #label>
 				{{ label }}
 				<span class="red--text" v-if="required">
 					<strong>*</strong>
+				</span>
+			</template>
+
+			<template
+				v-if="colapse_selection"
+				v-slot:selection="{ item, index }"
+			>
+				<v-chip color="secondary" small v-if="index === 0">
+					<span>
+						{{ item.value }} <strong>({{ item.id }}) </strong>
+					</span>
+				</v-chip>
+				<span v-if="index === 1" class="grey--text text-caption">
+					(+{{ modelData.length - 1 }} others)
 				</span>
 			</template>
 		</v-autocomplete>
@@ -140,6 +165,17 @@
 				type: Boolean,
 				default: true,
 			},
+			auto_select_first: {
+				type: Boolean,
+				default: false,
+			},
+			search_input_sync: {
+				default: null,
+			},
+			colapse_selection: {
+				type: Boolean,
+				default: false,
+			},
 		},
 		data: function () {
 			return {};
@@ -148,6 +184,14 @@
 		computed: {
 			isLoading() {
 				return this.$store.state.proccess.loading_field;
+			},
+			searchInputSync: {
+				set(val: any) {
+					this.$emit("sync", val);
+				},
+				get() {
+					return this.search_input_sync;
+				},
 			},
 			modelData: {
 				set(val: any) {
@@ -167,6 +211,12 @@
 			},
 			changeEvent(e: any) {
 				this.$emit("change", e);
+			},
+			focusEvent(e: any) {
+				this.$emit("focus", e);
+			},
+			clearHandler(e: any) {
+				this.$emit("clear", e);
 			},
 		},
 		watch: {},

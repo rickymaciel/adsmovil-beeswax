@@ -72,6 +72,14 @@ const SITE_ROUTE = 'api/list/site_id'
 const SITE_LIST_ROUTE = 'api/list/custom_lists/site_id'
 const AUCTION_TYPE_ROUTE = 'api/list/auction_types'
 const INVENTORY_SOURCE_ROUTE = 'api/list/inventory_sources'
+const TARGETING_ROUTE = 'api/targeting_expressions'
+const TARGETING_PREDICATE_ROUTE = 'api/list/targeting_predicates'
+const TARGETING_KEY_ROUTE = 'api/targeting_keys'
+const TARGETING_LOCATION_TYPE_ROUTE = 'api/list/targeting_location_types'
+const TARGETING_MODULE_ROUTE = 'api/list/targeting_modules'
+const ENVIROMENT_TYPE_ROUTE = 'api/list/environment_types'
+const ENVIROMENT_TPFRAME_ROUTE = 'api/list/topframes'
+const ENVIROMENT_VIDEO_ROUTE = 'api/list/video_apis'
 
 module.exports = {
   ADVERTISER: {
@@ -144,6 +152,11 @@ module.exports = {
   DOMAIN: {
     DOMAIN_LIST_ROUTE
   },
+  ENVIROMENT: {
+    ENVIROMENT_TYPE_ROUTE,
+    ENVIROMENT_TPFRAME_ROUTE,
+    ENVIROMENT_VIDEO_ROUTE
+  },
   EXCHANGE: {
     AUCTION_TYPE_ROUTE,
     INVENTORY_SOURCE_ROUTE
@@ -180,6 +193,13 @@ module.exports = {
   STRATEGIES: {
     STRATEGY_ROUTE,
     STRATEGY_OPTIMIZATION_ROUTE
+  },
+  TARGETING: {
+    TARGETING_ROUTE,
+    TARGETING_PREDICATE_ROUTE,
+    TARGETING_KEY_ROUTE,
+    TARGETING_LOCATION_TYPE_ROUTE,
+    TARGETING_MODULE_ROUTE
   },
   TIMEZONE: {
     TIMEZONE_ROUTE

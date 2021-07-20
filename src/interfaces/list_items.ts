@@ -89,6 +89,7 @@ export interface List {
 }
 
 export interface ListItemFilters {
+  custom_list_id?: number,
   name?: string,
   external_id?: number,
   list_item?: string,

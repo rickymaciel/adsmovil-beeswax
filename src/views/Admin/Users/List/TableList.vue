@@ -116,6 +116,7 @@
 				</v-card-actions>
 			</template>
 		</v-data-table>
+		
 		<div v-if="items.length" class="text-center py-8">
 			<v-pagination
 				v-model="currentPage"
@@ -128,7 +129,7 @@
 
 <script lang="ts">
 	import i18n from "@/plugins/i18n";
-import { isEmpty } from "lodash";
+	import { isEmpty } from "lodash";
 	import Vue from "vue";
 	import Filterable from "../../../../components/Header/Tables/Filterable.vue";
 	import { SortingOption } from "../../../../interfaces/paginated";
@@ -179,13 +180,8 @@ import { isEmpty } from "lodash";
 			},
 		},
 		components: { Filterable },
-		
-		data: function () {
-			return {};
-		},
-
+		data: () => ({}),
 		created() {},
-
 		mounted() {},
 
 		computed: {

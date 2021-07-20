@@ -124,8 +124,7 @@
 	import {User, UserDataCreate, Role} from "../../../../interfaces/user";
 	import Alertize from "../../../../components/Alertize.vue";
 	import { isRequired, isEmail, isNumber } from "../../../../services/rule-services";
-	import i18n from "@/plugins/i18n";
-
+	
 	export default Vue.extend({
 		name: "UserCreate",
 		props: {},

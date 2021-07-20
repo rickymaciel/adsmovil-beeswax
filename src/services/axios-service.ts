@@ -5,6 +5,7 @@
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { HasProviderToken, ProviderToken } from './auth-service'
 import { ValidateToken } from '@/services/jwt-service'
+import { forEach } from 'lodash';
 
 // axios.defaults.baseURL = 'http://dsp-api.localhost.com' // endpoint para gero
 axios.defaults.baseURL = 'https://dsp-api-testing.adsmovil.com'
@@ -19,8 +20,6 @@ axios.defaults.headers.get = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Credentials': true,
 };
-
-console.log(axios.defaults.headers);
 
 const token = localStorage.getItem('token') || ''
 
@@ -71,9 +70,17 @@ export function AxiosPost(url: string, payload: any, has_file: boolean = false) 
             }
         };
     }
-    console.log("AxiosPost", { url: url, payload: payload, headers: headers, has_file: has_file });
     return axios.post(url, payload, headers)
 }
+
+/**
+ * GET
+ * @param url
+ */
+export function AxiosDelete(url: string) {
+    return axios.delete(url)
+}
+
 
 /**
  * GET
@@ -92,6 +99,26 @@ export function AxiosPatch(url: string, payload: any) {
     return axios.patch(url, payload)
 }
 
+const getFormData = (attributes) => {
+    let formData = new FormData();
+    Object.keys(attributes).forEach((key, value) => {
+      if (Array.isArray(attributes[key])) {
+        formData.append(key, JSON.stringify(attributes[key]));
+      } else {
+        formData.append(key, attributes[key]);
+      }
+    });
+    return formData;
+  };
+
+
+export function AxiosUpload(url: string, payload: any, onUploadProgress) {
+    const formData = getFormData(payload);
+    return axios.post(url, formData, {
+        onUploadProgress,
+        headers: { 'Content-Type': 'multipart/form-data' }
+    });
+}
 // RESPONSE BOOLEAN CHECK //
 
 /**

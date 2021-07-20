@@ -464,7 +464,7 @@
 				</v-row>
 
 				<!-- Strategy -->
-				<v-row dense>
+				<v-row dense v-if="show_strategy">
 					<v-col cols="12" sm="12" md="12" lg="12">
 						<v-card
 							class="
@@ -513,7 +513,9 @@
 					</v-col>
 
 					<!-- Bid CPM* -->
-					<v-col cols="12" sm="12" md="6" lg="2">
+					<v-col 
+						v-if="showFieldsBidCpm"
+						cols="12" sm="12" md="6" lg="2">
 						<CardTextField
 							v-model.number="campaign.cpm_bid"
 							v-numeric
@@ -630,7 +632,7 @@
 					</v-col>
 				</v-row>
 
-				<!-- Frecuency Cup* -->
+				<!-- Frecuency Cap* -->
 				<v-col cols="12" sm="12" md="6" lg="4">
 					<v-card
 						elevation="0"
@@ -641,10 +643,7 @@
 					>
 						<v-layout>
 							<v-label class="v-label theme--light">
-								Frecuency Cup
-								<span class="red--text"
-									><strong>*</strong></span
-								>
+								Frecuency Cap
 							</v-label>
 						</v-layout>
 						<v-layout class="mt-3">
@@ -940,6 +939,7 @@
 		}),
 		created() {},
 		mounted() {
+			/*
 			setTimeout(() => {
 				if (
 					!isUndefined(this.campaign.frequency_caps) &&
@@ -948,6 +948,7 @@
 					this.addRowFrecuency();
 				}
 			}, 1000);
+			*/
 		},
 		computed: {
 			getMinDate() {
@@ -1172,60 +1173,91 @@
 					(!this.isValidNumber(this.campaign.budget) ||
 						!this.isValidNumber(this.campaign.kpi_objective))
 				) {
+					this.expected_show = false;
+					this.expected_label = "";
 					return false;
 				}
 
 				/**
-				 * is OPTIMIZED_CPM
+				 * Check selected data
 				 */
-				if (this.isStrategyByType(OPTIMIZED_CPM)) {
-					this.expected_show = true;
-					this.setTargets(false, false, false);
 
-					this.expected_label = "eCPM";
-					let value =
-						this.campaign.budget / (this.campaign.kpi_objective / 1000);
-					if (!isNaN(value) && value !== Infinity) {
-						this.expected_value = value.toFixed(2);
-					} else {
-						this.expected_value = undefined;
+				if(this.campaign.strategy_id === null){
+					this.expected_show = false;
+					this.expected_label = "";
+					return false;
+				}else {
+
+					/**
+					 * is OPTIMIZED_CPM
+					 */
+					if (this.isStrategyByType(OPTIMIZED_CPM) && 
+						this.isBudgetTypeSpend && 
+						this.isAutomaticAllocation && 
+						this.isOptimizationStrategyByType(BY_CAMPAIGN)) {
+
+						this.expected_show = true;
+						this.setTargets(false, false, false);
+
+						this.expected_label = "eCPM";
+						let value = this.campaign.budget / (this.campaign.kpi_objective / 1000);
+						if (!isNaN(value) && value !== Infinity) {
+							this.expected_value = value.toFixed(2);
+						} else {
+							this.expected_value = undefined;
+						}
 					}
-				}
 
-				/**
-				 * is OPTIMIZED_CPC
-				 */
-				if (this.isStrategyByType(OPTIMIZED_CPC)) {
-					this.expected_show = true;
-					this.setTargets(true, true, false);
+					/**
+					 * is OPTIMIZED_CPC
+					 */
+					if (this.isStrategyByType(OPTIMIZED_CPC) &&
+						this.isBudgetTypeSpend && 
+						this.isAutomaticAllocation && 
+						this.isOptimizationStrategyByType(BY_CAMPAIGN)) {
 
-					this.expected_label = "eCPC";
-					let value = this.campaign.budget / this.campaign.kpi_objective;
-					if (!isNaN(value) && value !== Infinity) {
-						this.expected_value = value.toFixed(2);
-					} else {
-						this.expected_value = undefined;
-					}
-				}
+						this.expected_show = true;
+						this.setTargets(true, true, false);
 
-				/**
-				 * is OPTIMIZED_VCR
-				 */
-				if (this.isStrategyByType(OPTIMIZED_VCR)) {
-					this.expected_show = true;
-					this.setTargets(false, false, true);
+						this.expected_label = "eCPC";
+						let value = this.campaign.budget / this.campaign.kpi_objective;
+						if (!isNaN(value) && value !== Infinity) {
+							this.expected_value = value.toFixed(2);
+						} else {
+							this.expected_value = undefined;
+						}
+					} 
 
-					this.expected_label = "eCPCV";
-					let value = this.campaign.budget / this.campaign.kpi_objective;
+					/**
+					 * is OPTIMIZED_VCR
+					 */
+					if (this.isStrategyByType(OPTIMIZED_VCR) && 
+						this.isBudgetTypeSpend && 
+						this.isAutomaticAllocation && 
+						this.isOptimizationStrategyByType(BY_CAMPAIGN)) {
 
-					if (!isNaN(value) && value !== Infinity) {
-						this.expected_value = value.toFixed(2);
-					} else {
-						this.expected_value = undefined;
+						this.expected_show = true;
+						this.setTargets(false, false, true);
+
+						this.expected_label = "eCPCV";
+						let value = this.campaign.budget / this.campaign.kpi_objective;
+
+						if (!isNaN(value) && value !== Infinity) {
+							this.expected_value = value.toFixed(2);
+						} else {
+							this.expected_value = undefined;
+						}
 					}
 				}
 
 				return this.expected_show;
+			},
+
+			/**
+			 * show fields bid CPM and eCPM
+			 */
+			showFieldsBidCpm() {
+				 return this.isBudgetTypeSpend && this.isAutomaticAllocation && this.isOptimizationStrategyByType(BY_CAMPAIGN);
 			},
 
 			getExpectedValue() {
@@ -1234,6 +1266,10 @@
 
 			getExpectedLabel() {
 				return this.expected_label;
+			},
+
+			show_strategy(){
+				return this.isAutomaticAllocation && this.isOptimizationStrategyByType(BY_CAMPAIGN);
 			},
 
 			/**
@@ -1452,11 +1488,6 @@
 			},
 
 			calculateDuration(start: any, end: any) {
-				console.log("calculateDuration", {
-					start: start,
-					end: end,
-					typeof: typeof start,
-				});
 				if (isUndefined(start) || isUndefined(end)) return;
 				if (!(start.isValid() && end.isValid())) {
 					return -1;

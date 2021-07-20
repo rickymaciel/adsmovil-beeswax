@@ -1,13 +1,27 @@
 <template>
-	<v-tabs v-model="currentTab" slider-size="4" show-arrows>
-		<v-tabs-slider color="secondary" size="4"></v-tabs-slider>
+	<v-tabs
+		v-model="currentTab"
+		:vertical="vertical"
+		:slider-size="slider_size"
+		:show-arrows="true"
+	>
+		<v-tabs-slider :color="color" :size="slider_size"></v-tabs-slider>
 		<v-tab
-			v-for="item in items"
-			:key="item"
-			class="v-tab v-tab--secondary"
-			:disabled="item.toLowerCase() !== 'overview'"
+			v-for="(item, index) in items"
+			:key="index"
+			:class="custom_class"
+			:disabled="item.disabled"
 		>
-			{{ item }}
+			<v-btn v-if="item.src" icon medium>
+				<img
+					:lazy-src="item.src"
+					:src="item.src"
+					aspect-ratio="1"
+					alt="Icon"
+				/>
+			</v-btn>
+			<v-icon left v-if="item.icon" :color="color"> mdi-account </v-icon>
+			{{ item.tab }}
 		</v-tab>
 	</v-tabs>
 </template>
@@ -28,6 +42,22 @@
 				type: Number,
 				default: 0,
 			},
+			vertical: {
+				type: Boolean,
+				default: false,
+			},
+			custom_class: {
+				type: String,
+				default: "v-tab--targeting",
+			},
+			slider_size: {
+				type: Number,
+				default: 4,
+			},
+			color: {
+				type: String,
+				default: "secondary",
+			},
 		},
 		components: {},
 		data: () => ({}),
@@ -43,6 +73,10 @@
 				},
 			},
 		},
-		methods: {},
+		methods: {
+			getUrl(item: { src: String }) {
+				return item.src;
+			},
+		},
 	});
 </script>

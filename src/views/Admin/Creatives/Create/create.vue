@@ -132,16 +132,10 @@
 		},
 		methods: {
 			updateCreativeType(data: { creative_type_id: number }) {
-				console.log("updateCreativeType", {
-					data: data,
-				});
 				this.init_creative.creative_type_id = data.creative_type_id;
 			},
 
 			updateCreativeTypeId(creative_type_id: number) {
-				console.log("updateCreativeTypeId", {
-					creative_type_id: creative_type_id,
-				});
 				this.init_creative.creative_type_id = creative_type_id;
 			},
 
@@ -623,7 +617,6 @@
 			 * Dispatch Create
 			 */
 			async dispatchCreative(params: { continue: boolean; creative: any }) {
-				console.log("dispatchCreative", { params: params });
 				return this.$store.dispatch("creative/CreateNewCreative", params);
 			},
 

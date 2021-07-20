@@ -76,26 +76,31 @@
 							text: "Event",
 							disabled: true,
 							href: "/admin/events/index",
+							roles: ["adsmovil-admin"]
 						},
 						{
 							text: "List",
 							disabled: false,
 							href: "/admin/custom_lists/index",
+							roles: ["account-admin", "account-operator"]
 						},
 						{
 							text: "Model",
 							disabled: true,
 							href: "/admin/models/index",
+							roles: ["adsmovil-admin"]
 						},
 						{
 							text: "Modifier",
 							disabled: false,
 							href: "/admin/modifiers/index",
+							roles: ["adsmovil-admin"]
 						},
 						{
 							text: "Segment",
 							disabled: true,
 							href: "/admin/segments/index",
+							roles: ["adsmovil-admin"]
 						},
 					],
 				},
@@ -108,6 +113,11 @@
 			getNavItems() {
 				const profile = this.$store.state.profile.profile;
 				return !!profile ? this.navSecondaryItems.filter((item) => {
+					if(typeof item.children != "undefined") {
+						item.children = item.children.filter((child) => {
+							return child.roles.indexOf(profile.roles[0].name) != -1;
+						});
+					}
 					return item.roles.indexOf(profile.roles[0].name) != -1;
 				}) : [];
 			}

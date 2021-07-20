@@ -16,22 +16,26 @@ export async function create (customList: CustomListDataCreate, token: string) {
   try {
     const response = await AxiosPost(ROUTES.CUSTOM_LIST_ROUTE, customList, token)
 
-    if (!isEmpty(response) && !isUndefined(response.id)) {
+    if (response.success) {
+      const data = response.content
+
       return {
-        id: response.id,
-        account_id: response.account_id,
-        external_id: response.external_id,
-        name: response.name,
-        custom_list_type_id: response.custom_list_type_id,
-        delimiter: response.delimiter,
-        default_radius_km: response.default_radius_km,
-        notes: response.notes,
-        active: response.active,
-        created_by: response.created_by,
-        updated_by: response.updated_by,
-        deleted_by: response.deleted_by,
-        created_at: response.created_at,
-        updated_at: response.updated_at
+        id: data.id,
+        external_id: data.external_id,
+        name: data.name,
+        type_id: data.type_id,
+        type_name: data.type_name,
+        type_key: data.type_key,
+        delimiter: data.delimiter,
+        default_radius_km: data.default_radius_km,
+        notes: data.notes,
+        custom_list_items_count: data.custom_list_items_count,
+        active: data.active,
+        type: {
+          id: data.type.id,
+          key: data.type.key,
+          name: data.type.name
+        }
       } as CustomList
     }
 
@@ -48,22 +52,26 @@ export async function update (customList: CustomListDataUpdate, token: string) {
   try {
     const response = await AxiosPatch(ROUTES.CUSTOM_LIST_ROUTE + '/' + customList.id, customList, token)
 
-    if (!isEmpty(response) && !isUndefined(response.id)) {
+    if (response.success) {
+      const data = response.content
+
       return {
-        id: response.id,
-        account_id: response.account_id,
-        external_id: response.external_id,
-        name: response.name,
-        custom_list_type_id: response.custom_list_type_id,
-        delimiter: response.delimiter,
-        default_radius_km: response.default_radius_km,
-        notes: response.notes,
-        active: response.active,
-        created_by: response.created_by,
-        updated_by: response.updated_by,
-        deleted_by: response.deleted_by,
-        created_at: response.created_at,
-        updated_at: response.updated_at
+        id: data.id,
+        external_id: data.external_id,
+        name: data.name,
+        type_id: data.type_id,
+        type_name: data.type_name,
+        type_key: data.type_key,
+        delimiter: data.delimiter,
+        default_radius_km: data.default_radius_km,
+        notes: data.notes,
+        custom_list_items_count: data.custom_list_items_count,
+        active: data.active,
+        type: {
+          id: data.type.id,
+          key: data.type.key,
+          name: data.type.name
+        }
       } as CustomList
     }
 
@@ -81,7 +89,7 @@ export async function changeStatus (id: number, status: boolean, token: string) 
     const active = status ? 1 : 0
     const response = await AxiosPatch(ROUTES.CUSTOM_LIST_ROUTE + '/' + id + '/set/' + active, {}, token)
 
-    if (!isEmpty(response) && !isUndefined(response.id)) {
+    if (response.success) {
       return true
     }
 
@@ -98,22 +106,26 @@ export async function show (id: number, token: string) {
   try {
     const response = await AxiosGet(ROUTES.CUSTOM_LIST_ROUTE + '/' + id, token)
 
-    if (!isEmpty(response) && !isUndefined(response.id)) {
+    if (response.success) {
+      const data = response.content
+
       return {
-        id: response.id,
-        account_id: response.account_id,
-        external_id: response.external_id,
-        name: response.name,
-        custom_list_type_id: response.custom_list_type_id,
-        delimiter: response.delimiter,
-        default_radius_km: response.default_radius_km,
-        notes: response.notes,
-        active: response.active,
-        created_by: response.created_by,
-        updated_by: response.updated_by,
-        deleted_by: response.deleted_by,
-        created_at: response.created_at,
-        updated_at: response.updated_at
+        id: data.id,
+        external_id: data.external_id,
+        name: data.name,
+        type_id: data.type_id,
+        type_name: data.type_name,
+        type_key: data.type_key,
+        delimiter: data.delimiter,
+        default_radius_km: data.default_radius_km,
+        notes: data.notes,
+        custom_list_items_count: data.custom_list_items_count,
+        active: data.active,
+        type: {
+          id: data.type.id,
+          key: data.type.key,
+          name: data.type.name
+        }
       } as CustomList
     }
 
@@ -144,43 +156,27 @@ export async function all (token: string, filters?: CustomListFilters, options?:
 
     const customs_lists = [] as any
 
-    if (!isEmpty(response) && response.length > 0) {
-      forEach(response, function (value, key) {
+    if (response.success) {
+      const data = response.content
+
+      forEach(data, function (value, key) {
         const custom_list = {
           id: value.id,
-          account_id: value.account_id,
           external_id: value.external_id,
           name: value.name,
-          custom_list_type_id: value.custom_list_type_id,
+          type_id: value.type_id,
+          type_name: value.type_name,
+          type_key: value.type_key,
+          delimiter: value.delimiter,
+          default_radius_km: value.default_radius_km,
+          notes: value.notes,
+          custom_list_items_count: value.custom_list_items_count,
+          active: value.active,
           type: {
             id: value.type.id,
             key: value.type.key,
             name: value.type.name
-          },
-          delimiter: value.delimiter,
-          default_radius_km: value.default_radius_km,
-          notes: value.notes,
-          active: value.active,
-          created_by: {
-            id: value.created_by.id,
-            first_name: value.created_by.name,
-            last_name: value.created_by.last_name,
-            email: value.created_by.email
-          },
-          updated_by: {
-            id: value.updated_by.id,
-            first_name: value.updated_by.name,
-            last_name: value.updated_by.last_name,
-            email: value.updated_by.email
-          },
-          deleted_by: {
-            id: (isEmpty(value.deleted_by)) ? null : value.deleted_by.id,
-            first_name: (isEmpty(value.deleted_by)) ? null : value.deleted_by.name,
-            last_name: (isEmpty(value.deleted_by)) ? null : value.deleted_by.last_name,
-            email: (isEmpty(value.deleted_by)) ? null : value.deleted_by.email
-          },
-          created_at: value.created_at,
-          updated_at: value.updated_at
+          }
         } as CustomList
 
         customs_lists.push(custom_list)
@@ -216,43 +212,27 @@ export async function paginated (token: string, paginated: CustomListPaginated, 
 
     const customs_lists = [] as any
 
-    if (!isEmpty(response) && !isUndefined(response.data) && response.data.length > 0) {
-      forEach(response.data, function (value, key) {
+    if (response.success) {
+      const data = response.content.data
+
+      forEach(data, function (value, key) {
         const custom_list = {
           id: value.id,
-          account_id: value.account_id,
           external_id: value.external_id,
           name: value.name,
-          custom_list_type_id: value.custom_list_type_id,
+          type_id: value.type_id,
+          type_name: value.type_name,
+          type_key: value.type_key,
+          delimiter: value.delimiter,
+          default_radius_km: value.default_radius_km,
+          notes: value.notes,
+          custom_list_items_count: value.custom_list_items_count,
+          active: value.active,
           type: {
             id: value.type.id,
             key: value.type.key,
             name: value.type.name
-          },
-          delimiter: value.delimiter,
-          default_radius_km: value.default_radius_km,
-          notes: value.notes,
-          active: value.active,
-          created_by: {
-            id: value.created_by.id,
-            first_name: value.created_by.name,
-            last_name: value.created_by.last_name,
-            email: value.created_by.email
-          },
-          updated_by: {
-            id: value.updated_by.id,
-            first_name: value.updated_by.name,
-            last_name: value.updated_by.last_name,
-            email: value.updated_by.email
-          },
-          deleted_by: {
-            id: (isEmpty(value.deleted_by)) ? null : value.deleted_by.id,
-            first_name: (isEmpty(value.deleted_by)) ? null : value.deleted_by.name,
-            last_name: (isEmpty(value.deleted_by)) ? null : value.deleted_by.last_name,
-            email: (isEmpty(value.deleted_by)) ? null : value.deleted_by.email
-          },
-          created_at: value.created_at,
-          updated_at: value.updated_at
+          }
         } as CustomList
 
         customs_lists.push(custom_list)
@@ -316,12 +296,12 @@ export async function list (token: string, filters?: CustomListFilters, options?
 function getFilters (filters: CustomListFilters): string {
   let filter = ''
 
+  const id = (isUndefined(filters.id)) ? '' : filters.id
   const name = (isUndefined(filters.name)) ? '' : filters.name
-  const external_id = (isUndefined(filters.external_id)) ? '' : filters.external_id
-  const type_id = (isUndefined(filters.custom_list_type_id)) ? '' : filters.custom_list_type_id
+  const type_name = (isUndefined(filters.type_name)) ? '' : filters.type_name
   const active = (isUndefined(filters.active)) ? '' : filters.active
 
-  filter += 'filters[name]=' + name + '&filters[external_id]=' + external_id + '&filters[custom_list_type_id]=' + type_id + '&filters[active]=' + active
+  filter += 'filters[id]=' + id + '&filters[name]=' + name + '&filters[type_name]=' + type_name + '&filters[active]=' + active
 
   return filter
 }

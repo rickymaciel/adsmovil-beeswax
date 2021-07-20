@@ -60,7 +60,7 @@
 	import { Campaign } from "../../../../interfaces/campaign";
 
 	export default Vue.extend({
-		name: "Create",
+		name: "Edit",
 		props: {},
 		components: { CreateTabs, Overview, Alertize },
 		data: () => ({

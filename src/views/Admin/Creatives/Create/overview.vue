@@ -1697,10 +1697,6 @@
 
 			async updateTemplate(params: any) {
 				const response = await this.getCreativeTypeByTemplateId();
-				console.log("updateTemplate", {
-					response: response,
-					params: params,
-				});
 				if (!response) return;
 				this.$emit("update-creative-type", response);
 			},
@@ -2164,7 +2160,6 @@
 			},
 
 			selectedWidthHeight(size_id: number) {
-				console.log("overview::selectedWidthHeight", { size_id: size_id });
 				const selectedSize = find(this.getCreativeSizes, function (s) {
 					return s.id === size_id;
 				});

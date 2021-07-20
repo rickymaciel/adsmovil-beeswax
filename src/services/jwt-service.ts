@@ -21,7 +21,6 @@ export function ValidateToken(token: string): string {
 export const IsTokenExpired = (token: string): boolean => {
     try {
         const decoded = DecodeToken(token)
-        console.log('JwtService:IsTokenExpired', { decoded: decoded })
 
         if (!decoded) return true
 
@@ -30,7 +29,6 @@ export const IsTokenExpired = (token: string): boolean => {
         if (!exp) return true
 
         const expirationDatetimeInSeconds = exp * 1000
-        console.log('JwtService:IsTokenExpired', { isExpired: Date.now() >= expirationDatetimeInSeconds })
 
         return Date.now() >= expirationDatetimeInSeconds
     } catch (error) {

@@ -10,8 +10,10 @@ export async function list (token: string) {
 
     const exchanges = [] as any
 
-    if (!isEmpty(response) && response.length > 0) {
-      forEach(response, function (value, key) {
+    if (response.success) {
+      const data = response.content
+
+      forEach(data, function (value, key) {
         const exc = {
           id: value.id,
           description: value.description,

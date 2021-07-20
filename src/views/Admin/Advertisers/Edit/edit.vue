@@ -13,7 +13,7 @@
 				<v-container>
 					<v-row no-gutters>
 						<!-- Advertiser ID -->
-						<v-col cols="12" sm="12" md="6" lg="3">
+						<v-col cols="12" sm="12" md="6">
 							<v-card
 								elevation="0"
 								class="pa-2"
@@ -27,10 +27,10 @@
 										getRules.isNumber,
 										getRules.isRequired,
 									]"
-									hint="Advertiser ID"
 									ref="name"
-									placeholder="Advertiser ID"
-									label="Advertiser ID*"
+									:hint="$t('advertisers.fields.id')"
+									:placeholder="$t('advertisers.fields.id')"
+									:label="$t('advertisers.fields.id')+'*'"
 									class="label-fixed disabled"
 								></v-text-field>
 							</v-card>
@@ -39,7 +39,7 @@
 
 					<v-row no-gutters>
 						<!-- Advertiser Name -->
-						<v-col cols="12" sm="12" md="6" lg="3">
+						<v-col cols="12" sm="12" md="6">
 							<v-card
 								elevation="0"
 								class="pa-2"
@@ -54,10 +54,10 @@
 										getRules.isMinLength,
 										getRules.isMaxLength,
 									]"
-									hint="Advertiser Name"
 									ref="name"
-									placeholder="Advertiser Name"
-									label="Advertiser Name*"
+									:hint="$t('advertisers.fields.name')"
+									:placeholder="$t('advertisers.fields.name')"
+									:label="$t('advertisers.fields.name')+'*'"
 									class="label-fixed"
 									counter="255"
 								></v-text-field>
@@ -65,7 +65,7 @@
 						</v-col>
 
 						<!-- Advertiser Category -->
-						<v-col cols="12" sm="12" md="6" lg="3">
+						<v-col cols="12" sm="12" md="6">
 							<v-card
 								elevation="0"
 								class="pa-2"
@@ -85,16 +85,14 @@
 									ref="category_id"
 									item-text="name"
 									item-value="id"
-									label="Advertiser Category*"
-									placeholder="Advertiser Category"
+									:label="$t('advertisers.fields.category')"
+									:placeholder="$t('advertisers.fields.category')"
 								></v-autocomplete>
 							</v-card>
 						</v-col>
-					</v-row>
 
-					<v-row no-gutters>
 						<!-- Advertiser Domain -->
-						<v-col cols="12" sm="12" md="6" lg="3">
+						<v-col cols="12" sm="12" md="6">
 							<v-card
 								elevation="0"
 								class="pa-2"
@@ -116,9 +114,9 @@
 												getRules.isRequired,
 												getRules.isDomain,
 											]"
-											hint="Advertiser Domain"
-											placeholder="Advertiser Domain"
-											label="Advertiser Domain*"
+											:hint="$t('advertisers.fields.domain')"
+											:placeholder="$t('advertisers.fields.domain')"
+											:label="$t('advertisers.fields.domain')+'*'"
 											class="label-fixed"
 											append-outer-icon="mdi-help-circle-outline"
 											@click:append-outer="
@@ -127,15 +125,14 @@
 										></v-text-field>
 									</template>
 									<span>
-										The advertiser’s primary domain. This is
-										recuerde by many exchanges
+										{{ $t("advertisers.labels.domainTooltip") }}
 									</span>
 								</v-tooltip>
 							</v-card>
 						</v-col>
 
 						<!-- Advertiser App Bundle -->
-						<v-col cols="12" sm="12" md="6" lg="3">
+						<v-col cols="12" sm="12" md="6">
 							<v-card
 								elevation="0"
 								class="pa-2"
@@ -152,11 +149,10 @@
 									<template v-slot:activator="{}">
 										<v-text-field
 											v-model="app_bundle"
-											:rules="[getRules.isRequired]"
 											ref="app_bundle"
-											hint="Advertiser App Bundle"
-											placeholder="Advertiser App Bundle"
-											label="Advertiser App Bundle*"
+											:hint="$t('advertisers.fields.appBundle')"
+											:placeholder="$t('advertisers.fields.appBundle')"
+											:label="$t('advertisers.fields.appBundle')"
 											class="label-fixed"
 											counter="255"
 											append-outer-icon="mdi-help-circle-outline"
@@ -166,15 +162,14 @@
 										></v-text-field>
 									</template>
 									<span>
-										The advertiser’s primary domain. This is
-										recuerde by many exchanges
+										{{ $t("advertisers.labels.appBundleTooltip") }}
 									</span>
 								</v-tooltip>
 							</v-card>
 						</v-col>
 
 						<!-- Status -->
-						<v-col cols="12" sm="12" md="6" lg="3">
+						<v-col cols="12" sm="12" md="6">
 							<v-card
 								elevation="0"
 								outlined
@@ -188,7 +183,7 @@
 									flat
 									hide-details
 									v-model="active"
-									:label="`${active ? 'Active' : 'Inactive'}`"
+									:label="`${active ? $t('common.fields.active') : $t('common.fields.inactive')}`"
 									@change="toggleStatus"
 								>
 								</v-switch>
@@ -197,7 +192,7 @@
 					</v-row>
 					<v-divider class="ma-4"></v-divider>
 					<v-row no-gutters align="center" justify="center">
-						<v-col cols="12" sm="12" md="8" lg="9">
+						<v-col cols="12" sm="12" md="6">
 							<v-card
 								elevation="0"
 								class="pa-2"
@@ -205,16 +200,13 @@
 								tile
 								color="rgb(0, 0, 0, 0.0)"
 							>
-								<v-card-text
-									align="start"
-									class="secondary--text info-message"
-								>
-									* Mandatory fields
+								<v-card-text align="start" class="secondary--text info-message">
+									{{ $t('common.labels.mandatory') }}
 								</v-card-text>
 							</v-card>
 						</v-col>
 
-						<v-col cols="12" sm="12" md="8" lg="3">
+						<v-col cols="12" sm="12" md="6">
 							<v-card
 								elevation="0"
 								class="pa-2"
@@ -222,14 +214,14 @@
 								tile
 								color="rgb(0, 0, 0, 0.0)"
 							>
-								<v-row align="center" justify="center">
+								<v-row align="end" justify="end">
 									<v-btn
 										type="submit"
 										rounded
 										color="secondary"
 										class="mx-2 px-8"
 									>
-										{{ $t("save") }}
+										{{ $t("common.actions.save") }}
 									</v-btn>
 									<v-btn
 										type="button"
@@ -238,7 +230,7 @@
 										class="mx-2 px-8"
 										@click="redirectTo"
 									>
-										{{ $t("cancel") }}
+										{{ $t("common.actions.cancel") }}
 									</v-btn>
 								</v-row>
 							</v-card>

@@ -144,12 +144,11 @@ class UserService {
 function getFilters(filters: UserFilters): string {
     let filter = ''
 
-    const id = (isUndefined(filters.id)) ? '' : filters.id
-    const name = (isUndefined(filters.name)) ? '' : filters.name
-    const last_name = (isUndefined(filters.last_name)) ? '' : filters.last_name
-    const email = (isUndefined(filters.email)) ? '' : filters.email
-    const role_description = (isUndefined(filters.role_description)) ? '' : filters.role_description
-    
+    const id = !!filters.id ? filters.id : '';
+    const name = !!filters.name ? filters.name : '';
+    const last_name = !!filters.last_name ? filters.last_name : '';
+    const email = !!filters.email ? filters.email : '';
+    const role_description = !!filters.role_description ? filters.role_description : '';    
     const active = (typeof filters.active === "undefined") ? '' : filters.active
 
     filter += 'filters[users.id]=' + id +

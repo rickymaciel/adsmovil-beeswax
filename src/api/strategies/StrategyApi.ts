@@ -10,17 +10,21 @@ export async function list (token: string) {
 
     const strategies = [] as any
 
-    if (!isEmpty(response) && Object.keys(response).length > 0) {
-      Object.keys(response).forEach(function (key) {
-        const strategy = {
-          id: parseInt(key),
-          name: response[key]
-        } as Strategy
+    if (response.success) {
+      let data = response.content
 
-        strategies.push(strategy)
-      })
+      if (Object.keys(data).length > 0) {
+        Object.keys(data).forEach(function (key) {
+          const strategy = {
+            id: parseInt(key),
+            name: response[key]
+          } as Strategy
 
-      return strategies
+          strategies.push(strategy)
+        })
+
+        return strategies
+      }
     }
 
     return null

@@ -1,6 +1,9 @@
-.theme--light.v-icon {
-  color: $tertiary !important;
+
+.theme--light .v-data-table .v-data-table__wrapper table thead tr th .v-icon, .theme--light .v-data-table .v-data-table__wrapper table thead tr td .v-icon {
+    color: $tertiary !important;
+    display: inline;
 }
+
 .v-input--selection-controls__ripple.green--text {
    color: $tertiary !important;
 }

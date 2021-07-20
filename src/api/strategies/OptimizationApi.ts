@@ -10,17 +10,21 @@ export async function list (token: string) {
 
     const optimizations = [] as any
 
-    if (!isEmpty(response) && Object.keys(response).length > 0) {
-      Object.keys(response).forEach(function (key) {
-        const opt = {
-          id: parseInt(key),
-          name: response[key]
-        } as Optimization
+    if (response.success) {
+      let data = response.content
 
-        optimizations.push(opt)
-      })
+      if (Object.keys(data).length > 0) {
+        Object.keys(data).forEach(function (key) {
+          const opt = {
+            id: parseInt(key),
+            name: response[key]
+          } as Optimization
 
-      return optimizations
+          optimizations.push(opt)
+        })
+
+        return optimizations
+      }
     }
 
     return null

@@ -1,14 +1,60 @@
-import { ListItemDataCreate, ListItemDataUpdate, ListItemFilters, ListItemOptions, ListItemPaginated } from '@/interfaces/list_items'
-import { AxiosGet, AxiosPost, GetData, GetErrors, GetMessage, AxiosPatch } from './axios-service';
+import { ListItemDataUpdate, ListItemFilters, ListItemOptions, ListItemPaginated } from '@/interfaces/list_items'
+import { AxiosGet, AxiosDelete, AxiosPost, GetData, GetErrors, GetMessage, AxiosPatch } from './axios-service';
 import { isEmpty, isUndefined } from 'lodash'
+import { Paginated, SortingOption } from '../interfaces/paginated';
 export const LIST_ITEM_UPLOAD = '/api/custom_list_items/upload'
 export const LIST_ITEM_ROUTE = '/api/custom_list_items'
 export const CUSTOM_LIST_EXCHANGES_ROUTE = '/api/custom_list_exchanges'
 
 class ListItemService {
+    
+    async paginated(params: { paginated?: Paginated, filters?: ListItemFilters, options?: SortingOption }) {
+        try {
+            let filter = ''
+            let option = ''
+
+            const { paginated, filters, options } = params;
+
+            if (!isUndefined(filters)) {
+                filter = getFilters(filters)
+            }
+            
+            if (!isUndefined(options)) {
+                option += getOptions(options, 'paginated', paginated)
+            }
+
+            const url = getURL(filter, option)
+            const response = await AxiosGet(LIST_ITEM_ROUTE + url)
+            return Promise.resolve(GetData(response));
+
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+
+    async delete(id) {
+        try {
+            console.log('url',LIST_ITEM_ROUTE+'/'+id);
+            const response = await AxiosDelete(LIST_ITEM_ROUTE+'/'+id);
+            return Promise.resolve(true);    
+        } 
+        catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+
     async upload(listItem: any) {
         try {
             const response = await AxiosPost(LIST_ITEM_UPLOAD, listItem)
+            console.log('ListItemService:upload: ', { response: response })
             if (response.status < 200 && response.status > 300) {
                 return null
             }
@@ -39,32 +85,6 @@ class ListItemService {
             const url = getURL(filter, option)
             const response = await AxiosGet(LIST_ITEM_ROUTE + url)
 
-            return Promise.resolve(GetData(response));
-
-        } catch (error) {
-            return Promise.reject({
-                success: false,
-                message: GetMessage(error),
-                errors: GetErrors(error)
-            });
-        }
-    }
-
-    async paginated(filters?: ListItemFilters, options?: ListItemOptions) {
-        try {
-            let filter = ''
-            let option = ''
-
-            if (!isUndefined(filters)) {
-                filter = getFilters(filters)
-            }
-
-            if (!isUndefined(options)) {
-                option += getOptions(options, 'paginated')
-            }
-
-            const url = getURL(filter, option)
-            const response = await AxiosGet(LIST_ITEM_ROUTE + url)
             return Promise.resolve(GetData(response));
 
         } catch (error) {
@@ -156,16 +176,10 @@ class ListItemService {
 
 function getFilters(filters: ListItemFilters): string {
     let filter = ''
-/*
-    const name = (isUndefined(filters.name)) ? '' : filters.name
-    const category_id = (isUndefined(filters.category_id)) ? '' : filters.category_id
-    const domain = (isUndefined(filters.domain)) ? '' : filters.domain
-    const app_bundle = (isUndefined(filters.app_bundle)) ? '' : filters.app_bundle
-    const external_id = (isUndefined(filters.external_id)) ? '' : filters.external_id
-    const active = (isUndefined(filters.active)) ? '' : filters.active
 
-    filter += 'filters[name]=' + name + '&filters[category_id]=' + category_id + '&filters[domain]=' + domain + '&filters[app_bundle]=' + app_bundle + '&filters[external_id]=' + external_id + '&filters[active]=' + active
-*/
+    const custom_list_id = (isUndefined(filters.custom_list_id)) ? '' : filters.custom_list_id;
+    filter += 'filters[custom_list_id]=' + custom_list_id;
+
     return filter
 }
 
@@ -176,11 +190,11 @@ function getOptions(options: ListItemOptions, mode: string, paginated?: ListItem
     const order = (isUndefined(options.order)) ? '' : options.order
 
     option += 'sort=' + sort + '&order=' + order + '&mode=' + mode
-
+*/
     if (mode == 'paginated') {
         option += '&page=' + paginated?.page + '&limit=' + paginated?.limit
     }
-*/
+
     return option
 }
 

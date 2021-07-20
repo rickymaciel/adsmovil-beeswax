@@ -10,17 +10,21 @@ export async function list (token: string) {
 
     const kpi_campaings = [] as any
 
-    if (!isEmpty(response) && Object.keys(response).length > 0) {
-      Object.keys(response).forEach(function (key) {
-        const kpi = {
-          id: parseInt(key),
-          name: response[key]
-        } as KpiCampaing
+    if (response.success) {
+      let data = response.content
 
-        kpi_campaings.push(kpi)
-      })
+      if (Object.keys(data).length > 0) {
+        Object.keys(data).forEach(function (key) {
+          const kpi = {
+            id: parseInt(key),
+            name: response[key]
+          } as KpiCampaing
 
-      return kpi_campaings
+          kpi_campaings.push(kpi)
+        })
+
+        return kpi_campaings
+      }
     }
 
     return null

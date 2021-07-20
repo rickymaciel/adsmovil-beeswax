@@ -104,7 +104,7 @@ export interface Notification {
     subtitle?: string;
     message: string;
     type: string;
-    to?: string;
+    to?: any;
     show?: Boolean;
     btn_text: string
 }

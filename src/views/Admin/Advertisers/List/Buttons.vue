@@ -10,7 +10,7 @@
 				:small="$vuetify.breakpoint.mobile"
 				raised
 				rounded
-				>Create New</v-btn
+				>{{ $t("common.actions.create") }}</v-btn
 			>
 
 			<v-btn

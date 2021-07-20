@@ -7,12 +7,16 @@
 			</div>
 		</template>
 
-		<v-list subheader dense flat>
-			<v-subheader>{{ $t("filter") }}</v-subheader>
+		<v-list subheader dense flat class="pa-3 py-1">
+			
+			<!-- filters title -->
+			<v-subheader v-if="header.filterable">{{ $t("filter") }}</v-subheader>
+			<v-divider v-if="header.filterable"></v-divider>
 
-			<template v-if="filter_by_active">
-				<v-list-item v-if="filter_by_active">
+			<template v-if="header.filterable && filter_by_active">
+				<v-list-item v-if="filter_by_active" class="px-2">
 					<v-radio-group
+						class="px-0 py-0 mx-0 my-4"
 						@change="selectedOption"
 						v-model="filter"
 						:ref="field_name"
@@ -30,10 +34,10 @@
 					</v-radio-group>
 				</v-list-item>
 			</template>
-			<template v-else>
+			<template v-if="header.filterable && !filter_by_active">
 				<v-list-item>
 					<v-text-field
-						class="label-fixed no-top"
+						class="label-fixed pt-0 px-0 mx-0"
 						:type="type"
 						:ref="field_name"
 						v-model="filter"
@@ -44,9 +48,10 @@
 				</v-list-item>
 			</template>
 
-			<v-divider></v-divider>
+			<v-subheader v-if="header.sortable">{{ $t("sort") }}</v-subheader>
+			<v-divider v-if="header.sortable"></v-divider>
 
-			<v-list-item-action>
+			<v-list-item-action v-if="header.sortable">
 				<v-radio-group v-model="option.order" @change="selectedOption">
 					<v-radio color="secondary" value="asc">
 						<template v-slot:label>

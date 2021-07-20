@@ -47,7 +47,7 @@
     "not-implemented-yet": "Method not yet implemented",
     "must-be-numeric": "Value must be a number",
     "invalid-email": "Invalid email address",
-    "domain": "Invalid URL. Example: http(s)://www.example.com",
+    "domain": "Invalid domain.",
     "appbundle": "Invalid App Bundle",
     "filter": "Filter",
     "sort": "Sort",
@@ -62,6 +62,7 @@
         "actions": {
             "create": "Create new",
             "save": "Save",
+            "save_continue": "Save & continue",
             "cancel": "Cancel",
             "backToLogin": "Back to Login",
             "goToLogin": "Go to Login"
@@ -127,6 +128,79 @@
             "success": "Your password have been changed"
         }
     },
+    "advertisers": {
+        "breadcrumb": "Advertisers",
+        "list": {
+            "title": "Advertisers list"
+        },
+        "create": {
+            "title": "Create new advertiser"
+        },        
+        "edit": {
+            "title": "Edit advertiser"
+        }, 
+        "fields":{
+            "id": "Advertiser ID",
+            "name": "Name",
+            "category": "Category",
+            "domain": "Domain",
+            "appBundle": "App Bundle",
+            "currency": "Currency"
+        },
+        "labels": {
+            "domainTooltip": "The advertiser’s primary domain. This is required by many exchanges",
+            "appBundleTooltip": "The app bundle is the unique identifier to the app in each app store's ecosystem"
+        }        
+    },
+    "customList": {
+        "breadcrumb": "Lists",
+        "fields": {
+            "id": "List ID",
+            "name": "Name",
+            "type": "Type",
+            "items": "Associated items",
+            "radius": "Default radius in Km"
+        },
+        "list": {
+            "title": "Lists"
+        },
+        "create": {
+            "title": "Create list"
+        },
+        "edit": {
+            "title": "Edit list"
+        },
+        "add": {
+            "title": "Add list items"
+        }
+    },
+    "customListItem": {
+        "list": {
+            "title": "List items"
+        },
+        "fields": {
+            "latitude": "Latitude",
+            "longitude": "Longitude",
+            "radius_km": "Radius (km)",
+            "list_item": "List item",
+            "value": "Value",
+            "name": "Name",
+            "prefix": "Prefix"
+        },
+        "labels": {
+            "paginationError": "You must confirm your changes before changing page",
+            "inputInstructions": "Indicate the charging method you want to use",
+            "manualInput": "Load items manually",
+            "uploadInput": "Upload file",
+            "deleted": "Deleted",
+            "total_items": "Items: {length} of {total}"
+        },
+        "actions": {
+            "add": "Add Item", 
+            "upload": "Upload"
+        }
+    },
+
     "require-campaign": "You must select a campaign",
     "must-be-validated": "Must be validated"
 }
