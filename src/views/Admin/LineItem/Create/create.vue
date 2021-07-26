@@ -81,7 +81,9 @@
 										>
 											<AppSite
 												v-if="currentTabTargeting === 0"
-												:data_variables="data_variables"
+												:data_variables="
+													data_variables.app_site
+												"
 												:app_site="targeting.app_site"
 												@add-item="addItem"
 												@add-item-unique="addItemUnique"
@@ -113,12 +115,46 @@
 
 											<Exchange
 												v-if="currentTabTargeting === 3"
+												:data_variables="
+													data_variables.exchange
+												"
 												:exchange="targeting.exchange"
+												@add-item="addItem"
+												@add-item-unique="addItemUnique"
+												@remove-item="removeItem"
+												@remove-item-unique="
+													removeItemUnique
+												"
+												@clear-app-site="clearHandler"
+												@update-data-var="
+													updateDataVariables
+												"
+												@add-comma="addCommaHandler"
+												@update-item-unique="
+													updateItemUnique
+												"
 											></Exchange>
 
 											<Geo
 												v-if="currentTabTargeting === 4"
-												:environment="targeting.geo"
+												:data_variables="
+													data_variables.geo
+												"
+												:geo="targeting.geo"
+												@add-item="addItem"
+												@add-item-unique="addItemUnique"
+												@remove-item="removeItem"
+												@remove-item-unique="
+													removeItemUnique
+												"
+												@clear-app-site="clearHandler"
+												@update-data-var="
+													updateDataVariables
+												"
+												@add-comma="addCommaHandler"
+												@update-item-unique="
+													updateItemUnique
+												"
 											></Geo>
 										</v-card>
 									</v-col>
@@ -215,9 +251,12 @@
 		initLineItem,
 		initHardCoreLineItem,
 		initTargeting,
+		getDataVariables,
+		initDataVariables,
+		getTargetingIDByValue,
 	} from "../../../../utils/initData";
 	import Alertize from "../../../../components/Alertize.vue";
-	import { isArray, isEmpty, isString, isUndefined, trim } from "lodash";
+	import { isArray, isEmpty, isNull, isString, isUndefined, trim } from "lodash";
 	import { LineItemDataCreate } from "../../../../interfaces/line_item";
 	import CardTextField from "../../../../components/Content/CardTextField.vue";
 	import AppSite from "../targetings/appSite.vue";
@@ -246,76 +285,36 @@
 			title: "Create",
 			currentTab: 0,
 			currentTabTargeting: 0,
-			items: [
-				{ key: 0, tab: "Overview", disabled: false },
-				{ key: 1, tab: "Targeting", disabled: true },
-				{ key: 2, tab: "Modifiers / Models", disabled: true },
-				{ key: 3, tab: "Creatives", disabled: true },
-			],
+			items: [],
 
 			targeting: initTargeting(),
 
 			//Aux App Site
-			data_variables: {
-				app_bundle_list: [],
-				app_id_list: [],
-				app_name: [],
-				deal_id: [],
-				deal_id_list: [],
-				domain_list: [],
-				placement_id: [],
-				placement_list: [],
-				publisher_id: [],
-				publisher_id_list: [],
-				site: [],
-				site_list: [],
-				app_name_attributes: [
-					{
-						value: "app_name",
-						text: "by App Name",
-					},
-					{
-						value: "app_id",
-						text: "by App ID",
-					},
-					{
-						value: "app_bundle",
-						text: "by App Bundle",
-					},
-				],
-				site_attributes: [
-					{
-						value: "site_id",
-						text: "by Site ID",
-					},
-					{
-						value: "site_name",
-						text: "by Site Name",
-					},
-					{
-						value: "placement_id",
-						text: "by Placement ID",
-					},
-				],
-			},
+			data_variables: initDataVariables(),
 		}),
 		created() {
 			// init for test
 			//this.setLineItem(initHardCoreLineItem());
 
 			this.setLineItem(initLineItem());
+
+			this.items = [
+				{ key: 0, tab: "Overview", disabled: false },
+				{ key: 1, tab: "Targeting", disabled: !this.isCreatedLineItem },
+				{ key: 2, tab: "Modifiers / Models", disabled: true },
+				{ key: 3, tab: "Creatives", disabled: true },
+			];
+
+			this.updateSelectedTabIndex();
+
+			// TODO revisar targeting keys -> cambiar datos hardcodeados a dinamico desde api
+
+			// setTimeout(async () => {
+			// 	const t = await this.dispatchTargetingKeys();
+			// 	console.log("dispatchTargetingKeys", { t });
+			// }, 500);
 		},
-		async mounted() {
-			if (this.currentTab === 0) {
-				await this.loadResources();
-			}
-			this.items.filter((i: { key: number; disabled: boolean }) => {
-				if (i.key === 1) {
-					i.disabled = !Boolean(this.getLineItem.id);
-				}
-				return i;
-			});
-		},
+		mounted() {},
 		computed: {
 			getCampaigns() {
 				return this.$store.state.campaign.campaigns_list;
@@ -365,10 +364,16 @@
 			getPrepareTargetingDataCreate() {
 				return prepareTargetingDataCreate(this.targeting);
 			},
+			isCreatedLineItem() {
+				return this.hasData(this.getLineItem.id);
+			},
 		},
 		methods: {
 			setLineItem(lineItem: any) {
 				this.$store.state.custom_list.lineItem = lineItem;
+			},
+			hasData(attr: any) {
+				return !isUndefined(attr) && !isNull(attr) && isEmpty(attr);
 			},
 			async loadResources() {
 				this.setLoading(true);
@@ -404,6 +409,11 @@
 			/**
 			 * GET
 			 */
+
+			async dispatchTargetingKeys() {
+				return this.$store.dispatch("targeting/getTargetingKeys");
+			},
+
 			async dispatchCampaigns() {
 				return this.$store.dispatch("campaign/list", {
 					filters: {} as CampaingFilters,
@@ -529,6 +539,7 @@
 			async handleTargetingSubmit() {
 				try {
 					this.setLoading(true);
+
 					const targeting_create_data = {
 						line_item_id: this.getLineItem.id,
 						active: true,
@@ -536,7 +547,12 @@
 							this.targeting
 						) as Array<Term>,
 					} as TargetingDataCreate;
+
+					console.log("create::handleTargetingSubmit", {
+						targeting_create_data,
+					});
 					await this.createTargeting(targeting_create_data);
+
 					this.setLoading(false);
 				} catch (error) {
 					console.error("handleSubmit", { error: error });
@@ -561,29 +577,10 @@
 			},
 
 			/**
-			 * Targeting keys
-			 */
-			getTargetingIDByValue() {
-				return {
-					app_bundle_list: 1,
-					app_id_list: 2,
-					app_name: 3,
-					deal_id: 4,
-					deal_id_list: 5,
-					domain_list: 6,
-					placement_list: 7,
-					publisher_id: 8,
-					publisher_id_list: 9,
-					site: 10,
-					site_list: 11,
-				};
-			},
-
-			/**
 			 * HANDLERS
 			 */
 
-			updateSelectedTabIndex(index: number) {
+			updateSelectedTabIndex(index: number = 0) {
 				this.currentTab = index;
 				if (this.currentTab === 0) {
 					this.loadResources();
@@ -608,7 +605,8 @@
 			}) {
 				this.targeting[params.tab][params.key].targeting_terms.push({
 					value: params.value,
-					targeting_key_id: this.getTargetingIDByValue()[params.key],
+					targeting_key_id:
+						getTargetingIDByValue()[params.tab][params.key],
 					targeting_predicate_id: 1823,
 				});
 			},
@@ -642,7 +640,7 @@
 							{
 								value: [trim(params.value)],
 								targeting_key_id:
-									this.getTargetingIDByValue()[params.key],
+									getTargetingIDByValue()[params.tab][params.key],
 								targeting_predicate_id: 1823,
 							}
 						);
@@ -667,7 +665,7 @@
 						terms.push({
 							value: [trim(item)],
 							targeting_key_id:
-								this.getTargetingIDByValue()[params.key],
+								getTargetingIDByValue()[params.tab][params.key],
 							targeting_predicate_id: 1823,
 						});
 					} else {
@@ -772,7 +770,7 @@
 					.filter(
 						(t: any) =>
 							t.targeting_key_id ===
-							this.getTargetingIDByValue()[params.key]
+							getTargetingIDByValue()[params.tab][params.key]
 					)
 					.findIndex((t: { value: any }) => t.value === params.value);
 
@@ -807,7 +805,7 @@
 			 * Update variables auxiliares
 			 */
 			updateDataVariables(params: any) {
-				this.data_variables[params.key] = params.data;
+				this.data_variables[params.tab][params.key] = params.data;
 			},
 
 			addCommaHandler(params: {
@@ -818,6 +816,19 @@
 					this.targeting[params.tab][params.key].value.concat(",");
 			},
 		},
-		watch: {},
+		watch: {
+			async currentTab(val, old) {
+				if (val === 0) {
+					await this.loadResources();
+				}
+
+				this.items.filter((i: { key: number; disabled: boolean }) => {
+					if (i.key === 1) {
+						i.disabled = !Boolean(this.getLineItem.id);
+					}
+					return i;
+				});
+			},
+		},
 	});
 </script>

@@ -247,14 +247,30 @@ export interface AdvertiserDataCreate {
   app_bundle: string
 }
 
+export interface AdvertiserDataUpdate {
+  category_id?: number,
+  domain?: string,
+  app_bundle?: string
+}
+
 export interface AddContentImageDataCreate {
   primary_asset_id: number,
   click_url: string
 }
 
+export interface AddContentImageDataUpdate {
+  primary_asset_id?: number,
+  click_url?: string
+}
+
 export interface AddContentJsTagDataCreate {
   creative_rule_id: number,
   tag: string
+}
+
+export interface AddContentJsTagDataUpdate {
+  creative_rule_id?: number,
+  tag?: string
 }
 
 export interface AddContentIframeTagDataCreate {
@@ -292,11 +308,24 @@ export interface ExchangeOptionsImageDataCreate {
   vendors: number[]
 }
 
+export interface ExchangeOptionsImageDataUpdate {
+  landing_page_url?: string,
+  appnexus_submit?: boolean
+  vendors?: number[]
+}
+
 export interface ExchangeOptionsJsTagDataCreate {
   thumbnail_id: number,
   landing_page_url: string,
   appnexus_submit: boolean
   vendors: number[]
+}
+
+export interface ExchangeOptionsJsTagDataUpdate {
+  thumbnail_id?: number,
+  landing_page_url?: string,
+  appnexus_submit?: boolean
+  vendors?: number[]
 }
 
 export interface ExchangeOptionsIframeTagDataCreate {
@@ -338,6 +367,12 @@ export interface AddonSettingDataCreate {
   scripts: string[]
 }
 
+export interface AddonSettingDataUpdate {
+  addons?: number[],
+  pixels?: string[],
+  scripts?: string[]
+}
+
 export interface AddonSettingVastInlineDataCreate {
   addons: number[],
   pixels: string[],
@@ -364,6 +399,16 @@ export interface AttributeDataCreate {
   height: number,
   responsive: boolean,
   expandable_directions: number[]
+}
+
+export interface AttributeDataUpdate {
+  mime_type_id?: number,
+  expandable_type_id?: number,
+  in_banner_video_id?: number,
+  width?: number,
+  height?: number,
+  responsive?: boolean,
+  expandable_directions?: number[]
 }
 
 export interface AttributeVastInlineDataCreate {

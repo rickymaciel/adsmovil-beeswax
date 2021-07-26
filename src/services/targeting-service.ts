@@ -1,17 +1,19 @@
 import { AppName, AppSite, Site } from "@/interfaces/appSite";
 import { Targeting, TargetingDataCreate } from "@/interfaces/targeting";
+import { mappingTargetingKeys } from "@/utils/resolveObjectArray";
 import { isEmpty } from "lodash";
 import { AxiosGet, AxiosPost, GetData, GetErrors, GetMessage } from "./axios-service";
 
 const ROUTES = require('../api/routes').APP_SITE
 const ROUTES_CUSTOM_LIST = require('../api/routes').CUSTOM_LIST
 const ROUTES_TARGETING = require('../api/routes').TARGETING
+const ROUTES_GEO = require('../api/routes').GEO
+const ROUTES_EXCHANGE = require('../api/routes').EXCHANGE
 
 class TargetingService {
 
     async create(targeting: TargetingDataCreate) {
         try {
-            console.log("TargetingService::create", { targeting });
             if (isEmpty(targeting.targeting_terms)) return Promise.reject({
                 success: false,
                 message: 'Targeting empty',
@@ -30,13 +32,51 @@ class TargetingService {
     }
 
     /**
+     * getTargetingKeys
+     * @returns 
+     */
+    async getTargetingKeys() {
+        try {
+
+            console.log('TargetingService::getTargetingKeys', {
+                route: `${ROUTES_TARGETING.TARGETING_KEY_ROUTE}?mode=all`
+            });
+
+            const response = await AxiosGet(`${ROUTES_TARGETING.TARGETING_KEY_ROUTE}?mode=all`);
+
+            console.log('TargetingService::getTargetingKeys', {
+                response: response
+            });
+
+            const data = GetData(response);
+            console.log('TargetingService::getTargetingKeys', {
+                data: data
+            });
+
+            const targeting_keys = mappingTargetingKeys(data)
+
+            console.log('TargetingService::getTargetingKeys', {
+                targeting_keys: targeting_keys
+            });
+
+            return Promise.resolve(targeting_keys as Array<any>);
+
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+
+    /**
      * getAppSitesByKey
      * @param key 
      * @returns 
      */
     async getAppSitesByKey(key: String) {
         try {
-            console.log("TargetingService::getAppSitesByKey", { key, url: await this.getUrlByKey(key) });
             const response = await AxiosGet(await this.getUrlByKey(key))
             return Promise.resolve(GetData(response) as Array<AppSite>);
 
@@ -60,6 +100,32 @@ class TargetingService {
             const url = ROUTES.APP_NAME_ROUTE + '?term=' + term + '&by_attribute=' + by_attribute;
             const response = await AxiosGet(url)
             return Promise.resolve(GetData(response) as Array<AppName>);
+
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+    /**
+     * getSearchByTerm
+     * @param params 
+     * @returns 
+     */
+    async getSearchByTerm(params: { key: any; term: any; object?: { key: String; value: String; } | undefined; by_attribute?: any; }) {
+        try {
+
+            let url = await this.getUrlByKey(params.key) + '?term=' + params.term;
+
+            if (params.by_attribute) {
+                url = url.concat('&by_attribute=' + params.by_attribute);
+            }
+
+            const response = await AxiosGet(url);
+
+            return Promise.resolve(GetData(response) as Array<any>);
 
         } catch (error) {
             return Promise.reject({
@@ -95,6 +161,10 @@ class TargetingService {
         let url = ''
 
         switch (key) {
+
+            /**
+             * app_site
+             */
             case 'app_bundle_list':
                 url = ROUTES.APP_BUNDLE_LIST_ROUTE
                 break
@@ -125,6 +195,36 @@ class TargetingService {
                 break
             case 'site_list':
                 url = ROUTES.SITE_LIST_ROUTE
+                break
+
+            /**
+             * geo
+             */
+            case 'city':
+                url = ROUTES_GEO.CITY_ROUTE
+                break
+
+            case 'country':
+                url = ROUTES_GEO.COUNTRY_ROUTE
+                break
+
+            case 'region':
+                url = ROUTES_GEO.REGION_ROUTE
+                break
+
+            case 'lat_long_list':
+                url = ROUTES_GEO.LAT_LONG_ROUTE
+                break
+
+            /**
+             * exchange
+             */
+            case 'inventory_source':
+                url = ROUTES_EXCHANGE.INVENTORY_SOURCE_ROUTE
+                break
+
+            case 'auction_type':
+                url = ROUTES_EXCHANGE.AUCTION_TYPE_ROUTE
                 break
         }
 

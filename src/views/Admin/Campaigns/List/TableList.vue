@@ -93,6 +93,18 @@
 				></Filterable>
 			</template>
 
+			<!-- END DATE -->
+			<template v-slot:[`header.line_items_count`]="{ header }">
+				<Filterable
+					field_name="line_items_count"
+					type="number"
+					:filters="filters"
+					:header="header"
+					:option="option"
+					@selected-option="selectedOption"
+				></Filterable>
+			</template>
+
 			<!-- active -->
 			<template v-slot:[`header.active`]="{ header }">
 				<Filterable
@@ -105,6 +117,19 @@
 					@selected-option="selectedOption"
 				></Filterable>
 			</template>
+
+			<!-- remaining -->
+			<template v-slot:[`header.budget_remaining`]="{ header }">
+				<Filterable
+					field_name="budget_remaining"
+					type="text"
+					:filters="filters"
+					:header="header"
+					:option="option"
+					@selected-option="selectedOption"
+				></Filterable>
+			</template>
+
 
 			<!-- ASSOSIATED LINE ITEM -->
 			<!-- <template v-slot:[`header.assosiateLineItem`]="{ header }">
@@ -321,7 +346,7 @@
 			updatePaginate(data: Number) {
 				this.$emit("update-paginate", data);
 			},
-			selectedOption(params: { option: SortingOption; filter: string }) {
+			selectedOption(params: { option: SortingOption; filter: any }) {
 				this.$emit("selected-option", {
 					option: params.option,
 					filter: params.filter,

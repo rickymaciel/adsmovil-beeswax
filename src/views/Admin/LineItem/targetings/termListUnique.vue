@@ -1,6 +1,19 @@
 <template>
-	<v-list>
+	<v-list
+		align="start"
+		self="start"
+		items="start"
+		justify="start"
+		dense
+		flat
+		rounded
+	>
 		<v-list-item
+			align="start"
+			self="start"
+			items="start"
+			justify="start"
+			dense
 			v-for="(targeting_term, index) in targeting_terms"
 			:key="index"
 		>
@@ -25,30 +38,26 @@
 				></CardSwitch>
 			</v-list-item-action>
 
-			<v-list-item-content>
-				<template>
+			<v-list-item-content class="ma-0 pa-2">
+				<v-flex>
 					<v-chip
-						label
-						outlined
-						close
 						class="me-2 mb-2"
 						color="secondary"
+						close
+						outlined
+						pill
 						v-for="(value, index) in targeting_term.value"
 						:key="index"
 						@click:close="removeHandler(value)"
 					>
 						<template v-if="use_display_name">
-							<span class="text-truncate">
-								{{ getDisplayNameByID(value) }}
-							</span>
+							{{ getDisplayNameByID(value) }}
 						</template>
 						<template v-else>
-							<span class="text-truncate">
-								{{ value }}
-							</span>
+							{{ value }}
 						</template>
 					</v-chip>
-				</template>
+				</v-flex>
 			</v-list-item-content>
 		</v-list-item>
 	</v-list>
@@ -83,7 +92,7 @@
 		async mounted() {},
 		computed: {},
 		methods: {
-			getDisplayNameByID(id: Number) {
+			getDisplayNameByID(id: any) {
 				let displayName = "";
 
 				const app = this.appLists.find((app: any) => app.id == id);
@@ -91,7 +100,7 @@
 					displayName = `${app.value} (${id})`;
 				}
 
-				return displayName;
+				return displayName || id;
 			},
 
 			removeHandler(value: any) {

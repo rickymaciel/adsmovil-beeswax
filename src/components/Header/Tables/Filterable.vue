@@ -48,10 +48,10 @@
 				</v-list-item>
 			</template>
 
-			<v-subheader v-if="header.sortable">{{ $t("sort") }}</v-subheader>
-			<v-divider v-if="header.sortable"></v-divider>
+			<v-subheader v-if="header.api_sortable">{{ $t("sort") }}</v-subheader>
+			<v-divider v-if="header.api_sortable"></v-divider>
 
-			<v-list-item-action v-if="header.sortable">
+			<v-list-item-action v-if="header.api_sortable">
 				<v-radio-group v-model="option.order" @change="selectedOption">
 					<v-radio color="secondary" value="asc">
 						<template v-slot:label>

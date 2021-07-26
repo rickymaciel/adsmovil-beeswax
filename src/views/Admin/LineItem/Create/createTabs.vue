@@ -51,7 +51,7 @@
 				default: "v-tab--targeting",
 			},
 			slider_size: {
-				type: Number,
+				type: Number, 
 				default: 4,
 			},
 			color: {

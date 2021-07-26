@@ -74,10 +74,10 @@
 	import { MraidTagDataCreate } from "../../../../interfaces/creativeBannerMraidTag";
 	import { Html5DataCreate } from "../../../../interfaces/creativeBannerHtml5";
 	import { VastInlineDataCreate } from "../../../../interfaces/creativeVideoVastInline";
-	import { initCreative } from "../../../../utils/fields";
 	import { TagCheck } from "../../../../interfaces/creative";
 
 	import AssociatedLineForm from "./associatedLineForm.vue";
+	import { initCreative } from "../../../../utils/initData";
 
 	export default Vue.extend({
 		name: "CreateCreative",

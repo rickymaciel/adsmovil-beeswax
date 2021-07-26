@@ -16,6 +16,26 @@
 							<v-card-text> entity: {{ entity }} </v-card-text>
 						</v-card>
 					</v-col> -->
+
+					<!-- ID -->
+					<v-col
+						v-if="hasData(entity.id)"
+						cols="12"
+						sm="12"
+						md="6"
+						lg="4"
+					>
+						<CardTextField
+							v-model="entity.id"
+							hint="ID"
+							reference="id"
+							label="ID"
+							placeholder="ID"
+							:required="true"
+							:disabled="true"
+						></CardTextField>
+					</v-col>
+
 					<v-col cols="12" sm="12" md="6" lg="4">
 						<CardAutocomplete
 							v-model="entity.campaign_id"
@@ -40,7 +60,7 @@
 						></CardAutocomplete>
 					</v-col>
 
-					<!-- Advertiser: advertiser_id -->
+					<!-- Advertiser: advertiser_id 
 					<v-col cols="12" sm="12" md="6" lg="4">
 						<CardAutocomplete
 							v-model="entity.advertiser_id"
@@ -60,8 +80,22 @@
 							:dense="false"
 							:required="true"
 							:class="{ disabled: isEdit }"
-							:disabled="isEdit"
+							:disabled="true"
 						></CardAutocomplete>
+					</v-col>
+					-->
+
+					<!-- Field Advertiser -->
+					<v-col cols="12" sm="12" md="6" lg="4">
+						<CardTextField
+							v-model="name_advertiser"
+							hint="Advertiser"
+							reference="advertiser_name"
+							label="Advertiser"
+							placeholder="Add Name"
+							:required="true"
+							:disabled="true"
+						></CardTextField>
 					</v-col>
 
 					<!-- Name -->
@@ -694,10 +728,7 @@
 					>
 						<v-layout>
 							<v-label class="v-label theme--light">
-								Frecuency Cup
-								<span class="red--text"
-									><strong>*</strong></span
-								>
+								Frecuency Cap
 							</v-label>
 						</v-layout>
 						<v-layout class="mt-3">
@@ -896,6 +927,7 @@
 
 	export default Vue.extend({
 		name: "Overview",
+
 		props: {
 			campaigns: {
 				type: Array,
@@ -951,10 +983,6 @@
 				type: Array,
 				required: true,
 			},
-			is_edit: {
-				type: Boolean,
-				default: false,
-			},
 			errors: {
 				type: Object,
 				default: function () {
@@ -962,12 +990,14 @@
 				},
 			},
 		},
+
 		components: {
 			CardTextField,
 			CardAutocomplete,
 			CardSwitch,
 			DatePicker,
 		},
+
 		data: () => ({
 			title: "Overview",
 			valid: false,
@@ -1001,6 +1031,9 @@
 			entity: initLineItem(),
 			campaign: {} as CampaignDataCreate,
 
+			//Data Field Advertiser
+			name_advertiser: "",
+
 			// Controll Enable
 			can_edit_budget_type: true,
 			can_edit_budget_content: true,
@@ -1009,16 +1042,17 @@
 			max_budget_content: null,
 			can_edit_daily_budget: false,
 		}),
-		created() {},
+
+		created() {
+			this.entity = this.lineItem;
+		},
+
 		mounted() {
-			if (this.isEdit) {
-				this.entity = this.lineItem;
-				this.campaign = this.entity?.campaign;
-			}
 			this.today = this.getDateTodayString();
 			this.min_date = this.getDateTodayString();
 			this.max_date = this.getDateTodayString();
 		},
+
 		computed: {
 			getMinDate() {
 				if (this.campaign?.start_date) {
@@ -1038,7 +1072,7 @@
 			},
 
 			isEdit() {
-				return this.is_edit;
+				return this.hasData(this.entity.id);
 			},
 
 			/**
@@ -1114,9 +1148,11 @@
 					],
 				};
 			},
+
 			calcSuggested() {
 				return Math.round(this.entity.budget / this.entity.line_duration);
 			},
+
 			getSuggested() {
 				if (
 					!this.showDailyBudget ||
@@ -1187,6 +1223,7 @@
 						this.$t("fieldRequired"),
 				];
 			},
+
 			endDateRules() {
 				return [
 					//(v: any) => this.calculateDuration(this.moment(this.entity.start_date), this.moment(this.entity.end_date)) < 0 || this.$t("must-after-start"),
@@ -1281,6 +1318,10 @@
 			},
 		},
 		methods: {
+			hasData(attr: any) {
+				return !isUndefined(attr) && !isNull(attr) && isEmpty(attr);
+			},
+
 			setBudgetText(): string {
 				if (isUndefined(this.entity.budget_type_id)) {
 					this.budgetText = "Total";
@@ -1418,7 +1459,7 @@
 
 			prepareDataCreate() {
 				return {
-					id: this.isEdit ? Number(this.entity.id) : undefined,
+					id: this.isEdit ? this.entity.id : undefined,
 					advertiser_id:
 						Number(this.entity?.advertiser_id) !== NaN
 							? Number(this.entity.advertiser_id)
@@ -1539,17 +1580,33 @@
 			},
 
 			async onChangeCampaing(id_campaign: any) {
-				this.setLoading(true);
-				let result = await this.dispatchGetCampaignById(id_campaign);
-				this.setLoading(false);
-				if (result) {
-					this.campaign = result;
-					this.mappingCampaignToLineItem(this.campaign);
+				if (!isNull(id_campaign)) {
+					this.setLoading(true);
+					let result = await this.dispatchGetCampaignById(id_campaign);
+					this.setLoading(false);
+					if (result) {
+						this.campaign = result;
+						this.mappingCampaignToLineItem(this.campaign);
+					}
+				} else {
+					this.name_advertiser = "";
 				}
 			},
 
 			setLoading(_loading: Boolean) {
 				this.$store.state.proccess.loading = _loading;
+			},
+
+			//Get the value of the associated advertiser
+			getAdvertisersAssosite(_idAdvertisers: any) {
+				const result = this.advertisers.find(
+					(advertiser) => advertiser.id === _idAdvertisers
+				);
+				if (result != null) {
+					this.name_advertiser = result.value;
+				} else {
+					this.name_advertiser = "";
+				}
 			},
 
 			mappingCampaignToLineItem(campaign: CampaingDataUpdate) {
@@ -1562,10 +1619,8 @@
 					campaign?.advertiser_id != null
 						? Number(campaign.advertiser_id)
 						: null;
-				this.entity.alternative_id =
-					campaign?.alternative_id != null
-						? String(campaign.alternative_id)
-						: "";
+				this.getAdvertisersAssosite(this.entity.advertiser_id);
+
 				this.entity.campaign_id =
 					campaign?.id != null ? Number(campaign.id) : null;
 				this.entity.automatic_allocation = campaign?.automatic_allocation;
@@ -1692,10 +1747,10 @@
 
 				// Optimization Strategy = By Campaing
 				/*
-																				Budget TOTAL=> Se copia de campaña y se puede editar debe ser menor a campaña y en Automatic Allocation=YES
-																				Optimization Strategy=>  Se copia de campaña y se puede editar.
-																				CPM bid, Target eCPC,Target CTR,Target eCPCV, Target VCR =>  Se copia de campaña y se puede editar.
-																			*/
+																												Budget TOTAL=> Se copia de campaña y se puede editar debe ser menor a campaña y en Automatic Allocation=YES
+																												Optimization Strategy=>  Se copia de campaña y se puede editar.
+																												CPM bid, Target eCPC,Target CTR,Target eCPCV, Target VCR =>  Se copia de campaña y se puede editar.
+																											*/
 				if (this.isOptimizationStrategyByType(OPTIMIZATION_BY_CAMPAIGN)) {
 					// Start Date, End Date => Se pueden editar pero deben estar dentro del margen de la campaña.
 					this.min_date =

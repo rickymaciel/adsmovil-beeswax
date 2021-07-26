@@ -6,6 +6,7 @@
 			<Buttons
 				:limit="paginated.limit"
 				@selected-limit="selectedLimit"
+				@download-list="handleDownload"
 				to="/admin/users/create"
 			></Buttons>
 		</v-layout>
@@ -44,7 +45,7 @@
 	} from "../../../../interfaces/paginated";
 	import { isNull, isUndefined } from "lodash";
 	import ParamService from "../../../../services/params-service";
-import i18n from "@/plugins/i18n";
+	import i18n from "@/plugins/i18n";
 
 	export default Vue.extend({
 		name: "UserList",
@@ -92,7 +93,9 @@ import i18n from "@/plugins/i18n";
 					{
 						text: "ID",
 						align: "center",
-						sortable: true,
+						sortable: false,
+						api_sortable: true,
+
 						filterable: true,
 						value: "id",
 						//width: "5%",
@@ -100,7 +103,9 @@ import i18n from "@/plugins/i18n";
 					{
 						text: i18n.t("users.fields.name"),
 						align: "start",
-						sortable: true,
+						sortable: false,
+						api_sortable: true,
+
 						filterable: true,
 						value: "name",
 						//width: "20%",
@@ -108,7 +113,9 @@ import i18n from "@/plugins/i18n";
 					{
 						text: i18n.t("users.fields.last_name"),
 						align: "start",
-						sortable: true,
+						sortable: false,
+						api_sortable: true,
+
 						filterable: true,
 						value: "last_name",
 						//width: "20%",
@@ -116,21 +123,27 @@ import i18n from "@/plugins/i18n";
 					{
 						text: "E-mail",
 						align: "start",
-						sortable: true,
+						sortable: false,
+						api_sortable: true,
+
 						filterable: true,
 						value: "email",
 					},
 					{
 						text: i18n.t("users.fields.role"),
 						align: "start",
-						sortable: true,
+						sortable: false,
+						api_sortable: true,
+
 						filterable: true,
 						value: "role_description",
 					},
 					{
 						text: i18n.t("common.fields.active"),
 						align: "start",
-						sortable: true,
+						sortable: false,
+						api_sortable: true,
+
 						filterable: true,
 						value: "active",
 					},
@@ -184,7 +197,6 @@ import i18n from "@/plugins/i18n";
 			},
 			setFilter(params: { key: string | number, value: any }) {
 				this.filters = {};
-				console.log('setFilter', params.key, params.value )
 				this.filters[params.key] = typeof params.value !== "undefined" ? params.value : "";
 			},
 			async selectedOption(params: {option: SortingOption, filter: any}) {
@@ -206,6 +218,19 @@ import i18n from "@/plugins/i18n";
 				this.updatePaginate(1);
 				await this.getPaginated();
 			},
+			async handleDownload() {
+				this.setLoading(true);
+				await this.$store.dispatch(
+					'user/download',
+					await ParamService.getParams(
+						this.paginated,
+						this.filters,
+						this.option
+					),
+					{root: true}					
+				);
+				this.setLoading(false);
+			}
 		},
 		watch: {
 			"paginated.page"(val, old) {

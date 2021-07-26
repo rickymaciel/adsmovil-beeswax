@@ -27,17 +27,19 @@
 				></CardSwitch>
 			</v-list-item-action>
 
-			<v-list-item-content class="my-0">
-				<v-chip
-					label
-					outlined
-					close
-					class="ma-0"
-					color="secondary"
-					@click:close="removeHandler(targeting_term.value)"
-				>
-					{{ getDisplayNameByID(targeting_term.value) }}
-				</v-chip>
+			<v-list-item-content class="ma-0 pa-2">
+				<v-flex>
+					<v-chip
+						close
+						outlined
+						pill
+						class="me-2 mb-2"
+						color="secondary"
+						@click:close="removeHandler(targeting_term.value)"
+					>
+						{{ getDisplayNameByID(targeting_term.value) }}
+					</v-chip>
+				</v-flex>
 			</v-list-item-content>
 
 			<!-- <v-list-item-action>
@@ -88,7 +90,7 @@
 					displayName = `${app.value} (${id})`;
 				}
 
-				return displayName;
+				return displayName || id;
 			},
 
 			removeHandler(value: any) {

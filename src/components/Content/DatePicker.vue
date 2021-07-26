@@ -172,91 +172,37 @@
 			event: "input",
 		},
 		props: {
-			datetime: {
-				type: [Date, String],
-				default: null,
-			},
-			disabled: {
-				type: Boolean,
-				default: false,
-			},
-			loading: {
-				type: Boolean,
-				default: false,
-			},
-			label: {
-				type: String,
-				default: "Label",
-			},
-			dialogWidth: {
-				type: Number,
-				default: DEFAULT_DIALOG_WIDTH,
-			},
-			dateFormat: {
-				type: String,
-				default: DEFAULT_DATE_FORMAT,
-			},
-			timeFormat: {
-				type: String,
-				default: DEFAULT_TIME_FORMAT,
-			},
-			clearText: {
-				type: String,
-				default: DEFAULT_CLEAR_TEXT,
-			},
-			okText: {
-				type: String,
-				default: DEFAULT_OK_TEXT,
-			},
-			textFieldProps: {
+			datetime: { type: [Date, String], default: null },
+			disabled: { type: Boolean, default: false },
+			loading: { type: Boolean, default: false },
+			label: { type: String, default: "Label" },
+			dialogWidth: { type: Number, default: DEFAULT_DIALOG_WIDTH },
+			dateFormat: { type: String, default: DEFAULT_DATE_FORMAT },
+			timeFormat: { type: String, default: DEFAULT_TIME_FORMAT },
+			clearText: { type: String, default: DEFAULT_CLEAR_TEXT },
+			okText: { type: String, default: DEFAULT_OK_TEXT },
+			textFieldProps: { 
 				type: Object,
-				default: function () {
-					return {
-						prependInnerIcon: "mdi-calendar",
-					};
-				},
+				default: () => ({ prependInnerIcon: "mdi-calendar" })
 			},
 			datePickerProps: {
 				type: Object,
-				default: function () {
-					return {
-						headerColor: "secondary",
-					};
-				},
+				default: () => ({ headerColor: "secondary" })
 			},
 			timePickerProps: {
 				type: Object,
-				default: function () {
-					return {
-						useSeconds: true,
-						ampmInTitle: true,
-						format: "24hr",
-						headerColor: "secondary",
-					};
-				},
+				default: () => ({
+					useSeconds: true,
+					ampmInTitle: true,
+					format: "24hr",
+					headerColor: "secondary"
+				})
 			},
-			min_date: {
-				type: String,
-				default: "",
-			},
-			max_date: {
-				type: String,
-				default: "",
-			},
-			is_end: {
-				type: Boolean,
-				default: false,
-			},
-			rules: {
-				type: Array,
-				default: function () {
-					return [];
-				},
-			},
-			required: {
-				type: Boolean,
-				default: false,
-			},
+			min_date: { type: String, default: "" },
+			max_date: { type: String, default: "" },
+			is_end: { type: Boolean, default: false },
+			rules: { type: Array, default: () =>([]) },
+			required: { type: Boolean, default: false },
 		},
 		data() {
 			return {
@@ -276,18 +222,6 @@
 			await this.initTime();
 		},
 		computed: {
-			// getHoursActive() {
-			// 	return this.hoursData.filter((hour) => hour >= this.getHours);
-			// },
-			// getHours() {
-			// 	return this.moment(this.min_date).hours();
-			// },
-			// getMinutes() {
-			// 	return this.moment(this.min_date).minutes();
-			// },
-			// getSeconds() {
-			// 	return this.moment(this.min_date).seconds();
-			// },
 			dateTimeFormat() {
 				return this.dateFormat + " " + this.timeFormat;
 			},
@@ -337,6 +271,7 @@
 				});
 			},
 			async init() {
+
 				if (!this.datetime) {
 					return;
 				}
@@ -344,16 +279,9 @@
 				let initDateTime;
 				if (this.datetime instanceof Date) {
 					initDateTime = this.datetime;
-				} else if (
-					typeof this.datetime === "string" ||
-					this.datetime instanceof String
-				) {
+				} else if (typeof this.datetime === "string" || this.datetime instanceof String) {
 					// see https://stackoverflow.com/a/9436948
-					initDateTime = parse(
-						this.datetime,
-						this.dateTimeFormat,
-						new Date()
-					);
+					initDateTime = parse( this.datetime, this.dateTimeFormat, new Date());
 				}
 
 				this.date = format(initDateTime, DEFAULT_DATE_FORMAT);

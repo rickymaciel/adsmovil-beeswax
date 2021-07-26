@@ -284,6 +284,7 @@
 					if (isEmpty(this.data_variables[key])) {
 						this.setLoading(true);
 						this.$emit("update-data-var", {
+							tab: this.tab,
 							key: key,
 							data: await this.dispatchAppSiteByKey(key),
 						});
@@ -423,6 +424,7 @@
 				if (val.length < 3) return;
 				this.setLoading(true);
 				this.$emit("update-data-var", {
+					tab: this.tab,
 					key: "app_name",
 					data: await this.getAppNameByAtribute({
 						term: val,
@@ -437,6 +439,7 @@
 				if (val.length < 3) return;
 				this.setLoading(true);
 				this.$emit("update-data-var", {
+					tab: this.tab,
 					key: "site",
 					data: await this.getSitesByAtribute({
 						term: val,

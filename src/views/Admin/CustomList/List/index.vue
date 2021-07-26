@@ -4,6 +4,7 @@
 			<Buttons
 				:limit="paginated.limit"
 				@selected-limit="selectedLimit"
+				@download-list="handleDownload"
 				to="/admin/custom_lists/create"
 			></Buttons>
 		</v-layout>
@@ -82,35 +83,40 @@
 					{
 						text: i18n.t("customList.fields.id"),
 						align: "center",
-						sortable: true,
+						sortable: false,
+						api_sortable: true,
 						filterable: true,
 						value: "id",
 					},
 					{
 						text: i18n.t("customList.fields.name"),
 						align: "start",
-						sortable: true,
+						sortable: false,
+						api_sortable: true,
 						filterable: true,
 						value: "name",
 					},
 					{
 						text: i18n.t("customList.fields.type"),
 						align: "start",
-						sortable: true,
+						sortable: false,
+						api_sortable: true,
 						filterable: true,
 						value: "type_name",
 					},
 					{
 						text: i18n.t("customList.fields.items"),
 						align: "start",
-						sortable: true,
+						sortable: false,
+						api_sortable: true,
 						filterable: false,
 						value: "custom_list_items_count",
 					},
 					{
 						text: i18n.t("common.fields.active"),
 						align: "start",
-						sortable: true,
+						sortable: false,
+						api_sortable: true,
 						filterable: true,
 						value: "active",
 					},
@@ -176,6 +182,19 @@
 			async updateCurrentPage(page) {
 				this.updatePaginate(page);
 				await this.getPaginated();
+			},
+			async handleDownload() {
+				this.setLoading(true);
+				await this.$store.dispatch(
+					'custom_list/download',
+					await ParamService.getParams(
+						this.paginated,
+						this.filters,
+						this.option
+					),
+					{root: true}					
+				);
+				this.setLoading(false);
 			}
 		},
 		watch: {

@@ -30,7 +30,7 @@
 								:kpi_campaigns="getKpiCampaigns"
 								:strategies="getStrategies"
 								:unit_times="getUnitTimes"
-								:owners="getUsers"
+								:traffickers="getUsers"
 								:start_time="start_time"
 								:end_time="end_time"
 								:is_edit="isEdit"
@@ -85,7 +85,6 @@
 		async created() {
 			await this.handleShow();
 			this.campaign = this.getParsedData();
-			console.log("mounted", { campaign: this.campaign });
 		},
 		mounted() {
 			this.dispatchAccount();
@@ -152,14 +151,14 @@
 					this.time_format
 				);
 
-				campaign.start_date = this.formatDate(
-					campaign.start_date,
-					this.date_format
-				);
-				campaign.end_date = this.formatDate(
-					campaign.end_date,
-					this.date_format
-				);
+				// campaign.start_date = this.formatDate(
+				// 	campaign.start_date,
+				// 	this.date_format
+				// );
+				// campaign.end_date = this.formatDate(
+				// 	campaign.end_date,
+				// 	this.date_format
+				// );
 
 				return campaign;
 			},
@@ -234,7 +233,7 @@
 
 			async dispatchUsers() {
 				return this.$store.dispatch(
-					"user/getUsers",
+					"user/list",
 					{
 						filters: undefined,
 						options: {},
