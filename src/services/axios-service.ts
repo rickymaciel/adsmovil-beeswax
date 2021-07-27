@@ -23,12 +23,15 @@ axios.defaults.headers.get = {
 
 const token = localStorage.getItem('token') || ''
 
+console.log('AxiosService', {token});
+
 if (token && token.startsWith('Bearer ')) {
     axios.defaults.headers.common.Authorization = ValidateToken(token)
 }
 
 // Add a request interceptor
 axios.interceptors.request.use(function (config) {
+    console.log('AxiosService::request', {token, config, headers: axios.defaults.headers});
     return config
 }, function (error) {
     //console.error('AxiosService.interceptors', { request: error })
@@ -88,6 +91,15 @@ export function AxiosDelete(url: string) {
  */
 export function AxiosGet(url: string) {
     return axios.get(url)
+}
+
+/**
+ * PUT
+ * @param url
+ * @param payload
+ */
+export function AxiosPut(url: string, payload: any) {
+    return axios.put(url, payload)
 }
 
 /**

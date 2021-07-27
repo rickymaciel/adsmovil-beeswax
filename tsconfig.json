@@ -16,11 +16,9 @@
         "noImplicitThis": false,
         "resolveJsonModule": true,
         "typeRoots": [
-            "./node_modules/@types",
-            "./node_modules/vuetify/types"
+            "./node_modules/@types"
         ],
         "types": [
-            "ts-node",
             "node",
             "webpack-env",
             "jest",

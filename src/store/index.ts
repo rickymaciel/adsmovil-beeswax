@@ -21,7 +21,7 @@ import TargetingService from '@/services/targeting-service'
 import { Credential } from '@/interfaces/credential'
 import { Advertiser, AdvertiserDataCreate, AdvertiserDataUpdate, AdvertiserList, Category, ResultPaginate } from '@/interfaces/advertiser'
 import { MessageTypes, Notification } from '@/interfaces/proccess'
-import { isEmpty, isNull, isUndefined } from 'lodash'
+import { isArray, isEmpty, isNull, isUndefined } from 'lodash'
 import { CustomList, CustomListDataCreate, List, Type } from '@/interfaces/custom_list'
 import { ResultPaginate as UserResultPaginate, UserDataCreate, User } from '@/interfaces/user'
 
@@ -1468,7 +1468,6 @@ export default new Vuex.Store({
 
                 async list({ commit }, payload: { filters: LineItemFilters, options: LineItemOptions }) {
                     try {
-
                         const response = await LineItemService.list(payload.filters, payload.options)
                         commit('SET_LINE_ITEM_LIST', resolveList(response))
                         return await Promise.resolve(response)
@@ -1485,6 +1484,16 @@ export default new Vuex.Store({
                         return await Promise.resolve(response)
                     } catch (error) {
                         CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+
+                async activate({  }, id: number) {
+                    try {
+                        let response = await LineItemService.changeStatus({id: id, active: true});
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error, { to: "" });
                         return await Promise.reject(error)
                     }
                 },
@@ -1545,7 +1554,8 @@ export default new Vuex.Store({
                 in_banner_videos: [],
                 vendors: [],
                 addons: [],
-                assets: []
+                assets: [],
+                creatives: [],
             }),
             mutations: {
                 SET_RESULT_PAGINATED(state, _result_paginate: ResultPaginate = {} as ResultPaginate) {
@@ -1601,6 +1611,9 @@ export default new Vuex.Store({
                 },
                 SET_ASSET(state, _asset) {
                     state.asset = _asset
+                },
+                SET_CREATIVE_LIST(state, _list: []) {
+                    state.creatives = _list
                 },
             },
             getters: {
@@ -1796,7 +1809,9 @@ export default new Vuex.Store({
                 },
                 async associateLineItem({ commit }, association: AssociationDataCreate) {
                     try {
+                        console.log("--- associateLineItem(association)", association);
                         const response = await CreativeService.associateLineItem(association)
+                        console.log("--- associateLineItem::response", response);
                         commit('PUSH_LINE_ASSOCIATION', response)
                         return await Promise.resolve(response)
                     } catch (error) {
@@ -1811,6 +1826,32 @@ export default new Vuex.Store({
                         return await Promise.resolve(response)
                     } catch (error) {
                         CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+
+                async list({ commit }) {
+                    try {
+                        const response = await CreativeService.list()
+                        if( isArray(response) ){
+                            commit('SET_CREATIVE_LIST', resolveListParams(response))
+                        }else{
+                            commit('SET_CREATIVE_LIST', resolveList(response))
+                        }
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
+                        return await Promise.reject(error)
+                    }
+                },
+
+                async show({ commit }, id: number) {
+                    try {
+                        const response = await CreativeService.show(id);
+                        commit('SET_CREATIVE', response);
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error, { to: "" });
                         return await Promise.reject(error)
                     }
                 },
@@ -1880,6 +1921,16 @@ export default new Vuex.Store({
                 async create({ commit }, targeting) {
                     try {
                         const response = await TargetingService.create(targeting)
+                        CreateNotification(
+                            this.dispatch,
+                            {
+                                type: MessageTypes.SUCCESS,
+                                title: i18n.t('title-success'),
+                                message: i18n.t('success'),
+                                btn_text: i18n.t('continue'),
+                                to: ""
+                            } as Notification
+                        );
                         return await Promise.resolve(response)
                     } catch (error) {
                         CatcherError(this.dispatch, error);

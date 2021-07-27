@@ -278,13 +278,27 @@ export interface AddContentIframeTagDataCreate {
   tag: string
 }
 
+export interface AddContentIframeTagDataUpdate {
+  creative_rule_id?: number,
+  tag?: string
+}
+
 export interface AddContentMraidTagDataCreate {
   creative_rule_id: number,
   tag: string
 }
 
+export interface AddContentMraidTagDataUpdate {
+  creative_rule_id?: number,
+  tag?: string
+}
+
 export interface AddContentHtml5DataCreate {
   primary_asset_id: number
+}
+
+export interface AddContentHtml5DataUpdate {
+  primary_asset_id?: number
 }
 
 export interface AddContentVastInlineDataCreate {
@@ -335,6 +349,13 @@ export interface ExchangeOptionsIframeTagDataCreate {
   vendors: number[]
 }
 
+export interface ExchangeOptionsIframeTagDataUpdate {
+  thumbnail_id?: number,
+  landing_page_url?: string,
+  appnexus_submit?: boolean
+  vendors?: number[]
+}
+
 export interface ExchangeOptionsMraidTagDataCreate {
   thumbnail_id: number,
   landing_page_url: string,
@@ -342,11 +363,25 @@ export interface ExchangeOptionsMraidTagDataCreate {
   vendors: number[]
 }
 
+export interface ExchangeOptionsMraidTagDataUpdate {
+  thumbnail_id?: number,
+  landing_page_url?: string,
+  appnexus_submit?: boolean
+  vendors?: number[]
+}
+
 export interface ExchangeOptionsHtml5DataCreate {
   thumbnail_id: number,
   landing_page_url: string,
   appnexus_submit: boolean,
   vendors: number[]
+}
+
+export interface ExchangeOptionsHtml5DataUpdate {
+  thumbnail_id?: number,
+  landing_page_url?: string,
+  appnexus_submit?: boolean,
+  vendors?: number[]
 }
 
 export interface ExchangeOptionsVastInlineDataCreate {

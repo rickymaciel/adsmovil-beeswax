@@ -143,77 +143,64 @@ export async function getCreativeData() {
  */
 export function initHardCoreLineItem(): any {
     return {
-        id: 30,
-        name: "Name test 31",
-        alternative_id: "43f",
-        start_date: "2021-07-07 00:00:00",
-        end_date: "2021-07-22 02:59:59",
-        budget: 897,
-        daily_budget: 897,
-        fix_cpm: 8,
-        cpm_bid: null,
+        id: 36,
+        name: "Line",
+        alternative_id: null,
+        start_date: "2021-07-23 01:00:00",
+        end_date: "2021-07-24 23:59:59",
+        budget: 20,
+        daily_budget: 20,
+        fix_cpm: null,
+        cpm_bid: 10,
         target_ecpc: null,
         target_ctr: null,
         target_vcr: null,
         active: false,
-        external_id: 4233,
+        external_id: 4853,
         spend: 0,
         created_by: 2,
         updated_by: 2,
         deleted_by: null,
-        created_at: "2021-07-06T05:02:07.000000Z",
-        updated_at: "2021-07-06T05:02:07.000000Z",
+        created_at: "2021-07-23T18:02:26.000000Z",
+        updated_at: "2021-07-23T18:02:27.000000Z",
         deleted_at: null,
         account_id: 1,
-        advertiser_id: 10,
-        campaign_id: 28,
-        line_item_type_id: 22,
-        budget_type_id: 2,
-        strategy_id: null,
-        bid_strategy_id: 24,
+        advertiser_id: 1,
+        campaign_id: 83,
+        line_item_type_id: 21,
+        budget_type_id: 1,
+        strategy_id: 9,
+        bid_strategy_id: 25,
         line_pacing_id: 13,
         bid_shading_id: 18,
         creative_method_id: 26,
-        budget_remaining: 897,
-        frequency_caps: [
-            {
-                id: 100,
-                impressions: 20,
-                duration: 201600,
-                every_time: 56,
-                created_by: null,
-                updated_by: null,
-                deleted_by: null,
-                created_at: "2021-07-06T05:02:07.000000Z",
-                updated_at: "2021-07-06T05:02:07.000000Z",
-                deleted_at: null,
-                unit_time_id: 4,
-                campaign_id: null,
-                line_item_id: 30,
-            },
-        ],
+        budget_remaining: 20,
+        frequency_caps: [],
         budget_type: {
-            id: 2,
-            description: "Impressions",
+            id: 1,
+            description: "Spend",
         },
         line_item_type: {
-            id: 22,
-            description: "Video",
+            id: 21,
+            description: "Banner",
         },
         advertiser: {
-            id: 10,
-            name: "Advertiser para Test 4",
+            id: 1,
+            name: "New Advertiser X",
         },
         campaign: {
-            id: 28,
-            name: "Prueba Campa\u00f1a 01072021 v1",
+            id: 83,
+            name: "Campa\u00f1010",
             budget_remaining: 0,
         },
         bid_strategy: {
-            id: 24,
-            description: "Fix",
+            id: 25,
+            description: "Automated",
         },
-        strategy: null,
+        strategy: {
+            id: 9,
+            description: "Optimized CPM",
+        },
         line_pacing: {
             id: 13,
             description: "Daily",
@@ -226,7 +213,8 @@ export function initHardCoreLineItem(): any {
             id: 26,
             description: "RANDOM",
         },
-    };
+        creative_associations: [],
+    }
 }
 
 export function initDataVariables() {
@@ -573,6 +561,7 @@ export function getTargetingIDByValue() {
  */
 export function initLineItem(): any {
     return {
+        id: null,
         advertiser_id: null,
         campaign_id: null,
         name: "",
@@ -597,7 +586,8 @@ export function initLineItem(): any {
         target_ecpcv: null,
         target_cpcv: null,
         target_vcr: null,
-        frequency_caps: [] as Array<FrequencyCap>
+        frequency_caps: [] as Array<FrequencyCap>,
+        creative_associations: []
     } as any;
 }
 

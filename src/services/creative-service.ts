@@ -47,6 +47,20 @@ class CreativeService {
         }
     }
 
+    async list() {
+        try {
+            //const response = await AxiosGet(`${CREATIVES}?mode=list&filters[active]=true`)
+            const response = await AxiosGet(`${CREATIVES}?mode=list`)
+            return Promise.resolve(GetData(response));
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+
     async creativeSizes() {
         try {
             const response = await AxiosGet(`${CREATIVE_SIZES_ROUTE}?mode=list`);
@@ -254,7 +268,9 @@ class CreativeService {
 
     async show(id: number) {
         try {
+            console.log("--- Service::Creative:show", id);
             const response = await AxiosGet(`${CREATIVES}/${id}`);
+            console.log("--- Service::Creative::response", GetData(response));
             return Promise.resolve(GetData(response));
         } catch (error) {
             return Promise.reject({

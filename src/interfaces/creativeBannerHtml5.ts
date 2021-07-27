@@ -10,7 +10,12 @@ import {
   Attribute,
   ExchangeOption,
   Template,
-  Type
+  Type,
+  AdvertiserDataUpdate,
+  AddContentHtml5DataUpdate,
+  AttributeDataUpdate,
+  ExchangeOptionsHtml5DataUpdate,
+  AddonSettingDataUpdate
 } from '@/interfaces/creative'
 
 export interface Html5 {
@@ -52,4 +57,18 @@ export interface Html5DataCreate {
   creative_attributes: AttributeDataCreate,
   creative_exchange_options: ExchangeOptionsHtml5DataCreate,
   creative_addon_settings: AddonSettingDataCreate
+}
+
+export interface Html5DataUpdate {
+  id: number,
+  name?: string,
+  secure?: boolean,
+  active?: boolean,
+  start_date?: string,
+  end_date?: string,
+  creative_advertiser?: AdvertiserDataUpdate,
+  creative_ad_content?: AddContentHtml5DataUpdate,
+  creative_attributes?: AttributeDataUpdate,
+  creative_exchange_options?: ExchangeOptionsHtml5DataUpdate,
+  creative_addon_settings?: AddonSettingDataUpdate
 }

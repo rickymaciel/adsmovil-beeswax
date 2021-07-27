@@ -10,7 +10,12 @@ import {
   Attribute,
   ExchangeOption,
   Template,
-  Type
+  Type,
+  AdvertiserDataUpdate,
+  AddContentMraidTagDataUpdate,
+  AttributeDataUpdate,
+  ExchangeOptionsMraidTagDataUpdate,
+  AddonSettingDataUpdate
 } from '@/interfaces/creative'
 
 export interface MraidTag {
@@ -52,4 +57,18 @@ export interface MraidTagDataCreate {
   creative_attributes: AttributeDataCreate,
   creative_exchange_options: ExchangeOptionsMraidTagDataCreate,
   creative_addon_settings: AddonSettingDataCreate
+}
+
+export interface MraidTagDataUpdate {
+  id: number,
+  name?: string,
+  secure?: boolean,
+  active?: boolean,
+  start_date?: string,
+  end_date?: string,
+  creative_advertiser?: AdvertiserDataUpdate,
+  creative_ad_content?: AddContentMraidTagDataUpdate,
+  creative_attributes?: AttributeDataUpdate,
+  creative_exchange_options?: ExchangeOptionsMraidTagDataUpdate,
+  creative_addon_settings?: AddonSettingDataUpdate
 }

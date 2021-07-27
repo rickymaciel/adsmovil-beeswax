@@ -237,5 +237,7 @@
         }
     },
     "require-campaign": "You must select a campaign",
-    "must-be-validated": "Must be validated"
+    "must-be-validated": "Must be validated",
+    "add-associated-creative": "Associated Creative",
+    "require-creative": "You must select a creative"
 }

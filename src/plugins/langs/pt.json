@@ -55,5 +55,7 @@
     "url-added": "Este URL já foi adicionado",
     "uploaded": "Este arquivo deve ser carregado primeiro",
     "require-campaign": "Você deve selecionar uma campanha",
-    "must-be-validated": "Deve ser validado"
+    "must-be-validated": "Deve ser validado",
+    "add-associated-creative": "Asociar Creativo",
+    "require-creative": "Você deve selecionar um creativo"
 }

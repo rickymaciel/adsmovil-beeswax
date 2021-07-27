@@ -356,7 +356,10 @@
 						>
 							<v-layout>
 								<v-label class="v-label theme--light">
-									Budget Type*
+									Assets
+									<span class="red--text"
+										><strong>*</strong></span
+									>
 								</v-label>
 							</v-layout>
 							<v-layout>
@@ -367,10 +370,10 @@
 									row
 								>
 									<v-radio
-										v-for="budgetType in getBudgetTypes"
-										:key="budgetType.id"
+										v-for="budgetType in getAssetsData"
+										:key="budgetType.key"
 										:label="budgetType.value"
-										:value="budgetType.id"
+										:value="budgetType.key"
 										color="secondary"
 									></v-radio>
 								</v-radio-group>
@@ -1242,7 +1245,7 @@
 							@delete-item="deleteVastEvent"
 						></VastEvent>
 					</v-col>
-
+ 
 					<!-- DividerForm: Vast Events -->
 					<v-col
 						class="pe-lg-16 pa-0"
@@ -1564,6 +1567,18 @@
 				if (!this.creative.file)
 					return "https://i.stack.imgur.com/y9DpT.jpg";
 				return URL.createObjectURL(this.creative.file);
+			},
+			getAssetsData() {
+				return [
+					{
+						key: 1,
+						value: "New",
+					},
+					{
+						key: 2,
+						value: "Existing",
+					},
+				];
 			},
 		},
 		methods: {
