@@ -6,6 +6,7 @@
 			<Buttons
 				:limit="paginated.limit"
 				@selected-limit="selectedLimit"
+				@download-list="handleDownload"
 				to="/admin/campaigns/create"
 			></Buttons>
 		</v-layout>
@@ -41,6 +42,7 @@
 	} from "../../../../interfaces/campaign";
 	import ParamService from "../../../../services/params-service";
 	import { Paginated, SortingOption } from "../../../../interfaces/paginated";
+import i18n from "@/plugins/i18n";
 
 	export default Vue.extend({
 		name: "CampaignList",
@@ -48,15 +50,9 @@
 		components: { Buttons, TableList },
 		data: () => ({
 			title: "List",
-			paginated: {
-				page: 1,
-				limit: 25,
-			} as Paginated,
+			paginated: { page: 1, limit: 25 } as Paginated,
 			filters: {},
-			options: {
-				sort: "",
-				order: "asc",
-			} as SortingOption,
+			options: { sort: "", order: "asc" } as SortingOption,
 		}),
 		created() {},
 		async mounted() {
@@ -76,84 +72,95 @@
 				) {
 					return [];
 				}
-				return result.data.sort(function(a,b){return b.id-a.id});
+				return result.data;
 			},
 			prepareTableHeaders() {
 				return [
 					{
-						text: "Id",
+						text: i18n.t('campaign.fields.id'),
 						align: "center",
 						sortable: false,
+						api_sortable: true,
 						filterable: true,
 						value: "id",
 					},
 					{
-						text: "Advertiser Name",
+						text: i18n.t('campaign.fields.advertiser'),
 						align: "start",
 						sortable: false,
+						api_sortable: true,
 						filterable: true,
 						value: "advertiser_name",
 					},
 					{
-						text: "Campaign Name",
+						text: i18n.t('campaign.fields.name'),
 						align: "start",
 						sortable: false,
+						api_sortable: true,
 						filterable: true,
 						value: "name",
 					},
 					{
-						text: "Campaign Budget",
+						text: i18n.t('campaign.fields.budget'),
 						align: "center",
 						sortable: false,
+						api_sortable: true,
 						filterable: true,
 						value: "budget",
 					},
 					{
-						text: "Campaign Spend",
+						text: i18n.t('campaign.fields.spend'),
 						align: "center",
 						sortable: false,
+						api_sortable: true,
 						filterable: true,
 						value: "spend",
 					},
 					{
-						text: "Start Date",
+						text: i18n.t('campaign.fields.start_date'),
 						align: "center",
 						sortable: false,
+						api_sortable: true,
 						filterable: true,
 						value: "start_date",
 					},
 					{
-						text: "End Date",
+						text: i18n.t('campaign.fields.end_date'),
 						align: "center",
 						sortable: false,
+						api_sortable: true,
 						filterable: true,
 						value: "end_date",
 					},
 					{
-						text: "Assosiate Line Item",
+						text: i18n.t('campaign.fields.associated_lines'),
 						align: "center",
 						sortable: false,
-						filterable: true,
-						value: "assosiateLineItem",
+						api_sortable: true,
+						filterable: false,
+						value: "line_items_count",
 					},
 					{
-						text: "Active",
+						text: i18n.t('campaign.fields.active'),
 						align: "start",
 						sortable: false,
+						api_sortable: true,
 						filterable: true,
 						value: "active",
 					},
 					{
-						text: "Budget Remaining",
+						text: i18n.t('campaign.fields.remaining_budget'),
 						align: "center",
 						sortable: false,
+						api_sortable: true,
 						filterable: true,
-						value: "budgetRemaining",
+						value: "budget_remaining",
 					},
 					{
 						text: "",
 						align: "center",
 						sortable: false,
+						api_sortable: true,
 						value: "actions",
 						width: "5%",
 					},
@@ -171,15 +178,11 @@
 						name: entity.name,
 						budget: entity.budget,
 						spend: entity.spend,
-						start_date: this.moment(entity.start_date).format(
-							"YYYY-MM-DD HH:mm:ss"
-						),
-						end_date: this.moment(entity.end_date).format(
-							"YYYY-MM-DD HH:mm:ss"
-						),
-						assosiateLineItem: 100, // TODO REFACTORIZAR
+						start_date: this.moment(entity.start_date).format("YYYY-MM-DD HH:mm:ss"),
+						end_date: this.moment(entity.end_date).format("YYYY-MM-DD HH:mm:ss"),
+						line_items_count: entity.line_items_count,
 						active: entity.active,
-						budgetRemaining: entity.budget,
+						budget_remaining: entity.budget_remaining,
 					};
 				});
 
@@ -199,23 +202,18 @@
 						this.filters,
 						this.options
 					),
-					{
-						root: true,
-					}
+					{root: true}
 				);
 				this.setLoading(false);
 			},
 			updatePaginate(data: any) {
 				this.paginated.page = data;
 			},
-			setFilter(params: { key: string | number; value: any }) {
+			setFilter(params: { key: string | number, value: any }) {
 				this.filters = {};
-				this.filters[params.key] = params.value || "";
+				this.filters[params.key] = typeof params.value !== "undefined" ? params.value : "";
 			},
-			async selectedOption(params: {
-				option: SortingOption;
-				filter: string;
-			}) {
+			async selectedOption(params: {option: SortingOption, filter: any}) {
 				this.setFilter({ key: params.option.sort, value: params.filter });
 				this.updatePaginate(1);
 				await this.updateParams({
@@ -237,6 +235,19 @@
 				this.updatePaginate(1);
 				await this.getPaginated();
 			},
+			async handleDownload() {
+				this.setLoading(true);
+				await this.$store.dispatch(
+					'campaign/download',
+					await ParamService.getParams(
+						this.paginated,
+						this.filters,
+						this.option
+					),
+					{root: true}					
+				);
+				this.setLoading(false);
+			}			
 		},
 		watch: {
 			"paginated.page"(val, old) {

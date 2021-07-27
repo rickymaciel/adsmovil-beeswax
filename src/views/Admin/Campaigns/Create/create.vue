@@ -40,7 +40,7 @@
 								:kpi_campaigns="getKpiCampaigns"
 								:strategies="getStrategies"
 								:unit_times="getUnitTimes"
-								:owners="getUsers"
+								:traffickers="getUsers"
 								@update-model="updateModelOverview"
 								@init-frequency-caps="dispatchUnitTimes()"
 								@create-campaign="handleSubmit"
@@ -58,10 +58,7 @@
 	import CreateTabs from "./createTabs.vue";
 	import Overview from "./overview.vue";
 	import Vue from "vue";
-	import {
-		AdvertiserFilters,
-		AdvertiserOptions,
-	} from "../../../../interfaces/advertiser";
+	import { AdvertiserFilters, AdvertiserOptions } from "../../../../interfaces/advertiser";
 	import { initCampaign } from "../../../../utils/initData";
 	import Alertize from "../../../../components/Alertize.vue";
 	import { isEmpty } from "lodash";
@@ -77,12 +74,8 @@
 			// items: ["Overview", "Modifiers / Models", "Events", "Experiments"],
 			items: ["Overview", "Modifiers / Models"],
 			account: {
-				currency: {
-					name: "USD",
-				},
-				timezone: {
-					name: "UTC",
-				},
+				currency: { name: "USD" },
+				timezone: { name: "UTC" }
 			},
 			campaign: initCampaign(),
 		}),
@@ -157,7 +150,7 @@
 			 */
 			async dispatchAdvertisers() {
 				return this.$store.dispatch("advertiser/list", {
-					filters: {} as AdvertiserFilters,
+					filters: { active: true } as AdvertiserFilters,
 					options: { sort: "name", order: "asc" } as AdvertiserOptions,
 				});
 			},
@@ -210,14 +203,9 @@
 
 			async dispatchUsers() {
 				return this.$store.dispatch(
-					"user/getUsers",
-					{
-						filters: undefined,
-						options: {},
-					},
-					{
-						root: true,
-					}
+					"user/list",
+					{ filters: { active: true }, options: {} },
+					{ root: true }
 				);
 			},
 

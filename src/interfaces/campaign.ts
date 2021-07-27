@@ -9,7 +9,9 @@ export interface Campaign {
     alternative_id: string,
     external_id: number,
     spend: number,
+    budget_remaining?: number,
     automatic_allocation: boolean,
+    line_items_count?: number,
     kpi_objective: number,
     cpm_bid: number,
     target_ecpc: number,
@@ -212,6 +214,7 @@ export interface FrequencyCap {
  * timezone_name
  */
 export interface CampaingFilters {
+    id?: number,
     name?: string,
     budget?: number,
     start_date?: string,
@@ -229,7 +232,8 @@ export interface CampaingFilters {
     kpi_campaign_name?: string,
     bid_shading_name?: string,
     timezone_name?: string,
-    trafficker_name?: string
+    trafficker_name?: string,
+    budget_remaining: number
 }
 
 export interface CampaingOptions {

@@ -4,6 +4,7 @@
 			<Buttons
 				:limit="paginated.limit"
 				@selected-limit="selectedLimit"
+				@download-list="handleDownload"
 				to="/admin/advertisers/create"
 			></Buttons>
 		</v-layout>
@@ -87,7 +88,8 @@
 					{
 						text: i18n.t("advertisers.fields.id"),
 						align: "center",
-						sortable: true,
+						sortable: false,
+						api_sortable: true,
 						filterable: true,
 						value: "id",
 						//width: "5%",
@@ -95,7 +97,8 @@
 					{
 						text: i18n.t("advertisers.fields.name"),
 						align: "start",
-						sortable: true,
+						sortable: false,
+						api_sortable: true,
 						filterable: true,
 						value: "name",
 						//width: "20%",
@@ -103,35 +106,40 @@
 					{
 						text: i18n.t("common.fields.active"),
 						align: "start",
-						sortable: true,
+						sortable: false,
+						api_sortable: true,
 						filterable: true,
 						value: "active",
 					},
 					{
 						text: i18n.t("advertisers.fields.category"),
 						align: "start",
-						sortable: true,
+						sortable: false,
+						api_sortable: true,
 						filterable: true,
 						value: "category",
 					},
 					{
 						text: i18n.t("advertisers.fields.domain"),
 						align: "start",
-						sortable: true,
+						sortable: false,
+						api_sortable: true,
 						filterable: true,
 						value: "domain",
 					},
 					{
 						text: i18n.t("advertisers.fields.appBundle"),
 						align: "start",
-						sortable: true,
+						sortable: false,
+						api_sortable: true,
 						filterable: true,
 						value: "app_bundle",
 					},
 					{
 						text: i18n.t("advertisers.fields.currency"),
 						align: "start",
-						sortable: true,
+						sortable: false,
+						api_sortable: true,
 						filterable: false,
 						value: "currency",
 					},
@@ -140,6 +148,7 @@
 						text: "",
 						align: "center",
 						sortable: false,
+						api_sortable: true,
 						value: "actions",
 						width: "5%",
 					},
@@ -211,6 +220,19 @@
 				this.updatePaginate(1);
 				await this.getPaginated();
 			},
+			async handleDownload() {
+				this.setLoading(true);
+				await this.$store.dispatch(
+					'advertiser/download',
+					await ParamService.getParams(
+						this.paginated,
+						this.filters,
+						this.option
+					),
+					{root: true}					
+				);
+				this.setLoading(false);
+			}
 		},
 		watch: {
 			"paginated.page"(val, old) {

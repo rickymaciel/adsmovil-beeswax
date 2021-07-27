@@ -1,5 +1,5 @@
 <template>
-	<div class="d-lg-flex justify-lg-space-between">
+	<div class="d-flex justify-space-between">
 		<div
 			class="mb-2 d-flex justify-space-between align-center align-self-center"
 		>
@@ -25,6 +25,7 @@
 				raised
 				rounded
 				class="ml-auto me-4 mb-1"
+				@click="handleDownload"
 			>
 				<img src="@/assets/icons/download_btn.png" alt="Tools" />
 			</v-btn>
@@ -226,6 +227,9 @@ import { find } from "lodash";
 			selecteLimit(item: { value: number }) {
 				this.$emit("selected-limit", item.value);
 			},
+			handleDownload() {
+				this.$emit("download-list")
+			}
 		},
 	});
 </script>

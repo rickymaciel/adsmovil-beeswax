@@ -57,140 +57,6 @@
 						</v-layout>
 
 						<!-- Targeting -->
-						<v-layout
-							color="transparent"
-							v-if="isCurrentTabSelected(item, 1)"
-							column
-						>
-							<v-container class="grey lighten-3">
-								<!-- Tabs targeting -->
-								<v-row>
-									<v-col cols="12" lg="2" md="3">
-										<NavTargeting
-											:current_tab="currentTabTargeting"
-											@update-selected-tab-index="
-												updateSelectedTabTargetingIndex
-											"
-										></NavTargeting>
-									</v-col>
-									<v-col cols="12" lg="10" md="9">
-										<v-card
-											width="100%"
-											class="mx-auto rounded-lg"
-											justify="between"
-											align="center"
-											color="transparent"
-											elevation="2"
-											tile
-											flat
-										>
-											<AppSite
-												v-if="currentTabTargeting === 0"
-												:data_variables="data_variables"
-												:app_site="targeting.app_site"
-												@add-item="addItem"
-												@add-item-unique="addItemUnique"
-												@remove-item="removeItem"
-												@remove-item-unique="
-													removeItemUnique
-												"
-												@clear-app-site="clearHandler"
-												@update-data-var="
-													updateDataVariables
-												"
-												@add-comma="addCommaHandler"
-												@update-item-unique="
-													updateItemUnique
-												"
-											></AppSite>
-
-											<Content
-												v-if="currentTabTargeting === 1"
-												:content="targeting.content"
-											></Content>
-
-											<Environment
-												v-if="currentTabTargeting === 2"
-												:environment="
-													targeting.environment
-												"
-											></Environment>
-
-											<Exchange
-												v-if="currentTabTargeting === 3"
-												:exchange="targeting.exchange"
-											></Exchange>
-
-											<Geo
-												v-if="currentTabTargeting === 4"
-												:environment="targeting.geo"
-											></Geo>
-										</v-card>
-									</v-col>
-								</v-row>
-
-								<!-- Actions targeting -->
-								<v-row
-									no-gutters
-									class="mt-4"
-									dense
-									align="center"
-									justify="start"
-								>
-									<v-col
-										class="pe-lg-16 pa-0"
-										cols="12"
-										sm="4"
-										md="4"
-										lg="6"
-									>
-									</v-col>
-
-									<v-col
-										class="pe-lg-16 pa-0"
-										cols="12"
-										sm="8"
-										md="8"
-										lg="6"
-									>
-										<v-card
-											elevation="0"
-											class="pa-2"
-											outlined
-											tile
-											color="rgb(0, 0, 0, 0.0)"
-										>
-											<v-row align="center" justify="end">
-												<v-btn
-													rounded
-													color="secondary"
-													class="ma-2 px-8"
-												>
-													{{ $t("save") }}
-												</v-btn>
-												<v-btn
-													rounded
-													color="secondary"
-													class="ma-2 px-8"
-													@click="
-														handleTargetingSubmit
-													"
-												>
-													{{ $t("save-continue") }}
-												</v-btn>
-												<v-btn
-													rounded
-													color="secondary"
-													class="ma-2 px-8"
-												>
-													{{ $t("cancel") }}
-												</v-btn>
-											</v-row>
-										</v-card>
-									</v-col>
-								</v-row>
-							</v-container>
-						</v-layout>
 					</v-tab-item>
 				</v-tabs-items>
 			</v-container>
@@ -218,6 +84,7 @@
 		initLineItem,
 		initHardCoreLineItem,
 		initTargeting,
+		initDataVariables,
 	} from "../../../../utils/initData";
 	import Alertize from "../../../../components/Alertize.vue";
 	import {
@@ -257,62 +124,21 @@
 			title: "EditLineItem",
 			currentTab: 0,
 			currentTabTargeting: 0,
-			items: [
-				{ key: 0, tab: "Overview", disabled: false },
-				{ key: 1, tab: "Targeting", disabled: true },
-				{ key: 2, tab: "Modifiers / Models", disabled: true },
-				{ key: 3, tab: "Creatives", disabled: true },
-			],
-			//lineItem: initHardCoreLineItem(),
-			// lineItem: initLineItem(),
+			items: [],
 			lineItem: null,
 			targeting: initTargeting(),
 
 			//Aux App Site
-			data_variables: {
-				app_bundle_list: [],
-				app_id_list: [],
-				app_name: [],
-				deal_id: [],
-				deal_id_list: [],
-				domain_list: [],
-				placement_id: [],
-				placement_list: [],
-				publisher_id: [],
-				publisher_id_list: [],
-				site: [],
-				site_list: [],
-				app_name_attributes: [
-					{
-						value: "app_name",
-						text: "by App Name",
-					},
-					{
-						value: "app_id",
-						text: "by App ID",
-					},
-					{
-						value: "app_bundle",
-						text: "by App Bundle",
-					},
-				],
-				site_attributes: [
-					{
-						value: "site_id",
-						text: "by Site ID",
-					},
-					{
-						value: "site_name",
-						text: "by Site Name",
-					},
-					{
-						value: "placement_id",
-						text: "by Placement ID",
-					},
-				],
-			},
+			data_variables: initDataVariables(),
 		}),
 		async created() {
+			this.items = [
+				{ key: 0, tab: "Overview", disabled: false },
+				{ key: 1, tab: "Targeting", disabled: true }, // !this.isCreatedLineItem
+				{ key: 2, tab: "Modifiers / Models", disabled: true },
+				{ key: 3, tab: "Creatives", disabled: true },
+			];
+
 			await this.handleShow();
 			this.lineItem = this.getParsedData();
 		},
@@ -401,13 +227,13 @@
 				this.end_time = this.formatDate(entity.end_date, this.time_format);
 
 				/*entity.start_date = this.formatDate(
-											entity.start_date,
-											this.date_format
-										);
-										entity.end_date = this.formatDate(
-											entity.end_date,
-											this.date_format
-										);*/
+													entity.start_date,
+													this.date_format
+												);
+												entity.end_date = this.formatDate(
+													entity.end_date,
+													this.date_format
+												);*/
 
 				return entity;
 			},

@@ -7,7 +7,7 @@ import { HasProviderToken, ProviderToken } from './auth-service'
 import { ValidateToken } from '@/services/jwt-service'
 import { forEach } from 'lodash';
 
-// axios.defaults.baseURL = 'http://dsp-api.localhost.com' // endpoint para gero
+//axios.defaults.baseURL = 'http://dsp-api.localhost.com' // endpoint para gero
 axios.defaults.baseURL = 'https://dsp-api-testing.adsmovil.com'
 
 axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*'
@@ -23,12 +23,15 @@ axios.defaults.headers.get = {
 
 const token = localStorage.getItem('token') || ''
 
+console.log('AxiosService', {token});
+
 if (token && token.startsWith('Bearer ')) {
     axios.defaults.headers.common.Authorization = ValidateToken(token)
 }
 
 // Add a request interceptor
 axios.interceptors.request.use(function (config) {
+    console.log('AxiosService::request', {token, config, headers: axios.defaults.headers});
     return config
 }, function (error) {
     //console.error('AxiosService.interceptors', { request: error })
@@ -91,6 +94,15 @@ export function AxiosGet(url: string) {
 }
 
 /**
+ * PUT
+ * @param url
+ * @param payload
+ */
+export function AxiosPut(url: string, payload: any) {
+    return axios.put(url, payload)
+}
+
+/**
  * PATCH
  * @param url
  * @param payload
@@ -102,14 +114,14 @@ export function AxiosPatch(url: string, payload: any) {
 const getFormData = (attributes) => {
     let formData = new FormData();
     Object.keys(attributes).forEach((key, value) => {
-      if (Array.isArray(attributes[key])) {
-        formData.append(key, JSON.stringify(attributes[key]));
-      } else {
-        formData.append(key, attributes[key]);
-      }
+        if (Array.isArray(attributes[key])) {
+            formData.append(key, JSON.stringify(attributes[key]));
+        } else {
+            formData.append(key, attributes[key]);
+        }
     });
     return formData;
-  };
+};
 
 
 export function AxiosUpload(url: string, payload: any, onUploadProgress) {
@@ -119,6 +131,26 @@ export function AxiosUpload(url: string, payload: any, onUploadProgress) {
         headers: { 'Content-Type': 'multipart/form-data' }
     });
 }
+
+/**
+ * GET
+ * @param url
+ */
+export async function AxiosDownload(url: string, title: string) {
+    const response = await axios.get(url, { responseType: 'blob' });
+    forceFileDownload(response, title);
+}
+
+function forceFileDownload(response, title) {
+    console.log(title)
+    const url = window.URL.createObjectURL(new Blob([response.data]))
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', title)
+    document.body.appendChild(link)
+    link.click()
+}
+
 // RESPONSE BOOLEAN CHECK //
 
 /**

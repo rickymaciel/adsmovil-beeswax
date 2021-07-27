@@ -68,7 +68,8 @@
             "goToLogin": "Go to Login"
         },
         "labels": {
-            "mandatory": "* Mandatory fields"
+            "mandatory": "* Mandatory fields",
+            "error": "Error"
         },
         "fields":{
             "active": "Active",
@@ -200,7 +201,43 @@
             "upload": "Upload"
         }
     },
-
+    "campaign": {
+        "breadcrumb": "Campaigns",
+        "list": {
+            "title": "Campaigns list"
+        },
+        "create": {
+            "title": "Create campaign"
+        },
+        "edit": {
+            "title": "Edit campaign"
+        },
+        "fields": {
+            "id": "ID",
+            "advertiser": "Advertiser",
+            "name": "Name",
+            "budget": "Budget",
+            "spend": "Spend",
+            "start_date": "Start date",
+            "end_date": "End date",
+            "associated_lines": "Associated lines",
+            "active": "Active",
+            "remaining_budget": "Remaining budget",
+            "trafficker": "Trafficker",
+            "currency": "Currency",
+            "timezone": "Timezone",
+            "alternative_id": "Alternative ID",
+            "budget_type": "Budget type" 
+        },
+        "labels": {
+            "duration": "Duration",
+            "budget": "Budget"
+        },
+        "actions": {
+        }
+    },
     "require-campaign": "You must select a campaign",
-    "must-be-validated": "Must be validated"
+    "must-be-validated": "Must be validated",
+    "add-associated-creative": "Associated Creative",
+    "require-creative": "You must select a creative"
 }

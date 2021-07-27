@@ -1,6 +1,6 @@
 import { CustomListPaginated, CustomListFilters, CustomListOptions, Type, CustomListDataCreate } from '@/interfaces/custom_list'
 import { Paginated } from '@/interfaces/paginated'
-import { AxiosGet, AxiosPost,  AxiosPatch, GetData, GetErrors, GetMessage, AxiosUpload } from '@/services/axios-service'
+import { AxiosGet, AxiosPost,  AxiosPatch, GetData, GetErrors, GetMessage, AxiosUpload, AxiosDownload } from '@/services/axios-service'
 import { isUndefined, isEmpty } from 'lodash'
 import { SortingOption } from '../interfaces/paginated';
 
@@ -44,6 +44,34 @@ class CustomListService {
             });
         }
     }  
+
+    async download(params: { paginated?: Paginated, filters?: CustomListFilters, options?: SortingOption }) {
+        try {
+            let filter = ''
+            let option = ''
+
+            if (!isUndefined(params.filters)) {
+                filter = getFilters(params.filters)
+            }
+
+            if (!isUndefined(params.options)) {
+                option += getOptions(params.options, 'download', params.paginated)
+            }
+
+            const url = getURL(filter, option)
+            
+            await AxiosDownload(CUSTOM_LIST_ROUTE + url, 'custom_lists-export.csv')
+            
+            return Promise.resolve({});
+
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }     
 
     async update({id, name, active, edited, deleted, created}) {
         try {

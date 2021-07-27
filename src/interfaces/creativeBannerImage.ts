@@ -1,6 +1,17 @@
 import {
-  AdvertiserDataCreate, AddContentImageDataCreate, ExchangeOptionsImageDataCreate, AddonSettingDataCreate,
-  AddContent, Advertiser, AddonSetting, Attribute, ExchangeOption, Template, Type
+  AdvertiserDataCreate,
+  AddContentImageDataCreate,
+  ExchangeOptionsImageDataCreate,
+  AddonSettingDataCreate,
+  AddContent,
+  Advertiser,
+  AddonSetting,
+  Attribute,
+  ExchangeOption,
+  Template,
+  Type,
+  AdvertiserDataUpdate,
+  AddContentImageDataUpdate, ExchangeOptionsImageDataUpdate, AddonSettingDataUpdate
 } from '@/interfaces/creative'
 
 export interface Image {
@@ -39,4 +50,17 @@ export interface ImageDataCreate {
   creative_ad_content: AddContentImageDataCreate,
   creative_exchange_options: ExchangeOptionsImageDataCreate,
   creative_addon_settings: AddonSettingDataCreate
+}
+
+export interface ImageDataUpdate {
+  id: number,
+  name?: string,
+  secure?: boolean,
+  start_date?: string,
+  end_date?: string,
+  active?: boolean,
+  creative_advertiser?: AdvertiserDataUpdate,
+  creative_ad_content?: AddContentImageDataUpdate,
+  creative_exchange_options?: ExchangeOptionsImageDataUpdate,
+  creative_addon_settings?: AddonSettingDataUpdate
 }

@@ -4,10 +4,12 @@ import {
     LineItemOptions,
     LineItemPaginated,
 } from '@/interfaces/line_item'
-import { AxiosGet, AxiosPost, AxiosPatch, GetData, GetErrors, GetMessage } from '@/services/axios-service'
+import { AxiosGet, AxiosPost, AxiosPatch, GetData, GetErrors, GetMessage, AxiosPut } from '@/services/axios-service'
 import { isEmpty, isNull, isUndefined } from 'lodash'
 
 export const LINE_ITEM_ROUTE = '/api/line_items'
+
+const ROUTES_LINE_ITEMS = require('../api/routes').LINE_ITEMS
 
 class LineItemService {
 
@@ -117,6 +119,19 @@ class LineItemService {
             console.log('LineItemService::all', { filters: params.filters, options: params.options, url: url, filter: filter, option: option });
 
             const response = await AxiosGet(`${LINE_ITEM_ROUTE}/${url}`);
+            return Promise.resolve(GetData(response));
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+
+    async changeStatus(params: { id: number; active: Boolean }) {
+        try {
+            const response = await AxiosPut(`${ROUTES_LINE_ITEMS.LINE_ITEMS_ROUTE}/${params.id}/set/${params.active ? 1 : 0}`, {})
             return Promise.resolve(GetData(response));
         } catch (error) {
             return Promise.reject({

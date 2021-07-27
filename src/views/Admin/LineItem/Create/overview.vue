@@ -16,6 +16,26 @@
 							<v-card-text> entity: {{ entity }} </v-card-text>
 						</v-card>
 					</v-col> -->
+
+					<!-- ID -->
+					<v-col
+						v-if="hasData(entity.id)"
+						cols="12"
+						sm="12"
+						md="6"
+						lg="4"
+					>
+						<CardTextField
+							v-model="entity.id"
+							hint="ID"
+							reference="id"
+							label="ID"
+							placeholder="ID"
+							:required="true"
+							:disabled="true"
+						></CardTextField>
+					</v-col>
+
 					<v-col cols="12" sm="12" md="6" lg="4">
 						<CardAutocomplete
 							v-model="entity.campaign_id"
@@ -40,7 +60,7 @@
 						></CardAutocomplete>
 					</v-col>
 
-					<!-- Advertiser: advertiser_id -->
+					<!-- Advertiser: advertiser_id 
 					<v-col cols="12" sm="12" md="6" lg="4">
 						<CardAutocomplete
 							v-model="entity.advertiser_id"
@@ -60,8 +80,22 @@
 							:dense="false"
 							:required="true"
 							:class="{ disabled: isEdit }"
-							:disabled="isEdit"
+							:disabled="true"
 						></CardAutocomplete>
+					</v-col>
+					-->
+
+					<!-- Field Advertiser -->
+					<v-col cols="12" sm="12" md="6" lg="4">
+						<CardTextField
+							v-model="name_advertiser"
+							hint="Advertiser"
+							reference="advertiser_name"
+							label="Advertiser"
+							placeholder="Add Name"
+							:required="true"
+							:disabled="true"
+						></CardTextField>
 					</v-col>
 
 					<!-- Name -->
@@ -88,10 +122,10 @@
 							:items="getLineTypes"
 							item_text="value"
 							item_value="id"
-							hint="Line type"
+							hint="Line Item type"
 							reference="line_item_type_id"
-							placeholder="Select Line type"
-							label="Line type"
+							placeholder="Select Line Item type"
+							label="Line Item type"
 							:chips="true"
 							:deletable_chips="true"
 							:multiple="false"
@@ -118,7 +152,6 @@
 						<CardAutocomplete
 							v-model="entity.creative_method_id"
 							v-numeric
-							:rules="getRules.required"
 							:items="getCreativeWeightingMethods"
 							item_text="value"
 							item_value="id"
@@ -131,7 +164,7 @@
 							:multiple="false"
 							:small_chips="true"
 							:dense="false"
-							:required="true"
+							:required="false"
 							:class="{ disabled: isEdit }"
 							:disabled="isEdit"
 						></CardAutocomplete>
@@ -172,7 +205,9 @@
 							flat
 							tile
 						>
-							<v-card-title class="px-2">Duration</v-card-title>
+							<v-card-title class="px-2"
+								>Duration Line</v-card-title
+							>
 							<v-divider class="mt-3"></v-divider>
 						</v-card>
 					</v-col>
@@ -187,11 +222,13 @@
 							color="rgb(0, 0, 0, 0.0)"
 						>
 							<DatePicker
-								label="Start Date*"
+								label="Start Date"
 								v-model="entity.start_date"
+								elevation="15"
 								:min_date="getMinDate"
 								:max_date="getMaxDate"
 								:rules="startDateRules"
+								:required="true"
 							></DatePicker>
 						</v-card>
 					</v-col>
@@ -206,12 +243,13 @@
 							color="rgb(0, 0, 0, 0.0)"
 						>
 							<DatePicker
-								label="End Date*"
+								label="End Date"
 								v-model="entity.end_date"
 								:min_date="getMinDate"
 								:max_date="getMaxDate"
 								:rules="endDateRules"
 								:is_end="true"
+								:required="true"
 							></DatePicker>
 						</v-card>
 					</v-col>
@@ -383,7 +421,13 @@
 					</v-col>
 
 					<!-- Bidding Shading -->
-					<v-col cols="12" sm="12" md="6" lg="4">
+					<v-col
+						cols="12"
+						sm="12"
+						md="6"
+						lg="4"
+						v-if="showBidShading"
+					>
 						<CardAutocomplete
 							v-model="entity.bid_shading_id"
 							v-numeric
@@ -399,7 +443,6 @@
 							:multiple="false"
 							:small_chips="true"
 							:dense="false"
-							:required="false"
 						></CardAutocomplete>
 					</v-col>
 				</v-row>
@@ -452,7 +495,13 @@
 					</v-col>
 
 					<!-- CPM Bid -->
-					<v-col cols="12" sm="12" md="6" lg="2">
+					<v-col
+						cols="12"
+						sm="12"
+						md="6"
+						lg="2"
+						v-if="showFieldCPMBig"
+					>
 						<CardTextField
 							v-model="entity.cpm_bid"
 							:rules="getRules.cpm_bid"
@@ -694,10 +743,7 @@
 					>
 						<v-layout>
 							<v-label class="v-label theme--light">
-								Frecuency Cup
-								<span class="red--text"
-									><strong>*</strong></span
-								>
+								Frecuency Cap
 							</v-label>
 						</v-layout>
 						<v-layout class="mt-3">
@@ -847,698 +893,729 @@
 </template>
 
 <script lang="ts">
-	import Vue from "vue";
-	import {
-		isUndefined,
-		isNull,
-		isEmpty,
-		isNaN,
-		find,
-		isNumber,
-		first,
-	} from "lodash";
-	import { AdvertiserList } from "../../../../interfaces/advertiser";
-	import DatePicker from "../../../../components/Content/DatePicker.vue";
-	import { LineItemDataCreate } from "../../../../interfaces/line_item";
-	import { initLineItem } from "../../../../utils/initData";
-	import CardTextField from "../../../../components/Content/CardTextField.vue";
-	import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
-	import CardSwitch from "../../../../components/Content/CardSwitch.vue";
-	import {
-		CampaignDataCreate,
-		CampaingList,
-		CampaingDataUpdate,
-	} from "../../../../interfaces/campaign";
+import Vue from "vue";
+import {
+	isUndefined,
+	isNull,
+	isEmpty,
+	isNaN,
+	find,
+	isNumber,
+	first,
+} from "lodash";
+import { AdvertiserList } from "../../../../interfaces/advertiser";
+import DatePicker from "../../../../components/Content/DatePicker.vue";
+import { LineItemDataCreate } from "../../../../interfaces/line_item";
+import { initLineItem } from "../../../../utils/initData";
+import CardTextField from "../../../../components/Content/CardTextField.vue";
+import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
+import CardSwitch from "../../../../components/Content/CardSwitch.vue";
+import {
+	CampaignDataCreate,
+	CampaingList,
+	CampaingDataUpdate,
+} from "../../../../interfaces/campaign";
 
-	const BY_CAMPAIGN = "By Campaign";
-	const DAILY = "Daily";
-	const IMPRESSIONS = "Impressions";
-	const SPEND = "Spend";
-	const IMPRESSION = "Impression";
-	const LINE_TYPE_BY_VIDEO = "Video";
+const BY_CAMPAIGN = "By Campaign";
+const DAILY = "Daily";
+const IMPRESSIONS = "Impressions";
+const SPEND = "Spend";
+const IMPRESSION = "Impression";
+const LINE_TYPE_BY_VIDEO = "Video";
 
-	// Configs to Optimization Strategy
-	const OPTIMIZED_CPM = "Optimized CPM";
-	const OPTIMIZED_CPC = "Optimized CPC";
-	const OPTIMIZED_VCR = "Optimized VCR";
+// Configs to Optimization Strategy
+const OPTIMIZED_CPM = "Optimized CPM";
+const OPTIMIZED_CPC = "Optimized CPC";
+const OPTIMIZED_VCR = "Optimized VCR";
 
-	const OPTIMIZATION_BY_LINE = "By Line";
-	const OPTIMIZATION_BY_CAMPAIGN = "By Campaign";
+const OPTIMIZATION_BY_LINE = "By Line";
+const OPTIMIZATION_BY_CAMPAIGN = "By Campaign";
 
-	// Configs to Bid Strategy
-	const BID_STRATEGY_FIXED = "Fix";
-	const BID_STRATEGY_AUTOMATED = "Automated";
+// Configs to Bid Strategy
+const BID_STRATEGY_FIXED = "Fix";
+const BID_STRATEGY_AUTOMATED = "Automated";
 
-	// Configs to Date
-	const DEFAULT_DATE_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
-	const DEFAULT_START_TIME = "00:00:00";
-	const DEFAULT_END_TIME = "00:59:59";
+// Configs to Date
+const DEFAULT_DATE_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
+const DEFAULT_START_TIME = "00:00:00";
+const DEFAULT_END_TIME = "00:59:59";
 
-	export default Vue.extend({
-		name: "Overview",
-		props: {
-			campaigns: {
-				type: Array,
-				required: true,
-			},
-			biddingShadings: {
-				type: Array,
-				required: true,
-			},
-			advertisers: {
-				type: Array,
-				required: true,
-			},
-			lineItemTypes: {
-				type: Array,
-				required: true,
-			},
-			line_item: {
-				type: Object,
-				default: function () {
-					return { frequency_caps: [] };
-				},
-			},
-			campaigns_pacing: {
-				type: Array,
-				required: true,
-			},
-			budget_types: {
-				type: Array,
-				required: true,
-			},
-			optimization_strategies: {
-				type: Array,
-				required: true,
-			},
-			strategies: {
-				type: Array,
-				required: true,
-			},
-			unit_times: {
-				type: Array,
-				required: true,
-			},
-			creativeWeightingMethods: {
-				type: Array,
-				required: true,
-			},
-			bidStrategies: {
-				type: Array,
-				required: true,
-			},
-			linesPacing: {
-				type: Array,
-				required: true,
-			},
-			is_edit: {
-				type: Boolean,
-				default: false,
-			},
-			errors: {
-				type: Object,
-				default: function () {
-					return {};
-				},
+export default Vue.extend({
+	name: "Overview",
+
+	props: {
+		campaigns: {
+			type: Array,
+			required: true,
+		},
+		biddingShadings: {
+			type: Array,
+			required: true,
+		},
+		advertisers: {
+			type: Array,
+			required: true,
+		},
+		lineItemTypes: {
+			type: Array,
+			required: true,
+		},
+		line_item: {
+			type: Object,
+			default: function () {
+				return { frequency_caps: [] };
 			},
 		},
-		components: {
-			CardTextField,
-			CardAutocomplete,
-			CardSwitch,
-			DatePicker,
+		campaigns_pacing: {
+			type: Array,
+			required: true,
 		},
-		data: () => ({
-			title: "Overview",
-			valid: false,
-			expected_show: false,
-			expected_value: undefined,
-			expected_label: "",
-			showDailyBudget: true,
-			show_target_ecpc: false,
-			show_target_ctr: false,
-			show_target_ecpcv: false,
-			show_target_cpcv: false,
-			show_target_ecpm: false,
-			show_target_vcr: false,
+		budget_types: {
+			type: Array,
+			required: true,
+		},
+		optimization_strategies: {
+			type: Array,
+			required: true,
+		},
+		strategies: {
+			type: Array,
+			required: true,
+		},
+		unit_times: {
+			type: Array,
+			required: true,
+		},
+		creativeWeightingMethods: {
+			type: Array,
+			required: true,
+		},
+		bidStrategies: {
+			type: Array,
+			required: true,
+		},
+		linesPacing: {
+			type: Array,
+			required: true,
+		},
+		errors: {
+			type: Object,
+			default: function () {
+				return {};
+			},
+		},
+	},
 
-			budgetText: "Total",
+	components: {
+		CardTextField,
+		CardAutocomplete,
+		CardSwitch,
+		DatePicker,
+	},
 
-			// Date
-			today: "",
-			openStartDate: false,
-			openStartTime: false,
-			openEndDate: false,
-			openEndTime: false,
-			start_date: "",
-			end_date: "",
-			start_time: DEFAULT_START_TIME,
-			end_time: DEFAULT_END_TIME,
-			min_date: "",
-			max_date: "",
+	data: () => ({
+		title: "Overview",
+		valid: false,
+		expected_show: false,
+		expected_value: undefined,
+		expected_label: "",
+		showDailyBudget: true,
+		show_target_ecpc: false,
+		show_target_ctr: false,
+		show_target_ecpcv: false,
+		show_target_cpcv: false,
+		show_target_ecpm: false,
+		show_target_vcr: false,
 
-			// Data
-			entity: initLineItem(),
-			campaign: {} as CampaignDataCreate,
+		budgetText: "Total",
 
-			// Controll Enable
-			can_edit_budget_type: true,
-			can_edit_budget_content: true,
-			can_edit_bidding_shading: false,
-			can_edit_fix_cpm: true,
-			max_budget_content: null,
-			can_edit_daily_budget: false,
-		}),
-		created() {},
-		mounted() {
-			if (this.isEdit) {
-				this.entity = this.lineItem;
-				this.campaign = this.entity?.campaign;
+		// Date
+		today: "",
+		openStartDate: false,
+		openStartTime: false,
+		openEndDate: false,
+		openEndTime: false,
+		start_date: "",
+		end_date: "",
+		start_time: DEFAULT_START_TIME,
+		end_time: DEFAULT_END_TIME,
+		min_date: "",
+		max_date: "",
+
+		// Data
+		entity: initLineItem(),
+		campaign: {} as CampaignDataCreate,
+
+		//Data Field Advertiser
+		name_advertiser: "",
+
+		// Controll Enable
+		can_edit_budget_type: true,
+		can_edit_budget_content: true,
+		can_edit_bidding_shading: false,
+		can_edit_fix_cpm: true,
+		max_budget_content: null,
+		can_edit_daily_budget: false,
+	}),
+
+	created() {
+		this.entity = this.lineItem;
+	},
+
+	mounted() {
+		this.today = this.getDateTodayString();
+		this.min_date = this.getDateTodayString();
+		this.max_date = this.getDateTodayString();
+	},
+
+	computed: {
+		getToday() {
+			return this.moment().format(DEFAULT_DATE_TIME_FORMAT);
+		},
+
+		getMinDate() {
+			if (this.campaign.start_date) {
+				return this.moment(this.campaign.start_date).format(
+					DEFAULT_DATE_TIME_FORMAT
+				);
 			}
-			this.today = this.getDateTodayString();
-			this.min_date = this.getDateTodayString();
-			this.max_date = this.getDateTodayString();
+			return this.getToday;
 		},
-		computed: {
-			getMinDate() {
-				if (this.campaign?.start_date) {
-					return this.moment(this.campaign.start_date).format(
+
+		getMaxDate() {
+			return this.campaign.end_date
+				? this.moment(this.campaign.end_date).format(
 						DEFAULT_DATE_TIME_FORMAT
-					);
-				}
-				return this.moment().format(DEFAULT_DATE_TIME_FORMAT);
-			},
+				  )
+				: "";
+		},
 
-			getMaxDate() {
-				return this.campaign?.end_date
-					? this.moment(this.campaign?.end_date).format(
-							DEFAULT_DATE_TIME_FORMAT
-					  )
-					: "";
-			},
+		isEdit() {
+			return this.hasData(this.entity.id);
+		},
 
-			isEdit() {
-				return this.is_edit;
-			},
+		/**
+		 * STRING RULES
+		 */
 
-			/**
-			 * STRING RULES
-			 */
-
-			getBudgetText() {
+		getBudgetText() {
+			this.budgetText = "Total";
+			if (isUndefined(this.entity.budget_type_id)) {
+				return this.budgetText;
+			}
+			const result = find(this.getBudgetType, {
+				id: this.entity.budget_type_id,
+			});
+			if (result) {
+				this.budgetText = `Total ${result.value}`;
+			} else {
 				this.budgetText = "Total";
-				if (isUndefined(this.entity.budget_type_id)) {
-					return this.budgetText;
-				}
-				const result = find(this.getBudgetType, {
-					id: this.entity.budget_type_id,
-				});
-				if (result) {
-					this.budgetText = `Total ${result.value}`;
-				} else {
-					this.budgetText = "Total";
-				}
-				return this.budgetText;
-			},
-
-			getBudgetTypeStatus() {
-				return this.can_edit_budget_type;
-			},
-
-			getBudgetContentStatus() {
-				return this.can_edit_budget_content;
-			},
-
-			getRules() {
-				return {
-					required: [(v: any) => Boolean(v) || this.$t("fieldRequired")],
-					number: [(v: number) => !isNaN(v) || this.$t("fieldRequired")],
-					cpm_bid: [
-						(v: any) => Boolean(v) || this.$t("fieldRequired"),
-						(v: number) => v > 0 || this.$t("min", { min: 0 }),
-						(v: number) => v <= 25000 || this.$t("max", { max: 25000 }),
-					],
-					target_ctr: [
-						(v: any) => Boolean(v) || true,
-						(v: number) => v >= 0 || this.$t("min", { min: 0 }),
-						(v: number) => v <= 1 || this.$t("max", { max: 1 }),
-					],
-					target_cpcv: [
-						(v: any) => Boolean(v) || true,
-						(v: number) => v >= 0 || this.$t("min", { min: 0 }),
-						(v: number) => v <= 1 || this.$t("max", { max: 1 }),
-					],
-					target_vcr: [
-						(v: any) => Boolean(v) || true,
-						(v: number) => v >= 0 || this.$t("min", { min: 0 }),
-						(v: number) => v <= 1 || this.$t("max", { max: 1 }),
-					],
-					daily_budget: [
-						(v: any) => Boolean(v) || this.$t("fieldRequired"),
-						(v: any) =>
-							v >= this.calcSuggested ||
-							this.$t("greaterOrEqual", {
-								value: this.calcSuggested,
-							}),
-					],
-					budget: [
-						(v: any) =>
-							Boolean(this.campaign?.budget) ||
-							this.$t("require-campaign"),
-						(v: any) => Boolean(v) || this.$t("fieldRequired"),
-						(v: any) =>
-							v <= this.campaign?.budget ||
-							this.$t("max", {
-								max: this.campaign?.budget,
-							}),
-					],
-				};
-			},
-			calcSuggested() {
-				return Math.round(this.entity.budget / this.entity.line_duration);
-			},
-			getSuggested() {
-				if (
-					!this.showDailyBudget ||
-					!this.entity.budget ||
-					!this.entity.line_duration
-				)
-					return "";
-				return `Suggested ${this.calcSuggested}`;
-			},
-
-			/**
-			 * Check
-			 */
-
-			initData() {
-				this.entity = this.line_item;
-				//this.getCalculateDuration();
-			},
-
-			isSelectedAutomaticAllocation() {
-				return [0, 1].includes(this.campaign?.automatic_allocation);
-			},
-
-			isAutomaticAllocation() {
-				return Boolean(this.campaign?.automatic_allocation === 1);
-			},
-
-			isBudgetTypeImpressions() {
-				return this.checkSelectedIDByName(
-					this.getBudgetType,
-					IMPRESSIONS,
-					this.entity.budget_type_id
-				);
-			},
-
-			isBudgetTypeSpend() {
-				return this.checkSelectedIDByName(
-					this.getBudgetType,
-					SPEND,
-					this.entity.budget_type_id
-				);
-			},
-
-			isOptimizationStrategyById() {
-				return this.checkSelectedIDByName(
-					this.getOptimizationStrategies,
-					BY_CAMPAIGN,
-					this.entity.optimization_strategy_id
-				);
-			},
-
-			isCampaignPacingById() {
-				return this.checkSelectedIDByName(
-					this.getLinesPacing,
-					DAILY,
-					this.entity.line_pacing_id
-				);
-			},
-
-			/**
-			 * DATE RULES
-			 */
-			startDateRules() {
-				return [
-					//(v: any) => this.calculateDuration(this.moment(this.entity.start_date), this.moment(this.entity.end_date)) > 0 || this.$t("must-after-end"),
-					(v: string) =>
-						(!isUndefined(v) && !isNull(v) && !isEmpty(v)) ||
-						this.$t("fieldRequired"),
-				];
-			},
-			endDateRules() {
-				return [
-					//(v: any) => this.calculateDuration(this.moment(this.entity.start_date), this.moment(this.entity.end_date)) < 0 || this.$t("must-after-start"),
-					(v: string) =>
-						(!isUndefined(v) && !isNull(v) && !isEmpty(v)) ||
-						this.$t("fieldRequired"),
-				];
-			},
-
-			/**
-			 * GET
-			 */
-			getCampaings(): CampaingList[] {
-				return this.campaigns;
-			},
-
-			getBiddingShadings(): [] {
-				return this.biddingShadings;
-			},
-
-			getAdvertisers(): AdvertiserList[] {
-				return this.advertisers;
-			},
-
-			getLineTypes(): Array<any> {
-				return this.lineItemTypes;
-			},
-
-			getCreativeWeightingMethods(): Array<any> {
-				return this.creativeWeightingMethods;
-			},
-
-			getBudgetType() {
-				return this.budget_types;
-			},
-
-			getOptimizationStrategies() {
-				return this.optimization_strategies;
-			},
-
-			getStrategies() {
-				if (this.entity.line_item_type_id == null) {
-					return this.strategies;
-				}
-				let result = this.checkSelectedIDByName(
-					this.getLineTypes,
-					LINE_TYPE_BY_VIDEO,
-					this.entity.line_item_type_id
-				);
-				if (!result) {
-					return this.strategies;
-				} else {
-					this.entity.strategy_id = null;
-					return this.strategies.filter((e) => {
-						return e.value !== OPTIMIZED_VCR;
-					});
-				}
-			},
-
-			getUnitTimes() {
-				return this.unit_times;
-			},
-
-			getBidStrategies() {
-				return this.bidStrategies;
-			},
-
-			getLinesPacing() {
-				return this.linesPacing;
-			},
-
-			getCanShowOptimizationStrategy() {
-				//Bid strategy = Automated
-				const result = find(this.getBidStrategies, {
-					id: this.entity.bid_strategy_id,
-				});
-				if (result) {
-					if (
-						result.value.toUpperCase() ==
-						BID_STRATEGY_AUTOMATED.toUpperCase()
-					) {
-						return true;
-					}
-				}
-				return false;
-			},
-
-			showCampaignPacing() {
-				return (
-					this.isAutomaticAllocation && this.isOptimizationStrategyById
-				);
-			},
+			}
+			return this.budgetText;
 		},
-		methods: {
-			setBudgetText(): string {
-				if (isUndefined(this.entity.budget_type_id)) {
-					this.budgetText = "Total";
-					return this.budgetText;
-				}
-				const result = find(this.getBudgetType, {
-					id: this.entity.budget_type_id,
+
+		getBudgetTypeStatus() {
+			return this.can_edit_budget_type;
+		},
+
+		getBudgetContentStatus() {
+			return this.can_edit_budget_content;
+		},
+
+		getRules() {
+			return {
+				required: [(v: any) => Boolean(v) || this.$t("fieldRequired")],
+				number: [(v: number) => !isNaN(v) || this.$t("fieldRequired")],
+				cpm_bid: [
+					(v: any) => Boolean(v) || this.$t("fieldRequired"),
+					(v: number) => v > 0 || this.$t("min", { min: 0 }),
+					(v: number) => v <= 25000 || this.$t("max", { max: 25000 }),
+				],
+				target_ctr: [
+					(v: any) => Boolean(v) || true,
+					(v: number) => v >= 0 || this.$t("min", { min: 0 }),
+					(v: number) => v <= 1 || this.$t("max", { max: 1 }),
+				],
+				target_cpcv: [
+					(v: any) => Boolean(v) || true,
+					(v: number) => v >= 0 || this.$t("min", { min: 0 }),
+					(v: number) => v <= 1 || this.$t("max", { max: 1 }),
+				],
+				target_vcr: [
+					(v: any) => Boolean(v) || true,
+					(v: number) => v >= 0 || this.$t("min", { min: 0 }),
+					(v: number) => v <= 1 || this.$t("max", { max: 1 }),
+				],
+				daily_budget: [
+					(v: any) => Boolean(v) || this.$t("fieldRequired"),
+					(v: any) =>
+						v >= this.calcSuggested ||
+						this.$t("greaterOrEqual", {
+							value: this.calcSuggested,
+						}),
+				],
+				budget: [
+					(v: any) =>
+						Boolean(this.campaign?.budget) ||
+						this.$t("require-campaign"),
+					(v: any) => Boolean(v) || this.$t("fieldRequired"),
+					(v: any) =>
+						v <= this.campaign?.budget ||
+						this.$t("max", {
+							max: this.campaign?.budget,
+						}),
+				],
+			};
+		},
+
+		calcSuggested() {
+			return Math.round(this.entity.budget / this.entity.line_duration);
+		},
+
+		getSuggested() {
+			if (
+				!this.showDailyBudget ||
+				!this.entity.budget ||
+				!this.entity.line_duration
+			)
+				return "";
+			return `Suggested ${this.calcSuggested}`;
+		},
+
+		/**
+		 * Check
+		 */
+
+		initData() {
+			this.entity = this.line_item;
+			//this.getCalculateDuration();
+		},
+
+		isSelectedAutomaticAllocation() {
+			return [0, 1].includes(this.campaign?.automatic_allocation);
+		},
+
+		isAutomaticAllocation() {
+			return isUndefined(this.campaign.automatic_allocation)
+				? false
+				: this.campaign.automatic_allocation;
+		},
+
+		isBudgetTypeImpressions() {
+			return this.checkSelectedIDByName(
+				this.getBudgetType,
+				IMPRESSIONS,
+				this.entity.budget_type_id
+			);
+		},
+
+		isBudgetTypeSpend() {
+			return this.checkSelectedIDByName(
+				this.getBudgetType,
+				SPEND,
+				this.entity.budget_type_id
+			);
+		},
+
+		isOptimizationStrategyById() {
+			return this.checkSelectedIDByName(
+				this.getOptimizationStrategies,
+				BY_CAMPAIGN,
+				this.entity.optimization_strategy_id
+			);
+		},
+
+		isCampaignPacingById() {
+			return this.checkSelectedIDByName(
+				this.getLinesPacing,
+				DAILY,
+				this.entity.line_pacing_id
+			);
+		},
+
+		/**
+		 * DATE RULES
+		 */
+		startDateRules() {
+			return [
+				//(v: any) => this.calculateDuration(this.moment(this.entity.start_date), this.moment(this.entity.end_date)) > 0 || this.$t("must-after-end"),
+				(v: string) =>
+					(!isUndefined(v) && !isNull(v) && !isEmpty(v)) ||
+					this.$t("fieldRequired"),
+			];
+		},
+
+		endDateRules() {
+			return [
+				//(v: any) => this.calculateDuration(this.moment(this.entity.start_date), this.moment(this.entity.end_date)) < 0 || this.$t("must-after-start"),
+				(v: string) =>
+					(!isUndefined(v) && !isNull(v) && !isEmpty(v)) ||
+					this.$t("fieldRequired"),
+			];
+		},
+
+		/**
+		 * GET
+		 */
+		getCampaings(): CampaingList[] {
+			return this.campaigns;
+		},
+
+		getBiddingShadings(): [] {
+			return this.biddingShadings;
+		},
+
+		getAdvertisers(): AdvertiserList[] {
+			return this.advertisers;
+		},
+
+		getLineTypes(): Array<any> {
+			return this.lineItemTypes;
+		},
+
+		getCreativeWeightingMethods(): Array<any> {
+			return this.creativeWeightingMethods;
+		},
+
+		getBudgetType() {
+			return this.budget_types;
+		},
+
+		getOptimizationStrategies() {
+			return this.optimization_strategies;
+		},
+
+		getStrategies() {
+			if (this.entity.line_item_type_id == null) {
+				return this.strategies;
+			}
+			let result = this.checkSelectedIDByName(
+				this.getLineTypes,
+				LINE_TYPE_BY_VIDEO,
+				this.entity.line_item_type_id
+			);
+			if (!result) {
+				return this.strategies;
+			} else {
+				this.entity.strategy_id = null;
+				return this.strategies.filter((e) => {
+					return e.value !== OPTIMIZED_VCR;
 				});
-				if (result) {
-					this.budgetText = `Total ${result.value}*`;
-				} else {
-					this.budgetText = "Total*";
+			}
+		},
+
+		getUnitTimes() {
+			return this.unit_times;
+		},
+
+		getBidStrategies() {
+			return this.bidStrategies;
+		},
+
+		getLinesPacing() {
+			return this.linesPacing;
+		},
+
+		getCanShowOptimizationStrategy() {
+			//Bid strategy = Automated
+			const result = find(this.getBidStrategies, {
+				id: this.entity.bid_strategy_id,
+			});
+			if (result) {
+				if (
+					result.value.toUpperCase() ==
+					BID_STRATEGY_AUTOMATED.toUpperCase()
+				) {
+					return true;
 				}
+			}
+			return false;
+		},
+
+		showBidShading() {
+			return (
+				this.getCanShowOptimizationStrategy &
+				(this.isStrategyByType(OPTIMIZED_VCR) ||
+					this.isStrategyByType(OPTIMIZED_CPM))
+			);
+		},
+
+		showCampaignPacing() {
+			return (
+				this.isAutomaticAllocation && this.isOptimizationStrategyById
+			);
+		},
+
+		showFieldCPMBig() {
+			return (
+				this.isBudgetTypeSpend && this.getCanShowOptimizationStrategy
+			);
+		},
+	},
+	methods: {
+		hasData(attr: any) {
+			return !isUndefined(attr) && !isNull(attr) && isEmpty(attr);
+		},
+
+		setBudgetText(): string {
+			if (isUndefined(this.entity.budget_type_id)) {
+				this.budgetText = "Total";
 				return this.budgetText;
-			},
+			}
+			const result = find(this.getBudgetType, {
+				id: this.entity.budget_type_id,
+			});
+			if (result) {
+				this.budgetText = `Total ${result.value}*`;
+			} else {
+				this.budgetText = "Total*";
+			}
+			return this.budgetText;
+		},
 
-			getDateTodayString() {
-				return new Date().toISOString().substr(0, 10);
-			},
+		getDateTodayString() {
+			return new Date().toISOString().substr(0, 10);
+		},
 
-			getError(index: string | number) {
-				if (!this.hasError(index)) return "";
-				return first(this.errors[index]);
-			},
+		getError(index: string | number) {
+			if (!this.hasError(index)) return "";
+			return first(this.errors[index]);
+		},
 
-			hasError(index: string | number) {
-				return this.errors.hasOwnProperty(index);
-			},
+		hasError(index: string | number) {
+			return this.errors.hasOwnProperty(index);
+		},
 
-			/**
-			 * Permite cambiar uno de estos modelos de vista para los campos relacionados con Optimization Strategy: show_ecpc, show_ctr, show_ecpcv, show_cpcv
-			 * @param {boolean} show_ecpc Habilita campo eCPC
-			 * @param {boolean} show_ctr Habilita campo CTR
-			 * @param {boolean} show_ecpcv Habilita campo eCPCV
-			 * @param {boolean} show_cpcv Habilita campo CPCV
-			 * @param {boolean} show_ecpm Habilita campo eCPM
-			 * @param {boolean} show_vcr Habilita campo VCR
-			 */
-			setTargets(
-				show_ecpc: boolean = false,
-				show_ctr: boolean = false,
-				show_ecpcv: boolean = false,
-				show_cpcv: boolean = false,
-				show_ecpm: boolean = false,
-				show_vcr: boolean = false
-			) {
-				this.show_target_ecpc = show_ecpc;
-				this.show_target_ctr = show_ctr;
-				this.show_target_ecpcv = show_ecpcv;
-				this.show_target_cpcv = show_cpcv;
-				this.show_target_ecpm = show_ecpm;
-				this.show_target_vcr = show_vcr;
-			},
+		/**
+		 * Permite cambiar uno de estos modelos de vista para los campos relacionados con Optimization Strategy: show_ecpc, show_ctr, show_ecpcv, show_cpcv
+		 * @param {boolean} show_ecpc Habilita campo eCPC
+		 * @param {boolean} show_ctr Habilita campo CTR
+		 * @param {boolean} show_ecpcv Habilita campo eCPCV
+		 * @param {boolean} show_cpcv Habilita campo CPCV
+		 * @param {boolean} show_ecpm Habilita campo eCPM
+		 * @param {boolean} show_vcr Habilita campo VCR
+		 */
+		setTargets(
+			show_ecpc: boolean = false,
+			show_ctr: boolean = false,
+			show_ecpcv: boolean = false,
+			show_cpcv: boolean = false,
+			show_ecpm: boolean = false,
+			show_vcr: boolean = false
+		) {
+			this.show_target_ecpc = show_ecpc;
+			this.show_target_ctr = show_ctr;
+			this.show_target_ecpcv = show_ecpcv;
+			this.show_target_cpcv = show_cpcv;
+			this.show_target_ecpm = show_ecpm;
+			this.show_target_vcr = show_vcr;
+		},
 
-			/**
-			 * Strategy by type
-			 */
-			isStrategyByType(type: String) {
-				return this.checkSelectedIDByName(
-					this.getStrategies,
-					type,
-					this.entity.strategy_id
-				);
-			},
+		/**
+		 * Strategy by type
+		 */
+		isStrategyByType(type: String) {
+			return this.checkSelectedIDByName(
+				this.getStrategies,
+				type,
+				this.entity.strategy_id
+			);
+		},
 
-			/**
-			 * Optimization Strategy by type
-			 */
-			isOptimizationStrategyByType(type: String) {
-				return this.checkSelectedIDByName(
-					this.getOptimizationStrategies,
-					type,
-					this.entity.optimization_strategy_id
-				);
-			},
+		/**
+		 * Optimization Strategy by type
+		 */
+		isOptimizationStrategyByType(type: String) {
+			return this.checkSelectedIDByName(
+				this.getOptimizationStrategies,
+				type,
+				this.entity.optimization_strategy_id
+			);
+		},
 
-			isValidNumber(num: Number) {
-				return !isNaN(num) && isNumber(num);
-			},
+		isValidNumber(num: Number) {
+			return !isNaN(num) && isNumber(num);
+		},
 
-			checkSelectedIDByName(data: any, value: String, id: Number) {
-				const result = find(data, { value: value });
-				return result && result.id === id;
-			},
+		checkSelectedIDByName(data: any, value: String, id: Number) {
+			const result = find(data, { value: value });
+			return result && result.id === id;
+		},
 
-			async validate() {
-				let form = this.$refs.form;
-				const valid = await form.validate();
-				return await valid;
-			},
+		async validate() {
+			let form = this.$refs.form;
+			const valid = await form.validate();
+			return await valid;
+		},
 
-			handleCancel() {
-				//this.$router.push({ name: "lineItemList" });
-				try {
-					this.$emit("handle-cancel");
-				} catch (error) {
-					console.error("handleCancel", { error: error });
-				}
-			},
+		handleCancel() {
+			//this.$router.push({ name: "lineItemList" });
+			try {
+				this.$emit("handle-cancel");
+			} catch (error) {
+				console.error("handleCancel", { error: error });
+			}
+		},
 
-			async handleSubmit() {
-				try {
-					if (!(await this.validate())) return;
-					let entity = this.prepareDataCreate();
-					const emit = this.isEdit
-						? "update-overview"
-						: "create-overview";
-					this.$emit(emit, {
-						lineItem: entity,
-					});
-				} catch (error) {
-					console.error("handleSubmit", { error: error });
-				}
-			},
-
-			async handleSubmitAndContinue() {
-				try {
-					if (!(await this.validate())) return;
-					const emit = this.isEdit
-						? "update-overview-continue"
-						: "create-overview-continue";
-					this.$emit(emit, {
-						lineItem: this.prepareDataCreate(),
-					});
-				} catch (error) {
-					console.error("handleSubmitAndContinue", { error: error });
-				}
-			},
-
-			async dispatchGetCampaignById(id: number) {
-				return this.$store.dispatch("campaign/getById", id, {
-					root: true,
+		async handleSubmit() {
+			try {
+				if (!(await this.validate())) return;
+				let entity = this.prepareDataCreate();
+				const emit = this.isEdit
+					? "update-overview"
+					: "create-overview";
+				this.$emit(emit, {
+					lineItem: entity,
 				});
-			},
+			} catch (error) {
+				console.error("handleSubmit", { error: error });
+			}
+		},
 
-			prepareDataCreate() {
-				return {
-					id: this.isEdit ? Number(this.entity.id) : undefined,
-					advertiser_id:
-						Number(this.entity?.advertiser_id) !== NaN
-							? Number(this.entity.advertiser_id)
-							: null,
-					campaign_id:
-						Number(this.entity?.campaign_id) !== NaN
-							? Number(this.entity.campaign_id)
-							: null,
-					name: String(this.entity.name),
-					budget:
-						Number(this.entity?.budget) !== NaN
-							? Number(this.entity.budget)
-							: null,
-					daily_budget:
-						Number(this.entity?.daily_budget) !== NaN
-							? Number(this.entity.daily_budget)
-							: null,
-					start_date: this.moment(this.entity.start_date).format(
-						DEFAULT_DATE_TIME_FORMAT
-					),
-					end_date: this.moment(this.entity.end_date).format(
-						DEFAULT_DATE_TIME_FORMAT
-					),
-					active: this.entity?.active,
-					alternative_id: String(this.entity.alternative_id),
-					bid_strategy_id:
-						Number(this.entity?.bid_strategy_id) !== NaN
-							? Number(this.entity.bid_strategy_id)
-							: null,
-					strategy_id:
-						Number(this.entity?.strategy_id) !== NaN
-							? Number(this.entity.strategy_id)
-							: null,
-					line_pacing_id:
-						Number(this.entity?.line_pacing_id) !== NaN
-							? Number(this.entity.line_pacing_id)
-							: null,
-					line_item_type_id:
-						Number(this.entity?.line_item_type_id) !== NaN
-							? Number(this.entity.line_item_type_id)
-							: null,
-					bid_shading_id:
-						Number(this.entity?.bid_shading_id) !== NaN
-							? Number(this.entity.bid_shading_id)
-							: null,
-					creative_method_id:
-						Number(this.entity?.creative_method_id) !== NaN
-							? Number(this.entity.creative_method_id)
-							: null,
-					fix_cpm:
-						Number(this.entity?.fix_cpm) !== NaN
-							? Number(this.entity.fix_cpm)
-							: null,
-					cpm_bid:
-						Number(this.entity?.cpm_bid) !== NaN
-							? Number(this.entity.cpm_bid)
-							: null,
-					//target_ecpm: Number(this.entity?.target_ecpm) !== NaN ? Number(this.entity?.target_ecpm) : null,
-					target_ecpc:
-						Number(this.entity?.target_ecpc) !== NaN
-							? Number(this.entity?.target_ecpc)
-							: null,
-					//target_ecpcv: Number(this.entity?.target_ecpcv) ? Number(this.entity?.target_ecpcv) : null,
-					target_ctr:
-						Number(this.entity?.target_ctr) !== NaN
-							? Number(this.entity?.target_ctr)
-							: null,
-					target_vcr:
-						Number(this.entity?.target_vcr) !== NaN
-							? Number(this.entity?.target_vcr)
-							: null,
-					frequency_caps: this.entity.frequency_caps,
-				} as LineItemDataCreate;
-			},
-
-			getCalculateDuration() {
-				if (!this.isValidDates()) return;
-				const startDate = this.moment(this.entity.start_date);
-				const endDate = this.moment(this.entity.end_date);
-				let days = this.calculateDuration(startDate, endDate);
-				if (days < 0) {
-					this.entity.end_date = "";
-					this.entity.line_duration = undefined;
-					return;
-				}
-
-				this.entity.line_duration = days;
-			},
-
-			calculateDuration(start: any, end: any) {
-				if (!(start.isValid() && end.isValid())) {
-					return -1;
-				}
-				const diff = end.diff(start, "days");
-				const duration = this.moment.duration(end.diff(start));
-				return Math.ceil(duration.asDays());
-			},
-
-			isValidDates() {
-				const startDate = this.moment(this.entity.start_date);
-				const endDate = this.moment(this.entity.end_date);
-				return startDate.isValid() && endDate.isValid();
-			},
-
-			addRowFrecuency() {
-				if (isUndefined(this.entity.frequency_caps)) return;
-				this.$emit("init-frequency-caps");
-				this.entity.frequency_caps.push({
-					impressions: undefined,
-					every_time: undefined,
-					unit_time_id: undefined,
+		async handleSubmitAndContinue() {
+			try {
+				if (!(await this.validate())) return;
+				const emit = this.isEdit
+					? "update-overview-continue"
+					: "create-overview-continue";
+				this.$emit(emit, {
+					lineItem: this.prepareDataCreate(),
 				});
-			},
+			} catch (error) {
+				console.error("handleSubmitAndContinue", { error: error });
+			}
+		},
 
-			deleteRowFrecuency(index: number) {
-				if (this.entity.frequency_caps.length === 0) return;
-				this.entity.frequency_caps.splice(index, 1);
-			},
+		async dispatchGetCampaignById(id: number) {
+			return this.$store.dispatch("campaign/getById", id, {
+				root: true,
+			});
+		},
 
-			async onChangeCampaing(id_campaign: any) {
+		prepareDataCreate() {
+			console.log(this.entity.bid_shading_id);
+			return {
+				id: this.isEdit ? this.entity.id : undefined,
+				advertiser_id:
+					Number(this.entity?.advertiser_id) !== NaN
+						? Number(this.entity.advertiser_id)
+						: null,
+				campaign_id:
+					Number(this.entity?.campaign_id) !== NaN
+						? Number(this.entity.campaign_id)
+						: null,
+				name: String(this.entity.name),
+				budget:
+					Number(this.entity?.budget) !== NaN
+						? Number(this.entity.budget)
+						: null,
+				daily_budget:
+					Number(this.entity?.daily_budget) !== NaN
+						? Number(this.entity.daily_budget)
+						: null,
+				start_date: this.moment(this.entity.start_date).format(
+					DEFAULT_DATE_TIME_FORMAT
+				),
+				end_date: this.moment(this.entity.end_date).format(
+					DEFAULT_DATE_TIME_FORMAT
+				),
+				active: this.entity?.active,
+				alternative_id: this.entity.alternative_id,
+				bid_strategy_id:
+					Number(this.entity?.bid_strategy_id) !== NaN
+						? Number(this.entity.bid_strategy_id)
+						: null,
+				strategy_id:
+					Number(this.entity?.strategy_id) !== NaN
+						? Number(this.entity.strategy_id)
+						: null,
+				line_pacing_id:
+					Number(this.entity?.line_pacing_id) !== NaN
+						? Number(this.entity.line_pacing_id)
+						: null,
+				line_item_type_id:
+					Number(this.entity?.line_item_type_id) !== NaN
+						? Number(this.entity.line_item_type_id)
+						: null,
+
+				bid_shading_id: isNull(this.entity.bid_shading_id)
+					? null
+					: this.entity.bid_shading_id,
+
+				creative_method_id: this.entity.creative_method_id,
+
+				fix_cpm:
+					Number(this.entity?.fix_cpm) !== NaN
+						? Number(this.entity.fix_cpm)
+						: null,
+				cpm_bid:
+					Number(this.entity?.cpm_bid) !== NaN
+						? Number(this.entity.cpm_bid)
+						: null,
+				//target_ecpm: Number(this.entity?.target_ecpm) !== NaN ? Number(this.entity?.target_ecpm) : null,
+				target_ecpc:
+					Number(this.entity?.target_ecpc) !== NaN
+						? Number(this.entity?.target_ecpc)
+						: null,
+				//target_ecpcv: Number(this.entity?.target_ecpcv) ? Number(this.entity?.target_ecpcv) : null,
+				target_ctr:
+					Number(this.entity?.target_ctr) !== NaN
+						? Number(this.entity?.target_ctr)
+						: null,
+				target_vcr:
+					Number(this.entity?.target_vcr) !== NaN
+						? Number(this.entity?.target_vcr)
+						: null,
+				frequency_caps: this.entity.frequency_caps,
+			} as LineItemDataCreate;
+		},
+
+		getCalculateDuration() {
+			if (!this.isValidDates()) return;
+			const startDate = this.moment(this.entity.start_date);
+			const endDate = this.moment(this.entity.end_date);
+			let days = this.calculateDuration(startDate, endDate);
+			if (days < 0) {
+				this.entity.end_date = "";
+				this.entity.line_duration = undefined;
+				return;
+			}
+
+			this.entity.line_duration = days;
+		},
+
+		calculateDuration(start: any, end: any) {
+			if (!(start.isValid() && end.isValid())) {
+				return -1;
+			}
+			const diff = end.diff(start, "days");
+			const duration = this.moment.duration(end.diff(start));
+			return Math.ceil(duration.asDays());
+		},
+
+		isValidDates() {
+			const startDate = this.moment(this.entity.start_date);
+			const endDate = this.moment(this.entity.end_date);
+			return startDate.isValid() && endDate.isValid();
+		},
+
+		addRowFrecuency() {
+			if (isUndefined(this.entity.frequency_caps)) return;
+			this.$emit("init-frequency-caps");
+			this.entity.frequency_caps.push({
+				impressions: undefined,
+				every_time: undefined,
+				unit_time_id: undefined,
+			});
+		},
+
+		deleteRowFrecuency(index: number) {
+			if (this.entity.frequency_caps.length === 0) return;
+			this.entity.frequency_caps.splice(index, 1);
+		},
+
+		async onChangeCampaing(id_campaign: any) {
+			if (!isNull(id_campaign)) {
 				this.setLoading(true);
 				let result = await this.dispatchGetCampaignById(id_campaign);
 				this.setLoading(false);
@@ -1546,313 +1623,339 @@
 					this.campaign = result;
 					this.mappingCampaignToLineItem(this.campaign);
 				}
-			},
+			} else {
+				this.clearFieldCampaing();
+			}
+		},
 
-			setLoading(_loading: Boolean) {
-				this.$store.state.proccess.loading = _loading;
-			},
+		setLoading(_loading: Boolean) {
+			this.$store.state.proccess.loading = _loading;
+		},
 
-			mappingCampaignToLineItem(campaign: CampaingDataUpdate) {
-				if (!campaign) {
-					return false;
-				}
-				// Proceso de mapeo inicializado
-				//this.entity.name = campaign.name != null ? String(campaign?.name) : null;
-				this.entity.advertiser_id =
-					campaign?.advertiser_id != null
-						? Number(campaign.advertiser_id)
-						: null;
-				this.entity.alternative_id =
-					campaign?.alternative_id != null
-						? String(campaign.alternative_id)
-						: "";
-				this.entity.campaign_id =
-					campaign?.id != null ? Number(campaign.id) : null;
-				this.entity.automatic_allocation = campaign?.automatic_allocation;
-				this.entity.start_date =
-					campaign?.start_date != null ? campaign.start_date : "";
-				this.start_date = this.entity.start_date;
-				this.entity.end_date =
-					campaign?.end_date != null ? campaign.end_date : "";
-				this.end_date = this.entity.end_date;
+		//Get the value of the associated advertiser
+		getAdvertisersAssosite(_idAdvertisers: any) {
+			const result = this.advertisers.find(
+				(advertiser) => advertiser.id === _idAdvertisers
+			);
+			if (result != null) {
+				this.name_advertiser = result.value;
+			} else {
+				this.name_advertiser = "";
+			}
+		},
 
-				// Calcular la duración de Line Item
+		mappingCampaignToLineItem(campaign: CampaingDataUpdate) {
+			if (!campaign) {
+				return false;
+			}
+			// Proceso de mapeo inicializado
+			//this.entity.name = campaign.name != null ? String(campaign?.name) : null;
+			this.entity.advertiser_id =
+				campaign?.advertiser_id != null
+					? Number(campaign.advertiser_id)
+					: null;
+			this.getAdvertisersAssosite(this.entity.advertiser_id);
+			this.entity.campaign_id =
+				campaign?.id != null ? Number(campaign.id) : null;
+			this.entity.automatic_allocation = campaign?.automatic_allocation;
+
+			//this.entity.start_date = campaign?.start_date != null ? campaign.start_date : "";
+			//this.start_date = this.entity.start_date;
+			//this.entity.end_date = campaign?.end_date != null ? campaign.end_date : "";
+			//this.end_date = this.entity.end_date;
+
+			// Calcular la duración de Line Item
+			/*
 				const startDate = this.moment(this.entity.start_date);
 				const endDate = this.moment(this.entity.end_date);
 				let days = this.calculateDuration(startDate, endDate);
 				if (days > 0) {
 					this.entity.line_duration = days;
-				}
+				}*/
 
-				this.entity.budget_type_id =
-					campaign?.budget_type_id != null
-						? Number(campaign.budget_type_id)
-						: null;
-				this.setBudgetText();
-
-				// SOLO SI Automatic Allocation = YES (1)
-				if (
-					campaign?.automatic_allocation == 1 &&
-					campaign?.optimization_strategy_id
-				) {
-					this.entity.optimization_strategy_id =
-						campaign.optimization_strategy_id;
-				}
-
-				// SOLO SI Automatic Allocation = YES (1) & Optimizarion Strategy = By Campaign
-				if (
-					campaign?.automatic_allocation == 1 &&
-					this.isOptimizationStrategyByType(OPTIMIZATION_BY_CAMPAIGN)
-				) {
-					this.entity.line_pacing_id = campaign?.campaign_pacing_id
-						? campaign.campaign_pacing_id
-						: null;
-				}
-
-				// SOLO SI Automatic Allocation = YES (1) & Optimization Strategy=By Camping & Campaing Pacing = Daily
-				if (
-					campaign?.automatic_allocation == 1 &&
-					this.isOptimizationStrategyByType(OPTIMIZATION_BY_CAMPAIGN) &&
-					this.checkSelectedIDByName(
-						this.getLinesPacing,
-						DAILY,
-						this.entity.line_pacing_id
-					)
-				) {
-					this.entity.daily_budget =
-						campaign?.daily_budget != null
-							? Number(campaign.daily_budget)
-							: null;
-				}
-
-				// SOLO SI Automatic Allocation = YES (1) & Optimizarion Strategy = By Campaign
-				if (
-					campaign?.automatic_allocation == 1 &&
-					this.isOptimizationStrategyByType(OPTIMIZATION_BY_CAMPAIGN)
-				) {
-					this.entity.strategy_id =
-						campaign?.strategy_id != null
-							? Number(campaign.strategy_id)
-							: null;
-				}
-
-				// Budget Type = Spend & Optimization Stategy = By campaing & Automatica Allocation= YES && Strategy = Any
-				if (
-					this.checkSelectedIDByName(
-						this.getBudgetType,
-						SPEND,
-						this.entity.budget_type_id
-					) &&
-					this.isOptimizationStrategyByType(OPTIMIZATION_BY_CAMPAIGN) &&
-					campaign?.automatic_allocation == 1
-				) {
-					this.entity.cpm_bid =
-						campaign.cpm_bid != null ? Number(campaign.cpm_bid) : null;
-				}
-
-				this.entity.budget =
-					campaign?.budget != null ? Number(campaign.budget) : null;
-				// Se calculan los eCPM, eCPC y eCPCV para mostrarlos en el layout
-				// Budget Type = Spend & Optimization Stategy = By campaing & Automatica Allocation= YES && Strategy = Any
-				if (
-					this.checkSelectedIDByName(
-						this.getBudgetType,
-						SPEND,
-						this.entity.budget_type_id
-					) &&
-					this.isOptimizationStrategyByType(OPTIMIZATION_BY_CAMPAIGN) &&
-					campaign?.automatic_allocation == 1
-				) {
-					let total = this.entity?.budget
-						? Number(this.entity.budget)
-						: null;
-					let kpi_objective = campaign?.kpi_objective
-						? Number(campaign.kpi_objective)
-						: null;
-					if (kpi_objective !== null && total !== null) {
-						this.entity.target_ecpm = (
-							total /
-							kpi_objective /
-							1000
-						)?.toFixed(2);
-						this.entity.target_ecpcv = (total / kpi_objective)?.toFixed(
-							2
-						);
-					}
-				}
-				this.onChangeOptimizationStrategy();
-				this.entity.target_ecpc =
-					campaign.target_ecpc != null
-						? Number(campaign.target_ecpc)
-						: null;
-				this.entity.target_ctr =
-					campaign.target_ctr != null
-						? Number(campaign.target_ctr)
-						: null;
-
-				// Optimization Strategy = By Campaing
-				/*
-																				Budget TOTAL=> Se copia de campaña y se puede editar debe ser menor a campaña y en Automatic Allocation=YES
-																				Optimization Strategy=>  Se copia de campaña y se puede editar.
-																				CPM bid, Target eCPC,Target CTR,Target eCPCV, Target VCR =>  Se copia de campaña y se puede editar.
-																			*/
-				if (this.isOptimizationStrategyByType(OPTIMIZATION_BY_CAMPAIGN)) {
-					// Start Date, End Date => Se pueden editar pero deben estar dentro del margen de la campaña.
-					this.min_date =
-						campaign.start_date != null
-							? campaign.start_date.substr(0, 10)
-							: null;
-					this.max_date =
-						campaign.end_date != null
-							? campaign.end_date.substr(0, 10)
-							: null;
-					// Budget TYPE => no se puede editar
-					this.can_edit_budget_type = false;
-				}
-
-				// SOLO SI Automatic Allocation = YES (1) & Optimizarion Strategy = By Campaign
-				if (
-					campaign?.automatic_allocation == 1 &&
-					this.isOptimizationStrategyByType(OPTIMIZATION_BY_CAMPAIGN)
-				) {
-					this.can_edit_budget_content = false;
-				}
-
-				// SOLO SI Automatic Allocation = YES (1) & Optimizarion Strategy = By Line
-				if (
-					campaign?.automatic_allocation == 1 &&
-					this.isOptimizationStrategyByType(OPTIMIZATION_BY_LINE)
-				) {
-					this.can_edit_budget_content = true;
-					this.max_budget_content =
-						campaign?.budget != null ? Number(campaign.budget) : null;
-				}
-
-				// SOLO SI Automatic Allocation = YES (1) & Optimizarion Strategy = By Campaign
-				if (
-					campaign?.automatic_allocation == 1 &&
-					this.isOptimizationStrategyByType(OPTIMIZATION_BY_CAMPAIGN)
-				) {
-					this.entity.line_pacing_id =
-						campaign?.campaign_pacing_id != null
-							? Number(campaign.campaign_pacing_id)
-							: null;
-				}
-
-				return true;
-			},
-
-			async onChangeOptimizationStrategy() {
-				//this.setTargets();
-				this.entity.target_ecpm = undefined;
-				this.entity.target_ecpc = undefined;
-				this.entity.target_ctr = undefined;
-				this.entity.target_ecpcv = undefined;
-				this.entity.target_cpcv = undefined;
-				let total = this.entity?.budget ? Number(this.entity.budget) : null;
-				let kpi_objective = this.campaign?.kpi_objective
-					? Number(this.campaign.kpi_objective)
+			this.entity.budget_type_id =
+				campaign?.budget_type_id != null
+					? Number(campaign.budget_type_id)
 					: null;
+			this.setBudgetText();
 
-				/**
-				 * is Bid Strategy = Automated
-				 * is Strategy = Optimized CPM
-				 */
-				if (this.isStrategyByType(OPTIMIZED_CPM)) {
-					this.setTargets(false, false, false, false, true, false);
-					if (kpi_objective !== null && total !== null) {
-						this.entity.target_ecpm = (
-							total /
-							kpi_objective /
-							1000
-						)?.toFixed(2);
-					} else {
-						this.entity.target_ecpm = undefined;
-					}
-					return;
-				}
+			// SOLO SI Automatic Allocation = YES (1)
+			if (
+				campaign?.automatic_allocation == 1 &&
+				campaign?.optimization_strategy_id
+			) {
+				this.entity.optimization_strategy_id =
+					campaign.optimization_strategy_id;
+			}
 
-				/**
-				 * is Bid Strategy = Automated
-				 * is Strategy = Optimized CPC
-				 */
-				if (this.isStrategyByType(OPTIMIZED_CPC)) {
-					this.setTargets(true, true, false, false, false, false);
-					if (kpi_objective !== null && total !== null) {
-						this.entity.target_ecpc = (total / kpi_objective)?.toFixed(
-							2
-						);
-					} else {
-						this.entity.target_ecpc = undefined;
-					}
-					return;
-				}
+			// SOLO SI Automatic Allocation = YES (1) & Optimizarion Strategy = By Campaign
+			if (
+				campaign?.automatic_allocation == 1 &&
+				this.isOptimizationStrategyByType(OPTIMIZATION_BY_CAMPAIGN)
+			) {
+				this.entity.line_pacing_id = campaign?.campaign_pacing_id
+					? campaign.campaign_pacing_id
+					: null;
+			}
 
-				/**
-				 * is Bid Strategy = Automated
-				 * is OPTIMIZED_VCR
-				 */
-				if (this.isStrategyByType(OPTIMIZED_VCR)) {
-					this.setTargets(false, false, true, false, false, true);
-					if (kpi_objective !== null && total !== null) {
-						this.entity.target_ecpcv = (total / kpi_objective)?.toFixed(
-							2
-						);
-					} else {
-						this.entity.target_ecpcv = undefined;
-					}
-					return;
-				}
-			},
-		},
-		watch: {
-			"entity.bid_strategy_id"(val, old) {
-				const result = find(this.getBidStrategies, {
-					id: this.entity.bid_strategy_id,
-				});
-				if (result) {
-					if (
-						result.value.toUpperCase() ==
-						BID_STRATEGY_FIXED.toUpperCase()
-					) {
-						this.can_edit_fix_cpm = true;
-						this.can_edit_bidding_shading = false;
-					} else {
-						this.can_edit_fix_cpm = false;
-						this.can_edit_bidding_shading = true;
-						this.entity.fix_cpm = null;
-					}
-				}
-			},
-
-			"entity.line_pacing_id"(val, old) {
-				let founded = this.checkSelectedIDByName(
+			// SOLO SI Automatic Allocation = YES (1) & Optimization Strategy=By Camping & Campaing Pacing = Daily
+			if (
+				campaign?.automatic_allocation == 1 &&
+				this.isOptimizationStrategyByType(OPTIMIZATION_BY_CAMPAIGN) &&
+				this.checkSelectedIDByName(
 					this.getLinesPacing,
 					DAILY,
 					this.entity.line_pacing_id
-				);
-				if (founded) {
-					this.can_edit_daily_budget = true;
-					this.entity.daily_budget = null;
-					if (this.entity.budget && this.entity.line_duration) {
-						this.entity.daily_budget_suggested = (
-							this.entity.budget / this.entity.line_duration
-						)?.toFixed(2);
-					}
-				} else {
-					this.can_edit_daily_budget = false;
-					this.entity.daily_budget = null;
-					this.entity.daily_budget_suggested = null;
+				)
+			) {
+				this.entity.daily_budget =
+					campaign?.daily_budget != null
+						? Number(campaign.daily_budget)
+						: null;
+			}
+
+			// SOLO SI Automatic Allocation = YES (1) & Optimizarion Strategy = By Campaign
+			if (
+				campaign?.automatic_allocation == 1 &&
+				this.isOptimizationStrategyByType(OPTIMIZATION_BY_CAMPAIGN)
+			) {
+				this.entity.strategy_id =
+					campaign?.strategy_id != null
+						? Number(campaign.strategy_id)
+						: null;
+			}
+
+			// Budget Type = Spend & Optimization Stategy = By campaing & Automatica Allocation= YES && Strategy = Any
+			if (
+				this.checkSelectedIDByName(
+					this.getBudgetType,
+					SPEND,
+					this.entity.budget_type_id
+				) &&
+				this.isOptimizationStrategyByType(OPTIMIZATION_BY_CAMPAIGN) &&
+				campaign?.automatic_allocation == 1
+			) {
+				this.entity.cpm_bid =
+					campaign.cpm_bid != null ? Number(campaign.cpm_bid) : null;
+			}
+
+			this.entity.budget =
+				campaign?.budget != null ? Number(campaign.budget) : null;
+			// Se calculan los eCPM, eCPC y eCPCV para mostrarlos en el layout
+			// Budget Type = Spend & Optimization Stategy = By campaing & Automatica Allocation= YES && Strategy = Any
+			if (
+				this.checkSelectedIDByName(
+					this.getBudgetType,
+					SPEND,
+					this.entity.budget_type_id
+				) &&
+				this.isOptimizationStrategyByType(OPTIMIZATION_BY_CAMPAIGN) &&
+				campaign?.automatic_allocation == 1
+			) {
+				let total = this.entity?.budget
+					? Number(this.entity.budget)
+					: null;
+				let kpi_objective = campaign?.kpi_objective
+					? Number(campaign.kpi_objective)
+					: null;
+				if (kpi_objective !== null && total !== null) {
+					this.entity.target_ecpm = (
+						total /
+						kpi_objective /
+						1000
+					)?.toFixed(2);
+					this.entity.target_ecpcv = (total / kpi_objective)?.toFixed(
+						2
+					);
 				}
-			},
+			}
+			this.onChangeOptimizationStrategy();
+			this.entity.target_ecpc =
+				campaign.target_ecpc != null
+					? Number(campaign.target_ecpc)
+					: null;
+			this.entity.target_ctr =
+				campaign.target_ctr != null
+					? Number(campaign.target_ctr)
+					: null;
 
-			"entity.start_date"(val, old) {
-				this.getCalculateDuration();
-			},
+			// Optimization Strategy = By Campaing
+			/*
+																												Budget TOTAL=> Se copia de campaña y se puede editar debe ser menor a campaña y en Automatic Allocation=YES
+																												Optimization Strategy=>  Se copia de campaña y se puede editar.
+																												CPM bid, Target eCPC,Target CTR,Target eCPCV, Target VCR =>  Se copia de campaña y se puede editar.
+																											*/
+			if (this.isOptimizationStrategyByType(OPTIMIZATION_BY_CAMPAIGN)) {
+				// Start Date, End Date => Se pueden editar pero deben estar dentro del margen de la campaña.
+				this.min_date =
+					campaign.start_date != null
+						? campaign.start_date.substr(0, 10)
+						: null;
+				this.max_date =
+					campaign.end_date != null
+						? campaign.end_date.substr(0, 10)
+						: null;
+				// Budget TYPE => no se puede editar
+				this.can_edit_budget_type = false;
+			}
 
-			"entity.end_date"(val, old) {
-				this.getCalculateDuration();
-			},
+			// SOLO SI Automatic Allocation = YES (1) & Optimizarion Strategy = By Campaign
+			if (
+				campaign?.automatic_allocation == 1 &&
+				this.isOptimizationStrategyByType(OPTIMIZATION_BY_CAMPAIGN)
+			) {
+				this.can_edit_budget_content = false;
+			}
+
+			// SOLO SI Automatic Allocation = YES (1) & Optimizarion Strategy = By Line
+			if (
+				campaign?.automatic_allocation == 1 &&
+				this.isOptimizationStrategyByType(OPTIMIZATION_BY_LINE)
+			) {
+				this.can_edit_budget_content = true;
+				this.max_budget_content =
+					campaign?.budget != null ? Number(campaign.budget) : null;
+			}
+
+			// SOLO SI Automatic Allocation = YES (1) & Optimizarion Strategy = By Campaign
+			if (
+				campaign?.automatic_allocation == 1 &&
+				this.isOptimizationStrategyByType(OPTIMIZATION_BY_CAMPAIGN)
+			) {
+				this.entity.line_pacing_id =
+					campaign?.campaign_pacing_id != null
+						? Number(campaign.campaign_pacing_id)
+						: null;
+			}
+
+			return true;
 		},
-	});
+
+		async onChangeOptimizationStrategy() {
+			//this.setTargets();
+			this.entity.target_ecpm = undefined;
+			this.entity.target_ecpc = undefined;
+			this.entity.target_ctr = undefined;
+			this.entity.target_ecpcv = undefined;
+			this.entity.target_cpcv = undefined;
+			let total = this.entity?.budget ? Number(this.entity.budget) : null;
+			let kpi_objective = this.campaign?.kpi_objective
+				? Number(this.campaign.kpi_objective)
+				: null;
+
+			/**
+			 * is Bid Strategy = Automated
+			 * is Strategy = Optimized CPM
+			 */
+			if (this.isStrategyByType(OPTIMIZED_CPM)) {
+				this.setTargets(false, false, false, false, true, false);
+				if (kpi_objective !== null && total !== null) {
+					this.entity.target_ecpm = (
+						total /
+						kpi_objective /
+						1000
+					)?.toFixed(2);
+				} else {
+					this.entity.target_ecpm = undefined;
+				}
+				return;
+			}
+
+			/**
+			 * is Bid Strategy = Automated
+			 * is Strategy = Optimized CPC
+			 */
+			if (this.isStrategyByType(OPTIMIZED_CPC)) {
+				this.setTargets(true, true, false, false, false, false);
+				if (kpi_objective !== null && total !== null) {
+					this.entity.target_ecpc = (total / kpi_objective)?.toFixed(
+						2
+					);
+				} else {
+					this.entity.target_ecpc = undefined;
+				}
+				return;
+			}
+
+			/**
+			 * is Bid Strategy = Automated
+			 * is OPTIMIZED_VCR
+			 */
+			if (this.isStrategyByType(OPTIMIZED_VCR)) {
+				this.setTargets(false, false, true, false, false, true);
+				if (kpi_objective !== null && total !== null) {
+					this.entity.target_ecpcv = (total / kpi_objective)?.toFixed(
+						2
+					);
+				} else {
+					this.entity.target_ecpcv = undefined;
+				}
+				return;
+			}
+		},
+
+		//Clear Fields
+		clearFieldCampaing() {
+			//this.entity = initLineItem();
+
+			this.name_advertiser = "";
+			this.entity.start_date = null;
+			this.entity.end_date = null;
+			this.entity.budget = null;
+			this.entity.line_duration = null;
+			this.entity.budget_type_id = null;
+			this.entity.automatic_allocation = null;
+			this.campaign.automatic_allocation = undefined;
+		},
+	},
+	watch: {
+		"entity.bid_strategy_id"(val, old) {
+			const result = find(this.getBidStrategies, {
+				id: this.entity.bid_strategy_id,
+			});
+			if (result) {
+				if (
+					result.value.toUpperCase() ==
+					BID_STRATEGY_FIXED.toUpperCase()
+				) {
+					this.can_edit_fix_cpm = true;
+					this.can_edit_bidding_shading = false;
+				} else {
+					this.can_edit_fix_cpm = false;
+					this.can_edit_bidding_shading = true;
+					this.entity.fix_cpm = null;
+				}
+			}
+		},
+
+		"entity.line_pacing_id"(val, old) {
+			let founded = this.checkSelectedIDByName(
+				this.getLinesPacing,
+				DAILY,
+				this.entity.line_pacing_id
+			);
+			if (founded) {
+				this.can_edit_daily_budget = true;
+				this.entity.daily_budget = null;
+				if (this.entity.budget && this.entity.line_duration) {
+					this.entity.daily_budget_suggested = (
+						this.entity.budget / this.entity.line_duration
+					)?.toFixed(2);
+				}
+			} else {
+				this.can_edit_daily_budget = false;
+				this.entity.daily_budget = null;
+				this.entity.daily_budget_suggested = null;
+			}
+		},
+
+		"entity.start_date"(val, old) {
+			this.getCalculateDuration();
+		},
+
+		"entity.end_date"(val, old) {
+			this.getCalculateDuration();
+		},
+	},
+});
 </script>

@@ -6,8 +6,8 @@ import { account, forgot, initialize, login, logout, permissions, profile, reset
 //import { create, update, show, all, paginated, list, modules, types } from './modifiers/ModifierApi'
 //import { create, all, paginated, list, show, changeStatus, update } from './campaing/CampaingApi'
 //import { all, changeStatus, create, list, paginated, show, update } from './line_items/LineItemsApi'
-//import { create } from '@/api/creatives/banner/ImageApi'
-//import { create } from '@/api/creatives/banner/JsTagApi'
+//import { create, update } from '@/api/creatives/banner/ImageApi'
+import { create, update } from '@/api/creatives/banner/JsTagApi'
 //import { create } from '@/api/creatives/banner/IframeTagApi'
 //import { create } from '@/api/creatives/banner/MraidTagApi'
 //import { create } from '@/api/creatives/banner/Html5Api'
@@ -55,7 +55,9 @@ import { UserInit } from '@/interfaces/user'
 //import { list } from '@/api/targeting/PredicateApi'
 //import { list } from '@/api/targeting/LocationTypeApi'
 //import { list } from '@/api/targeting/ModuleApi'
-import { enviroments } from '@/api/enviroment/EnviromentApi'
+//import { enviroments } from '@/api/enviroment/EnviromentApi'
+//import { browsers, browserVersions, deviceModels, deviceScreenSize, operatingSystemVersion, platforms } from '@/api/platform/PlatformApi'
+//import { contents } from '@/api/content/ContentApi'
 
 /* -------- BEGIN AUTH -------- */
 const test_login = {
@@ -1720,6 +1722,49 @@ const test_create_creative_image = {
   }
 }
 
+const test_update_creative_image = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data = {
+        id: 36,
+        name: 'Creative Image Update',
+        secure: true,
+        creative_advertiser: {
+          category_id: 6,
+          domain: 'https://image.com',
+          app_bundle: 'com.adsmovil.Image'
+        },
+        creative_ad_content: {
+          primary_asset_id: 36,
+          click_url: 'http://adsmovil.com/click_url/image'
+        },
+        creative_exchange_options: {
+          appnexus_submit: true,
+          landing_page_url: 'http://adsmovil.com/image',
+          vendors: [649, 650, 651]
+        },
+        creative_addon_settings: {
+          //addons: [1],
+          pixels: ['https://adsmovil.com/pixels/pixel1.js', 'https://adsmovil.com/pixels/pixel2.js'],
+          scripts: ['https://adsmovil.com/scripts/script1.js', 'https://adsmovil.com/scripts/script2.js']
+        }
+      }
+
+      const data_creative = await update(data, value)
+
+      console.log('CREATIVE IMAGE', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
 const test_create_creative_jstag = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
@@ -1775,9 +1820,64 @@ const test_create_creative_jstag = {
       return null
     })
   }
+}*/
+
+const test_update_creative_jstag = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data = {
+        id: 12,
+        name: 'Creative Js Tag',
+        secure: true,
+        start_date: '2021-06-26 00:00:00',
+        end_date: '2021-06-30 00:00:00',
+        creative_advertiser: {
+          category_id: 6,
+          domain: 'https://jstag.com',
+          app_bundle: 'com.adsmovil.JsTag'
+        },
+        creative_ad_content: {
+          creative_rule_id: 617,
+          tag: '<ins data-dcm-placement=""/>'
+        },
+        creative_attributes: {
+          width: 320,
+          height: 50,
+          mime_type_id: 630,
+          expandable_type_id: 639,
+          expandable_directions: [1817],
+          responsive: true,
+          in_banner_video_id: 619
+        },
+        creative_exchange_options: {
+          thumbnail_id: 36,
+          appnexus_submit: false,
+          landing_page_url: 'http://adsmovil.com',
+          vendors: [649, 650, 651]
+        },
+        creative_addon_settings: {
+          //addons: [1],
+          pixels: ['https://adsmovil.com/pixels/jstag.js', 'https://adsmovil.com/pixels/jstag.js'],
+          scripts: ['https://adsmovil.com/scripts/jstag.js', 'https://adsmovil.com/scripts/jstag.js']
+        }
+      }
+
+      const data_creative = await update(data, value)
+
+      console.log('CREATIVE JS TAG', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
 }
 
-const test_create_creative_iframetag = {
+/*const test_create_creative_iframetag = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
@@ -2380,7 +2480,7 @@ const test_targeting = {
 /* -------- END TARGETING -------- */
 
 /* -------- BEGIN ENVIROMENT -------- */
-const test_enviroment = {
+/*const test_enviroment = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
@@ -2396,7 +2496,52 @@ const test_enviroment = {
       return null
     })
   }
-}
+}*/
 /* -------- END ENVIROMENT -------- */
 
-export default test_enviroment
+/* -------- BEGIN PLATFORM -------- */
+/*const test_platform = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      // const data_platform = await browsers(value)
+      // const data_platform = await browserVersions(value)
+      // const data_platform = await deviceModels(value)
+      // const data_platform = await deviceScreenSize(value)
+      const data_platform = await operatingSystemVersion(value)
+      // const data_platform = await platforms('operating_system', value)
+
+      console.log('PLATFORM', data_platform)
+
+      return data_platform
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}*/
+/* -------- END PLATFORM -------- */
+
+/* -------- BEGIN CONTENT -------- */
+/*const test_content = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_content = await contents('language', value)
+
+      console.log('CONTENT', data_content)
+
+      return data_content
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}*/
+/* -------- END CONTENT -------- */
+
+export default test_update_creative_jstag

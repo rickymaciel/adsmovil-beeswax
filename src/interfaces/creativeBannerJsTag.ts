@@ -10,7 +10,12 @@ import {
   Attribute,
   ExchangeOption,
   Template,
-  Type
+  Type,
+  AdvertiserDataUpdate,
+  AddContentJsTagDataUpdate,
+  AttributeDataUpdate,
+  ExchangeOptionsJsTagDataUpdate,
+  AddonSettingDataUpdate
 } from '@/interfaces/creative'
 
 export interface JsTag {
@@ -52,4 +57,18 @@ export interface JsTagDataCreate {
   creative_attributes: AttributeDataCreate,
   creative_exchange_options: ExchangeOptionsJsTagDataCreate,
   creative_addon_settings: AddonSettingDataCreate
+}
+
+export interface JsTagDataUpdate {
+  id: number,
+  name?: string,
+  secure?: boolean,
+  start_date?: string,
+  end_date?: string,
+  active?: boolean,
+  creative_advertiser: AdvertiserDataUpdate,
+  creative_ad_content: AddContentJsTagDataUpdate,
+  creative_attributes: AttributeDataUpdate,
+  creative_exchange_options: ExchangeOptionsJsTagDataUpdate,
+  creative_addon_settings: AddonSettingDataUpdate
 }

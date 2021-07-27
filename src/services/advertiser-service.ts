@@ -1,6 +1,6 @@
 import { AdvertiserDataCreate, AdvertiserDataUpdate, AdvertiserFilters, AdvertiserOptions, AdvertiserPaginated } from '@/interfaces/advertiser'
 import { isEmpty, isUndefined } from 'lodash'
-import { AxiosGet, AxiosPatch, AxiosPost, GetData, GetErrors, GetMessage } from './axios-service';
+import { AxiosDownload, AxiosGet, AxiosPatch, AxiosPost, GetData, GetErrors, GetMessage } from './axios-service';
 
 export const ADVERTISER_ROUTE = '/api/advertisers'
 export const ADVERTISER_CATEGORIES_ROUTE = '/api/list/advertiser_categories'
@@ -60,6 +60,34 @@ class AdvertiserService {
         }
     }
 
+    async download(params: { paginated?: AdvertiserPaginated, filters?: AdvertiserFilters, options?: AdvertiserOptions }) {
+        try {
+            let filter = ''
+            let option = ''
+
+            if (!isUndefined(params.filters)) {
+                filter = getFilters(params.filters)
+            }
+
+            if (!isUndefined(params.options)) {
+                option += getOptions(params.options, 'download', params.paginated)
+            }
+
+            const url = getURL(filter, option)
+            
+            await AxiosDownload(ADVERTISER_ROUTE + url, 'advertisers-export.csv')
+            
+            return Promise.resolve({});
+
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    } 
+
     async categories() {
         try {
             const response = await AxiosGet(ADVERTISER_CATEGORIES_ROUTE)
@@ -112,9 +140,26 @@ class AdvertiserService {
         }
     }
 
-    async list() {
+    async list(params: {filters?: AdvertiserFilters, options?: AdvertiserOptions}) {
         try {
-            const response = await AxiosGet(`${ADVERTISER_ROUTE}?mode=list`);
+            
+            const {filters, options} = params;
+
+            let filter = ''
+            let option = ''
+
+            if (!isUndefined(filters)) {
+                filter = getFilters(filters)
+            }
+
+            if (!isUndefined(options)) {
+                option += getOptions(options, 'list')
+            } else {
+                option += '&mode=list'
+            }
+
+            const url = getURL(filter, option)
+            const response = await AxiosGet(`${ADVERTISER_ROUTE}`+url);
             return Promise.resolve(GetData(response));
         } catch (error) {
             return Promise.reject({
@@ -135,7 +180,7 @@ function getFilters(filters: AdvertiserFilters): string {
     const category = !!filters.category ? filters.category : '';
     const domain = !!filters.domain ? filters.domain : '';
     const app_bundle = !!filters.app_bundle ? filters.app_bundle : '';
-    const active = (typeof filters.active === "undefined") ? '' : filters.active
+    const active = (typeof filters.active === "undefined") ? '' : (!!filters.active ? 1 : 0);
 
     filter += 'filters[advertisers.id]=' + id 
             + '&filters[advertisers.name]=' + name 

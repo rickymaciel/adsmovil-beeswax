@@ -10,7 +10,12 @@ import {
   Attribute,
   ExchangeOption,
   Template,
-  Type
+  Type,
+  AdvertiserDataUpdate,
+  AddContentIframeTagDataUpdate,
+  AttributeDataUpdate,
+  ExchangeOptionsIframeTagDataUpdate,
+  AddonSettingDataUpdate
 } from '@/interfaces/creative'
 
 export interface IframeTag {
@@ -52,4 +57,17 @@ export interface IframeTagDataCreate {
   creative_attributes: AttributeDataCreate,
   creative_exchange_options: ExchangeOptionsIframeTagDataCreate,
   creative_addon_settings: AddonSettingDataCreate
+}
+
+export interface IframeTagDataUpdate {
+  id: number,
+  name?: string,
+  secure?: boolean,
+  start_date?: string,
+  end_date?: string,
+  creative_advertiser: AdvertiserDataUpdate,
+  creative_ad_content: AddContentIframeTagDataUpdate,
+  creative_attributes: AttributeDataUpdate,
+  creative_exchange_options: ExchangeOptionsIframeTagDataUpdate,
+  creative_addon_settings: AddonSettingDataUpdate
 }

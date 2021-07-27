@@ -168,12 +168,12 @@
 	import DividerForm from "../../../../components/Content/DividerForm.vue";
 	import CardTextField from "../../../../components/Content/CardTextField.vue";
 	import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
-	import { initAssociationCreative } from "../../../../utils/fields";
 	import { AssociationDataCreate } from "../../../../interfaces/creativeAssociation";
 	import { isEmpty } from "lodash";
 	import { LineItemFilters } from "../../../../interfaces/line_item";
 	import { SortingOption } from "../../../../interfaces/paginated";
 	import { getCreativeTypeByTemplateId } from "../../../../utils/resolveObjectArray";
+	import { initAssociationCreative } from "../../../../utils/initData";
 
 	export default Vue.extend({
 		name: "AssociatedLineForm",

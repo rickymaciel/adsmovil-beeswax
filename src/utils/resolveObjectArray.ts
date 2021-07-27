@@ -1,5 +1,5 @@
 import { Term } from "@/interfaces/targeting";
-import { isArray, isEmpty, isObject, isString, join, orderBy } from "lodash";
+import { groupBy, isArray, isEmpty, orderBy } from "lodash";
 
 interface ComboListOptions {
     id?: Number | String,
@@ -103,7 +103,50 @@ export function prepareTargetingDataCreate(targeting: any) {
                 }
             });
         }
+
+        if (key === 'geo') {
+
+            var t = targeting[key];
+
+            Object.keys(t).forEach(geoKey => {
+                const term = t[geoKey];
+                if (!isEmpty(term.targeting_terms)) {
+                    if (isArray(term.targeting_terms[0].value)) {
+                        term.targeting_terms[0].value.forEach((v: any) => {
+                            targeting_terms.push({
+                                value: v,
+                                targeting_key_id: term.targeting_terms[0].targeting_key_id,
+                                targeting_predicate_id: term.targeting_terms[0].targeting_predicate_id
+                            } as Term);
+                        });
+                    } else {
+                        term.targeting_terms.forEach((targeting_term: Term) => {
+                            targeting_terms.push(targeting_term);
+                        });
+                    }
+                }
+            });
+        }
     });
 
     return targeting_terms
+}
+
+export function mappingTargetingKeys(response: Array<any>): Array<any> {
+
+    const res = response.map(t => {
+        return {
+            id: t.id,
+            name: t.name,
+            unique_predicate: t.unique_predicate,
+            targeting_module: t.targeting_module,
+            targeting_module_id: t.targeting_module.id
+        }
+    });
+
+    const g = groupBy(res, 'targeting_module.extra');
+
+    console.log('mappingTargetingKeys', { res, g });
+
+    return res;
 }

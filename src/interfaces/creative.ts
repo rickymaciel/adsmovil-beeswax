@@ -247,9 +247,20 @@ export interface AdvertiserDataCreate {
   app_bundle: string
 }
 
+export interface AdvertiserDataUpdate {
+  category_id?: number,
+  domain?: string,
+  app_bundle?: string
+}
+
 export interface AddContentImageDataCreate {
   primary_asset_id: number,
   click_url: string
+}
+
+export interface AddContentImageDataUpdate {
+  primary_asset_id?: number,
+  click_url?: string
 }
 
 export interface AddContentJsTagDataCreate {
@@ -257,9 +268,19 @@ export interface AddContentJsTagDataCreate {
   tag: string
 }
 
+export interface AddContentJsTagDataUpdate {
+  creative_rule_id?: number,
+  tag?: string
+}
+
 export interface AddContentIframeTagDataCreate {
   creative_rule_id: number,
   tag: string
+}
+
+export interface AddContentIframeTagDataUpdate {
+  creative_rule_id?: number,
+  tag?: string
 }
 
 export interface AddContentMraidTagDataCreate {
@@ -267,8 +288,17 @@ export interface AddContentMraidTagDataCreate {
   tag: string
 }
 
+export interface AddContentMraidTagDataUpdate {
+  creative_rule_id?: number,
+  tag?: string
+}
+
 export interface AddContentHtml5DataCreate {
   primary_asset_id: number
+}
+
+export interface AddContentHtml5DataUpdate {
+  primary_asset_id?: number
 }
 
 export interface AddContentVastInlineDataCreate {
@@ -292,11 +322,24 @@ export interface ExchangeOptionsImageDataCreate {
   vendors: number[]
 }
 
+export interface ExchangeOptionsImageDataUpdate {
+  landing_page_url?: string,
+  appnexus_submit?: boolean
+  vendors?: number[]
+}
+
 export interface ExchangeOptionsJsTagDataCreate {
   thumbnail_id: number,
   landing_page_url: string,
   appnexus_submit: boolean
   vendors: number[]
+}
+
+export interface ExchangeOptionsJsTagDataUpdate {
+  thumbnail_id?: number,
+  landing_page_url?: string,
+  appnexus_submit?: boolean
+  vendors?: number[]
 }
 
 export interface ExchangeOptionsIframeTagDataCreate {
@@ -306,6 +349,13 @@ export interface ExchangeOptionsIframeTagDataCreate {
   vendors: number[]
 }
 
+export interface ExchangeOptionsIframeTagDataUpdate {
+  thumbnail_id?: number,
+  landing_page_url?: string,
+  appnexus_submit?: boolean
+  vendors?: number[]
+}
+
 export interface ExchangeOptionsMraidTagDataCreate {
   thumbnail_id: number,
   landing_page_url: string,
@@ -313,11 +363,25 @@ export interface ExchangeOptionsMraidTagDataCreate {
   vendors: number[]
 }
 
+export interface ExchangeOptionsMraidTagDataUpdate {
+  thumbnail_id?: number,
+  landing_page_url?: string,
+  appnexus_submit?: boolean
+  vendors?: number[]
+}
+
 export interface ExchangeOptionsHtml5DataCreate {
   thumbnail_id: number,
   landing_page_url: string,
   appnexus_submit: boolean,
   vendors: number[]
+}
+
+export interface ExchangeOptionsHtml5DataUpdate {
+  thumbnail_id?: number,
+  landing_page_url?: string,
+  appnexus_submit?: boolean,
+  vendors?: number[]
 }
 
 export interface ExchangeOptionsVastInlineDataCreate {
@@ -336,6 +400,12 @@ export interface AddonSettingDataCreate {
   addons: number[],
   pixels: string[],
   scripts: string[]
+}
+
+export interface AddonSettingDataUpdate {
+  addons?: number[],
+  pixels?: string[],
+  scripts?: string[]
 }
 
 export interface AddonSettingVastInlineDataCreate {
@@ -364,6 +434,16 @@ export interface AttributeDataCreate {
   height: number,
   responsive: boolean,
   expandable_directions: number[]
+}
+
+export interface AttributeDataUpdate {
+  mime_type_id?: number,
+  expandable_type_id?: number,
+  in_banner_video_id?: number,
+  width?: number,
+  height?: number,
+  responsive?: boolean,
+  expandable_directions?: number[]
 }
 
 export interface AttributeVastInlineDataCreate {

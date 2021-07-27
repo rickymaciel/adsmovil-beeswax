@@ -51,7 +51,7 @@
 						<CardAutocomplete
 							v-model="campaign.trafficker_id"
 							:rules="getRules.required"
-							:items="owners"
+							:items="traffickers"
 							item_text="value"
 							item_value="id"
 							hint="Owner"
@@ -169,7 +169,7 @@
 					</v-col>
 
 					<!-- Campaign Duration* Calculo en dias entre el inicio y fin de campaña ✔ -->
-					<v-col cols="12" sm="12" md="6" lg="4">
+					<v-col cols="12" sm="12" md="6" lg="4" class="pt-3">
 						<CardTextField
 							v-model="campaign_duration"
 							hint="Campaign Duration"
@@ -459,6 +459,7 @@
 							:label="getKpiObjectiveLabel"
 							:placeholder="getKpiObjectiveLabel"
 							:required="true"
+							type="number"
 						></CardTextField>
 					</v-col>
 				</v-row>
@@ -514,7 +515,7 @@
 
 					<!-- Bid CPM* -->
 					<v-col 
-						v-if="showFieldsBidCpm"
+						v-if="show_field_cpm"
 						cols="12" sm="12" md="6" lg="2">
 						<CardTextField
 							v-model.number="campaign.cpm_bid"
@@ -525,6 +526,7 @@
 							label="Bid CPM"
 							placeholder="Bid CPM"
 							:required="true"
+							type="number"
 						></CardTextField>
 					</v-col>
 
@@ -546,6 +548,7 @@
 							:placeholder="getExpectedLabel"
 							:required="true"
 							:valueText="getExpectedValue"
+							type="number"
 						></CardTextField>
 					</v-col>
 
@@ -566,6 +569,7 @@
 							label="Target eCPCV"
 							placeholder="Target eCPCV"
 							:required="true"
+							type="number"
 						></CardTextField>
 					</v-col>
 
@@ -586,6 +590,7 @@
 							label="Target CTR"
 							placeholder="Target CTR"
 							:required="true"
+							type="number"
 						></CardTextField>
 					</v-col>
 
@@ -851,7 +856,7 @@
 	export default Vue.extend({
 		name: "Overview",
 		props: {
-			owners: {
+			traffickers: {
 				type: Array,
 				default: function () {
 					return [];
@@ -936,6 +941,7 @@
 			show_target_ecpc: false,
 			show_target_ctr: false,
 			show_target_vcr: false,
+			show_field_cpm: false,
 		}),
 		created() {},
 		mounted() {
@@ -1197,7 +1203,7 @@
 						this.isOptimizationStrategyByType(BY_CAMPAIGN)) {
 
 						this.expected_show = true;
-						this.setTargets(false, false, false);
+						this.setTargets(false, false, false, true);
 
 						this.expected_label = "eCPM";
 						let value = this.campaign.budget / (this.campaign.kpi_objective / 1000);
@@ -1217,7 +1223,7 @@
 						this.isOptimizationStrategyByType(BY_CAMPAIGN)) {
 
 						this.expected_show = true;
-						this.setTargets(true, true, false);
+						this.setTargets(true, true, false, true);
 
 						this.expected_label = "eCPC";
 						let value = this.campaign.budget / this.campaign.kpi_objective;
@@ -1237,7 +1243,7 @@
 						this.isOptimizationStrategyByType(BY_CAMPAIGN)) {
 
 						this.expected_show = true;
-						this.setTargets(false, false, true);
+						this.setTargets(false, false, true, true);
 
 						this.expected_label = "eCPCV";
 						let value = this.campaign.budget / this.campaign.kpi_objective;
@@ -1251,13 +1257,6 @@
 				}
 
 				return this.expected_show;
-			},
-
-			/**
-			 * show fields bid CPM and eCPM
-			 */
-			showFieldsBidCpm() {
-				 return this.isBudgetTypeSpend && this.isAutomaticAllocation && this.isOptimizationStrategyByType(BY_CAMPAIGN);
 			},
 
 			getExpectedValue() {
@@ -1352,11 +1351,13 @@
 			setTargets(
 				show_ecpc: boolean = false,
 				show_ctr: boolean = false,
-				show_vcr: boolean = false
+				show_vcr: boolean = false,
+				show_cpm: boolean = false
 			) {
 				this.show_target_ecpc = show_ecpc;
 				this.show_target_ctr = show_ctr;
 				this.show_target_vcr = show_vcr;
+				this.show_field_cpm = show_cpm;
 			},
 
 			/**
@@ -1457,6 +1458,7 @@
 
 			addRowFrecuency() {
 				if (isUndefined(this.campaign.frequency_caps)) return;
+				if(this.campaign.frequency_caps.length>=3) return;
 				this.$emit("init-frequency-caps");
 				this.campaign.frequency_caps.push({
 					impressions: undefined,
@@ -1466,7 +1468,7 @@
 			},
 
 			deleteRowFrecuency(index: number) {
-				if (this.campaign.frequency_caps.length === 1) return;
+				if (this.campaign.frequency_caps.length === 0) return;
 				this.campaign.frequency_caps.splice(index, 1);
 			},
 

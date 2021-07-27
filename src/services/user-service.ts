@@ -1,5 +1,5 @@
 import { UserDataCreate, UserFilters, UserOptions, UserPaginated } from '@/interfaces/user'
-import { AxiosGet, AxiosPatch, AxiosPost, GetData, GetErrors, GetMessage } from '@/services/axios-service'
+import { AxiosDownload, AxiosGet, AxiosPatch, AxiosPost, GetData, GetErrors, GetMessage } from '@/services/axios-service'
 import { isEmpty, isUndefined } from 'lodash'
 import { UserDataUpdate } from '../interfaces/user';
 
@@ -86,6 +86,34 @@ class UserService {
         }
     } 
 
+    async download(params: { paginated?: UserPaginated, filters?: UserFilters, options?: UserOptions }) {
+        try {
+            let filter = ''
+            let option = ''
+
+            if (!isUndefined(params.filters)) {
+                filter = getFilters(params.filters)
+            }
+
+            if (!isUndefined(params.options)) {
+                option += getOptions(params.options, 'download', params.paginated)
+            }
+
+            const url = getURL(filter, option)
+            
+            await AxiosDownload(USERS_ROUTE + url, 'users-export.csv')
+            
+            return Promise.resolve({});
+
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    } 
+
     async listRoles() {
         try {
             const response = await AxiosGet(ROLES_ROUTE);
@@ -149,7 +177,7 @@ function getFilters(filters: UserFilters): string {
     const last_name = !!filters.last_name ? filters.last_name : '';
     const email = !!filters.email ? filters.email : '';
     const role_description = !!filters.role_description ? filters.role_description : '';    
-    const active = (typeof filters.active === "undefined") ? '' : filters.active
+    const active = (typeof filters.active === "undefined") ? '' : (!!filters.active ? 1 : 0)
 
     filter += 'filters[users.id]=' + id +
               '&filters[users.name]=' + name +

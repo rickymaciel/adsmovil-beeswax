@@ -9,6 +9,11 @@
 					<v-card-subtitle>
 						{{ $t("customListItem.labels.inputInstructions") }}
 					</v-card-subtitle>
+
+					<v-card-subtitle v-if="input_mode == 'upload'" class="pt-0 pb-0">
+						<v-icon color="red" class="pr-2">mdi-alert-circle</v-icon>
+						<strong style="color:red">File must have .csv extension and must be delimited by semicolon</strong>
+					</v-card-subtitle>
 					
 					<v-card-text>
 						<v-row no-gutters>
@@ -431,7 +436,7 @@
 			async loadExchanges() {
 				this.exchanges = await this.$store.dispatch(
 					'lists/getList', 
-					'custom_list_exchanges', 
+					{ list_name:	'custom_list_exchanges' }, 
 					{ root: true }
 				);
 			}
