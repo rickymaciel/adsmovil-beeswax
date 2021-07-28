@@ -57,6 +57,7 @@
 							:class="{ disabled: isEdit }"
 							:disabled="isEdit"
 							@change="onChangeCampaing"
+							@click="fetchResource('campaign_id')"
 						></CardAutocomplete>
 					</v-col>
 
@@ -1149,7 +1150,8 @@ export default Vue.extend({
 				daily_budget: [
 					(v: any) => Boolean(v) || this.$t("fieldRequired"),
 					(v: any) =>
-						v >= this.calcSuggested ||
+						(!isNaN(this.calcSuggested) &&
+							v >= this.calcSuggested) ||
 						this.$t("greaterOrEqual", {
 							value: this.calcSuggested,
 						}),
@@ -1169,7 +1171,10 @@ export default Vue.extend({
 		},
 
 		calcSuggested() {
-			return Math.round(this.entity.budget / this.entity.line_duration);
+			const calc = Math.round(
+				this.entity.budget / this.entity.line_duration
+			);
+			return !isNaN(calc) ? calc : null;
 		},
 
 		getSuggested() {
@@ -1522,19 +1527,23 @@ export default Vue.extend({
 				active: this.entity?.active,
 				alternative_id: this.entity.alternative_id,
 				bid_strategy_id:
-					Number(this.entity?.bid_strategy_id) !== NaN
+					Number(this.entity?.bid_strategy_id) !== NaN &&
+					Number(this.entity?.bid_strategy_id) > 0
 						? Number(this.entity.bid_strategy_id)
 						: null,
 				strategy_id:
-					Number(this.entity?.strategy_id) !== NaN
+					Number(this.entity?.strategy_id) !== NaN &&
+					Number(this.entity?.strategy_id) > 0
 						? Number(this.entity.strategy_id)
 						: null,
 				line_pacing_id:
-					Number(this.entity?.line_pacing_id) !== NaN
+					Number(this.entity?.line_pacing_id) !== NaN &&
+					Number(this.entity?.line_pacing_id) > 0
 						? Number(this.entity.line_pacing_id)
 						: null,
 				line_item_type_id:
-					Number(this.entity?.line_item_type_id) !== NaN
+					Number(this.entity?.line_item_type_id) !== NaN &&
+					Number(this.entity.line_item_type_id) > 0
 						? Number(this.entity.line_item_type_id)
 						: null,
 
@@ -1545,25 +1554,30 @@ export default Vue.extend({
 				creative_method_id: this.entity.creative_method_id,
 
 				fix_cpm:
-					Number(this.entity?.fix_cpm) !== NaN
+					Number(this.entity?.fix_cpm) !== NaN &&
+					Number(this.entity?.fix_cpm) > 0
 						? Number(this.entity.fix_cpm)
 						: null,
 				cpm_bid:
-					Number(this.entity?.cpm_bid) !== NaN
+					Number(this.entity?.cpm_bid) !== NaN &&
+					Number(this.entity?.cpm_bid) > 0
 						? Number(this.entity.cpm_bid)
 						: null,
 				//target_ecpm: Number(this.entity?.target_ecpm) !== NaN ? Number(this.entity?.target_ecpm) : null,
 				target_ecpc:
-					Number(this.entity?.target_ecpc) !== NaN
+					Number(this.entity?.target_ecpc) !== NaN &&
+					Number(this.entity?.target_ecpc) > 0
 						? Number(this.entity?.target_ecpc)
 						: null,
 				//target_ecpcv: Number(this.entity?.target_ecpcv) ? Number(this.entity?.target_ecpcv) : null,
 				target_ctr:
-					Number(this.entity?.target_ctr) !== NaN
+					Number(this.entity?.target_ctr) !== NaN &&
+					Number(this.entity?.target_ctr) > 0
 						? Number(this.entity?.target_ctr)
 						: null,
 				target_vcr:
-					Number(this.entity?.target_vcr) !== NaN
+					Number(this.entity?.target_vcr) !== NaN &&
+					Number(this.entity?.target_vcr) > 0
 						? Number(this.entity?.target_vcr)
 						: null,
 				frequency_caps: this.entity.frequency_caps,
@@ -1709,7 +1723,8 @@ export default Vue.extend({
 				)
 			) {
 				this.entity.daily_budget =
-					campaign?.daily_budget != null
+					campaign?.daily_budget != null &&
+					Number(campaign.daily_budget) > 0
 						? Number(campaign.daily_budget)
 						: null;
 			}
@@ -1906,6 +1921,14 @@ export default Vue.extend({
 			this.entity.budget_type_id = null;
 			this.entity.automatic_allocation = null;
 			this.campaign.automatic_allocation = undefined;
+		},
+
+		// fetching
+		async fetchResource(attribute: any) {
+			console.log("overview::fetchResource", {
+				resource: `fetch-${attribute}`,
+			});
+			this.$emit(`fetch-${attribute}`);
 		},
 	},
 	watch: {

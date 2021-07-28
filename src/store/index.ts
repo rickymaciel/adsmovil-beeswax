@@ -1439,7 +1439,7 @@ export default new Vuex.Store({
                         commit('SET_LINE_ITEM', response);
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error, { to: "lineItemList" });
+                        CatcherError(this.dispatch, error, { to: "LineItemList" });
                         return await Promise.reject(error)
                     }
                 },
@@ -1450,7 +1450,7 @@ export default new Vuex.Store({
                         commit('SET_LINE_ITEM', response);
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error, { to: "lineItemList" });
+                        CatcherError(this.dispatch, error, { to: "LineItemList" });
                         return await Promise.reject(error)
                     }
                 },
@@ -1491,6 +1491,16 @@ export default new Vuex.Store({
                 async activate({  }, id: number) {
                     try {
                         let response = await LineItemService.changeStatus({id: id, active: true});
+                        CreateNotification(
+                            this.dispatch,
+                            {
+                                type: MessageTypes.SUCCESS,
+                                title: i18n.t('title-success'),
+                                message: i18n.t('success'),
+                                btn_text: i18n.t('close'),
+                                to: "LineItemList"
+                            } as Notification
+                        );
                         return await Promise.resolve(response)
                     } catch (error) {
                         CatcherError(this.dispatch, error, { to: "" });
@@ -1813,6 +1823,16 @@ export default new Vuex.Store({
                         const response = await CreativeService.associateLineItem(association)
                         console.log("--- associateLineItem::response", response);
                         commit('PUSH_LINE_ASSOCIATION', response)
+                        CreateNotification(
+                            this.dispatch,
+                            {
+                                type: MessageTypes.SUCCESS,
+                                title: i18n.t('title-success'),
+                                message: i18n.t('success'),
+                                btn_text: i18n.t('continue'),
+                                to: ""
+                            } as Notification
+                        );
                         return await Promise.resolve(response)
                     } catch (error) {
                         CatcherError(this.dispatch, error);

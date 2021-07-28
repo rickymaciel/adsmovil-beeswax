@@ -77,148 +77,149 @@
 </template>
 
 <script lang="ts">
-	export default {
-		name: "CardAutocomplete",
-		model: {
-			prop: "model_data",
-			event: "input",
-		},
-		props: {
-			model_data: {},
-			rules: {
-				type: Array,
-				default: function () {
-					return [];
-				},
-			},
-			items: {
-				type: Array,
-				default: function () {
-					return [];
-				},
-			},
-			hint: {
-				type: String,
-				default: "",
-			},
-			reference: {
-				type: String,
-				default: "",
-			},
-			placeholder: {
-				type: String,
-				default: "",
-			},
-			label: {
-				type: String,
-				default: "",
-			},
-			customClass: {
-				type: String,
-				default: "label-fixed",
-			},
-			counter: {
-				type: Number,
-				default: 255,
-			},
-			item_text: {
-				type: String,
-				default: "value",
-			},
-			item_value: {
-				type: String,
-				default: "id",
-			},
-			disabled: {
-				type: Boolean,
-				default: false,
-			},
-			multiple: {
-				type: Boolean,
-				default: false,
-			},
-			chips: {
-				type: Boolean,
-				default: false,
-			},
-			deletable_chips: {
-				type: Boolean,
-				default: false,
-			},
-			small_chips: {
-				type: Boolean,
-				default: false,
-			},
-			dense: {
-				type: Boolean,
-				default: false,
-			},
-			persistent_hint: {
-				type: Boolean,
-				default: false,
-			},
-			required: {
-				type: Boolean,
-				default: false,
-			},
-			clearable: {
-				type: Boolean,
-				default: true,
-			},
-			auto_select_first: {
-				type: Boolean,
-				default: false,
-			},
-			search_input_sync: {
-				default: null,
-			},
-			colapse_selection: {
-				type: Boolean,
-				default: false,
+export default {
+	name: "CardAutocomplete",
+	model: {
+		prop: "model_data",
+		event: "input",
+	},
+	props: {
+		model_data: {},
+		rules: {
+			type: Array,
+			default: function () {
+				return [];
 			},
 		},
-		data: function () {
-			return {};
-		},
-		mounted() {},
-		computed: {
-			isLoading() {
-				return this.$store.state.proccess.loading_field;
-			},
-			searchInputSync: {
-				set(val: any) {
-					this.$emit("sync", val);
-				},
-				get() {
-					return this.search_input_sync;
-				},
-			},
-			modelData: {
-				set(val: any) {
-					this.$emit("input", val);
-				},
-				get() {
-					return this.model_data;
-				},
-			},
-			getClass() {
-				return `${this.customClass} ${this.disabled ? "disabled" : ""}`;
+		items: {
+			type: Array,
+			default: function () {
+				return [];
 			},
 		},
-		methods: {
-			clickEvent(e: any) {
-				this.$emit("click", e);
+		hint: {
+			type: String,
+			default: "",
+		},
+		reference: {
+			type: String,
+			default: "",
+		},
+		placeholder: {
+			type: String,
+			default: "",
+		},
+		label: {
+			type: String,
+			default: "",
+		},
+		customClass: {
+			type: String,
+			default: "label-fixed",
+		},
+		counter: {
+			type: Number,
+			default: 255,
+		},
+		item_text: {
+			type: String,
+			default: "value",
+		},
+		item_value: {
+			type: String,
+			default: "id",
+		},
+		disabled: {
+			type: Boolean,
+			default: false,
+		},
+		multiple: {
+			type: Boolean,
+			default: false,
+		},
+		chips: {
+			type: Boolean,
+			default: false,
+		},
+		deletable_chips: {
+			type: Boolean,
+			default: false,
+		},
+		small_chips: {
+			type: Boolean,
+			default: false,
+		},
+		dense: {
+			type: Boolean,
+			default: false,
+		},
+		persistent_hint: {
+			type: Boolean,
+			default: false,
+		},
+		required: {
+			type: Boolean,
+			default: false,
+		},
+		clearable: {
+			type: Boolean,
+			default: true,
+		},
+		auto_select_first: {
+			type: Boolean,
+			default: false,
+		},
+		search_input_sync: {
+			default: null,
+		},
+		colapse_selection: {
+			type: Boolean,
+			default: false,
+		},
+	},
+	data: function () {
+		return {};
+	},
+	mounted() {},
+	computed: {
+		isLoading() {
+			return this.$store.state.proccess.loading_field;
+		},
+		searchInputSync: {
+			set(val: any) {
+				this.$emit("sync", val);
 			},
-			changeEvent(e: any) {
-				this.$emit("change", e);
-			},
-			focusEvent(e: any) {
-				this.$emit("focus", e);
-			},
-			clearHandler(e: any) {
-				this.$emit("clear", e);
+			get() {
+				return this.search_input_sync;
 			},
 		},
-		watch: {},
-	};
+		modelData: {
+			set(val: any) {
+				this.$emit("input", val);
+			},
+			get() {
+				return this.model_data;
+			},
+		},
+		getClass() {
+			return `${this.customClass} ${this.disabled ? "disabled" : ""}`;
+		},
+	},
+	methods: {
+		clickEvent(e: any) {
+			console.log("CardAutocomplete::clickEvent", { e });
+			this.$emit("click", e);
+		},
+		changeEvent(e: any) {
+			this.$emit("change", e);
+		},
+		focusEvent(e: any) {
+			this.$emit("focus", e);
+		},
+		clearHandler(e: any) {
+			this.$emit("clear", e);
+		},
+	},
+	watch: {},
+};
 </script>

@@ -336,7 +336,7 @@ const routes: Array<RouteConfig> = [
                 children: [
                     {
                         path: 'index',
-                        name: 'lineItemList',
+                        name: 'LineItemList',
                         component: () => import('@/views/Admin/LineItem/List/index.vue'),
                         meta: {
                             requiresAuth: true,
