@@ -10,6 +10,18 @@
 		>
 			<v-container>
 				<v-row dense>
+					<!-- <v-col cols="12" sm="12" md="12" lg="12" class="mt-2">
+						<v-card>
+							<v-card-text>
+								{{ line_item }}
+							</v-card-text>
+						</v-card>
+						<v-card>
+							<v-card-text>
+								{{ association }}
+							</v-card-text>
+						</v-card>
+					</v-col> -->
 					<!-- Associates Creatives -->
 					<v-col cols="12" sm="6" md="6" lg="3" class="mt-2">
 						<CardAutocomplete
@@ -95,7 +107,13 @@
 					</v-col>
 
 					<!-- Activate -->
-					<v-col cols="12" sm="12" md="12" lg="12">
+					<v-col
+						v-if="associated_creative"
+						cols="12"
+						sm="12"
+						md="12"
+						lg="12"
+					>
 						<v-card
 							elevation="0"
 							class="pt-8"
@@ -174,6 +192,7 @@ export default Vue.extend({
 		start_date_rules: [],
 		end_date_rules: [],
 		creativeSelected: undefined,
+		associated_creative: false,
 	}),
 	created() {
 		// if (isNull(this.line_item?.id) || isUndefined(this.line_item?.id)) {
@@ -182,12 +201,16 @@ export default Vue.extend({
 		// } else {
 		// 	console.log("--- Line Item Received:", this.line_item);
 		// }
+		this.association.line_item_id = this.line_item.id;
+
+		console.log("--- Line Item Received created:", this.line_item);
 	},
 	async mounted() {
+		console.log("--- Line Item Received mounted:", this.line_item);
 		this.setLoading(true);
 		await this.dispatchCreatives();
 		// TODO TEST AFTER REMOVE
-		await this.dispatchShowLineItem(2);
+		//await this.dispatchShowLineItem(2);
 		this.setLoading(false);
 	},
 	computed: {
@@ -289,6 +312,7 @@ export default Vue.extend({
 				if (!(await this.validate())) return;
 				await this.setLoading(true);
 				await this.associateCreative();
+				this.associated_creative = true;
 				await this.setLoading(false);
 			} catch (error) {
 				console.error("handleSubmitAssociated", { error: error });
@@ -318,8 +342,8 @@ export default Vue.extend({
 		async parsedData() {
 			return {
 				creative_id: this.creativeSelected.id,
-				//line_item_id: this.line_item.id,
-				line_item_id: 50, // TODO REMOVER (VALUE TO TEST CASE)
+				line_item_id: this.line_item.id,
+				//line_item_id: 50, // TODO REMOVER (VALUE TO TEST CASE)
 				start_date: this.moment(
 					String(this.association.start_date)
 				).format(DATE_TIME_FORMAT),

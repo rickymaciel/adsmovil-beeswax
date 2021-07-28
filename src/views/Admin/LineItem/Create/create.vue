@@ -571,11 +571,20 @@ export default Vue.extend({
 		}) {
 			try {
 				this.setLoading(true);
-				await this.createOverview(data.lineItem);
+
+				const result = await this.createOverview(data.lineItem);
+
+				console.log("create::handleSubmitAndContinueOverview", {
+					result,
+				});
+
+				this.setLineItem(result);
+
 				this.updateSelectedTabIndex(1);
+
 				this.setLoading(false);
 			} catch (error) {
-				console.error("handleSubmitAndContinueOverview", {
+				console.error("create::handleSubmitAndContinueOverview", {
 					error: error,
 				});
 				this.setLoading(false);
@@ -614,7 +623,6 @@ export default Vue.extend({
 
 		async handleActivate() {
 			try {
-				if (!this.hasAssociatedCreatives) return;
 				this.setLoading(true);
 
 				const response = await this.activate(this.getLineItem.id);
