@@ -72,6 +72,7 @@
 								</v-col>
 						</v-row>						
 					</v-card-text>
+					
 				</v-col>
 			</v-row>		
 			<v-row no-gutters>
@@ -416,18 +417,23 @@
 			async handleUpload() {
 				if(!this.current_file || this.upload_progress != 0) return;
 				this.setLoading(true);
-				await this.$store.dispatch('custom_list/uploadItems', {
-					payload:{
-						custom_list_id: this.custom_list.id,
-						file: this.current_file	
-					}
-					,function: this.onUploadProgress
-				}, { root: true });
-				this.page = await this.getPaginated();
-				this.setLoading(false);
-				this.filename = undefined;
-				this.current_file = undefined;
-				this.upload_progress = 0;
+				try {
+					await this.$store.dispatch('custom_list/uploadItems', {
+						payload:{
+							custom_list_id: this.custom_list.id,
+							file: this.current_file	
+						}
+						,function: this.onUploadProgress
+					}, { root: true });
+					this.page = await this.getPaginated();
+					this.setLoading(false);
+					this.filename = undefined;
+					this.current_file = undefined;
+					this.upload_progress = 0;
+				}
+				catch(error) {
+					console.error('handleUpload', error);
+				}
 			},
 			
 			/*

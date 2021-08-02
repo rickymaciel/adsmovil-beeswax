@@ -89,7 +89,7 @@ export default new Vuex.Store({
                 SET_LOADING_FIELD(state, _loading_field = false) {
                     state.loading_field = _loading_field;
                 },
-                SET_NOTIFICATION(state, _notification: Notification = { message: "", type: "", title: "", btn_text: "", show: false }) {
+                SET_NOTIFICATION(state, _notification: Notification = { message: "", type: "", title: "", btn_text: "", details: {}, show: false }) {
                     state.notification = _notification;
                 },
                 SET_ERRORS(state, _errors: Object = {}) {
@@ -165,37 +165,26 @@ export default new Vuex.Store({
                 async init({ }, initData: any) {
                     try {
                         const response = await AuthService.init(initData)
-                        CreateNotification(
-                            this.dispatch,
-                            {
-                                type: MessageTypes.SUCCESS,
-                                title: i18n.t('title-success'),
-                                message: i18n.t('init.messages.success'),
-                                btn_text: 'Go to Login',
-                                to: "Login"
-                            } as Notification
-                        );
+                        notificationService.notifySuccess(this, {
+                            message: i18n.t('init.messages.success'),
+                            btn_text: i18n.t('init.actions.go_login'),
+                            to: "Login"
+                        } as Notification);
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
                 async forgotPassword({ }, { email }) {
                     try {
-                        const response = await AuthService.forgotPassword(email)
-                        CreateNotification(
-                            this.dispatch,
-                            {
-                                type: MessageTypes.SUCCESS,
-                                title: i18n.t('title-success'),
-                                message: i18n.t("forgotPassword.messages.success"),
-                                btn_text: i18n.t("continue"),
-                            } as Notification
-                        );
+                        const response = await AuthService.forgotPassword(email);
+                        notificationService.notifySuccess(this, {
+                            message: i18n.t("forgotPassword.messages.success"),
+                        } as Notification);
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
@@ -207,15 +196,12 @@ export default new Vuex.Store({
                             password_confirmation,
                             token
                         });
-                        CreateNotification(this.dispatch, {
-                            type: MessageTypes.SUCCESS,
-                            title: i18n.t('title-success'),
+                        notificationService.notifySuccess(this, {
                             message: i18n.t('passwordReset.messages.success'),
-                            btn_text: i18n.t("continue"),
                         } as Notification);
                     }
                     catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
@@ -226,7 +212,7 @@ export default new Vuex.Store({
                         return await Promise.resolve(response)
                     } catch (error) {
                         commit('SET_TOKEN')
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
@@ -238,7 +224,7 @@ export default new Vuex.Store({
                         window.location.href = '/'
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 }
@@ -266,7 +252,7 @@ export default new Vuex.Store({
                         commit('SET_PROFILE', ProviderProfile(response))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error, { to: "Root" });
+                        catchError(this, error, { to: "Root" });
                         return await Promise.reject(error)
                     }
                 }
@@ -294,7 +280,7 @@ export default new Vuex.Store({
                         commit('SET_PERMISSIONS', PermissionProfile(response))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error, { to: "Root" });
+                        catchError(this, error, { to: "Root" });
                         return await Promise.reject(error)
                     }
                 }
@@ -338,7 +324,7 @@ export default new Vuex.Store({
                         commit('SET_RESULT_PAGINATED', response)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
@@ -347,7 +333,7 @@ export default new Vuex.Store({
                         await AdvertiserService.download(params)
                         return await Promise.resolve({})
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
@@ -357,52 +343,35 @@ export default new Vuex.Store({
                         commit('SET_CATEGORIES', response)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async create({ }, advertiser: AdvertiserDataCreate) {
                     try {
                         const response = await AdvertiserService.create(advertiser);
-                        CreateNotification(
-                            this.dispatch,
-                            {
-                                type: MessageTypes.SUCCESS,
-                                title: i18n.t('title-success'),
-                                message: i18n.t('success'),
-                                btn_text: i18n.t('continue'),
-                                to: "AdvertisersIndex"
-                            } as Notification
-                        );
+                        notificationService.notifySuccess(this, {
+                            to: "AdvertisersIndex"
+                        } as Notification);
                         return Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return Promise.reject(error)
                     }
                 },
-
                 async update({ commit }, params: { advertiser: AdvertiserDataUpdate, id: number }) {
                     try {
                         const response = await AdvertiserService.update(params.advertiser, params.id);
                         commit('SET_ADVERTISER', response);
-                        CreateNotification(
-                            this.dispatch,
-                            {
-                                type: MessageTypes.SUCCESS,
-                                title: i18n.t('title-success'),
-                                message: i18n.t('success'),
-                                btn_text: i18n.t('continue'),
-                                to: "AdvertisersIndex"
-                            } as Notification
-                        );
+                        notificationService.notifySuccess(this, {
+                            to: "AdvertisersIndex"
+                        } as Notification);
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async show({ commit }, id: number) {
                     try {
                         const response = await AdvertiserService.show(id);
@@ -413,25 +382,23 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
-
                 async list({ commit }, filters) {
                     try {
                         const response = await AdvertiserService.list(filters);
                         commit('SET_ADVERTISERS_LIST', resolveList(response))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async all({ commit }) {
                     try {
                         const response = await AdvertiserService.all(undefined, { order: 'asc', sort: 'name' })
                         commit('SET_ADVERTISERS_LIST', response)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
@@ -514,251 +481,196 @@ export default new Vuex.Store({
             },
             getters: {},
             actions: {
-
                 async paginated({ commit }, params) {
                     try {
                         const response = await CustomListService.paginated(params)
                         commit('SET_RESULT_PAGINATED', response)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
-                async download({ }, params) {
+                async download({}, params) {
                     try {
                         await CustomListService.download(params)
                         return await Promise.resolve({})
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async create({ commit }, customList: CustomListDataCreate) {
                     try {
                         const response = await CustomListService.create(customList);
-                        commit('SET_CUSTOM_LIST', response)
-                        CreateNotification(
-                            this.dispatch,
-                            {
-                                type: MessageTypes.SUCCESS,
-                                title: i18n.t('title-success'),
-                                message: i18n.t('success'),
-                                btn_text: i18n.t('continue'),
-                                to: {
-                                    name: "CustomListEdit",
-                                    params: { id: response.id }
-                                }
-                            } as Notification
-                        );
-
+                        commit('SET_CUSTOM_LIST', response);
+                        notificationService.notifySuccess(this, { 
+                            to: { name: "CustomListEdit", params: { id: response.id } }
+                        } as Notification);    
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async show({ commit }, id: Number) {
                     try {
                         const response = await CustomListService.show(id);
                         commit('SET_CUSTOM_LIST', response)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error, { to: "CustomListIndex" });
+                        catchError(this, error, { to: "CustomListIndex" });
                         return await Promise.reject(error)
                     }
                 },
-
                 async update({ commit }, updates) {
                     try {
                         const response = await CustomListService.update(updates);
                         commit('SET_CUSTOM_LIST', response)
-
-                        CreateNotification(
-                            this.dispatch,
-                            {
-                                type: MessageTypes.SUCCESS,
-                                title: i18n.t('title-success'),
-                                message: i18n.t('success'),
-                                btn_text: i18n.t('continue'),
-                            } as Notification
-                        );
-
+                        notificationService.notifySuccess(this, {} as Notification);
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
-                async uploadItems({ }, params) {
+                async uploadItems({}, params) {
                     try {
                         const response = await CustomListService.uploadItems(params.payload, params.function);
-
-                        CreateNotification(
-                            this.dispatch,
-                            {
-                                type: MessageTypes.SUCCESS,
-                                title: i18n.t('title-success'),
-                                message: i18n.t('success'),
-                                btn_text: i18n.t('continue'),
-                            } as Notification
-                        );
-
+                        notificationService.notifySuccess(this, {} as Notification);
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async getTypes({ commit }) {
                     try {
                         const response: List[] = await TypeService.list()
                         commit('SET_TYPES', response)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async getLineItemTypes({ commit }) {
                     try {
                         const response: List[] = await lineItemTypeService.list()
                         commit('SET_LINE_ITEM_TYPES', resolveList(response))
                         return await Promise.resolve(resolveList(response))
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async getBidStrategies({ commit }) {
                     try {
                         const response: List[] = await CustomListService.bidStrategyList()
                         commit('SET_BID_STRATEGY_LIST', resolveList(response))
                         return await Promise.resolve(resolveList(response))
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async getLinesPacing({ commit }) {
                     try {
                         const response: List[] = await CustomListService.linePacingList()
                         commit('SET_LINE_PACING_LIST', resolveList(response))
                         return await Promise.resolve(resolveList(response))
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async getBiddingShadings({ commit }) {
                     try {
                         const response: List[] = await CustomListService.biddingShadingList()
                         commit('SET_BIDDING_SHADING_LIST', resolveList(response))
                         return await Promise.resolve(resolveList(response))
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async getViewByTypeSelected({ commit }, type: Type) {
                     try {
                         const response = await CustomListService.getViewByTypeSelected(type);
                         commit('SET_MODEL_VIEW', response)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async getBudgetTypes({ commit }) {
                     try {
                         const response = await CustomListService.budgetTypes()
                         commit('SET_BUDGET_TYPES', resolveList(response))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async getCampaignPacing({ commit }) {
                     try {
                         const response = await CustomListService.campaignPacing()
                         commit('SET_CAMPAIGNS_PACING', resolveList(response))
-
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async getOptimizationStrategies({ commit }) {
                     try {
                         const response = await CustomListService.optimizationStrategies()
                         commit('SET_OPTIMIZATION_STRATEGIES', resolveList(response))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async getKpiCampaigns({ commit }) {
                     try {
                         const response = await CustomListService.kpiCampaigns()
                         commit('SET_KPI_CAMPAIGNS', resolveList(response))
-
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async getStrategies({ commit }) {
                     try {
                         const response = await CustomListService.strategies()
                         commit('SET_STRATEGIES', resolveList(response))
-
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async getUnitTimes({ commit }) {
                     try {
                         const response = await CustomListService.unitTimes()
                         commit('SET_UNIT_TIMES', resolveList(response))
-
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async getCreativeWeightingMethods({ commit }) {
                     try {
                         const response = await CustomListService.CreativeWeightingMethods()
                         commit('SET_CREATIVE_WEIGHTING_METHODS', resolveList(response))
-
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
@@ -788,128 +700,78 @@ export default new Vuex.Store({
             },
             getters: {},
             actions: {
-
                 async paginated({ commit }, params) {
                     try {
                         const response = await ListItemService.paginated(params)
                         commit('SET_RESULT_PAGINATED', response)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
-                async delete({ }, id) {
+                async delete({}, id) {
                     try {
                         const response = await ListItemService.delete(id);
                         return await Promise.resolve(true);
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
-                async uploadFile({ }, upload: any) {
+                async uploadFile({}, upload: any) {
                     try {
                         const response = await ListItemService.upload(upload)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error, { to: "" });
+                        catchError(this, error, { to: "" });
                         return await Promise.reject(error)
                     }
                 },
-
                 async create({ commit }, params: { listItem: any, customListType: string }) {
-                    //dejamos de usar el parametro customListType por sugerencia de Ricki
-                    //async create({ commit }, entity: ListItemDataCreate) {
                     try {
                         const response = await ListItemService.create(params?.listItem, params?.customListType);
                         commit('SET_ITEM', response);
-                        /*CreateNotification(
-                            this.dispatch,
-                            {
-                                type: MessageTypes.SUCCESS,
-                                title: i18n.t('title-success'),
-                                message: i18n.t('success'),
-                                btn_text: i18n.t('continue'),
-                                to: ""
-                            } as Notification
-                        );*/
                         return Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error, { to: "" });
+                        catchError(this, error, { to: "" });
                         return Promise.reject(error)
                     }
                 },
-
                 async update({ commit }, params: { listItem: any, customListType: string }) {
-                    //dejamos de usar el parametro customListType por sugerencia de Ricki
-                    //async update({ commit }, entity: ListItemDataUpdate) {
                     try {
                         const response = await ListItemService.update(params?.listItem, params?.customListType);
                         commit('SET_ITEM', response);
-                        /*CreateNotification(
-                            this.dispatch,
-                            {
-                                type: MessageTypes.SUCCESS,
-                                title: i18n.t('title-success'),
-                                message: i18n.t('success'),
-                                btn_text: i18n.t('continue'),
-                                to: ""
-                            } as Notification
-                        );*/
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error, { to: "" });
+                        catchError(this, error, { to: "" });
                         return await Promise.reject(error)
                     }
                 },
-
                 async show({ commit }, id: number) {
                     try {
                         const response = await ListItemService.show(id);
                         commit('SET_ITEM', response);
-                        CreateNotification(
-                            this.dispatch,
-                            {
-                                type: MessageTypes.SUCCESS,
-                                title: i18n.t('title-success'),
-                                message: i18n.t('success'),
-                                btn_text: i18n.t('continue'),
-                                to: ""
-                            } as Notification
-                        );
+                        notificationService.notifySuccess(this, { to: "" } as Notification);
                         return await Promise.resolve(response)
                     } catch (error) {
                         commit('SET_ITEM');
-                        CatcherError(this.dispatch, error, { to: "" });
+                        catchError(this, error, { to: "" });
                         return await Promise.reject(error)
                     }
                 },
-
                 async list({ commit }, payload: { filters: ListItemFilters, options: ListItemOptions }) {
                     try {
                         const response = await ListItemService.list(payload.filters, payload.options);
-                        commit('SET_ITEM_LIST', resolveList(response));
-                        CreateNotification(
-                            this.dispatch,
-                            {
-                                type: MessageTypes.SUCCESS,
-                                title: i18n.t('title-success'),
-                                message: i18n.t('success'),
-                                btn_text: i18n.t('continue'),
-                                to: ""
-                            } as Notification
-                        );
+                        commit('SET_ITEM_LIST', resolveList(response));                        
+                        notificationService.notifySuccess(this, { to: "" } as Notification);
                         return await Promise.resolve(response);
                     } catch (error) {
                         commit('SET_ITEM_LIST')
-                        CatcherError(this.dispatch, error, { to: "" });
+                        catchError(this, error, { to: "" });
                         return await Promise.reject(error)
                     }
-                },
-
+                },                
                 async getAllByCustomId({ commit }, customList: any) {
                     try {
                         const entities = await ListItemService.getAllByCustomId(customList?.id);
@@ -1011,7 +873,7 @@ export default new Vuex.Store({
                         commit('SET_ACCOUNT', response)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error, { to: "Dashboard" });
+                        catchError(this, error, { to: "Dashboard" });
                         return await Promise.reject(error)
                     }
                 },
@@ -1042,102 +904,76 @@ export default new Vuex.Store({
             getters: {
             },
             actions: {
-
                 async paginated({ commit }, params) {
                     try {
                         const response = await UserService.paginated(params)
                         commit('SET_RESULT_PAGINATED', response)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
-                async download({ }, params) {
+                async download({}, params) {
                     try {
                         await UserService.download(params)
                         return await Promise.resolve({})
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async list({ commit }, params) {
                     try {
                         const response = await UserService.list(params.filters, params.options);
                         commit('SET_USERS', resolveList(response))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async listRoles({ commit }) {
                     try {
                         const response = await UserService.listRoles();
                         commit('SET_ROLES', response)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async create({ }, user: UserDataCreate) {
                     try {
                         const response = await UserService.create(user);
-                        CreateNotification(
-                            this.dispatch,
-                            {
-                                type: MessageTypes.SUCCESS,
-                                title: i18n.t('title-success'),
-                                message: i18n.t('success'),
-                                btn_text: i18n.t('continue'),
-                                to: "UsersIndex"
-                            } as Notification
-                        );
+                        notificationService.notifySuccess(this, {to: "UsersIndex"} as Notification);
                         return Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return Promise.reject(error)
                     }
                 },
-
                 async update({ commit }, params: { user: UserDataUpdate, id: number }) {
                     try {
                         const response = await UserService.update(params.user, params.id);
                         commit('SET_USER', response);
-                        CreateNotification(
-                            this.dispatch,
-                            {
-                                type: MessageTypes.SUCCESS,
-                                title: i18n.t('title-success'),
-                                message: i18n.t('success'),
-                                btn_text: i18n.t('continue'),
-                                to: "UsersIndex"
-                            } as Notification
-                        );
+                        notificationService.notifySuccess(this, {to: "UsersIndex"} as Notification);
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async show({ commit }, id: number) {
                     try {
                         const response = await UserService.show(id);
                         commit('SET_USER', response);
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
             }
         },
         campaign: {
@@ -1162,81 +998,56 @@ export default new Vuex.Store({
             getters: {
             },
             actions: {
-
                 async create({ }, campaign: CampaignDataCreate) {
                     try {
                         const response = await CampaignService.create(campaign)
-                        CreateNotification(
-                            this.dispatch,
-                            {
-                                type: MessageTypes.SUCCESS,
-                                title: i18n.t('title-success'),
-                                message: i18n.t('success'),
-                                btn_text: i18n.t('continue'),
-                                to: "CampaignsIndex"
-                            } as Notification
-                        );
+                        notificationService.notifySuccess(this, {to: "CampaignsIndex"} as Notification);
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async update({ commit }, campaign: Campaign) {
                     try {
                         const response = await CampaignService.update(campaign)
                         commit('SET_CAMPAIGN', response);
-                        CreateNotification(
-                            this.dispatch,
-                            {
-                                type: MessageTypes.SUCCESS,
-                                title: i18n.t('title-success'),
-                                message: i18n.t('success'),
-                                btn_text: i18n.t('continue'),
-                                to: "CampaignsIndex"
-                            } as Notification
-                        );
+                        notificationService.notifySuccess(this, {to: "CampaignsIndex"} as Notification);
                         return await Promise.resolve(response)
-
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async show({ commit }, id: number) {
                     try {
                         const response = await CampaignService.show(id);
                         commit('SET_CAMPAIGN', response);
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error, { to: "CampaignsIndex" });
+                        catchError(this, error, { to: "CampaignsIndex" });
                         return await Promise.reject(error)
                     }
                 },
-
                 async paginated({ commit }, params) {
                     try {
                         const response = await CampaignService.paginated(params)
                         commit('SET_RESULT_PAGINATED', response)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
-                async download({ }, params) {
+                async download({}, params) {
                     try {
                         await CampaignService.download(params)
                         return await Promise.resolve({})
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
-                },
-
+                },                
                 async list({ commit }, params) {
                     try {
                         const response = await CampaignService.list(params?.filters, params?.options)
@@ -1244,18 +1055,17 @@ export default new Vuex.Store({
                         commit('SET_RESULT_LIST', values)
                         return await Promise.resolve(resolveList(values))
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async getById({ commit }, id: number) {
                     try {
                         const response = await CampaignService.show(id);
                         commit('SET_CAMPAIGN', response);
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error, { to: "" });
+                        catchError(this, error, { to: "" });
                         return await Promise.reject(error)
                     }
                 },
@@ -1295,44 +1105,40 @@ export default new Vuex.Store({
                         commit('SET_RESULT_PAGINATED', response)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async createModifier({ commit }, modifier: ModifierDataCreate) {
                     try {
                         const response = await ModifierService.create(modifier)
                         commit('SET_MODIFIER', response);
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async showModifier({ commit }, id: number) {
                     try {
                         const response = await ModifierService.show(id);
                         commit('SET_MODIFIER', response);
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error, { to: "ModifiersIndex" });
+                        catchError(this, error, { to: "ModifiersIndex" });
                         return await Promise.reject(error)
                     }
                 },
-
                 async updateModifier({ commit }, params: { modifier: ModifierDataUpdate, id: number }) {
                     try {
                         const response = await ModifierService.update(params.modifier, params.id);
                         commit('SET_MODIFIER', response);
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error, { to: "ModifiersIndex" });
+                        catchError(this, error, { to: "ModifiersIndex" });
                         return await Promise.reject(error)
                     }
                 },
-
                 async list({ commit }, payload: { filters: ModifierFilters, options: ModifierOptions }) {
                     try {
 
@@ -1340,7 +1146,7 @@ export default new Vuex.Store({
                         commit('SET_MODIFIERS_LIST', resolveList(response))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
@@ -1411,24 +1217,14 @@ export default new Vuex.Store({
                 async create({ commit }, lineItem: LineItemDataCreate) {
                     try {
                         const response = await LineItemService.create(lineItem);
-                        CreateNotification(
-                            this.dispatch,
-                            {
-                                type: MessageTypes.SUCCESS,
-                                title: i18n.t('title-success'),
-                                message: i18n.t('success'),
-                                btn_text: i18n.t('continue'),
-                                to: ""
-                            } as Notification
-                        );
+                        notificationService.notifySuccess(this, {to: ""} as Notification);                        
                         commit('SET_LINE_ITEM', response);
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async show({ commit }, id: number) {
                     try {
                         let response = await LineItemService.show(id);
@@ -1439,11 +1235,10 @@ export default new Vuex.Store({
                         commit('SET_LINE_ITEM', response);
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error, { to: "LineItemList" });
+                        catchError(this, error, { to: "lineItemList" });
                         return await Promise.reject(error)
                     }
                 },
-
                 async update({ commit }, params: { lineItem: LineItemDataCreate, id: number }) {
                     try {
                         const response = await LineItemService.update(params.lineItem, params.id);
@@ -1454,36 +1249,33 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
-
                 async paginated({ commit }, params) {
                     try {
                         const response = await LineItemService.paginated(params?.paginated, params?.filters, params?.options)
                         commit('SET_RESULT_PAGINATED', response)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async list({ commit }, payload: { filters: LineItemFilters, options: LineItemOptions }) {
                     try {
                         const response = await LineItemService.list(payload.filters, payload.options)
                         commit('SET_LINE_ITEM_LIST', resolveList(response))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async all({ commit }, params: { filters: LineItemFilters, options: LineItemOptions }) {
                     try {
                         const response = await LineItemService.all(params)
                         commit('SET_LINE_ITEMS', response)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
@@ -1540,7 +1332,7 @@ export default new Vuex.Store({
                         commit('SET_TYPE_LIST', response)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
@@ -1629,7 +1421,6 @@ export default new Vuex.Store({
             getters: {
             },
             actions: {
-
                 /**
                  * GET AUXILIARY METHODS
                  */
@@ -1639,11 +1430,10 @@ export default new Vuex.Store({
                         commit('SET_CREATIVE_SIZES', resolveListParams(response, "id", "name"))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async creativeTemplates({ commit, state }) {
                     try {
                         const response = await CreativeService.creativeTemplates()
@@ -1651,62 +1441,57 @@ export default new Vuex.Store({
                         commit('SET_CREATIVE_TEMPLATES', resolveTemplates(response, state.creative_types))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async creativeTypes({ commit }) {
                     try {
                         const response = await CreativeService.creativeTypes()
                         commit('SET_CREATIVE_TYPES', resolveListParams(response, "id", "description"))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async advertiserCategories({ commit }) {
                     try {
                         const response = await CreativeService.advertiserCategories()
                         commit('SET_ADVERTISER_CATEGORIES', resolveListParams(response, "id", "name"))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async getCreativeTypeByTemplateId({ }, params: { creativeTypes: Array<any>, creative_template_id: Number }) {
                     try {
                         if (isEmpty(params.creativeTypes) && params.creative_template_id < 1) return await Promise.resolve();
                         const response = getCreativeTypeByTemplateId(params.creativeTypes, params.creative_template_id)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async mimeTypes({ commit }) {
                     try {
                         const response = await CreativeService.mimeTypes()
                         commit('SET_MIME_TYPES', resolveListParams(response, "id", "description"))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async creativeRules({ commit }) {
                     try {
                         const response = await CreativeService.creativeRules()
                         commit('SET_CREATIVE_RULES', resolveListParams(response, "id", "description"))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
@@ -1716,7 +1501,7 @@ export default new Vuex.Store({
                         commit('SET_Expandable_TYPES', resolveListParams(response, "id", "description"))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
@@ -1726,94 +1511,81 @@ export default new Vuex.Store({
                         commit('SET_Expandable_DIRECTIONS', resolveListParams(response, "id", "description"))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async inBannerVideos({ commit }) {
                     try {
                         const response = await CreativeService.inBannerVideos()
                         commit('SET_IN_BANNER_VIDEOS', resolveListParams(response, "id", "description"))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async vendors({ commit }) {
                     try {
                         const response = await CreativeService.vendors()
                         commit('SET_VENDORS', resolveListParams(response, "id", "description"))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async addons({ commit }) {
                     try {
                         const response = await CreativeService.addons()
                         commit('SET_ADDONS', resolveList(response))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async assets({ commit }) {
                     try {
                         const response = await CreativeService.assets()
                         commit('SET_ASSETS', resolveList(response))
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async creativeAssets({ commit }, params) {
                     try {
                         const response = await CreativeService.creativeAssets(params)
                         commit('SET_ASSET', response)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async CreateNewCreative({ commit }, params: { continue: Boolean, creative: any }) {
                     try {
                         const response = await CreativeService.CreateNewCreative(params.creative)
                         commit('SET_CREATIVE', response)
-                        CreateNotification(
-                            this.dispatch,
-                            {
-                                type: MessageTypes.SUCCESS,
-                                title: i18n.t('title-success'),
-                                message: i18n.t('success'),
-                                btn_text: params.continue ? i18n.t('continue') : i18n.t('close'),
-                                to: params.continue ? "" : "CreativesIndex"
-                            } as Notification
-                        );
+                        notificationService.notifySuccess(this, {
+                            btn_text: params.continue ? i18n.t('continue') : i18n.t('close'),
+                            to: params.continue ? "" : "CreativesIndex"
+                        } as Notification);
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
-
                 async validateTag({ commit }, tag: TagCheck) {
                     try {
                         const response = await CreativeService.validateTag(tag)
                         commit('SET_ASSET', response)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
@@ -1835,7 +1607,7 @@ export default new Vuex.Store({
                         );
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
@@ -1845,7 +1617,7 @@ export default new Vuex.Store({
                         commit('SET_RESULT_PAGINATED', response)
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
@@ -1907,7 +1679,7 @@ export default new Vuex.Store({
                         const response = await TargetingService.getAppSitesByKey(params.key)
                         return await Promise.resolve(resolveListParams(response, params.object?.key || 'external_id', params.object?.value || 'name'))
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
@@ -1916,7 +1688,7 @@ export default new Vuex.Store({
                         const response = await TargetingService.getAppNameByAtribute(params.term, params.by_attribute)
                         return await Promise.resolve(resolveListParams(response, 'id', 'app_name'))
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
@@ -1934,26 +1706,17 @@ export default new Vuex.Store({
                         const response = await TargetingService.getSitesByAtribute(params.term, params.by_attribute)
                         return await Promise.resolve(resolveListParams(response, 'site_id', 'site_id'))
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
                 async create({ commit }, targeting) {
                     try {
                         const response = await TargetingService.create(targeting)
-                        CreateNotification(
-                            this.dispatch,
-                            {
-                                type: MessageTypes.SUCCESS,
-                                title: i18n.t('title-success'),
-                                message: i18n.t('success'),
-                                btn_text: i18n.t('continue'),
-                                to: ""
-                            } as Notification
-                        );
+                        notificationService.notifySuccess(this, {to:""} as Notification);
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 },
@@ -1983,7 +1746,7 @@ export default new Vuex.Store({
                         }
                         return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error);
+                        catchError(this, error);
                         return await Promise.reject(error)
                     }
                 }
@@ -2012,23 +1775,35 @@ export function Errors(dispatch: Dispatch, error: any) {
     }
 }
 
+
+function catchError(store: any, error: any, params?: { to?: string }) {
+    store.dispatch('proccess/setLoading', false, { root: true });
+    
+    notificationService.notifyError(store, {
+        message: error.message,
+        details: error.errors,
+        to: params?.to,
+        btn_text: isUndefined(params?.to) ? i18n.t(MessageTypes.TRYAGAIN) : i18n.t(MessageTypes.CONTINUE)
+    } as Notification);
+}
+
+
 /**
  * CatcherError
  * @param dispatch 
  * @param error AxiosError
  * @param params { to?: string }
  */
-export function CatcherError(dispatch: Dispatch, error: AxiosError, params?: { to?: string }) {
-    dispatch('proccess/setLoading', false, { root: true });
-    console.error("CatcherError", {
-        error: error,
-        params: params
-    });
+export function CatcherError(dispatch: Dispatch, error: any, params?: { to?: string }) {
+    dispatch('proccess/setLoading', false, { root: true });    
+
     Errors(dispatch, error);
+
     CreateNotification(dispatch, {
         type: MessageTypes.ERROR,
         title: i18n.t('title-failed'),
         message: error.message,
+        details: error.errors,
         to: params?.to,
         btn_text: isUndefined(params?.to) ? i18n.t(MessageTypes.TRYAGAIN) : i18n.t(MessageTypes.CONTINUE)
     } as Notification);

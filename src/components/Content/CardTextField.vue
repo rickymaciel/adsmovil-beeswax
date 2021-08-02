@@ -29,7 +29,7 @@
 			:step="type === 'time' ? 2 : 1"
 			:disabled="disabled"
 			:value="getValue"
-			:error-messages="error_messages"
+			:error-messages="error_messages" 
 			v-on:keyup.enter="enterHandler"
 		>
 			<!-- <template v-slot:prepend-inner>
@@ -173,7 +173,7 @@
 				type: String,
 				default: undefined,
 			},
-			error_messages: {
+			error_messages: { 
 				type: Array,
 				default: function () {
 					return [];

@@ -56,6 +56,7 @@
 							:required="true"
 							:class="{ disabled: isEdit }"
 							:disabled="isEdit"
+							:error_messages="getError('campaign_id')"
 							@change="onChangeCampaing"
 							@click="fetchResource('campaign_id')"
 						></CardAutocomplete>
@@ -96,6 +97,7 @@
 							placeholder="Add Name"
 							:required="true"
 							:disabled="true"
+							:error_messages="getError('advertiser_id')"
 						></CardTextField>
 					</v-col>
 
@@ -109,6 +111,7 @@
 							label="Name"
 							placeholder="Add Name"
 							:required="true"
+							:error_messages="getError('name')"
 						></CardTextField>
 					</v-col>
 				</v-row>
@@ -133,6 +136,7 @@
 							:small_chips="true"
 							:dense="false"
 							:required="true"
+							:error_messages="getError('line_item_type_id')"
 						></CardAutocomplete>
 					</v-col>
 
@@ -230,6 +234,7 @@
 								:max_date="getMaxDate"
 								:rules="startDateRules"
 								:required="true"
+								:error_messages="getError('start_date')"
 							></DatePicker>
 						</v-card>
 					</v-col>
@@ -251,6 +256,7 @@
 								:rules="endDateRules"
 								:is_end="true"
 								:required="true"
+								:error_messages="getError('end_date')"
 							></DatePicker>
 						</v-card>
 					</v-col>
@@ -418,6 +424,7 @@
 							:required="true"
 							:disabled="!can_edit_fix_cpm"
 							:class="{ disabled: !can_edit_fix_cpm }"
+							:error_messages="getError('fix_cpm')"
 						></CardTextField>
 					</v-col>
 
@@ -670,6 +677,7 @@
 							:small_chips="true"
 							:dense="false"
 							:required="true"
+							:error_messages="getError('line_pacing_id')"
 						></CardAutocomplete>
 					</v-col>
 
@@ -683,12 +691,13 @@
 							reference="daily_budget"
 							label="Daily Budget"
 							placeholder="Daily Budget"
-							:required="false"
+							:required="true"
 							class="p-prefix"
 							:suffix="getSuggested"
 							:persistent-hint="hasError('daily_budget')"
 							:disabled="!can_edit_daily_budget"
 							:class="{ disabled: !can_edit_daily_budget }"
+							:error_messages="getError('budget')"
 						></CardTextField>
 					</v-col>
 
@@ -916,6 +925,7 @@ import {
 	CampaingList,
 	CampaingDataUpdate,
 } from "../../../../interfaces/campaign";
+import { getError } from "../../../../utils/resolveObjectArray";
 
 const BY_CAMPAIGN = "By Campaign";
 const DAILY = "Daily";
@@ -1201,9 +1211,7 @@ export default Vue.extend({
 		},
 
 		isAutomaticAllocation() {
-			return isUndefined(this.campaign.automatic_allocation)
-				? false
-				: this.campaign.automatic_allocation;
+			return !isNull(this.campaign.automatic_allocation) ? this.campaign.automatic_allocation : false;
 		},
 
 		isBudgetTypeImpressions() {
@@ -1356,8 +1364,13 @@ export default Vue.extend({
 				this.isBudgetTypeSpend && this.getCanShowOptimizationStrategy
 			);
 		},
+
+		getErrors() {
+			return this.$store.state.proccess.errors;
+		},
 	},
 	methods: {
+
 		hasData(attr: any) {
 			return !isUndefined(attr) && !isNull(attr) && isEmpty(attr);
 		},
@@ -1382,10 +1395,15 @@ export default Vue.extend({
 			return new Date().toISOString().substr(0, 10);
 		},
 
+		getError(index: any) {
+			return getError(this.getErrors, index);
+		},
+
+		/*
 		getError(index: string | number) {
 			if (!this.hasError(index)) return "";
 			return first(this.errors[index]);
-		},
+		},*/
 
 		hasError(index: string | number) {
 			return this.errors.hasOwnProperty(index);
@@ -1498,7 +1516,6 @@ export default Vue.extend({
 		},
 
 		prepareDataCreate() {
-			console.log(this.entity.bid_shading_id);
 			return {
 				id: this.isEdit ? this.entity.id : undefined,
 				advertiser_id:
@@ -1694,22 +1711,13 @@ export default Vue.extend({
 			this.setBudgetText();
 
 			// SOLO SI Automatic Allocation = YES (1)
-			if (
-				campaign?.automatic_allocation == 1 &&
-				campaign?.optimization_strategy_id
-			) {
-				this.entity.optimization_strategy_id =
-					campaign.optimization_strategy_id;
+			if (campaign?.automatic_allocation == 1 && campaign?.optimization_strategy_id) {
+				this.entity.optimization_strategy_id = campaign.optimization_strategy_id;
 			}
 
 			// SOLO SI Automatic Allocation = YES (1) & Optimizarion Strategy = By Campaign
-			if (
-				campaign?.automatic_allocation == 1 &&
-				this.isOptimizationStrategyByType(OPTIMIZATION_BY_CAMPAIGN)
-			) {
-				this.entity.line_pacing_id = campaign?.campaign_pacing_id
-					? campaign.campaign_pacing_id
-					: null;
+			if (campaign?.automatic_allocation == 1 && this.isOptimizationStrategyByType(OPTIMIZATION_BY_CAMPAIGN)) {
+				this.entity.line_pacing_id = campaign?.campaign_pacing_id ? campaign.campaign_pacing_id : null;
 			}
 
 			// SOLO SI Automatic Allocation = YES (1) & Optimization Strategy=By Camping & Campaing Pacing = Daily
@@ -1920,7 +1928,8 @@ export default Vue.extend({
 			this.entity.line_duration = null;
 			this.entity.budget_type_id = null;
 			this.entity.automatic_allocation = null;
-			this.campaign.automatic_allocation = undefined;
+			this.entity.line_pacing_id = null;
+			
 		},
 
 		// fetching

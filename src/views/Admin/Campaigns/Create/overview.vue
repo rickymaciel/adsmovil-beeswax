@@ -1393,6 +1393,7 @@
 			async validate() {
 				let form = this.$refs.form;
 				const valid = await form.validate();
+				console.log('valid', valid);
 				return await valid;
 			},
 			handleCancel() {
@@ -1402,6 +1403,7 @@
 			async handleSubmit() {
 				try {
 					if (!(await this.validate())) return;
+					console.log('this.isEdit', this.isEdit)
 					const emit = this.isEdit
 						? "update-campaign"
 						: "create-campaign";

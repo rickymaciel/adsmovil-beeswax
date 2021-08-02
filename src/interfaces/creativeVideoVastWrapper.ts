@@ -11,7 +11,10 @@ import {
   AddContentVastWrapperDataCreate,
   AttributeVastWrapperDataCreate,
   ExchangeOptionsVastWrapperDataCreate,
-  AddonSettingVastWrapperDataCreate
+  AddonSettingVastWrapperDataCreate,
+  AdvertiserDataUpdate,
+  AddContentVastWrapperDataUpdate,
+  AttributeVastWrapperDataUpdate, ExchangeOptionsVastWrapperDataUpdate, AddonSettingVastWrapperDataUpdate
 } from '@/interfaces/creative'
 
 export interface VastWrapper {
@@ -54,4 +57,18 @@ export interface VastWrapperDataCreate {
   creative_attributes: AttributeVastWrapperDataCreate,
   creative_exchange_options: ExchangeOptionsVastWrapperDataCreate,
   creative_addon_settings: AddonSettingVastWrapperDataCreate
+}
+
+export interface VastWrapperDataUpdate {
+  id: number,
+  name: string,
+  secure: boolean,
+  start_date: string,
+  end_date: string,
+  active: boolean,
+  creative_advertiser: AdvertiserDataUpdate,
+  creative_ad_content: AddContentVastWrapperDataUpdate,
+  creative_attributes: AttributeVastWrapperDataUpdate,
+  creative_exchange_options: ExchangeOptionsVastWrapperDataUpdate,
+  creative_addon_settings: AddonSettingVastWrapperDataUpdate
 }

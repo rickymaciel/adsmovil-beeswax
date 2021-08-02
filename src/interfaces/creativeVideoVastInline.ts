@@ -10,7 +10,11 @@ import {
   Attribute,
   ExchangeOption,
   Template,
-  Type
+  Type,
+  AdvertiserDataUpdate,
+  AddContentVastInlineDataUpdate,
+  AttributeVastInlineDataUpdate,
+  ExchangeOptionsVastInlineDataUpdate, AddonSettingVastInlineDataUpdate
 } from '@/interfaces/creative'
 
 export interface VastInline {
@@ -53,4 +57,18 @@ export interface VastInlineDataCreate {
   creative_attributes: AttributeVastInlineDataCreate,
   creative_exchange_options: ExchangeOptionsVastInlineDataCreate,
   creative_addon_settings: AddonSettingVastInlineDataCreate
+}
+
+export interface VastInlineDataUpdate {
+  id: number,
+  name: string,
+  secure: boolean,
+  start_date: string,
+  end_date: string,
+  active: boolean,
+  creative_advertiser: AdvertiserDataUpdate,
+  creative_ad_content: AddContentVastInlineDataUpdate,
+  creative_attributes: AttributeVastInlineDataUpdate,
+  creative_exchange_options: ExchangeOptionsVastInlineDataUpdate,
+  creative_addon_settings: AddonSettingVastInlineDataUpdate
 }
