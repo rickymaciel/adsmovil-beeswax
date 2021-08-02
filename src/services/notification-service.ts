@@ -2,6 +2,37 @@ import { Notification, MessageTypes } from "../interfaces/proccess";
 import i18n from '@/plugins/i18n';
 const NOTFOUNDMESSAGE = "Object not found or not active";
 class NotificationService {
+
+    success = { 
+        type: MessageTypes.SUCCESS, 
+        title: i18n.t('title-success'), 
+        message: i18n.t('success'),
+        btn_text: i18n.t('continue'),
+        show: true
+    } as Notification;
+
+    error = {
+        type: MessageTypes.ERROR,
+        title: i18n.t('title-failed'),
+        message: i18n.t('error'),
+        btn_text: i18n.t(MessageTypes.CONTINUE),
+        show: true
+    } as Notification;
+    
+    async notifySuccess(store, notification : Notification) {
+        notification = {...this.success, ...notification};
+        await store.dispatch('proccess/setErrors', undefined, { root: true });
+        await store.dispatch("proccess/setNotification", notification, { root: true });
+    }
+
+    async notifyError(store, notification : Notification) {
+        notification = {...this.error, ...notification}
+        if(notification.details) {
+            await store.dispatch('proccess/setErrors', notification.details, { root: true })
+        }
+        await store.dispatch("proccess/setNotification", notification, { root: true });
+    }
+
     /**
      * Success
      * @param params // { customMessage, to }

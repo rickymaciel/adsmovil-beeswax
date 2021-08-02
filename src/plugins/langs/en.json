@@ -85,7 +85,8 @@
     "init": {
         "title": "Activate your account",
         "actions": {
-            "submit": "Activate account"
+            "submit": "Activate account",
+            "go_login": "Go to Login"
         },
         "messages": {
             "success": "Your account was successfully activated."

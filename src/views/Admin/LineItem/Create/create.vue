@@ -558,8 +558,8 @@ export default Vue.extend({
 			try {
 				this.setLoading(true);
 				await this.createOverview(data.lineItem);
-				this.$router.push({ name: "lineItemList" });
 				this.setLoading(false);
+				this.$router.push({ name: "lineItemList" });
 			} catch (error) {
 				console.error("handleSubmitOverview", { error: error });
 				this.setLoading(false);

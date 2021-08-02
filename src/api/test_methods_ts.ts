@@ -7,12 +7,12 @@ import { account, forgot, initialize, login, logout, permissions, profile, reset
 //import { create, all, paginated, list, show, changeStatus, update } from './campaing/CampaingApi'
 //import { all, changeStatus, create, list, paginated, show, update } from './line_items/LineItemsApi'
 //import { create, update } from '@/api/creatives/banner/ImageApi'
-import { create, update } from '@/api/creatives/banner/JsTagApi'
-//import { create } from '@/api/creatives/banner/IframeTagApi'
-//import { create } from '@/api/creatives/banner/MraidTagApi'
-//import { create } from '@/api/creatives/banner/Html5Api'
-//import { create } from '@/api/creatives/video/VastInlineApi'
-//import { create } from '@/api/creatives/video/VastWrapper'
+//import { create, update } from '@/api/creatives/banner/JsTagApi'
+//import { create, update } from '@/api/creatives/banner/IframeTagApi'
+//import { create, update } from '@/api/creatives/banner/MraidTagApi'
+//import { create, update } from '@/api/creatives/banner/Html5Api'
+//import { create, update } from '@/api/creatives/video/VastInlineApi'
+import { create, update } from '@/api/creatives/video/VastWrapper'
 //import { all, paginated, list } from '@/api/creatives/CreativeApi'
 //import { all, paginated, list } from '@/api/creatives/AddonApi'
 //import { all, paginated, list } from '@/api/creatives/AssetApi'
@@ -1820,7 +1820,7 @@ const test_create_creative_jstag = {
       return null
     })
   }
-}*/
+}
 
 const test_update_creative_jstag = {
   data: function () {
@@ -1877,7 +1877,7 @@ const test_update_creative_jstag = {
   }
 }
 
-/*const test_create_creative_iframetag = {
+const test_create_creative_iframetag = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
@@ -1923,6 +1923,61 @@ const test_update_creative_jstag = {
       }
 
       const data_creative = await create(data, value)
+
+      console.log('CREATIVE IFRAME TAG', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_update_creative_iframetag = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data = {
+        id: 15,
+        name: 'Update Iframe Tag',
+        secure: false,
+        start_date: '2021-06-24 00:00:00',
+        end_date: '2021-06-30 00:00:00',
+        creative_advertiser: {
+          category_id: 6,
+          domain: 'https://advertiserupdate.com',
+          app_bundle: 'com.adsmovil.JsTag'
+        },
+        creative_ad_content: {
+          creative_rule_id: 616,
+          tag: '<ins data-dcm-placement=""/>'
+        },
+        creative_attributes: {
+          width: 320,
+          height: 50,
+          mime_type_id: 630,
+          expandable_type_id: 642,
+          expandable_directions: [1821, 1822],
+          responsive: false,
+          in_banner_video_id: 620
+        },
+        creative_exchange_options: {
+          thumbnail_id: 36,
+          appnexus_submit: false,
+          landing_page_url: 'http://adsmovil.com/update',
+          vendors: [649, 650, 651]
+        },
+        creative_addon_settings: {
+          //addons: [1],
+          pixels: ['https://adsmovil.com/pixels/pixel1.js', 'https://adsmovil.com/pixels/pixel2.js'],
+          scripts: ['https://adsmovil.com/scripts/script1.js', 'https://adsmovil.com/scripts/script2.js']
+        }
+      }
+
+      const data_creative = await update(data, value)
 
       console.log('CREATIVE IFRAME TAG', data_creative)
 
@@ -1991,6 +2046,61 @@ const test_create_creative_mraidtag = {
   }
 }
 
+const test_update_creative_mraidtag = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data = {
+        id: 18,
+        name: 'Update Mraid Tag',
+        secure: true,
+        start_date: '2021-06-24 00:00:00',
+        end_date: '2021-06-30 00:00:00',
+        creative_advertiser: {
+          category_id: 6,
+          domain: 'https://advertiser.com',
+          app_bundle: 'com.adsmovil.MraidTag'
+        },
+        creative_ad_content: {
+          creative_rule_id: 617,
+          tag: '<ins data-dcm-placement=""/>'
+        },
+        creative_attributes: {
+          width: 320,
+          height: 50,
+          mime_type_id: 630,
+          expandable_type_id: 642,
+          expandable_directions: [1822],
+          responsive: false,
+          in_banner_video_id: 620
+        },
+        creative_exchange_options: {
+          thumbnail_id: 36,
+          appnexus_submit: true,
+          landing_page_url: 'http://adsmovilupdate.com',
+          vendors: [649, 650, 651]
+        },
+        creative_addon_settings: {
+          //addons: [1],
+          pixels: ['https://adsmovil.com/pixels/pixel1.js', 'https://adsmovil.com/pixels/pixel2.js'],
+          scripts: ['https://adsmovil.com/scripts/script1.js', 'https://adsmovil.com/scripts/script2.js']
+        }
+      }
+
+      const data_creative = await update(data, value)
+
+      console.log('CREATIVE MRAID TAG', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
 const test_create_creative_html5 = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
@@ -2036,6 +2146,60 @@ const test_create_creative_html5 = {
       }
 
       const data_creative = await create(data, value)
+
+      console.log('CREATIVE HTML5', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_update_creative_html5 = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data = {
+        id: 29,
+        name: 'Update HTML5',
+        secure: true,
+        start_date: '2021-06-24 00:00:00',
+        end_date: '2021-06-30 00:00:00',
+        creative_advertiser: {
+          category_id: 6,
+          domain: 'https://advertiserupdae.com',
+          app_bundle: 'com.adsmovil.HTML5'
+        },
+        creative_ad_content: {
+          primary_asset_id: 42
+        },
+        creative_attributes: {
+          width: 320,
+          height: 50,
+          mime_type_id: 630,
+          expandable_type_id: 642,
+          expandable_directions: [1822],
+          responsive: true,
+          in_banner_video_id: 620
+        },
+        creative_exchange_options: {
+          thumbnail_id: 36,
+          appnexus_submit: false,
+          landing_page_url: 'http://adsmovil.com',
+          vendors: [649, 650, 651]
+        },
+        creative_addon_settings: {
+          //addons: [1],
+          pixels: ['https://adsmovil.com/pixels/pixel1.js', 'https://adsmovil.com/pixels/pixel2.js'],
+          scripts: ['https://adsmovil.com/scripts/script1.js', 'https://adsmovil.com/scripts/script2.js']
+        }
+      }
+
+      const data_creative = await update(data, value)
 
       console.log('CREATIVE HTML5', data_creative)
 
@@ -2124,6 +2288,81 @@ const test_create_creative_vast_inline = {
   }
 }
 
+const test_update_creative_vast_inline = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data = {
+        id: 31,
+        name: 'Update Vast Inline',
+        secure: true,
+        start_date: '2021-06-24 00:00:00',
+        end_date: '2021-06-30 00:00:00',
+        active: false,
+        creative_advertiser: {
+          category_id: 2,
+          domain: 'advertiser.vastinline.com',
+          app_bundle: 'com.adsmovil.VastInline'
+        },
+        creative_ad_content: {
+          primary_asset_id: 23,
+          title: 'VAST INLINE',
+          click_url: 'http://adsmovil.com/vast/update',
+          video_duration: 30,
+          companion_size_id: 3,
+          companion_html: '<html></html>'
+        },
+        creative_attributes: {
+          skippable: true,
+          skip_offset: '00:00:10'
+        },
+        creative_exchange_options: {
+          appnexus_submit: true,
+          landing_page_url: 'http://adsmovil.com',
+          vendors: [649, 650, 651]
+        },
+        creative_addon_settings: {
+          //addons: [6],
+          pixels: ['https://adsmovil.com/pixels/vastinline.js', 'https://adsmovil.com/pixels/vastinline.js'],
+          scripts: ['https://adsmovil.com/scripts/vastinline.js', 'https://adsmovil.com/scripts/vastinline.js'],
+          click_trackers: ['https://adsmovil.com/vastinline.js', 'https://adsmovil.com/vastinline.js'],
+          vast_events: [
+            {
+              event: 'start',
+              url: 'https://adsmovil.com/start'
+            },
+            {
+              event: 'firstQuartile',
+              url: 'https://adsmovil.com/firstQuartile'
+            }
+          ],
+          progress_events: [
+            {
+              time: '00:00:10',
+              url: 'https://adsmovil.com/time/10'
+            },
+            {
+              time: '00:00:20',
+              url: 'https://adsmovil.com/time/20'
+            }
+          ]
+        }
+      }
+
+      const data_creative = await update(data, value)
+
+      console.log('CREATIVE VAST INLINE', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
 const test_create_creative_vast_wrapper = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
@@ -2199,9 +2438,84 @@ const test_create_creative_vast_wrapper = {
       return null
     })
   }
+}*/
+
+const test_update_creative_vast_wrapper = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data = {
+        id: 34,
+        name: 'Update Vast Wrapper',
+        secure: false,
+        start_date: '2021-06-01 00:00:00',
+        end_date: '2021-06-30 00:00:00',
+        active: false,
+        creative_advertiser: {
+          category_id: 2,
+          domain: 'advertiser.vastwrapper.com',
+          app_bundle: 'com.adsmovil.vastwrapper'
+        },
+        creative_ad_content: {
+          tag: '<tag/>',
+          video_duration: 15
+        },
+        creative_attributes: {
+          video_mime_types: [635, 637, 638],
+          video_api_id: 124,
+          video_bit_rates: [644, 646],
+          skippable: false,
+          skip_offset: '00:00:10',
+          moat_inapp_viewability: false
+        },
+        creative_exchange_options: {
+          appnexus_submit: false,
+          landing_page_url: 'http://adsmovil.com/vastwrapper',
+          vendors: [649, 650, 651]
+        },
+        creative_addon_settings: {
+          //addons: [6],
+          pixels: ['https://adsmovil.com/pixels/pixel1.js', 'https://adsmovil.com/pixels/pixel2.js'],
+          scripts: ['https://adsmovil.com/scripts/script1.js', 'https://adsmovil.com/scripts/script2.js'],
+          click_trackers: ['https://adsmovil.com/tracker1.js', 'https://adsmovil.com/tracker2.js'],
+          vast_events: [
+            {
+              event: 'start',
+              url: 'https://adsmovil.com/start'
+            },
+            {
+              event: 'firstQuartile',
+              url: 'https://adsmovil.com/firstQuartile'
+            }
+          ],
+          progress_events: [
+            {
+              time: '00:00:10',
+              url: 'https://adsmovil.com/time/10'
+            },
+            {
+              time: '00:00:20',
+              url: 'https://adsmovil.com/time/20'
+            }
+          ]
+        }
+      }
+
+      const data_creative = await update(data, value)
+
+      console.log('CREATIVE VAST WRAPPER', data_creative)
+
+      return data_creative
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
 }
 
-const test_get_creatives = {
+/*const test_get_creatives = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
@@ -2544,4 +2858,4 @@ const test_targeting = {
 }*/
 /* -------- END CONTENT -------- */
 
-export default test_update_creative_jstag
+export default test_update_creative_vast_wrapper

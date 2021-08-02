@@ -100,12 +100,13 @@ export interface AdvertiserList {
 }
 
 export interface Notification {
-    title: string;
-    subtitle?: string;
-    message: string;
-    type: string;
-    to?: any;
-    show?: Boolean;
+    title: string,
+    subtitle?: string,
+    message: string,
+    details?: any,
+    type: string,
+    to?: any,
+    show?: Boolean,
     btn_text: string
 }
 

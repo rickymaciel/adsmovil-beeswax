@@ -311,9 +311,24 @@ export interface AddContentVastInlineDataCreate {
   companion_html: string
 }
 
+export interface AddContentVastInlineDataUpdate {
+  title?: string,
+  click_url?: string,
+  video_duration?: number,
+  primary_asset_id?: number,
+  secondary_asset_id?: number,
+  companion_size_id?: number,
+  companion_html?: string
+}
+
 export interface AddContentVastWrapperDataCreate {
   tag: string,
   video_duration: number
+}
+
+export interface AddContentVastWrapperDataUpdate {
+  tag?: string,
+  video_duration?: number
 }
 
 export interface ExchangeOptionsImageDataCreate {
@@ -390,10 +405,22 @@ export interface ExchangeOptionsVastInlineDataCreate {
   vendors: number[]
 }
 
+export interface ExchangeOptionsVastInlineDataUpdate {
+  landing_page_url?: string,
+  appnexus_submit?: boolean,
+  vendors?: number[]
+}
+
 export interface ExchangeOptionsVastWrapperDataCreate {
   landing_page_url: string,
   appnexus_submit: boolean,
   vendors: number[]
+}
+
+export interface ExchangeOptionsVastWrapperDataUpdate {
+  landing_page_url?: string,
+  appnexus_submit?: boolean,
+  vendors?: number[]
 }
 
 export interface AddonSettingDataCreate {
@@ -417,6 +444,15 @@ export interface AddonSettingVastInlineDataCreate {
   progress_events: ProgressEvent[]
 }
 
+export interface AddonSettingVastInlineDataUpdate {
+  addons?: number[],
+  pixels?: string[],
+  scripts?: string[],
+  click_trackers?: string[],
+  vast_events?: VastEvent[],
+  progress_events?: ProgressEvent[]
+}
+
 export interface AddonSettingVastWrapperDataCreate {
   addons: number[],
   pixels: string[],
@@ -424,6 +460,15 @@ export interface AddonSettingVastWrapperDataCreate {
   click_trackers: string[],
   vast_events: VastEvent[],
   progress_events: ProgressEvent[]
+}
+
+export interface AddonSettingVastWrapperDataUpdate {
+  addons?: number[],
+  pixels?: string[],
+  scripts?: string[],
+  click_trackers?: string[],
+  vast_events?: VastEvent[],
+  progress_events?: ProgressEvent[]
 }
 
 export interface AttributeDataCreate {
@@ -451,6 +496,11 @@ export interface AttributeVastInlineDataCreate {
   skip_offset: string
 }
 
+export interface AttributeVastInlineDataUpdate {
+  skippable?: boolean,
+  skip_offset?: string
+}
+
 export interface AttributeVastWrapperDataCreate {
   video_api_id: number,
   video_mime_types: number[],
@@ -458,6 +508,15 @@ export interface AttributeVastWrapperDataCreate {
   skippable: boolean,
   skip_offset: string,
   moat_inapp_viewability: boolean
+}
+
+export interface AttributeVastWrapperDataUpdate {
+  video_api_id?: number,
+  video_mime_types?: number[],
+  video_bit_rates?: number[],
+  skippable?: boolean,
+  skip_offset?: string,
+  moat_inapp_viewability?: boolean
 }
 
 export interface VastEvent {

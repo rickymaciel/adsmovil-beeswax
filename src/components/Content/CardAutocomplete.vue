@@ -30,6 +30,7 @@
 			validate-on-blur
 			hide-no-data
 			:loading="isLoading"
+			:error-messages="error_messages"
 			@click="clickEvent"
 			@change="changeEvent"
 			@focus="focusEvent"
@@ -175,6 +176,12 @@ export default {
 		colapse_selection: {
 			type: Boolean,
 			default: false,
+		},
+		error_messages: { 
+			type: Array,
+				default: function () {
+					return [];
+			},
 		},
 	},
 	data: function () {

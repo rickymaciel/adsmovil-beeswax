@@ -11,6 +11,7 @@
 				v-on="on"
 				readonly
 				:rules="rules"
+				:error-messages="error_messages"
 			>
 				<template v-slot:progress>
 					<slot name="progress">
@@ -202,7 +203,13 @@ export default {
 		max_date: { type: String, default: "" },
 		is_end: { type: Boolean, default: false },
 		rules: { type: Array, default: () => [] },
-		required: { type: Boolean, default: false },
+		required: { type: Boolean, default: false }, 
+		error_messages: { 
+			type: Array,
+				default: function () {
+					return [];
+			},
+		},
 	},
 	data() {
 		return {

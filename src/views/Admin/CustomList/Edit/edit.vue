@@ -1,6 +1,6 @@
 <template>
 	<v-container class="my-0">
-		<Alertize :message="message" :type="type"></Alertize>
+		<Alertize :message="message" :type="type"/>
 		<v-layout column>
 			<v-form
 				ref="form"

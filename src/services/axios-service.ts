@@ -5,33 +5,49 @@
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { HasProviderToken, ProviderToken } from './auth-service'
 import { ValidateToken } from '@/services/jwt-service'
-import { forEach } from 'lodash';
 
-//axios.defaults.baseURL = 'http://dsp-api.localhost.com' // endpoint para gero
-axios.defaults.baseURL = 'https://dsp-api-testing.adsmovil.com'
+// const api_gero = 'http://dsp-api.localhost.com';
+const api_production = 'https://dsp-platform.adsmovil.com';
+const api_develop = 'https://dsp-sandbox.adsmovil.com';
+
+const front_production = 'https://adsmovil-beeswax.herokuapp.com'
+// const front_develop = 'https://dev-adsmovil.herokuapp.com/'
+
+axios.defaults.baseURL = location.origin === front_production ? api_production : api_develop
+
+
+console.log('AxiosService', {
+    origin: location.origin,
+    is_production: location.origin === front_production,
+    baseURL: axios.defaults.baseURL
+})
 
 axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*'
 axios.defaults.headers.common['Access-Control-Allow-Headers'] = "Origin, Content-Type, X-Auth-Token"
 axios.defaults.headers.common['Access-Control-Allow-Methods'] = "GET, POST, PATCH, PUT, DELETE, OPTIONS"
 axios.defaults.headers.common['Accept'] = 'application/json'
 
-axios.defaults.headers.get = {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Credentials': true,
-};
+// axios.defaults.headers.get = {
+//     'Accept': 'application/json',
+//     'Content-Type': 'application/json',
+//     'Access-Control-Allow-Credentials': true,
+// };
 
 const token = localStorage.getItem('token') || ''
 
-console.log('AxiosService', {token});
-
 if (token && token.startsWith('Bearer ')) {
-    axios.defaults.headers.common.Authorization = ValidateToken(token)
+    const tokenValid = ValidateToken(token)
+
+    if (String(tokenValid).length > 0) {
+        axios.defaults.headers.common.Authorization = tokenValid
+        localStorage.setItem('token', tokenValid)
+    }
+    
+    axios.defaults.headers.common.Authorization = token
 }
 
 // Add a request interceptor
 axios.interceptors.request.use(function (config) {
-    console.log('AxiosService::request', {token, config, headers: axios.defaults.headers});
     return config
 }, function (error) {
     //console.error('AxiosService.interceptors', { request: error })
@@ -43,6 +59,7 @@ axios.interceptors.response.use(function (response) {
     if (HasProviderToken(response)) {
         const provider = ProviderToken(response)
         if (provider && provider.startsWith('Bearer')) {
+
             const tokenValid = ValidateToken(provider)
 
             if (String(tokenValid).length > 0) {
@@ -63,16 +80,10 @@ axios.interceptors.response.use(function (response) {
 export function AxiosPost(url: string, payload: any, has_file: boolean = false) {
     var headers = {
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': has_file ? 'multipart/form-data' : 'application/json'
         }
     };
-    if (has_file) {
-        headers = {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        };
-    }
+    // console.log('AxiosPost', {url, payload, headers});
     return axios.post(url, payload, headers)
 }
 
