@@ -17,7 +17,7 @@
 				></CustomListForm>
 
 				<v-divider class="my-4"></v-divider>
-
+				<v-row> 
 					<v-col cols="12" sm="12" md="6" lg="8">
 						<v-card
 							elevation="0"
@@ -63,7 +63,7 @@
 							</v-row>
 						</v-card>
 					</v-col>
-				</v-row> -->
+				</v-row>
 			</v-form>
 
 			<!-- <v-divider v-if="hasTypeSelected" class="my-8"></v-divider> -->

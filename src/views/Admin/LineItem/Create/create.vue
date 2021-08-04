@@ -18,25 +18,9 @@
 						<!-- Overview -->
 						<v-layout v-if="isCurrentTabSelected(item, 0)" column>
 							<Overview
-								:campaigns="getCampaigns"
-								:biddingShadings="getBiddingShadings"
-								:advertisers="getAdvertisers"
-								:lineItemTypes="getLineItemTypes"
-								:line_item="getLineItem"
-								:campaigns_pacing="getCampaignsPacing"
-								:budget_types="getBudgetTypes"
-								:optimization_strategies="
-									getOptimizationStrategies
-								"
-								:strategies="getStrategies"
-								:unit_times="getUnitTimes"
-								:creativeWeightingMethods="
-									getCreativeWeightingMethods
-								"
-								:bidStrategies="getBidStrategies"
-								:linesPacing="getLinesPacing"
-								@update-model="updateModelOverview"
-								@init-frequency-caps="dispatchUnitTimes()"
+								:resources="resources"
+								:line_item="line_item"
+								@init-frequency-caps="addFrecuencyCaps"
 								@create-overview="handleSubmitOverview"
 								@update-overview="handleSubmitOverview"
 								@create-overview-continue="
@@ -46,8 +30,10 @@
 									handleSubmitAndContinueOverview
 								"
 								@handle-cancel="handleCancel"
-								@update-line-item="setLineItem"
 								:errors="getErrors"
+								@fetch-resource="fetchResource"
+								@change="handleChange"
+								@clear="handleClear"
 							></Overview>
 						</v-layout>
 
@@ -81,6 +67,7 @@
 										>
 											<AppSite
 												v-if="currentTabTargeting === 0"
+												:predicates="getPredicateIds"
 												:data_variables="
 													data_variables.app_site
 												"
@@ -103,11 +90,13 @@
 
 											<Content
 												v-if="currentTabTargeting === 1"
+												:predicates="getPredicateIds"
 												:content="targeting.content"
 											></Content>
 
 											<Environment
 												v-if="currentTabTargeting === 2"
+												:predicates="getPredicateIds"
 												:environment="
 													targeting.environment
 												"
@@ -115,6 +104,7 @@
 
 											<Exchange
 												v-if="currentTabTargeting === 3"
+												:predicates="getPredicateIds"
 												:data_variables="
 													data_variables.exchange
 												"
@@ -137,6 +127,7 @@
 
 											<Geo
 												v-if="currentTabTargeting === 4"
+												:predicates="getPredicateIds"
 												:data_variables="
 													data_variables.geo
 												"
@@ -228,7 +219,7 @@
 							<AssociatedCreativesForm
 								@line-item-activate="handleActivate"
 								@cancel="handleCancel"
-								:line_item="getLineItem"
+								:line_item="line_item"
 							></AssociatedCreativesForm>
 						</v-layout>
 					</v-tab-item>
@@ -256,13 +247,21 @@ import { TargetingDataCreate, Term } from "../../../../interfaces/targeting";
 
 import {
 	initLineItem,
-	initHardCoreLineItem,
 	initTargeting,
 	initDataVariables,
 	getTargetingIDByValue,
 } from "../../../../utils/initData";
 import Alertize from "../../../../components/Alertize.vue";
-import { isArray, isEmpty, isNull, isString, isUndefined, trim } from "lodash";
+import {
+	find,
+	isArray,
+	isEmpty,
+	isNull,
+	isString,
+	isUndefined,
+	trim,
+	filter,
+} from "lodash";
 import { LineItemDataCreate } from "../../../../interfaces/line_item";
 import CardTextField from "../../../../components/Content/CardTextField.vue";
 import AppSite from "../targetings/appSite.vue";
@@ -272,6 +271,35 @@ import Geo from "../targetings/geo.vue";
 import Exchange from "../targetings/exchange.vue";
 import { prepareTargetingDataCreate } from "../../../../utils/resolveObjectArray";
 import AssociatedCreativesForm from "../creatives/associatedCreatives.vue";
+
+// Configs Optimization Strategy
+const OPTIMIZATION_BY_LINE = "By Line";
+const OPTIMIZATION_BY_CAMPAIGN = "By Campaign";
+
+// Configs Bid Strategy
+const BID_STRATEGY_FIXED = "Fix";
+const BID_STRATEGY_AUTOMATED = "Automated";
+
+// Configs Budget Type
+const BUDGET_TYPE_IMPRESSIONS = "Impressions";
+const BUDGET_TYPE_SPEND = "Spend";
+
+// Configs to Optimization Strategy
+const OPTIMIZED_CPM = "Optimized CPM";
+const OPTIMIZED_CPC = "Optimized CPC";
+const OPTIMIZED_VCR = "Optimized VCR";
+
+// Configs Line Item Type
+const LINE_ITEM_TYPE_VIDEO = "Video";
+
+// Configs Line Pacing
+const LINE_PACING_DAILY = "Daily";
+const LINE_PACING_ASAP = "ASAP";
+const LINE_PACING_LIFETIME = "Lifetime";
+
+// Configs Targeting Predicates
+const EXCLUDED = "None";
+const INCLUDED = "All";
 
 export default Vue.extend({
 	name: "Create",
@@ -290,38 +318,130 @@ export default Vue.extend({
 		AssociatedCreativesForm,
 	},
 	data: () => ({
-		title: "Create",
+		title: "CreateLineItem",
 		currentTab: 0,
 		currentTabTargeting: 0,
 		items: [],
 
+		//Aux App Site
+		data_variables: initDataVariables(),
+
+		targeting_predicates: [],
+
 		// Line Item Data
-		line_item: null,
+		line_item: initLineItem(),
 
 		// Targeting Data
 		targeting: initTargeting(),
 
 		targeting_expressions: null,
 
-		//Aux App Site
-		data_variables: initDataVariables(),
+		resources: {
+			campaigns: [],
+			advertisers: [],
+			line_item_types: [],
+			creative_weighting_methods: [],
+			budget_types: [],
+			bid_strategies: [],
+			strategies: [],
+			strategies_filtered: [],
+			bidding_shadings: [],
+			campaigns_pacing: [],
+			optimization_strategies: [],
+			unit_times: [],
+			line_pacings: [],
+			selected_campaign: null,
+			budget_display: "Total",
+			fields: {
+				budget: {
+					required: true,
+					show: true,
+					disabled: false,
+				},
+				budget_type_id: {
+					required: true,
+					show: true,
+					disabled: false,
+				},
+				fix_cpm: {
+					required: false,
+					show: false,
+					disabled: false,
+				},
+				bid_shading_id: {
+					required: false,
+					show: false,
+					disabled: false,
+				},
+				bid_strategy_id: {
+					required: true,
+					show: true,
+					disabled: false,
+				},
+				strategy_id: {
+					required: false,
+					show: false,
+					disabled: false,
+				},
+				line_pacing_id: {
+					required: true,
+					show: false,
+					disabled: true,
+				},
+				daily_budget: {
+					required: false,
+					show: false,
+					disabled: true,
+				},
+				cpm_bid: {
+					required: false,
+					show: false,
+					disabled: true,
+				},
+				target_ecpm: {
+					required: false,
+					show: false,
+					disabled: false,
+				},
+				target_ecpc: {
+					required: false,
+					show: false,
+					disabled: true,
+				},
+				target_ctr: {
+					required: false,
+					show: false,
+					disabled: false,
+				},
+				target_ecpcv: {
+					required: false,
+					show: false,
+					disabled: false,
+				},
+				target_cpcv: {
+					required: false,
+					show: false,
+					disabled: false,
+				},
+				target_vcr: {
+					required: false,
+					show: false,
+					disabled: false,
+				},
+			},
+		},
 	}),
 	created() {
-		// init for test
-		//this.setLineItem(initHardCoreLineItem());
-
-		this.setLineItem(initLineItem());
-
 		this.items = [];
 
 		this.updateSelectedTabIndex();
 
-		// TODO revisar targeting keys -> cambiar datos hardcodeados a dinamico desde api !this.hasTargetingExpressions
-
-		// setTimeout(async () => {
-		// 	const t = await this.dispatchTargetingKeys();
-		// 	console.log("dispatchTargetingKeys", { t });
-		// }, 500);
+		this.$nextTick(async () => {
+			this.setLoading(true);
+			this.targeting_predicates =
+				await this.dispatchTargetingPredicates();
+			this.setLoading(false);
+		});
 	},
 	mounted() {},
 	computed: {
@@ -342,45 +462,10 @@ export default Vue.extend({
 			];
 		},
 
-		getCampaigns() {
-			return this.$store.state.campaign.campaigns_list;
-		},
-		getBiddingShadings() {
-			return this.$store.state.custom_list.bidding_shadings_list;
-		},
-		getAdvertisers() {
-			return this.$store.state.advertiser.advertisers_list;
-		},
-		getLineItemTypes() {
-			return this.$store.state.custom_list.line_item_types;
-		},
-		getLineItem() {
-			return this.line_item;
-		},
-		getBudgetTypes() {
-			return this.$store.state.custom_list.budget_types;
-		},
-		getCampaignsPacing() {
-			return this.$store.state.custom_list.campaigns_pacing;
-		},
-		getOptimizationStrategies() {
-			return this.$store.state.custom_list.optimization_strategies;
-		},
-		getStrategies() {
-			return this.$store.state.custom_list.strategies;
-		},
-		getUnitTimes() {
-			return this.$store.state.custom_list.unit_times;
-		},
-		getCreativeWeightingMethods() {
-			return this.$store.state.custom_list.creative_weighting_methods;
-		},
-		getBidStrategies() {
-			return this.$store.state.custom_list.bid_strategy_list;
-		},
-		getLinesPacing() {
-			return this.$store.state.custom_list.lines_pacing_list;
-		},
+		/**
+		 * End Resources
+		 */
+
 		getErrors() {
 			return this.$store.state.proccess.errors;
 		},
@@ -391,16 +476,16 @@ export default Vue.extend({
 			return prepareTargetingDataCreate(this.targeting);
 		},
 		isCreatedLineItem() {
-			return this.hasData(this.getLineItem.id);
+			return this.hasData(this.line_item.id);
 		},
 		hasAssociatedCreatives() {
 			return (
-				this.hasData(this.getLineItem.creative_associations) &&
-				!isEmpty(this.getLineItem.creative_associations)
+				this.hasData(this.line_item.creative_associations) &&
+				!isEmpty(this.line_item.creative_associations)
 			);
 		},
 		getAssociatedCreatives(): Array<any> {
-			return this.getLineItem.creative_associations;
+			return this.line_item.creative_associations;
 		},
 		hasTargetingExpressions() {
 			return (
@@ -411,29 +496,428 @@ export default Vue.extend({
 		getTargetingExpressions() {
 			return this.targeting_expressions;
 		},
+
+		/**
+		 *
+		 */
+
+		getSelectedCampaign() {
+			return this.resources.selected_campaign;
+		},
+
+		isAutomaticAllocation(): Boolean {
+			return Boolean(this.getSelectedCampaign?.automatic_allocation);
+		},
+
+		getPredicateIds() {
+			return {
+				INCLUDED: this.isIncluded,
+				EXCLUDED: this.isExcluded,
+			};
+		},
+
+		isExcluded() {
+			const result = find(this.targeting_predicates, {
+				value: EXCLUDED,
+			});
+
+			return result?.id;
+		},
+
+		isIncluded() {
+			const result = find(this.targeting_predicates, {
+				value: INCLUDED,
+			});
+
+			return result?.id;
+		},
+
+		updateBudgetDisplay() {
+			const result = find(this.resources.budget_types, {
+				id: this.line_item.budget_type_id,
+			});
+
+			this.resources.budget_display = `Total ${result?.value || ""}`;
+		},
+
+		async updateStrategies() {
+			const strategies = this.resources.strategies;
+
+			const isVideo: Boolean = await this.isLineItemType(
+				LINE_ITEM_TYPE_VIDEO
+			);
+
+			if (isVideo) {
+				this.resources.strategies_filtered = filter(
+					strategies,
+					function (s) {
+						return (
+							String(s.value).toLowerCase() !=
+							OPTIMIZED_VCR.toLowerCase()
+						);
+					}
+				);
+			} else {
+				this.resources.strategies_filtered = strategies;
+			}
+
+			return this.resources.strategies_filtered;
+		},
 	},
 	methods: {
+		/**
+		 * Aplica cambios en los datos obtenidos desde la campaña
+		 */
+		async applyCampaignSelectedToLineItem(from_campaign: Boolean = false) {
+			const campaign = this.resources.selected_campaign;
+			const optimization_strategy = campaign?.optimization_strategy;
+			const isByCampaign: Boolean =
+				optimization_strategy?.description === OPTIMIZATION_BY_CAMPAIGN;
+			const isAutomated: Boolean = await this.isBidStrategy(
+				BID_STRATEGY_AUTOMATED
+			);
+			const isFix: Boolean = await this.isBidStrategy(BID_STRATEGY_FIXED);
+
+			// advertiser_id
+			this.setField("advertiser_id", {
+				show: true,
+				required: true,
+				disabled: false,
+				value: campaign?.advertiser_id || null,
+			});
+
+			if (isAutomated) {
+				if (isEmpty(this.resources.strategies)) {
+					this.resources.strategies = await this.dispatchStrategies();
+				}
+			}
+
+			// strategy_id
+			this.setField("strategy_id", {
+				show: isAutomated,
+				required: isAutomated,
+				disabled: false,
+				value: from_campaign ? campaign?.strategy_id : undefined,
+			});
+
+			// budget_type_id
+			this.setField("budget_type_id", {
+				show: true,
+				required: true,
+				disabled: isByCampaign,
+				value: from_campaign ? campaign?.budget_type_id : undefined,
+			});
+
+			// budget
+			this.setField("budget", {
+				show: true,
+				required: true,
+				disabled: this.isAutomaticAllocation && isByCampaign,
+				value: campaign?.budget,
+			});
+
+			const isSpend: Boolean = await this.isBudgetType(BUDGET_TYPE_SPEND);
+
+			// cpm_bid
+			this.setField("cpm_bid", {
+				show: isAutomated && isSpend,
+				required: isAutomated && isSpend,
+				disabled: !(isAutomated && isSpend),
+				value:
+					this.isAutomaticAllocation && isByCampaign
+						? campaign?.cpm_bid
+						: null,
+			});
+
+			// fix_cpm
+			this.setField("fix_cpm", {
+				show: isFix,
+				required: isFix,
+				disabled: !isFix,
+			});
+
+			const isOptimizedCPC: Boolean = await this.isStrategy(
+				OPTIMIZED_CPC
+			);
+
+			const isOptimizedCPM: Boolean = await this.isStrategy(
+				OPTIMIZED_CPM
+			);
+
+			const isOptimizedVCR: Boolean = await this.isStrategy(
+				OPTIMIZED_VCR
+			);
+
+			// bid_shading_id
+			this.setField("bid_shading_id", {
+				show: (isOptimizedVCR || isOptimizedCPM) && isFix,
+				required: (isOptimizedVCR || isOptimizedCPM) && isFix,
+				disabled: !((isOptimizedVCR || isOptimizedCPM) && isFix),
+				value: undefined,
+			});
+
+			// target_ecpc
+			this.setField("target_ecpc", {
+				show: isOptimizedCPC && isAutomated && isSpend,
+				required: false,
+				disabled: !(isOptimizedCPC && isAutomated && isSpend),
+				value:
+					this.isAutomaticAllocation && isByCampaign && isOptimizedCPC
+						? campaign?.target_ecpc
+						: undefined,
+			});
+
+			// target_ctr
+			this.setField("target_ctr", {
+				show: isOptimizedCPC && isAutomated && isSpend,
+				required: false,
+				disabled: !(isOptimizedCPC && isAutomated && isSpend),
+				value:
+					this.isAutomaticAllocation && isByCampaign && isOptimizedCPC
+						? campaign?.target_ctr
+						: undefined,
+			});
+
+			// target_vcr
+			this.setField("target_vcr", {
+				show: isOptimizedVCR && isAutomated,
+				required: false,
+				disabled: !(isOptimizedVCR && isAutomated),
+				value: isOptimizedVCR ? campaign?.target_vcr : undefined,
+			});
+
+			// line_pacing_id
+			this.setField("line_pacing_id", {
+				show: !(this.isAutomaticAllocation && isByCampaign),
+				required: true,
+				disabled: false,
+				value:
+					this.isAutomaticAllocation && isByCampaign
+						? campaign?.campaign_pacing_id
+						: undefined,
+			});
+
+			const isPacingDaily: Boolean = await this.isLinePacing(
+				LINE_PACING_DAILY
+			);
+
+			// daily_budget
+			this.setField("daily_budget", {
+				show: true,
+				required: isPacingDaily,
+				disabled: !isPacingDaily,
+				value:
+					this.isAutomaticAllocation && isByCampaign
+						? campaign?.daily_budget
+						: undefined,
+			});
+
+			// update strategies filtered
+			this.updateStrategies;
+
+			this.updateBudgetDisplay;
+		},
+
+		async isOptimizationStrategy(key: any): Promise<Boolean> {
+			if (isEmpty(this.resources.optimization_strategies)) {
+				this.resources.optimization_strategies =
+					await this.dispatchOptimizationStrategies();
+			}
+
+			return (
+				find(this.resources.optimization_strategies, { value: key })
+					?.id ===
+				this.resources.selected_campaign?.optimization_strategy_id
+			);
+		},
+
+		async isBidStrategy(key: string): Promise<Boolean> {
+			if (isEmpty(this.resources.bid_strategies)) {
+				this.resources.bid_strategies =
+					await this.dispatchBidStrategies();
+			}
+
+			const bid_strategy = find(this.resources.bid_strategies, {
+				value: key,
+			});
+
+			return bid_strategy?.id === this.line_item.bid_strategy_id;
+		},
+
+		async isBudgetType(key: string): Promise<Boolean> {
+			if (isEmpty(this.resources.budget_types)) {
+				this.resources.budget_types = await this.dispatchBudgetTypes();
+			}
+
+			const budget_type = find(this.resources.budget_types, {
+				value: key,
+			});
+
+			return budget_type?.id === this.line_item.budget_type_id;
+		},
+
+		async isLineItemType(key: string): Promise<Boolean> {
+			if (isEmpty(this.resources.line_item_types)) {
+				this.resources.line_item_types = await this.dispatchTypes();
+			}
+
+			const line_item_type = find(this.resources.line_item_types, {
+				value: key,
+			});
+
+			return line_item_type?.id === this.line_item.line_item_type_id;
+		},
+
+		async isStrategy(key: string): Promise<Boolean> {
+			if (isEmpty(this.resources.strategies)) {
+				this.resources.strategies = await this.dispatchStrategies();
+			}
+
+			const strategy = find(this.resources.strategies, {
+				value: key,
+			});
+
+			return strategy?.id === this.line_item.strategy_id;
+		},
+
+		async isLinePacing(key: string): Promise<Boolean> {
+			if (isEmpty(this.resources.line_pacings)) {
+				this.resources.line_pacings = await this.dispatchLinesPacing();
+			}
+
+			const line_pacing = find(this.resources.line_pacings, {
+				value: key,
+			});
+
+			return line_pacing?.id === this.line_item.line_pacing_id;
+		},
+
 		setLineItem(lineItem: any) {
-			console.log("setLineItem", { lineItem });
 			this.line_item = lineItem;
 		},
 		hasData(attr: any) {
 			return !isUndefined(attr) && !isNull(attr);
 		},
+		async fetchResource(params: { resource: string; value?: any }) {
+			this.setLoadingField(true);
+			switch (params.resource) {
+				case "campaign_id":
+					if (isEmpty(this.resources.advertisers)) {
+						this.resources.advertisers =
+							await this.dispatchAdvertisers();
+					}
+					if (isEmpty(this.resources.campaigns)) {
+						this.resources.campaigns =
+							await this.dispatchCampaigns();
+					}
+					break;
+
+				case "line_item_type_id":
+					if (isEmpty(this.resources.line_item_types)) {
+						this.resources.line_item_types =
+							await this.dispatchTypes();
+					}
+					break;
+
+				case "creative_method_id":
+					if (isEmpty(this.resources.creative_weighting_methods)) {
+						this.resources.creative_weighting_methods =
+							await this.dispatchCreativeWeightingMethods();
+					}
+					break;
+
+				case "line_pacing_id":
+					if (isEmpty(this.resources.line_pacings)) {
+						this.resources.line_pacings =
+							await this.dispatchLinesPacing();
+					}
+					break;
+
+				case "bid_shading_id":
+					if (isEmpty(this.resources.bidding_shadings)) {
+						this.resources.bidding_shadings =
+							await this.dispatchBiddingShadings();
+					}
+					break;
+
+				case "strategy_id":
+					if (isEmpty(this.resources.strategies)) {
+						this.resources.strategies =
+							await this.dispatchStrategies();
+					}
+
+					// update strategies filtered
+					this.updateStrategies;
+					break;
+
+				case "unit_time_id":
+					if (isEmpty(this.resources.unit_times)) {
+						this.resources.unit_times =
+							await this.dispatchUnitTimes();
+					}
+					break;
+			}
+			this.setLoadingField(false);
+		},
+
+		async handleChange(params: { key: string | number; value: any }) {
+			this.setLoadingField(true);
+
+			this.line_item[params.key] = params.value;
+
+			switch (params.key) {
+				case "line_duration":
+					this.applyCampaignSelectedToLineItem();
+					break;
+
+				case "line_item_type_id":
+					this.updateStrategies;
+					this.applyCampaignSelectedToLineItem();
+					break;
+
+				case "bid_strategy_id":
+					this.applyCampaignSelectedToLineItem();
+					break;
+
+				case "campaign_id":
+					this.resources.selected_campaign =
+						await this.dispatchGetCampaignById(
+							Number(params.value)
+						);
+
+					this.applyCampaignSelectedToLineItem(true);
+					break;
+
+				case "strategy_id":
+					this.applyCampaignSelectedToLineItem();
+					break;
+
+				case "bid_shading_id":
+					this.applyCampaignSelectedToLineItem();
+					break;
+
+				case "budget_type_id":
+					this.applyCampaignSelectedToLineItem();
+					break;
+
+				case "line_pacing_id":
+					this.applyCampaignSelectedToLineItem();
+					break;
+			}
+
+			this.setLoadingField(false);
+		},
+
 		async loadResources() {
 			this.setLoading(true);
-			await this.dispatchCampaigns();
-			await this.dispatchAdvertisers();
-			await this.dispatchTypes();
-			await this.dispatchBudgetTypes();
-			await this.dispatchCampaignPacing();
-			await this.dispatchOptimizationStrategies();
-			await this.dispatchStrategies();
-			await this.dispatchUnitTimes();
-			await this.dispatchCreativeWeightingMethods();
-			await this.dispatchBidStrategies();
-			await this.dispatchLinesPacing();
-			await this.dispatchBiddingShadings();
+			if (isEmpty(this.resources.budget_types)) {
+				this.resources.budget_types = await this.dispatchBudgetTypes();
+			}
+			if (isEmpty(this.resources.bid_strategies)) {
+				this.resources.bid_strategies =
+					await this.dispatchBidStrategies();
+			}
+
 			this.setLoading(false);
 		},
 		redirectTo() {
@@ -444,7 +928,9 @@ export default Vue.extend({
 			return this.$store.dispatch(
 				"proccess/setNotification",
 				notification,
-				{ root: true }
+				{
+					root: true,
+				}
 			);
 		},
 		isCurrentTabSelected(item: { key: number }, index: number): Boolean {
@@ -457,6 +943,10 @@ export default Vue.extend({
 
 		async dispatchTargetingKeys() {
 			return this.$store.dispatch("targeting/getTargetingKeys");
+		},
+
+		async dispatchTargetingPredicates() {
+			return this.$store.dispatch("targeting/getTargetingPredicates");
 		},
 
 		async dispatchCampaigns() {
@@ -507,15 +997,19 @@ export default Vue.extend({
 			});
 		},
 
-		async dispatchUnitTimes() {
-			if (!isEmpty(this.getUnitTimes)) return;
-			return this.$store.dispatch("custom_list/getUnitTimes", {
-				root: true,
+		async addFrecuencyCaps() {
+			this.line_item.frequency_caps.push({
+				impressions: undefined,
+				every_time: undefined,
+				unit_time_id: undefined,
 			});
 		},
 
+		async dispatchUnitTimes() {
+			return this.$store.dispatch("custom_list/getUnitTimes");
+		},
+
 		async dispatchCreativeWeightingMethods() {
-			if (!isEmpty(this.getCreativeWeightingMethods)) return;
 			return this.$store.dispatch(
 				"custom_list/getCreativeWeightingMethods",
 				{
@@ -525,29 +1019,32 @@ export default Vue.extend({
 		},
 
 		async dispatchBidStrategies() {
-			if (!isEmpty(this.dispatchBidStrategies)) return;
 			return this.$store.dispatch("custom_list/getBidStrategies", {
 				root: true,
 			});
 		},
 
 		async dispatchLinesPacing() {
-			if (!isEmpty(this.dispatchLinesPacing)) return;
+			if (!isEmpty(this.resources.line_pacings)) return;
 			return this.$store.dispatch("custom_list/getLinesPacing", {
 				root: true,
 			});
 		},
 
 		async dispatchBiddingShadings() {
-			if (!isEmpty(this.dispatchBiddingShadings)) return;
+			if (!isEmpty(this.resources.bidding_shadings)) return;
 			return this.$store.dispatch("custom_list/getBiddingShadings", {
 				root: true,
 			});
 		},
 
+		async dispatchGetCampaignById(id: number) {
+			return this.$store.dispatch("campaign/getById", id);
+		},
+
 		async handleCancel() {
 			try {
-				this.$router.push({ name: "lineItemList" });
+				this.$router.push({ name: "LineItemList" });
 			} catch (error) {
 				console.error("handleCancel", { error: error });
 				this.setLoading(false);
@@ -559,7 +1056,7 @@ export default Vue.extend({
 				this.setLoading(true);
 				await this.createOverview(data.lineItem);
 				this.setLoading(false);
-				this.$router.push({ name: "lineItemList" });
+				this.$router.push({ name: "LineItemList" });
 			} catch (error) {
 				console.error("handleSubmitOverview", { error: error });
 				this.setLoading(false);
@@ -573,10 +1070,6 @@ export default Vue.extend({
 				this.setLoading(true);
 
 				const result = await this.createOverview(data.lineItem);
-
-				console.log("create::handleSubmitAndContinueOverview", {
-					result,
-				});
 
 				this.setLineItem(result);
 
@@ -596,7 +1089,7 @@ export default Vue.extend({
 				this.setLoading(true);
 
 				const targeting_create_data = {
-					line_item_id: this.getLineItem.id,
+					line_item_id: this.line_item.id,
 					active: true,
 					targeting_terms: prepareTargetingDataCreate(
 						this.targeting
@@ -607,11 +1100,6 @@ export default Vue.extend({
 					targeting_create_data
 				);
 
-				console.log("create::handleTargetingSubmit", {
-					targeting_create_data,
-					targeting_expressions: this.targeting_expressions,
-				});
-
 				this.updateSelectedTabIndex(3);
 
 				this.setLoading(false);
@@ -621,12 +1109,92 @@ export default Vue.extend({
 			}
 		},
 
+		handleClear(key: any) {
+			switch (key) {
+				case "clear-relations":
+					this.line_item.start_date = null;
+					this.line_item.end_date = null;
+					this.line_item.line_duration = null;
+					this.resources.selected_campaign = null;
+
+					// advertiser_id
+					this.setField("advertiser_id", {
+						show: true,
+						required: true,
+						disabled: true,
+						value: null,
+					});
+
+					// budget_type_id
+					this.setField("budget_type_id", {
+						show: true,
+						required: true,
+						disabled: false,
+						value: null,
+					});
+
+					// budget
+					this.setField("budget", {
+						show: true,
+						required: true,
+						disabled: false,
+						value: null,
+					});
+
+					// line_pacing_id
+					this.setField("line_pacing_id", {
+						show: false,
+						required: false,
+						disabled: true,
+						value: null,
+					});
+
+					// strategy_id
+					this.setField("strategy_id", {
+						show: false,
+						required: false,
+						disabled: true,
+						value: null,
+					});
+
+					// bid_strategy_id
+					this.setField("bid_strategy_id", {
+						show: true,
+						required: true,
+						disabled: true,
+						value: null,
+					});
+
+					// daily_budget
+					this.setField("daily_budget", {
+						show: false,
+						required: false,
+						disabled: true,
+						value: null,
+					});
+
+					// cpm_bid
+					this.setField("cpm_bid", {
+						show: false,
+						required: false,
+						disabled: true,
+						value: null,
+					});
+
+					this.updateBudgetDisplay;
+
+					break;
+
+				default:
+					break;
+			}
+		},
+
 		async handleActivate() {
 			try {
 				this.setLoading(true);
 
-				const response = await this.activate(this.getLineItem.id);
-				console.log("handleActivate", { response });
+				const response = await this.activate(this.line_item.id);
 
 				this.setLoading(false);
 			} catch (error) {
@@ -647,15 +1215,30 @@ export default Vue.extend({
 			return this.$store.dispatch("line_item/activate", id);
 		},
 
-		// async dispatchShowLineItem(id: any) {
-		// 	console.log("--- dispatchShowLineItem(id)", id);
-		// 	return await this.$store.dispatch("line_item/show", id, {
-		// 		root: true,
-		// 	});
-		// },
-
 		setLoading(_loading: Boolean) {
 			this.$store.state.proccess.loading = _loading;
+		},
+
+		setLoadingField(_loading: Boolean) {
+			this.$store.state.proccess.loading_field = _loading;
+		},
+
+		/**
+		 * key
+		 * element: required?, show?, disabled?, value
+		 */
+		setField(
+			key: string,
+			element: { required: any; show: any; disabled: any; value: any }
+		) {
+			this.resources.fields[key] = {
+				required: element.required,
+				show: element.show,
+				disabled: element.disabled,
+			};
+			if (!isUndefined(element.value)) {
+				this.line_item[key] = element.value;
+			}
 		},
 
 		/**
@@ -673,10 +1256,6 @@ export default Vue.extend({
 			this.currentTabTargeting = index;
 		},
 
-		updateModelOverview(model: any) {
-			this.campaign = model;
-		},
-
 		/**
 		 * Add item
 		 */
@@ -689,7 +1268,7 @@ export default Vue.extend({
 				value: params.value,
 				targeting_key_id:
 					getTargetingIDByValue()[params.tab][params.key],
-				targeting_predicate_id: 1823,
+				targeting_predicate_id: this.isIncluded,
 			});
 		},
 
@@ -723,7 +1302,7 @@ export default Vue.extend({
 							value: [trim(params.value)],
 							targeting_key_id:
 								getTargetingIDByValue()[params.tab][params.key],
-							targeting_predicate_id: 1823,
+							targeting_predicate_id: this.isIncluded,
 						}
 					);
 				}
@@ -748,7 +1327,7 @@ export default Vue.extend({
 						value: [trim(item)],
 						targeting_key_id:
 							getTargetingIDByValue()[params.tab][params.key],
-						targeting_predicate_id: 1823,
+						targeting_predicate_id: this.isIncluded,
 					});
 				} else {
 					if (!terms[0].value.includes(trim(item))) {
@@ -900,10 +1479,9 @@ export default Vue.extend({
 	},
 	watch: {
 		async currentTab(val, old) {
-			if (val === 0) {
-				await this.loadResources();
-			}
-
+			// if (val === 0) {
+			// 	await this.loadResources();
+			// }
 			// this.items.filter((i: { key: number; disabled: boolean }) => {
 			// 	if (i.key === 1) {
 			// 		i.disabled = !Boolean(this.getLineItem.id);

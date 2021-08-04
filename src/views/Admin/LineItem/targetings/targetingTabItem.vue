@@ -30,6 +30,7 @@
 				<TermList
 					:appLists="appLists"
 					:targeting_terms="targeting_key_data.targeting_terms"
+					:predicates="predicates"
 					@remove-item="removeHandler"
 				></TermList>
 			</v-col>
@@ -37,70 +38,76 @@
 	</v-container>
 </template>
 <script lang="ts">
-	import Vue from "vue";
-	import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
-	import TermList from "./termList.vue";
+import Vue from "vue";
+import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
+import TermList from "./termList.vue";
 
-	export default Vue.extend({
-		name: "TargetingTabItem",
-		props: {
-			targeting_key_data: {
-				type: Object,
-				default: function () {
-					return {};
-				},
-			},
-			appLists: {
-				type: Array,
-				default: function () {
-					return [];
-				},
-			},
-			hint: {
-				type: String,
-				default: "Hint",
-			},
-			reference: {
-				type: String,
-				default: "reference",
-			},
-			placeholder: {
-				type: String,
-				default: "Placeholder",
-			},
-			label: {
-				type: String,
-				default: "Label",
-			},
-			item_text: {
-				type: String,
-				default: "value",
-			},
-			item_value: {
-				type: String,
-				default: "id",
+export default Vue.extend({
+	name: "TargetingTabItem",
+	props: {
+		targeting_key_data: {
+			type: Object,
+			default: function () {
+				return {};
 			},
 		},
-		components: {
-			CardAutocomplete,
-			TermList,
-		},
-		data: () => ({}),
-		async created() {},
-		async mounted() {},
-		computed: {},
-		methods: {
-			removeHandler(value: any) {
-				this.$emit("remove-item", value);
-			},
-			clearHandler() {
-				this.$emit("clear");
-			},
-			focusHandler() {
-				this.$emit("focus");
+		appLists: {
+			type: Array,
+			default: function () {
+				return [];
 			},
 		},
+		hint: {
+			type: String,
+			default: "Hint",
+		},
+		reference: {
+			type: String,
+			default: "reference",
+		},
+		placeholder: {
+			type: String,
+			default: "Placeholder",
+		},
+		label: {
+			type: String,
+			default: "Label",
+		},
+		item_text: {
+			type: String,
+			default: "value",
+		},
+		item_value: {
+			type: String,
+			default: "id",
+		},
+		predicates: {
+			type: Object,
+			default: function () {
+				return {};
+			},
+		},
+	},
+	components: {
+		CardAutocomplete,
+		TermList,
+	},
+	data: () => ({}),
+	async created() {},
+	async mounted() {},
+	computed: {},
+	methods: {
+		removeHandler(value: any) {
+			this.$emit("remove-item", value);
+		},
+		clearHandler() {
+			this.$emit("clear");
+		},
+		focusHandler() {
+			this.$emit("focus");
+		},
+	},
 
-		watch: {},
-	});
+	watch: {},
+});
 </script>

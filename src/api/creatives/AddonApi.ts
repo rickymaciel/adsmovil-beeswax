@@ -2,10 +2,81 @@ import { forEach, isEmpty, isUndefined, isNull } from 'lodash'
 import { success, error } from '@/api/handlers/HandlerResponse'
 import { GetMessage, GetErrors } from '@/api/handlers/HandlerError'
 import { AxiosPost, AxiosGet, AxiosPatch } from '@/api/AxiosService'
-import { Addon, AddonFilters, AddonList, AddonOptions, AddonPaginated, Advertiser } from '@/interfaces/creativeAddon'
+import {
+  Addon,
+  AddonDataCreate, AddonDataUpdate,
+  AddonFilters,
+  AddonList,
+  AddonOptions,
+  AddonPaginated,
+  Advertiser
+} from '@/interfaces/creativeAddon'
 import { Type } from '@/interfaces/creative'
 
 const ROUTES = require('../routes').CREATIVES
+
+export async function create (addon: AddonDataCreate, token: string) {
+  try {
+    const response = await AxiosPost(ROUTES.CREATIVE_ADDONS_ROUTE, addon, token)
+
+    if (response.success) {
+      const data = response.content
+
+      const item = parseData(data)
+
+      return success('', item)
+    }
+
+    console.log('ERROR: ', response)
+
+    return error(response.message, response.errors)
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
+    return error(GetMessage(err), GetErrors(err))
+  }
+}
+
+export async function update (addon: AddonDataUpdate, token: string) {
+  try {
+    const response = await AxiosPatch(ROUTES.CREATIVE_ADDONS_ROUTE + '/' + addon.id, addon, token)
+
+    if (response.success) {
+      const data = response.content
+
+      const item = parseData(data)
+
+      return success('', item)
+    }
+
+    console.log('ERROR: ', response)
+
+    return error(response.message, response.errors)
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
+    return error(GetMessage(err), GetErrors(err))
+  }
+}
+
+export async function show (id: number, token: string) {
+  try {
+    const response = await AxiosGet(ROUTES.CREATIVE_ADDONS_ROUTE + '/' + id, token)
+
+    if (response.success) {
+      const data = response.content
+
+      const addons = parseData(data)
+
+      return success('', addons)
+    }
+
+    console.log('ERROR: ', response)
+
+    return error(response.message, response.errors)
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
+    return error(GetMessage(err), GetErrors(err))
+  }
+}
 
 export async function all (token: string, filters?: AddonFilters, options?: AddonOptions) {
   try {

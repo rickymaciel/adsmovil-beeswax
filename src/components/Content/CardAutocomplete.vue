@@ -26,8 +26,8 @@
 			:persistent-hint="persistent_hint"
 			:clearable="clearable"
 			:search-input.sync="searchInputSync"
-			:disabled="isLoading || disabled"
-			validate-on-blur
+			:disabled="disabled"
+			:validate-on-blur="false"
 			hide-no-data
 			:loading="isLoading"
 			:error-messages="error_messages"
@@ -36,7 +36,7 @@
 			@focus="focusEvent"
 			@click:clear="clearHandler"
 		>
-			<template v-slot:prepend-inner>
+			<!-- <template v-slot:prepend-inner>
 				<v-progress-circular
 					v-if="isLoading"
 					size="24"
@@ -44,7 +44,7 @@
 					indeterminate
 					class="ms-1"
 				></v-progress-circular>
-			</template>
+			</template> -->
 
 			<template v-slot:no-data>
 				<v-list-item>
@@ -66,10 +66,14 @@
 			>
 				<v-chip color="secondary" small v-if="index === 0">
 					<span>
-						{{ item.value }} <strong>({{ item.id }}) </strong>
+						{{ item.value }}
+						<strong v-if="show_id">({{ item.id }}) </strong>
 					</span>
 				</v-chip>
-				<span v-if="index === 1" class="grey--text text-caption">
+				<span
+					v-if="multiple && index === 1"
+					class="grey--text text-caption"
+				>
 					(+{{ modelData.length - 1 }} others)
 				</span>
 			</template>
@@ -177,10 +181,14 @@ export default {
 			type: Boolean,
 			default: false,
 		},
-		error_messages: { 
+		show_id: {
+			type: Boolean,
+			default: false,
+		},
+		error_messages: {
 			type: Array,
-				default: function () {
-					return [];
+			default: function () {
+				return [];
 			},
 		},
 	},
@@ -214,7 +222,6 @@ export default {
 	},
 	methods: {
 		clickEvent(e: any) {
-			console.log("CardAutocomplete::clickEvent", { e });
 			this.$emit("click", e);
 		},
 		changeEvent(e: any) {

@@ -25,6 +25,35 @@ export interface Addon {
   vendor: Vendor
 }
 
+export interface AddonDataCreate {
+  name: string,
+  alternative_id: number,
+  addon_type_id: number,
+  creative_type_id: number,
+  advertiser_id: number,
+  include_default: boolean,
+  url: string,
+  secure: boolean,
+  active: boolean,
+  vendor_id?: number,
+  cpm_cost?: number //When loading this field a vendor_id must be passed
+}
+
+export interface AddonDataUpdate {
+  id: number,
+  name?: string,
+  alternative_id?: number,
+  advertiser_id?: number,
+  include_default?: boolean,
+  url?: string,
+  addon_type_id?: number,
+  creative_type_id?: number,
+  vendor_id?: number,
+  secure?: boolean,
+  active?: boolean,
+  cpm_cost?: number
+}
+
 export interface Advertiser {
   id: number,
   external_id: number,

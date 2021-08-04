@@ -37,28 +37,9 @@ class TargetingService {
      */
     async getTargetingKeys() {
         try {
-
-            console.log('TargetingService::getTargetingKeys', {
-                route: `${ROUTES_TARGETING.TARGETING_KEY_ROUTE}?mode=all`
-            });
-
             const response = await AxiosGet(`${ROUTES_TARGETING.TARGETING_KEY_ROUTE}?mode=all`);
-
-            console.log('TargetingService::getTargetingKeys', {
-                response: response
-            });
-
             const data = GetData(response);
-            console.log('TargetingService::getTargetingKeys', {
-                data: data
-            });
-
             const targeting_keys = mappingTargetingKeys(data)
-
-            console.log('TargetingService::getTargetingKeys', {
-                targeting_keys: targeting_keys
-            });
-
             return Promise.resolve(targeting_keys as Array<any>);
 
         } catch (error) {
@@ -147,6 +128,20 @@ class TargetingService {
             const url = ROUTES.SITE_ROUTE + '?term=' + term + '&by_attribute=' + by_attribute;
             const response = await AxiosGet(url)
             return Promise.resolve(GetData(response) as Array<Site>);
+
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+    
+    async getTargetingPredicates() {
+        try {
+            const response = await AxiosGet(ROUTES_TARGETING.TARGETING_PREDICATE_ROUTE)
+            return Promise.resolve(GetData(response));
 
         } catch (error) {
             return Promise.reject({

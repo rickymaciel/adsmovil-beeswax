@@ -34,6 +34,14 @@ export function isMaxLength(v: any) {
     return (v && v.length <= MAX_LENGTH) || i18n.t("maxLength", { max: MAX_LENGTH })
 }
 
+export function isMin(v: any, min: number) {
+    return (v && v >= min) || i18n.t("min", { min: min })
+}
+
+export function isMax(v: any, max: number) {
+    return (v && v <= max) || i18n.t("max", { max: max })
+}
+
 export function isFileMaxSize(v: any) {
     return (v && v.size <= FILE_MAX_FILE) || i18n.t("file-max-size", { max: (FILE_MAX_FILE / 1000000) })
 }

@@ -19,6 +19,7 @@
 			<!-- include -->
 			<v-col class="pe-lg-16 pa-0" cols="12" sm="12" md="6" lg="6">
 				<TermListUnique
+					:predicates="predicates"
 					:targeting_terms="targeting_key_data.targeting_terms"
 					:use_display_name="false"
 					@remove-item-unique="removeHandler"
@@ -28,74 +29,80 @@
 	</v-container>
 </template>
 <script lang="ts">
-	import { isString } from "lodash";
-	import Vue from "vue";
-	import CardTextField from "../../../../components/Content/CardTextField.vue";
-	import TermListUnique from "./termListUnique.vue";
+import { isString } from "lodash";
+import Vue from "vue";
+import CardTextField from "../../../../components/Content/CardTextField.vue";
+import TermListUnique from "./termListUnique.vue";
 
-	export default Vue.extend({
-		name: "TargetingTabItemSplit",
-		props: {
-			targeting_key_data: {
-				type: Object,
-				default: function () {
-					return {};
-				},
-			},
-			hint: {
-				type: String,
-				default: "Hint",
-			},
-			reference: {
-				type: String,
-				default: "reference",
-			},
-			placeholder: {
-				type: String,
-				default: "Placeholder",
-			},
-			label: {
-				type: String,
-				default: "Label",
-			},
-			persistent_hint: {
-				type: Boolean,
-				default: false,
+export default Vue.extend({
+	name: "TargetingTabItemSplit",
+	props: {
+		targeting_key_data: {
+			type: Object,
+			default: function () {
+				return {};
 			},
 		},
-		components: {
-			CardTextField,
-			TermListUnique,
+		hint: {
+			type: String,
+			default: "Hint",
 		},
-		data: () => ({}),
-		async created() {},
-		async mounted() {},
-		computed: {},
-		methods: {
-			removeHandler(value: any) {
-				this.$emit("remove-item", value);
-			},
-			clearHandler() {
-				this.$emit("clear");
-			},
-			focusHandler() {
-				this.$emit("focus");
-			},
-			blurHandler(data: string) {
-				var items: Array<string> = [];
-
-				if (isString(data)) {
-					items = data.split(",");
-				}
-
-				this.$emit("blur", items);
-			},
-
-			enterHandler(e: any) {
-				this.$emit("enter", e);
+		reference: {
+			type: String,
+			default: "reference",
+		},
+		placeholder: {
+			type: String,
+			default: "Placeholder",
+		},
+		label: {
+			type: String,
+			default: "Label",
+		},
+		persistent_hint: {
+			type: Boolean,
+			default: false,
+		},
+		predicates: {
+			type: Object,
+			default: function () {
+				return {};
 			},
 		},
+	},
+	components: {
+		CardTextField,
+		TermListUnique,
+	},
+	data: () => ({}),
+	async created() {},
+	async mounted() {},
+	computed: {},
+	methods: {
+		removeHandler(value: any) {
+			this.$emit("remove-item", value);
+		},
+		clearHandler() {
+			this.$emit("clear");
+		},
+		focusHandler() {
+			this.$emit("focus");
+		},
+		blurHandler(data: string) {
+			var items: Array<string> = [];
 
-		watch: {},
-	});
+			if (isString(data)) {
+				items = data.split(",");
+			}
+
+			this.$emit("blur", items);
+		},
+
+		enterHandler(e: any) {
+			this.$emit("enter", e);
+		},
+	},
+
+	watch: {},
+});
 </script>

@@ -29,7 +29,8 @@
 			:step="type === 'time' ? 2 : 1"
 			:disabled="disabled"
 			:value="getValue"
-			:error-messages="error_messages" 
+			:suffix="suffix"
+			:error-messages="error_messages"
 			v-on:keyup.enter="enterHandler"
 		>
 			<!-- <template v-slot:prepend-inner>
@@ -90,145 +91,149 @@
 </template>
 
 <script lang="ts">
-	import { isEmpty } from "lodash";
-	export default {
-		name: "CardTextField",
-		model: {
-			prop: "model_data",
-			event: "input",
-		},
-		props: {
-			model_data: {},
-			rules: {
-				type: Array,
-				default: function () {
-					return [];
-				},
-			},
-			hint: {
-				type: String,
-				default: "",
-			},
-			reference: {
-				type: String,
-				default: "",
-			},
-			placeholder: {
-				type: String,
-				default: "",
-			},
-			label: {
-				type: String,
-				default: "",
-			},
-			customClass: {
-				type: String,
-				default: "label-fixed",
-			},
-			counter: {
-				type: Number,
-				default: 255,
-			},
-			is_upload: {
-				type: Boolean,
-				default: false,
-			},
-			persistent_hint: {
-				type: Boolean,
-				default: false,
-			},
-			icon_add: {
-				type: Boolean,
-				default: false,
-			},
-			clearable: {
-				type: Boolean,
-				default: true,
-			},
-			error: {
-				type: Boolean,
-				default: false,
-			},
-			messages: {
-				type: String,
-				default: "",
-			},
-			required: {
-				type: Boolean,
-				default: false,
-			},
-			type: {
-				type: String,
-				default: "text",
-			},
-			disabled: {
-				type: Boolean,
-				default: false,
-			},
-			valueNumber: {
-				type: Number,
-				default: undefined,
-			},
-			valueText: {
-				type: String,
-				default: undefined,
-			},
-			error_messages: { 
-				type: Array,
-				default: function () {
-					return [];
-				},
+import { isEmpty } from "lodash";
+export default {
+	name: "CardTextField",
+	model: {
+		prop: "model_data",
+		event: "input",
+	},
+	props: {
+		model_data: {},
+		rules: {
+			type: Array,
+			default: function () {
+				return [];
 			},
 		},
-		data: function () {
-			return {};
+		hint: {
+			type: String,
+			default: "",
 		},
-		mounted() {},
-		computed: {
-			isLoading() {
-				return this.$store.state.proccess.loading_field;
-			},
-			modelData: {
-				set(val: any) {
-					this.$emit("input", val);
-				},
-				get() {
-					return this.model_data;
-				},
-			},
-			getCustomClass() {
-				if (this.disabled) {
-					return this.customClass + " disabled";
-				} else {
-					return this.customClass;
-				}
-			},
-			getValue() {
-				if (this.valueNumber) return this.valueNumber;
-				if (this.valueText) return this.valueText;
-				return undefined;
+		reference: {
+			type: String,
+			default: "",
+		},
+		placeholder: {
+			type: String,
+			default: "",
+		},
+		label: {
+			type: String,
+			default: "",
+		},
+		customClass: {
+			type: String,
+			default: "label-fixed",
+		},
+		counter: {
+			type: Number,
+			default: 255,
+		},
+		is_upload: {
+			type: Boolean,
+			default: false,
+		},
+		persistent_hint: {
+			type: Boolean,
+			default: false,
+		},
+		icon_add: {
+			type: Boolean,
+			default: false,
+		},
+		clearable: {
+			type: Boolean,
+			default: true,
+		},
+		error: {
+			type: Boolean,
+			default: false,
+		},
+		messages: {
+			type: String,
+			default: "",
+		},
+		required: {
+			type: Boolean,
+			default: false,
+		},
+		type: {
+			type: String,
+			default: "text",
+		},
+		disabled: {
+			type: Boolean,
+			default: false,
+		},
+		valueNumber: {
+			type: Number,
+			default: undefined,
+		},
+		valueText: {
+			type: String,
+			default: undefined,
+		},
+		suffix: {
+			type: String,
+			default: undefined,
+		},
+		error_messages: {
+			type: Array,
+			default: function () {
+				return [];
 			},
 		},
-		methods: {
-			isEmpty(data: any) {
-				return isEmpty(data);
+	},
+	data: function () {
+		return {};
+	},
+	mounted() {},
+	computed: {
+		isLoading() {
+			return this.$store.state.proccess.loading_field;
+		},
+		modelData: {
+			set(val: any) {
+				this.$emit("input", val);
 			},
-			clickAppendOuter(params: any) {
-				this.$emit("click-append-outer", params);
-			},
-			clickAppend() {
-				this.$emit("click-append", this.modelData);
-			},
-			changeEvent(e: any) {
-				this.$emit("change", e);
-			},
-			blurEvent(e: any) {
-				this.$emit("blur", this.modelData);
-			},
-			enterHandler(e: any) {
-				this.$emit("enter", e);
+			get() {
+				return this.model_data;
 			},
 		},
-		watch: {},
-	};
+		getCustomClass() {
+			if (this.disabled) {
+				return this.customClass + " disabled";
+			} else {
+				return this.customClass;
+			}
+		},
+		getValue() {
+			if (this.valueNumber) return this.valueNumber;
+			if (this.valueText) return this.valueText;
+			return undefined;
+		},
+	},
+	methods: {
+		isEmpty(data: any) {
+			return isEmpty(data);
+		},
+		clickAppendOuter(params: any) {
+			this.$emit("click-append-outer", params);
+		},
+		clickAppend() {
+			this.$emit("click-append", this.modelData);
+		},
+		changeEvent(e: any) {
+			this.$emit("change", e);
+		},
+		blurEvent(e: any) {
+			this.$emit("blur", this.modelData);
+		},
+		enterHandler(e: any) {
+			this.$emit("enter", e);
+		},
+	},
+	watch: {},
+};
 </script>

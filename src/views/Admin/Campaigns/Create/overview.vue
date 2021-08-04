@@ -21,6 +21,7 @@
 							placeholder="Name"
 							label="Name"
 							:required="true"
+							:error_messages="getFail('name')"
 						></CardTextField>
 					</v-col>
 
@@ -43,6 +44,7 @@
 							:dense="false"
 							:required="true"
 							:disabled="isEdit"
+							:error_messages="getFail('advertiser_id')"
 						></CardAutocomplete>
 					</v-col>
 
@@ -64,7 +66,6 @@
 							:small_chips="true"
 							:dense="false"
 							:required="true"
-							:disabled="isEdit"
 						></CardAutocomplete>
 					</v-col>
 				</v-row>
@@ -144,6 +145,7 @@
 								:min_date="getMinDate"
 								:rules="startDateRules"
 								:required="true"
+								:error_messages="getFail('start_date')"
 							></DatePicker>
 						</v-card>
 					</v-col>
@@ -164,6 +166,7 @@
 								:rules="endDateRules"
 								:is_end="true"
 								:required="true"
+								:error_messages="getFail('end_date')"
 							></DatePicker>
 						</v-card>
 					</v-col>
@@ -226,6 +229,7 @@
 									:rules="getRules.required"
 									row
 									:disabled="isEdit"
+									:error-messages="getFail('budget_type_id')"
 								>
 									<v-radio
 										v-for="budgetType in getBudgetType"
@@ -251,6 +255,7 @@
 							:placeholder="getBudgetText"
 							:disabled="!getBudgetText"
 							:required="true"
+							:error_messages="getFail('budget')"
 						></CardTextField>
 					</v-col>
 
@@ -277,6 +282,9 @@
 									row
 									v-model.number="
 										campaign.automatic_allocation
+									"
+									:error-messages="
+										getFail('automatic_allocation')
 									"
 								>
 									<v-radio
@@ -341,6 +349,9 @@
 									:disabled="
 										isEdit && isOptimizationStrategyById
 									"
+									:error-messages="
+										getFail('optimization_strategy_id')
+									"
 								>
 									<v-radio
 										v-for="element in getOptimizationStrategies"
@@ -379,6 +390,7 @@
 							:small_chips="true"
 							:dense="false"
 							:required="true"
+							:error_messages="getFail('campaign_pacing_id')"
 						></CardAutocomplete>
 					</v-col>
 
@@ -401,6 +413,7 @@
 							:suffix="getSuggested"
 							:persistent-hint="hasError('daily_budget')"
 							:required="true"
+							:error_messages="getFail('daily_budget')"
 						></CardTextField>
 					</v-col>
 				</v-row>
@@ -445,6 +458,7 @@
 							:small_chips="true"
 							:dense="false"
 							:required="true"
+							:error_messages="getFail('kpi_campaign_id')"
 						></CardAutocomplete>
 					</v-col>
 
@@ -460,6 +474,7 @@
 							:placeholder="getKpiObjectiveLabel"
 							:required="true"
 							type="number"
+							:error_messages="getFail('kpi_objective')"
 						></CardTextField>
 					</v-col>
 				</v-row>
@@ -510,13 +525,18 @@
 							:small_chips="true"
 							:dense="false"
 							:required="true"
+							:error_messages="getFail('strategy_id')"
 						></CardAutocomplete>
 					</v-col>
 
 					<!-- Bid CPM* -->
-					<v-col 
+					<v-col
 						v-if="show_field_cpm"
-						cols="12" sm="12" md="6" lg="2">
+						cols="12"
+						sm="12"
+						md="6"
+						lg="2"
+					>
 						<CardTextField
 							v-model.number="campaign.cpm_bid"
 							v-numeric
@@ -526,6 +546,7 @@
 							label="Bid CPM"
 							placeholder="Bid CPM"
 							:required="true"
+							:error_messages="getFail('cpm_bid')"
 							type="number"
 						></CardTextField>
 					</v-col>
@@ -548,6 +569,7 @@
 							:placeholder="getExpectedLabel"
 							:required="true"
 							:valueText="getExpectedValue"
+							:error_messages="getFail('cpm_bid')"
 							type="number"
 						></CardTextField>
 					</v-col>
@@ -569,6 +591,7 @@
 							label="Target eCPCV"
 							placeholder="Target eCPCV"
 							:required="true"
+							:error_messages="getFail('target_ecpc')"
 							type="number"
 						></CardTextField>
 					</v-col>
@@ -590,6 +613,7 @@
 							label="Target CTR"
 							placeholder="Target CTR"
 							:required="true"
+							:error_messages="getFail('target_ctr')"
 							type="number"
 						></CardTextField>
 					</v-col>
@@ -610,6 +634,7 @@
 							ref="target_vcr"
 							label="Target VCR"
 							placeholder="Target VCR"
+							:error_messages="getFail('target_vcr')"
 							:required="true"
 						></CardTextField>
 					</v-col>
@@ -821,131 +846,132 @@
 </template>
 
 <script lang="ts">
-	import Vue from "vue";
-	import {
-		isUndefined,
-		isNull,
-		isEmpty,
-		isNaN,
-		find,
-		isNumber,
-		first,
-	} from "lodash";
-	import { AdvertiserList } from "../../../../interfaces/advertiser";
-	import DatePicker from "../../../../components/Content/DatePicker.vue";
-	import { CampaignDataCreate } from "../../../../interfaces/campaign";
-	import CardTextField from "../../../../components/Content/CardTextField.vue";
-	import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
+import Vue from "vue";
+import {
+	isUndefined,
+	isNull,
+	isEmpty,
+	isNaN,
+	find,
+	isNumber,
+	first,
+} from "lodash";
+import { AdvertiserList } from "../../../../interfaces/advertiser";
+import DatePicker from "../../../../components/Content/DatePicker.vue";
+import { CampaignDataCreate } from "../../../../interfaces/campaign";
+import CardTextField from "../../../../components/Content/CardTextField.vue";
+import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
+import { getError } from "../../../../utils/resolveObjectArray";
 
-	const BY_CAMPAIGN = "By Campaign";
-	const DAILY = "Daily";
-	const IMPRESSIONS = "Impressions";
-	const SPEND = "Spend";
-	const IMPRESSION = "Impression";
-	const CLICKS = "Clicks";
-	const COMPLETED_VIDEO = "Completed Video";
-	const OPTIMIZED_CPM = "Optimized CPM";
-	const OPTIMIZED_CPC = "Optimized CPC";
-	const OPTIMIZED_VCR = "Optimized VCR";
+const BY_CAMPAIGN = "By Campaign";
+const DAILY = "Daily";
+const IMPRESSIONS = "Impressions";
+const SPEND = "Spend";
+const IMPRESSION = "Impression";
+const CLICKS = "Clicks";
+const COMPLETED_VIDEO = "Completed Video";
+const OPTIMIZED_CPM = "Optimized CPM";
+const OPTIMIZED_CPC = "Optimized CPC";
+const OPTIMIZED_VCR = "Optimized VCR";
 
-	// Configs to Date
-	const DEFAULT_DATE_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
-	const DEFAULT_START_TIME = "00:00:00";
-	const DEFAULT_END_TIME = "00:59:59";
+// Configs to Date
+const DEFAULT_DATE_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
+const DEFAULT_START_TIME = "00:00:00";
+const DEFAULT_END_TIME = "00:59:59";
 
-	export default Vue.extend({
-		name: "Overview",
-		props: {
-			traffickers: {
-				type: Array,
-				default: function () {
-					return [];
-				},
-			},
-			campaign: {
-				type: Object,
-				default: function () {
-					return { frequency_caps: [] };
-				},
-			},
-			account: {
-				type: Object,
-				default: function () {
-					return {};
-				},
-			},
-			budget_types: {
-				type: Array,
-				required: true,
-			},
-			advertisers: {
-				type: Array,
-				required: true,
-			},
-			campaigns_pacing: {
-				type: Array,
-				required: true,
-			},
-			optimization_strategies: {
-				type: Array,
-				required: true,
-			},
-			kpi_campaigns: {
-				type: Array,
-				required: true,
-			},
-			strategies: {
-				type: Array,
-				required: true,
-			},
-			unit_times: {
-				type: Array,
-				required: true,
-			},
-			start_time: {
-				type: String,
-				default: "00:00:00",
-			},
-			end_time: {
-				type: String,
-				default: "00:59:59",
-			},
-			is_edit: {
-				type: Boolean,
-				default: false,
-			},
-			errors: {
-				type: Object,
-				default: function () {
-					return {};
-				},
+export default Vue.extend({
+	name: "Overview",
+	props: {
+		traffickers: {
+			type: Array,
+			default: function () {
+				return [];
 			},
 		},
-		components: {
-			DatePicker,
-			CardTextField,
-			CardAutocomplete,
+		campaign: {
+			type: Object,
+			default: function () {
+				return { frequency_caps: [] };
+			},
 		},
-		data: () => ({
-			title: "Overview",
-			valid: false,
-			today: new Date().toISOString().substr(0, 10),
-			openStartDate: false,
-			openStartTime: false,
-			openEndDate: false,
-			openEndTime: false,
-			expected_show: false,
-			expected_value: undefined,
-			expected_label: "",
-			campaign_duration: undefined,
-			show_target_ecpc: false,
-			show_target_ctr: false,
-			show_target_vcr: false,
-			show_field_cpm: false,
-		}),
-		created() {},
-		mounted() {
-			/*
+		account: {
+			type: Object,
+			default: function () {
+				return {};
+			},
+		},
+		budget_types: {
+			type: Array,
+			required: true,
+		},
+		advertisers: {
+			type: Array,
+			required: true,
+		},
+		campaigns_pacing: {
+			type: Array,
+			required: true,
+		},
+		optimization_strategies: {
+			type: Array,
+			required: true,
+		},
+		kpi_campaigns: {
+			type: Array,
+			required: true,
+		},
+		strategies: {
+			type: Array,
+			required: true,
+		},
+		unit_times: {
+			type: Array,
+			required: true,
+		},
+		start_time: {
+			type: String,
+			default: "00:00:00",
+		},
+		end_time: {
+			type: String,
+			default: "00:59:59",
+		},
+		is_edit: {
+			type: Boolean,
+			default: false,
+		},
+		errors: {
+			type: Object,
+			default: function () {
+				return {};
+			},
+		},
+	},
+	components: {
+		DatePicker,
+		CardTextField,
+		CardAutocomplete,
+	},
+	data: () => ({
+		title: "Overview",
+		valid: false,
+		today: new Date().toISOString().substr(0, 10),
+		openStartDate: false,
+		openStartTime: false,
+		openEndDate: false,
+		openEndTime: false,
+		expected_show: false,
+		expected_value: undefined,
+		expected_label: "",
+		campaign_duration: undefined,
+		show_target_ecpc: false,
+		show_target_ctr: false,
+		show_target_vcr: false,
+		show_field_cpm: false,
+	}),
+	created() {},
+	mounted() {
+		/*
 			setTimeout(() => {
 				if (
 					!isUndefined(this.campaign.frequency_caps) &&
@@ -955,560 +981,577 @@
 				}
 			}, 1000);
 			*/
+	},
+	computed: {
+		getMinDate() {
+			return this.moment().format(DEFAULT_DATE_TIME_FORMAT);
 		},
-		computed: {
-			getMinDate() {
-				return this.moment().format(DEFAULT_DATE_TIME_FORMAT);
-			},
 
-			isEdit() {
-				return this.is_edit;
-			},
-
-			/**
-			 * STRING RULES
-			 */
-
-			getBudgetText() {
-				if (isUndefined(this.campaign.budget_type_id)) return "Total";
-				const result = find(this.getBudgetType, {
-					id: this.campaign.budget_type_id,
-				});
-				return result ? `Total ${result.value}` : "Total";
-			},
-
-			getRules() {
-				return {
-					required: [(v: any) => Boolean(v) || this.$t("fieldRequired")],
-					number: [(v: number) => !isNaN(v) || this.$t("fieldRequired")],
-					cpm_bid: [
-						(v: any) => Boolean(v) || this.$t("fieldRequired"),
-						(v: number) => v > 0 || this.$t("min", { min: 0 }),
-						(v: number) => v <= 25000 || this.$t("max", { max: 25000 }),
-					],
-					target_ecpc: [
-						(v: any) => Boolean(v) || true,
-						(v: number) => v > 0 || this.$t("min", { min: 0 }),
-						(v: number) => v <= 10000 || this.$t("max", { max: 10000 }),
-					],
-					target_ctr: [
-						(v: any) => Boolean(v) || true,
-						(v: number) => v >= 0 || this.$t("min", { min: 0 }),
-						(v: number) => v <= 1 || this.$t("max", { max: 1 }),
-					],
-					target_vcr: [
-						(v: any) => Boolean(v) || true,
-						(v: number) => v >= 0 || this.$t("min", { min: 0 }),
-						(v: number) => v <= 1 || this.$t("max", { max: 1 }),
-					],
-					daily_budget: [
-						(v: any) => Boolean(v) || this.$t("fieldRequired"),
-						(v: any) =>
-							v >= this.calcSuggested ||
-							this.$t("greaterOrEqual", {
-								value: this.calcSuggested,
-							}),
-					],
-				};
-			},
-			nameRules() {
-				return [
-					(v: string) =>
-						(!isUndefined(v) && !isNull(v) && !isEmpty(v)) ||
-						this.$t("fieldRequired"),
-					(v: string) =>
-						(v && v.length <= 255) ||
-						this.$t("maxLength", { max: 255 }),
-					(v: string) =>
-						(v && v.length >= 2) || this.$t("minLength", { min: 2 }),
-				];
-			},
-
-			calcSuggested() {
-				return Math.round(this.campaign.budget / this.campaign_duration);
-			},
-
-			getSuggested() {
-				if (
-					!this.showDailyBudget ||
-					!this.campaign.budget ||
-					!this.campaign_duration
-				)
-					return "";
-				return `Suggested ${this.calcSuggested}`;
-			},
-
-			getKpiObjectiveLabel() {
-				let label = "Objective";
-
-				if (!this.isSelectedAutomaticAllocation) return label;
-
-				if (this.isKpiCampaignImpression) {
-					label = "Impression Objective";
-				}
-				if (this.isKpiCampaignClicks) {
-					label = "Clicks Objective";
-				}
-				if (this.isKpiCampaignCompletedVideo) {
-					label = "Videos Objective";
-				}
-
-				return label;
-			},
-
-			getAllocationData() {
-				return [
-					{
-						kay: 0,
-						value: "No",
-					},
-					{
-						kay: 1,
-						value: "Yes",
-					},
-				];
-			},
-
-			/**
-			 * Check
-			 */
-
-			initEdit() {
-				if (
-					!this.isEdit &&
-					!isUndefined(this.campaign) &&
-					Object.entries(this.campaign).length
-				)
-					return;
-				if (
-					!isUndefined(this.campaign.frequency_caps) &&
-					this.campaign.frequency_caps.length
-				) {
-					this.$emit("init-frequency-caps");
-				}
-				this.calculateDuration();
-			},
-
-			showCampaignPacing() {
-				return (
-					this.isAutomaticAllocation && this.isOptimizationStrategyById
-				);
-			},
-
-			showDailyBudget() {
-				return this.isCampaignPacingById;
-			},
-
-			isSelectedAutomaticAllocation() {
-				return [0, 1].includes(this.campaign.automatic_allocation);
-			},
-
-			isAutomaticAllocation() {
-				return Boolean(this.campaign.automatic_allocation === 1);
-			},
-
-			isBudgetTypeImpressions() {
-				return this.checkSelectedIDByName(
-					this.getBudgetType,
-					IMPRESSIONS,
-					this.campaign.budget_type_id
-				);
-			},
-
-			isBudgetTypeSpend() {
-				return this.checkSelectedIDByName(
-					this.getBudgetType,
-					SPEND,
-					this.campaign.budget_type_id
-				);
-			},
-
-			isKpiCampaignImpression() {
-				return this.checkSelectedIDByName(
-					this.getKpiCampaigns,
-					IMPRESSION.toLowerCase(),
-					this.campaign.kpi_campaign_id
-				);
-			},
-
-			isKpiCampaignClicks() {
-				return this.checkSelectedIDByName(
-					this.getKpiCampaigns,
-					CLICKS.toLowerCase(),
-					this.campaign.kpi_campaign_id
-				);
-			},
-
-			isKpiCampaignCompletedVideo() {
-				return this.checkSelectedIDByName(
-					this.getKpiCampaigns,
-					COMPLETED_VIDEO.toLowerCase(),
-					this.campaign.kpi_campaign_id
-				);
-			},
-
-			isOptimizationStrategyById() {
-				return this.checkSelectedIDByName(
-					this.getOptimizationStrategies,
-					BY_CAMPAIGN,
-					this.campaign.optimization_strategy_id
-				);
-			},
-
-			isCampaignPacingById() {
-				return this.checkSelectedIDByName(
-					this.getCampaignsPacing,
-					DAILY,
-					this.campaign.campaign_pacing_id
-				);
-			},
-
-			showExpectedLabel() {
-				this.setTargets();
-
-				/**
-				 * is automatic_allocation === 1
-				 * is budget type === spend
-				 * is BY_CAMPAIGN
-				 */
-
-				if (
-					!this.isAutomaticAllocation &&
-					!this.isBudgetTypeSpend &&
-					!this.isOptimizationStrategyByType(BY_CAMPAIGN) &&
-					(!this.isValidNumber(this.campaign.budget) ||
-						!this.isValidNumber(this.campaign.kpi_objective))
-				) {
-					this.expected_show = false;
-					this.expected_label = "";
-					return false;
-				}
-
-				/**
-				 * Check selected data
-				 */
-
-				if(this.campaign.strategy_id === null){
-					this.expected_show = false;
-					this.expected_label = "";
-					return false;
-				}else {
-
-					/**
-					 * is OPTIMIZED_CPM
-					 */
-					if (this.isStrategyByType(OPTIMIZED_CPM) && 
-						this.isBudgetTypeSpend && 
-						this.isAutomaticAllocation && 
-						this.isOptimizationStrategyByType(BY_CAMPAIGN)) {
-
-						this.expected_show = true;
-						this.setTargets(false, false, false, true);
-
-						this.expected_label = "eCPM";
-						let value = this.campaign.budget / (this.campaign.kpi_objective / 1000);
-						if (!isNaN(value) && value !== Infinity) {
-							this.expected_value = value.toFixed(2);
-						} else {
-							this.expected_value = undefined;
-						}
-					}
-
-					/**
-					 * is OPTIMIZED_CPC
-					 */
-					if (this.isStrategyByType(OPTIMIZED_CPC) &&
-						this.isBudgetTypeSpend && 
-						this.isAutomaticAllocation && 
-						this.isOptimizationStrategyByType(BY_CAMPAIGN)) {
-
-						this.expected_show = true;
-						this.setTargets(true, true, false, true);
-
-						this.expected_label = "eCPC";
-						let value = this.campaign.budget / this.campaign.kpi_objective;
-						if (!isNaN(value) && value !== Infinity) {
-							this.expected_value = value.toFixed(2);
-						} else {
-							this.expected_value = undefined;
-						}
-					} 
-
-					/**
-					 * is OPTIMIZED_VCR
-					 */
-					if (this.isStrategyByType(OPTIMIZED_VCR) && 
-						this.isBudgetTypeSpend && 
-						this.isAutomaticAllocation && 
-						this.isOptimizationStrategyByType(BY_CAMPAIGN)) {
-
-						this.expected_show = true;
-						this.setTargets(false, false, true, true);
-
-						this.expected_label = "eCPCV";
-						let value = this.campaign.budget / this.campaign.kpi_objective;
-
-						if (!isNaN(value) && value !== Infinity) {
-							this.expected_value = value.toFixed(2);
-						} else {
-							this.expected_value = undefined;
-						}
-					}
-				}
-
-				return this.expected_show;
-			},
-
-			getExpectedValue() {
-				return this.expected_value;
-			},
-
-			getExpectedLabel() {
-				return this.expected_label;
-			},
-
-			show_strategy(){
-				return this.isAutomaticAllocation && this.isOptimizationStrategyByType(BY_CAMPAIGN);
-			},
-
-			/**
-			 * DATE RULES
-			 */
-			startDateRules() {
-				return [
-					(v: string) =>
-						(!isUndefined(v) && !isNull(v) && !isEmpty(v)) ||
-						this.$t("fieldRequired"),
-				];
-			},
-
-			endDateRules() {
-				return [
-					(v: string) =>
-						(!isUndefined(v) && !isNull(v) && !isEmpty(v)) ||
-						this.$t("fieldRequired"),
-				];
-			},
-
-			/**
-			 * GET
-			 */
-			getCurrency() {
-				return !isUndefined(this.account.currency) &&
-					!isEmpty(this.account.currency)
-					? `${this.account.currency.key} (${this.account.currency.glyph})`
-					: "N/A";
-			},
-
-			getTimezone() {
-				return !isUndefined(this.account.timezone) &&
-					!isEmpty(this.account.timezone)
-					? `${this.account.timezone.name}`
-					: "N/A";
-			},
-
-			getAdvertisers(): AdvertiserList[] {
-				return this.advertisers;
-			},
-
-			getBudgetType() {
-				return this.budget_types;
-			},
-
-			getCampaignsPacing() {
-				return this.campaigns_pacing;
-			},
-
-			getOptimizationStrategies() {
-				return this.optimization_strategies;
-			},
-
-			getKpiCampaigns() {
-				return this.kpi_campaigns;
-			},
-
-			getStrategies() {
-				return this.strategies;
-			},
-
-			getUnitTimes() {
-				return this.unit_times;
-			},
+		isEdit() {
+			return this.is_edit;
 		},
-		methods: {
-			getError(index: string | number) {
-				if (!this.hasError(index)) return "";
-				return first(this.errors[index]);
-			},
 
-			hasError(index: string | number) {
-				return this.errors.hasOwnProperty(index);
-			},
+		/**
+		 * STRING RULES
+		 */
 
-			/**
-			 * targets: show_ecpc, show_ctr, show_vcr
-			 */
-			setTargets(
-				show_ecpc: boolean = false,
-				show_ctr: boolean = false,
-				show_vcr: boolean = false,
-				show_cpm: boolean = false
+		getBudgetText() {
+			if (isUndefined(this.campaign.budget_type_id)) return "Total";
+			const result = find(this.getBudgetType, {
+				id: this.campaign.budget_type_id,
+			});
+			return result ? `Total ${result.value}` : "Total";
+		},
+
+		getRules() {
+			return {
+				required: [(v: any) => Boolean(v) || this.$t("fieldRequired")],
+				number: [(v: number) => !isNaN(v) || this.$t("fieldRequired")],
+				cpm_bid: [
+					(v: any) => Boolean(v) || this.$t("fieldRequired"),
+					(v: number) => v > 0 || this.$t("min", { min: 0 }),
+					(v: number) => v <= 25000 || this.$t("max", { max: 25000 }),
+				],
+				target_ecpc: [
+					(v: any) => Boolean(v) || true,
+					(v: number) => v > 0 || this.$t("min", { min: 0 }),
+					(v: number) => v <= 10000 || this.$t("max", { max: 10000 }),
+				],
+				target_ctr: [
+					(v: any) => Boolean(v) || true,
+					(v: number) => v >= 0 || this.$t("min", { min: 0 }),
+					(v: number) => v <= 1 || this.$t("max", { max: 1 }),
+				],
+				target_vcr: [
+					(v: any) => Boolean(v) || true,
+					(v: number) => v >= 0 || this.$t("min", { min: 0 }),
+					(v: number) => v <= 1 || this.$t("max", { max: 1 }),
+				],
+				daily_budget: [
+					(v: any) => Boolean(v) || this.$t("fieldRequired"),
+					(v: any) =>
+						v >= this.calcSuggested ||
+						this.$t("greaterOrEqual", {
+							value: this.calcSuggested,
+						}),
+				],
+			};
+		},
+		nameRules() {
+			return [
+				(v: string) =>
+					(!isUndefined(v) && !isNull(v) && !isEmpty(v)) ||
+					this.$t("fieldRequired"),
+				(v: string) =>
+					(v && v.length <= 255) ||
+					this.$t("maxLength", { max: 255 }),
+				(v: string) =>
+					(v && v.length >= 2) || this.$t("minLength", { min: 2 }),
+			];
+		},
+
+		calcSuggested() {
+			return Math.round(this.campaign.budget / this.campaign_duration);
+		},
+
+		getSuggested() {
+			if (
+				!this.showDailyBudget ||
+				!this.campaign.budget ||
+				!this.campaign_duration
+			)
+				return "";
+			return `Suggested ${this.calcSuggested}`;
+		},
+
+		getKpiObjectiveLabel() {
+			let label = "Objective";
+
+			if (!this.isSelectedAutomaticAllocation) return label;
+
+			if (this.isKpiCampaignImpression) {
+				label = "Impression Objective";
+			}
+			if (this.isKpiCampaignClicks) {
+				label = "Clicks Objective";
+			}
+			if (this.isKpiCampaignCompletedVideo) {
+				label = "Videos Objective";
+			}
+
+			return label;
+		},
+
+		getAllocationData() {
+			return [
+				{
+					kay: 0,
+					value: "No",
+				},
+				{
+					kay: 1,
+					value: "Yes",
+				},
+			];
+		},
+
+		/**
+		 * Check
+		 */
+
+		initEdit() {
+			if (
+				!this.isEdit &&
+				!isUndefined(this.campaign) &&
+				Object.entries(this.campaign).length
+			)
+				return;
+			if (
+				!isUndefined(this.campaign.frequency_caps) &&
+				this.campaign.frequency_caps.length
 			) {
-				this.show_target_ecpc = show_ecpc;
-				this.show_target_ctr = show_ctr;
-				this.show_target_vcr = show_vcr;
-				this.show_field_cpm = show_cpm;
-			},
-
-			/**
-			 * Strategy by type
-			 */
-			isStrategyByType(type: String) {
-				return this.checkSelectedIDByName(
-					this.getStrategies,
-					type,
-					this.campaign.strategy_id
-				);
-			},
-
-			/**
-			 * Optimization Strategy by type
-			 */
-			isOptimizationStrategyByType(type: String) {
-				return this.checkSelectedIDByName(
-					this.getOptimizationStrategies,
-					type,
-					this.campaign.optimization_strategy_id
-				);
-			},
-
-			isValidNumber(num: Number) {
-				return !isNaN(num) && isNumber(num);
-			},
-
-			checkSelectedIDByName(data: any, value: String, id: Number) {
-				const result = find(data, { value: value });
-				return result && result.id === id;
-			},
-			async validate() {
-				let form = this.$refs.form;
-				const valid = await form.validate();
-				console.log('valid', valid);
-				return await valid;
-			},
-			handleCancel() {
-				this.$router.push({ name: "CampaignsIndex" });
-			},
-
-			async handleSubmit() {
-				try {
-					if (!(await this.validate())) return;
-					console.log('this.isEdit', this.isEdit)
-					const emit = this.isEdit
-						? "update-campaign"
-						: "create-campaign";
-					this.$emit(emit, {
-						campaign: this.prepareDataCreate(),
-					});
-				} catch (error) {
-					console.error("handleSubmit", { error: error });
-				}
-			},
-
-			prepareDataCreate() {
-				return {
-					id: this.isEdit ? Number(this.campaign.id) : undefined,
-					name: String(this.campaign.name),
-					advertiser_id: Number(this.campaign.advertiser_id),
-					budget: Number(this.campaign.budget),
-					start_date: this.moment(this.campaign.start_date).format(
-						DEFAULT_DATE_TIME_FORMAT
-					),
-					end_date: this.moment(this.campaign.end_date).format(
-						DEFAULT_DATE_TIME_FORMAT
-					),
-					frequency_caps: this.campaign.frequency_caps,
-					alternative_id: this.campaign.alternative_id,
-					active: 1,
-					trafficker_id: Number(this.campaign.trafficker_id),
-					budget_type_id: Number(this.campaign.budget_type_id),
-					automatic_allocation: Number(
-						this.campaign.automatic_allocation
-					),
-					kpi_campaign_id: Number(this.campaign.kpi_campaign_id),
-					kpi_objective: Number(this.campaign.kpi_objective),
-					optimization_strategy_id: Number(
-						this.campaign.optimization_strategy_id
-					),
-					strategy_id: Number(this.campaign.strategy_id),
-					campaign_pacing_id: Number(this.campaign.campaign_pacing_id),
-					daily_budget: Number(this.campaign.daily_budget),
-					cpm_bid: this.campaign.cpm_bid
-						? Number(this.campaign.cpm_bid)
-						: null,
-					target_ecpc: Number(this.campaign.target_ecpc),
-					target_ctr: Number(this.campaign.target_ctr),
-					target_vcr: Number(this.campaign.target_vcr),
-				} as CampaignDataCreate;
-			},
-
-			isValidDates() {
-				const startDate = this.moment(this.campaign.start_date);
-				const endDate = this.moment(this.campaign.end_date);
-				return startDate.isValid() && endDate.isValid();
-			},
-
-			addRowFrecuency() {
-				if (isUndefined(this.campaign.frequency_caps)) return;
-				if(this.campaign.frequency_caps.length>=3) return;
 				this.$emit("init-frequency-caps");
-				this.campaign.frequency_caps.push({
-					impressions: undefined,
-					every_time: undefined,
-					unit_time_id: undefined,
+			}
+			this.calculateDuration();
+		},
+
+		showCampaignPacing() {
+			return (
+				this.isAutomaticAllocation && this.isOptimizationStrategyById
+			);
+		},
+
+		showDailyBudget() {
+			return this.isCampaignPacingById;
+		},
+
+		isSelectedAutomaticAllocation() {
+			return [0, 1].includes(this.campaign.automatic_allocation);
+		},
+
+		isAutomaticAllocation() {
+			return Boolean(this.campaign.automatic_allocation === 1);
+		},
+
+		isBudgetTypeImpressions() {
+			return this.checkSelectedIDByName(
+				this.getBudgetType,
+				IMPRESSIONS,
+				this.campaign.budget_type_id
+			);
+		},
+
+		isBudgetTypeSpend() {
+			return this.checkSelectedIDByName(
+				this.getBudgetType,
+				SPEND,
+				this.campaign.budget_type_id
+			);
+		},
+
+		isKpiCampaignImpression() {
+			return this.checkSelectedIDByName(
+				this.getKpiCampaigns,
+				IMPRESSION.toLowerCase(),
+				this.campaign.kpi_campaign_id
+			);
+		},
+
+		isKpiCampaignClicks() {
+			return this.checkSelectedIDByName(
+				this.getKpiCampaigns,
+				CLICKS.toLowerCase(),
+				this.campaign.kpi_campaign_id
+			);
+		},
+
+		isKpiCampaignCompletedVideo() {
+			return this.checkSelectedIDByName(
+				this.getKpiCampaigns,
+				COMPLETED_VIDEO.toLowerCase(),
+				this.campaign.kpi_campaign_id
+			);
+		},
+
+		isOptimizationStrategyById() {
+			return this.checkSelectedIDByName(
+				this.getOptimizationStrategies,
+				BY_CAMPAIGN,
+				this.campaign.optimization_strategy_id
+			);
+		},
+
+		isCampaignPacingById() {
+			return this.checkSelectedIDByName(
+				this.getCampaignsPacing,
+				DAILY,
+				this.campaign.campaign_pacing_id
+			);
+		},
+
+		showExpectedLabel() {
+			this.setTargets();
+
+			/**
+			 * is automatic_allocation === 1
+			 * is budget type === spend
+			 * is BY_CAMPAIGN
+			 */
+
+			if (
+				!this.isAutomaticAllocation &&
+				!this.isBudgetTypeSpend &&
+				!this.isOptimizationStrategyByType(BY_CAMPAIGN) &&
+				(!this.isValidNumber(this.campaign.budget) ||
+					!this.isValidNumber(this.campaign.kpi_objective))
+			) {
+				this.expected_show = false;
+				this.expected_label = "";
+				return false;
+			}
+
+			/**
+			 * Check selected data
+			 */
+
+			if (this.campaign.strategy_id === null) {
+				this.expected_show = false;
+				this.expected_label = "";
+				return false;
+			} else {
+				/**
+				 * is OPTIMIZED_CPM
+				 */
+				if (
+					this.isStrategyByType(OPTIMIZED_CPM) &&
+					this.isBudgetTypeSpend &&
+					this.isAutomaticAllocation &&
+					this.isOptimizationStrategyByType(BY_CAMPAIGN)
+				) {
+					this.expected_show = true;
+					this.setTargets(false, false, false, true);
+
+					this.expected_label = "eCPM";
+					let value =
+						this.campaign.budget /
+						(this.campaign.kpi_objective / 1000);
+					if (!isNaN(value) && value !== Infinity) {
+						this.expected_value = value.toFixed(2);
+					} else {
+						this.expected_value = undefined;
+					}
+				}
+
+				/**
+				 * is OPTIMIZED_CPC
+				 */
+				if (
+					this.isStrategyByType(OPTIMIZED_CPC) &&
+					this.isBudgetTypeSpend &&
+					this.isAutomaticAllocation &&
+					this.isOptimizationStrategyByType(BY_CAMPAIGN)
+				) {
+					this.expected_show = true;
+					this.setTargets(true, true, false, true);
+
+					this.expected_label = "eCPC";
+					let value =
+						this.campaign.budget / this.campaign.kpi_objective;
+					if (!isNaN(value) && value !== Infinity) {
+						this.expected_value = value.toFixed(2);
+					} else {
+						this.expected_value = undefined;
+					}
+				}
+
+				/**
+				 * is OPTIMIZED_VCR
+				 */
+				if (
+					this.isStrategyByType(OPTIMIZED_VCR) &&
+					this.isBudgetTypeSpend &&
+					this.isAutomaticAllocation &&
+					this.isOptimizationStrategyByType(BY_CAMPAIGN)
+				) {
+					this.expected_show = true;
+					this.setTargets(false, false, true, true);
+
+					this.expected_label = "eCPCV";
+					let value =
+						this.campaign.budget / this.campaign.kpi_objective;
+
+					if (!isNaN(value) && value !== Infinity) {
+						this.expected_value = value.toFixed(2);
+					} else {
+						this.expected_value = undefined;
+					}
+				}
+			}
+
+			return this.expected_show;
+		},
+
+		getExpectedValue() {
+			return this.expected_value;
+		},
+
+		getExpectedLabel() {
+			return this.expected_label;
+		},
+
+		show_strategy() {
+			return (
+				this.isAutomaticAllocation &&
+				this.isOptimizationStrategyByType(BY_CAMPAIGN)
+			);
+		},
+
+		/**
+		 * DATE RULES
+		 */
+		startDateRules() {
+			return [
+				(v: string) =>
+					(!isUndefined(v) && !isNull(v) && !isEmpty(v)) ||
+					this.$t("fieldRequired"),
+			];
+		},
+
+		endDateRules() {
+			return [
+				(v: string) =>
+					(!isUndefined(v) && !isNull(v) && !isEmpty(v)) ||
+					this.$t("fieldRequired"),
+			];
+		},
+
+		/**
+		 * GET
+		 */
+		getCurrency() {
+			return !isUndefined(this.account.currency) &&
+				!isEmpty(this.account.currency)
+				? `${this.account.currency.key} (${this.account.currency.glyph})`
+				: "N/A";
+		},
+
+		getTimezone() {
+			return !isUndefined(this.account.timezone) &&
+				!isEmpty(this.account.timezone)
+				? `${this.account.timezone.name}`
+				: "N/A";
+		},
+
+		getAdvertisers(): AdvertiserList[] {
+			return this.advertisers;
+		},
+
+		getBudgetType() {
+			return this.budget_types;
+		},
+
+		getCampaignsPacing() {
+			return this.campaigns_pacing;
+		},
+
+		getOptimizationStrategies() {
+			return this.optimization_strategies;
+		},
+
+		getKpiCampaigns() {
+			return this.kpi_campaigns;
+		},
+
+		getStrategies() {
+			return this.strategies;
+		},
+
+		getUnitTimes() {
+			return this.unit_times;
+		},
+
+		getFails() {
+			return this.$store.state.proccess.errors;
+		},
+	},
+	methods: {
+		getError(index: string | number) {
+			if (!this.hasError(index)) return "";
+			return first(this.errors[index]);
+		},
+
+		hasError(index: string | number) {
+			return this.errors.hasOwnProperty(index);
+		},
+
+		getFail(index: any) {
+			return getError(this.getFails, index);
+		},
+
+		/**
+		 * targets: show_ecpc, show_ctr, show_vcr
+		 */
+		setTargets(
+			show_ecpc: boolean = false,
+			show_ctr: boolean = false,
+			show_vcr: boolean = false,
+			show_cpm: boolean = false
+		) {
+			this.show_target_ecpc = show_ecpc;
+			this.show_target_ctr = show_ctr;
+			this.show_target_vcr = show_vcr;
+			this.show_field_cpm = show_cpm;
+		},
+
+		/**
+		 * Strategy by type
+		 */
+		isStrategyByType(type: String) {
+			return this.checkSelectedIDByName(
+				this.getStrategies,
+				type,
+				this.campaign.strategy_id
+			);
+		},
+
+		/**
+		 * Optimization Strategy by type
+		 */
+		isOptimizationStrategyByType(type: String) {
+			return this.checkSelectedIDByName(
+				this.getOptimizationStrategies,
+				type,
+				this.campaign.optimization_strategy_id
+			);
+		},
+
+		isValidNumber(num: Number) {
+			return !isNaN(num) && isNumber(num);
+		},
+
+		checkSelectedIDByName(data: any, value: String, id: Number) {
+			const result = find(data, { value: value });
+			return result && result.id === id;
+		},
+		async validate() {
+			let form = this.$refs.form;
+			const valid = await form.validate();
+			console.log("valid", valid);
+			return await valid;
+		},
+		handleCancel() {
+			this.$router.push({ name: "CampaignsIndex" });
+		},
+
+		async handleSubmit() {
+			try {
+				if (!(await this.validate())) return;
+				console.log("this.isEdit", this.isEdit);
+				const emit = this.isEdit
+					? "update-campaign"
+					: "create-campaign";
+				this.$emit(emit, {
+					campaign: this.prepareDataCreate(),
 				});
-			},
-
-			deleteRowFrecuency(index: number) {
-				if (this.campaign.frequency_caps.length === 0) return;
-				this.campaign.frequency_caps.splice(index, 1);
-			},
-
-			getCalculateDuration() {
-				if (!this.isValidDates()) return;
-
-				const startDate = this.moment(this.campaign.start_date);
-				const endDate = this.moment(this.campaign.end_date);
-
-				let days = this.calculateDuration(startDate, endDate);
-
-				if (days < 0) {
-					this.campaign.end_date = "";
-					this.campaign_duration = undefined;
-					return;
-				}
-
-				this.campaign_duration = days;
-			},
-
-			calculateDuration(start: any, end: any) {
-				if (isUndefined(start) || isUndefined(end)) return;
-				if (!(start.isValid() && end.isValid())) {
-					return -1;
-				}
-				const diff = end.diff(start, "days");
-				const duration = this.moment.duration(end.diff(start));
-				return Math.ceil(duration.asDays());
-			},
+			} catch (error) {
+				console.error("handleSubmit", { error: error });
+			}
 		},
-		watch: {
-			"campaign.start_date"(val, old) {
-				this.getCalculateDuration();
-			},
 
-			"campaign.end_date"(val, old) {
-				this.getCalculateDuration();
-			},
+		prepareDataCreate() {
+			return {
+				id: this.isEdit ? Number(this.campaign.id) : undefined,
+				name: String(this.campaign.name),
+				advertiser_id: Number(this.campaign.advertiser_id),
+				budget: Number(this.campaign.budget),
+				start_date: this.moment(this.campaign.start_date).format(
+					DEFAULT_DATE_TIME_FORMAT
+				),
+				end_date: this.moment(this.campaign.end_date).format(
+					DEFAULT_DATE_TIME_FORMAT
+				),
+				frequency_caps: this.campaign.frequency_caps,
+				alternative_id: this.campaign.alternative_id,
+				active: 1,
+				trafficker_id: Number(this.campaign.trafficker_id),
+				budget_type_id: Number(this.campaign.budget_type_id),
+				automatic_allocation: Number(
+					this.campaign.automatic_allocation
+				),
+				kpi_campaign_id: Number(this.campaign.kpi_campaign_id),
+				kpi_objective: Number(this.campaign.kpi_objective),
+				optimization_strategy_id: Number(
+					this.campaign.optimization_strategy_id
+				),
+				strategy_id: Number(this.campaign.strategy_id),
+				campaign_pacing_id: Number(this.campaign.campaign_pacing_id),
+				daily_budget: Number(this.campaign.daily_budget),
+				cpm_bid: this.campaign.cpm_bid
+					? Number(this.campaign.cpm_bid)
+					: null,
+				target_ecpc: Number(this.campaign.target_ecpc),
+				target_ctr: Number(this.campaign.target_ctr),
+				target_vcr: Number(this.campaign.target_vcr),
+			} as CampaignDataCreate;
 		},
-	});
+
+		isValidDates() {
+			const startDate = this.moment(this.campaign.start_date);
+			const endDate = this.moment(this.campaign.end_date);
+			return startDate.isValid() && endDate.isValid();
+		},
+
+		addRowFrecuency() {
+			if (isUndefined(this.campaign.frequency_caps)) return;
+			if (this.campaign.frequency_caps.length >= 3) return;
+			this.$emit("init-frequency-caps");
+			this.campaign.frequency_caps.push({
+				impressions: undefined,
+				every_time: undefined,
+				unit_time_id: undefined,
+			});
+		},
+
+		deleteRowFrecuency(index: number) {
+			if (this.campaign.frequency_caps.length === 0) return;
+			this.campaign.frequency_caps.splice(index, 1);
+		},
+
+		getCalculateDuration() {
+			if (!this.isValidDates()) return;
+
+			const startDate = this.moment(this.campaign.start_date);
+			const endDate = this.moment(this.campaign.end_date);
+
+			let days = this.calculateDuration(startDate, endDate);
+
+			if (days < 0) {
+				this.campaign.end_date = "";
+				this.campaign_duration = undefined;
+				return;
+			}
+
+			this.campaign_duration = days;
+		},
+
+		calculateDuration(start: any, end: any) {
+			if (isUndefined(start) || isUndefined(end)) return;
+			if (!(start.isValid() && end.isValid())) {
+				return -1;
+			}
+			const diff = end.diff(start, "days");
+			const duration = this.moment.duration(end.diff(start));
+			return Math.ceil(duration.asDays());
+		},
+	},
+	watch: {
+		"campaign.start_date"(val, old) {
+			this.getCalculateDuration();
+		},
+
+		"campaign.end_date"(val, old) {
+			this.getCalculateDuration();
+		},
+	},
+});
 </script>

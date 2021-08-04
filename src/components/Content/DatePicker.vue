@@ -8,6 +8,7 @@
 				:loading="loading"
 				:value="formattedDatetime"
 				:hint="dateTimeFormat"
+				:validate-on-blur="false"
 				v-on="on"
 				readonly
 				:rules="rules"
@@ -203,11 +204,11 @@ export default {
 		max_date: { type: String, default: "" },
 		is_end: { type: Boolean, default: false },
 		rules: { type: Array, default: () => [] },
-		required: { type: Boolean, default: false }, 
-		error_messages: { 
+		required: { type: Boolean, default: false },
+		error_messages: {
 			type: Array,
-				default: function () {
-					return [];
+			default: function () {
+				return [];
 			},
 		},
 	},

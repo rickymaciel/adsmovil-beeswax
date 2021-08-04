@@ -12,6 +12,7 @@
 				<v-container>
 					<v-row no-gutters>
 						<!-- E-mail -->
+						<!--
 						<v-col cols="12" sm="12" md="6">
 							<v-card
 								elevation="0"
@@ -24,7 +25,7 @@
 									v-model="email"
 									:rules="[
 										getRules.isRequired,
-										getRules.isEmail
+										getRules.isEmail 
 									]"
 									hint="E-mail"
 									ref="name"
@@ -35,8 +36,26 @@
 								></v-text-field>
 							</v-card>
 						</v-col>
+						-->
+						<v-col cols="12" sm="12" md="6" lg="6">
+							<CardTextField
+								v-model="email"
+								:rules="[
+									getRules.isRequired,
+									getRules.isEmail 
+								]"
+								:hint="$t('users.fields.mail')"
+								:reference="name"
+								:placeholder="$t('users.fields.mail')"
+								:label="$t('users.fields.mail')"
+								:counter="255"
+								:required="true"
+								:error_messages="getFail('email')"
+							></CardTextField>
+						</v-col>
 
 						<!-- Role -->
+						<!--
 						<v-col cols="12" sm="12" md="6">
 							<v-card
 								elevation="0"
@@ -62,6 +81,31 @@
 								></v-autocomplete>
 							</v-card>
 						</v-col>
+						-->
+						<v-col cols="12" sm="12" md="6" lg="6">
+							<CardAutocomplete
+								v-model="role_id"
+								:rules="[
+									getRules.isRequired,
+									getRules.isNumber,
+								]"
+								:items="getRoles"
+								item_text="description"
+								item_value="id"
+								ref="role_id"
+								:hint="$t('users.fields.role')"
+								:label="$t('users.fields.role')"
+								:placeholder="$t('users.fields.role')"
+								:chips="true"
+								:deletable_chips="true"
+								:multiple="false"
+								:small_chips="true"
+								:dense="false"
+								:required="true"
+								:error_messages="getFail('role_id')"
+							></CardAutocomplete>
+						</v-col>
+
 					</v-row>
 
 					<v-divider class="ma-4"></v-divider>
@@ -123,12 +167,19 @@
 	import Vue from "vue";
 	import {User, UserDataCreate, Role} from "../../../../interfaces/user";
 	import Alertize from "../../../../components/Alertize.vue";
+	import CardTextField from "../../../../components/Content/CardTextField.vue";
+	import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
 	import { isRequired, isEmail, isNumber } from "../../../../services/rule-services";
-	
+	import { getError } from "../../../../utils/resolveObjectArray";
+
 	export default Vue.extend({
 		name: "UserCreate",
 		props: {},
-		components: { Alertize },
+		components: { 
+			Alertize,
+			CardTextField,
+			CardAutocomplete, 
+		},
 		data: () => ({
 			title: "Create",
 			user: {} as UserDataCreate,
@@ -156,8 +207,14 @@
 					isNumber
 				};
 			},
+			getFails() {
+				return this.$store.state.proccess.errors;
+			},
 		},
 		methods: {
+			getFail(index: any) {
+				return getError(this.getFails, index);
+			},
 			setNotification(notification: Notification) {
 				return this.$store.dispatch(
 					"proccess/setNotification",

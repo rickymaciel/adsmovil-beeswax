@@ -12,9 +12,9 @@ import { account, forgot, initialize, login, logout, permissions, profile, reset
 //import { create, update } from '@/api/creatives/banner/MraidTagApi'
 //import { create, update } from '@/api/creatives/banner/Html5Api'
 //import { create, update } from '@/api/creatives/video/VastInlineApi'
-import { create, update } from '@/api/creatives/video/VastWrapper'
+//import { create, update } from '@/api/creatives/video/VastWrapper'
 //import { all, paginated, list } from '@/api/creatives/CreativeApi'
-//import { all, paginated, list } from '@/api/creatives/AddonApi'
+import { create, update, show, all, paginated, list } from '@/api/creatives/AddonApi'
 //import { all, paginated, list } from '@/api/creatives/AssetApi'
 //import { create, deleted } from '@/api/creatives/AssociateApi'
 //import { all, paginated, list, show } from '@/api/targeting/KeyApi'
@@ -2438,7 +2438,7 @@ const test_create_creative_vast_wrapper = {
       return null
     })
   }
-}*/
+}
 
 const test_update_creative_vast_wrapper = {
   data: function () {
@@ -2515,7 +2515,7 @@ const test_update_creative_vast_wrapper = {
   }
 }
 
-/*const test_get_creatives = {
+const test_get_creatives = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
@@ -2527,27 +2527,6 @@ const test_update_creative_vast_wrapper = {
       // const data_creatives = await show(59, value)
 
       console.log('CRATIVES', data_creatives)
-
-      return data_creatives
-    }).catch(error => {
-      console.log('EXCEPTION: ', error)
-      return null
-    })
-  }
-}
-
-const test_get_creatives_addons = {
-  data: function () {
-    const promise = new Promise<any>((resolve, reject) => {
-      const token = test_login.data()
-      resolve(token)
-    }).then(async value => {
-      // const data_creatives = await all(value,{}, { sort: 'name', order: 'asc' })
-      // const data_creatives = await paginated(value, { page: 1, limit: 15 }, { name: 'polaco' }, { sort: 'name', order: 'asc' })
-      const data_creatives = await list(value, {}, { sort: 'name', order: 'asc' })
-      // const data_creatives = await show(59, value)
-
-      console.log('CRATIVES ADDONS', data_creatives)
 
       return data_creatives
     }).catch(error => {
@@ -2620,6 +2599,94 @@ const test_get_creatives_assets = {
   }
 }*/
 /* -------- END CREATIVES -------- */
+
+/* -------- BEGIN CREATIVES ADDONS -------- */
+const test_create_addons = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const addon = {
+        name: 'ADDONS ADS MOVIL',
+        alternative_id: 1991,
+        addon_type_id: 625,
+        creative_type_id: 21,
+        advertiser_id: 13,
+        //vendor_id: 10,
+        include_default: true,
+        url: 'https://adsmovil.com',
+        secure: true,
+        active: true,
+        //cpm_cost: 0.5
+      }
+
+      const data_addon = await create(addon, value)
+
+      console.log('CREATE ADDON', data_addon)
+
+      return data_addon
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_update_addons = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const addon = {
+        id: 4,
+        name: 'Addons update polack',
+        //alternative_id: 2021,
+        addon_type_id: 625,
+        //creative_type_id: 21,
+        //advertiser_id: 13,
+        include_default: false,
+        url: 'https://adsmovil.com',
+        secure: false,
+        active: false,
+        //vendor_id?: number,
+        //cpm_cost?: number
+      }
+
+      const data_addon = await update(addon, value)
+
+      console.log('CREATE ADDON', data_addon)
+
+      return data_addon
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+const test_get_addons = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      // const data_creatives = await all(value,{}, { sort: 'name', order: 'asc' })
+      // const data_creatives = await paginated(value, { page: 1, limit: 15 }, { name: 'polaco' }, { sort: 'name', order: 'asc' })
+      // const data_creatives = await list(value, {}, { sort: 'name', order: 'asc' })
+      const data_creatives = await show(1, value)
+
+      console.log('CRATIVES ADDONS', data_creatives)
+
+      return data_creatives
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+/* -------- END CREATIVES ADDONS -------- */
 
 /* -------- BEGIN TARGETING -------- */
 /*const test_targeting_predicates = {
@@ -2858,4 +2925,4 @@ const test_targeting = {
 }*/
 /* -------- END CONTENT -------- */
 
-export default test_update_creative_vast_wrapper
+export default test_update_addons
