@@ -104,7 +104,7 @@
 				return this.$store.state.creative.asset;
 			},
 
-			hasCreative() {
+			hasCreative() { 
 				return (
 					!isUndefined(this.$store.state.creative.creative) &&
 					!isNull(this.$store.state.creative.creative)

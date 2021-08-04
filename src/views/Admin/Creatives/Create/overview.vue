@@ -173,6 +173,7 @@
 							@input="updateTemplate"
 							@click="fetchCreativeTemplates"
 							:required="true"
+							:error_messages="getError('creative_template_id')"
 						></CardAutocomplete>
 					</v-col>
 
@@ -197,6 +198,7 @@
 							label="Width x Height"
 							@input="selectedWidthHeight"
 							@click="fetchCreativeSizes"
+							:error_messages="getError('creative_attributes.size_id')"
 						></CardAutocomplete>
 					</v-col>
 
@@ -220,6 +222,7 @@
 							placeholder="Select Creative Type"
 							label="Creative Type"
 							:disabled="true"
+							:error_messages="getError('creative_type_id')"
 						></CardAutocomplete>
 					</v-col>
 
@@ -247,7 +250,7 @@
 						<CardAutocomplete
 							v-model="creative.creative_advertiser.advertiser_id"
 							:model="creative.creative_advertiser.advertiser_id"
-							:rules="advertiser_id_rules"
+							
 							:items="getAdvertisers"
 							item_text="name"
 							item_value="id"
@@ -258,6 +261,7 @@
 							@input="selectedAdvertiser"
 							@click="fetchCreativeAdvertisers"
 							:required="true"
+							:error_messages="getError('creative_advertiser.advertiser_id')"
 						></CardAutocomplete>
 					</v-col>
 
@@ -277,6 +281,7 @@
 							placeholder="Domain"
 							label="Domain"
 							:required="true"
+							:error_messages="getError('creative_advertiser.domain')"
 						></CardTextField>
 					</v-col>
 
@@ -301,6 +306,7 @@
 							label="Category"
 							:required="true"
 							@click="fetchAdvertiserCategories"
+							:error_messages="getError('creative_advertiser.category_id')"
 						></CardAutocomplete>
 					</v-col>
 
@@ -320,6 +326,7 @@
 							placeholder="App Bundle"
 							label="App Bundle"
 							:required="true"
+							:error_messages="getError('creative_advertiser.app_bundle')"
 						></CardTextField>
 					</v-col>
 
@@ -541,6 +548,7 @@
 							reference="title"
 							placeholder="Title"
 							label="Title"
+							:error_messages="getError('creative_ad_content.title')"
 						></CardTextField>
 					</v-col>
 
@@ -2146,7 +2154,7 @@
 					await this.addCommonsValidations();
 
 					await this.validate();
-
+					
 					await this.submitCreative(false);
 				} catch (error) {
 					console.error("handleSubmit", { error: error });

@@ -3,12 +3,12 @@
 		<v-data-table
 			:headers="headers"
 			:items="filteredData"
+			:items-per-page="perPage"
 			item-key="creative"
 			class="elevation-1"
 			hide-default-footer
 			:mobile-breakpoint="null"
 		>
-
 			<!-- ID -->
 			<template v-slot:[`header.id`]="{ header }">
 				<v-menu :close-on-content-click="false">
@@ -267,7 +267,7 @@
 				<v-card-actions>
 					<v-img
 						v-if="item.thumbail"
-						style="borderRadius: 5px"
+						style="borderradius: 5px"
 						:lazy-src="item.thumbail"
 						max-height="45"
 						max-width="45"
@@ -275,7 +275,7 @@
 					></v-img>
 					<v-img
 						v-else
-						style="borderRadius: 5px"
+						style="borderradius: 5px"
 						lazy-src="https://picsum.photos/id/11/10/6"
 						max-height="45"
 						max-width="45"
@@ -325,7 +325,6 @@
 					</v-btn>
 				</v-card-actions>
 			</template>
-
 		</v-data-table>
 
 		<!-- PAGINATE --->
@@ -336,130 +335,134 @@
 				@input="updatePaginate"
 			></v-pagination>
 		</div>
-
 	</section>
 </template>
 
 <script lang="ts">
-	import { isNull, orderBy } from "lodash";
-	import Vue from "vue";
+import { isEmpty, isNull, orderBy } from "lodash";
+import Vue from "vue";
 
-	export default Vue.extend({
-		name: "CreativesTable",
-		props: {
-			current_page: {
-				type: Number,
+export default Vue.extend({
+	name: "CreativesTable",
+	props: {
+		current_page: {
+			type: Number,
+		},
+		next_page_url: {
+			type: String,
+		},
+		path: {
+			type: String,
+		},
+		per_page: {
+			type: Number,
+		},
+		prev_page_url: {
+			type: String,
+		},
+		to: {
+			type: Number,
+		},
+		total: {
+			type: Number,
+		},
+		headers: {
+			type: Array,
+			default: [],
+		},
+		items: {
+			type: Array,
+			default: [],
+		},
+	},
+	components: {},
+	data: () => ({
+		radios: false,
+		filter: {
+			id: {
+				value: "",
+				order: "asc",
 			},
-			next_page_url: {
-				type: String,
+			name: {
+				value: "",
+				order: "asc",
 			},
-			path: {
-				type: String,
+			size: {
+				value: "",
+				order: "asc",
 			},
-			per_page: {
-				type: Number,
+			type: {
+				value: "",
+				order: "asc",
 			},
-			prev_page_url: {
-				type: String,
+			lineItems: {
+				value: "",
+				order: "asc",
 			},
-			to: {
-				type: Number,
+			thumbail: {
+				value: "",
+				order: "asc",
 			},
-			total: {
-				type: Number,
-			},
-			headers: {
-				type: Array,
-				default: [],
-			},
-			items: {
-				type: Array,
-				default: [],
+			active: {
+				value: "",
+				order: "asc",
 			},
 		},
-		components: {},
-		data: () => ({
-			radios: false,
-			filter: {
-				id: {
-					value: "",
-					order: "asc",
-				},
-				name: {
-					value: "",
-					order: "asc",
-				},
-				size: {
-					value: "",
-					order: "asc",
-				},
-				type: {
-					value: "",
-					order: "asc",
-				},
-				lineItems: {
-					value: "",
-					order: "asc",
-				},
-				thumbail: {
-					value: "",
-					order: "asc",
-				},
-				active: {
-					value: "",
-					order: "asc",
-				},
+		filtered: [],
+	}),
+
+	created() {},
+
+	mounted() {},
+
+	computed: {
+		currentPage: {
+			set(val) {
+				this.$emit("update-current-page", val);
 			},
-			filtered: [],
-		}),
-
-		created() {},
-
-		mounted() {},
-
-		computed: {
-			currentPage: {
-				set(val) {
-					this.$emit("update-current-page", val);
-				},
-				get() {
-					return this.current_page;
-				},
+			get() {
+				return this.current_page;
 			},
+		},
 
-			getLength() {
-				return Math.ceil(this.total / this.per_page);
-			},
+		getLength() {
+			return Math.ceil(this.total / this.per_page);
+		},
+		perPage() {
+			return !isNaN(this.per_page) && isEmpty(this.per_page)
+				? this.per_page
+				: 25;
+		},
 
-			getTotalFiltered() {
-				return this.filtered.length;
-			},
+		getTotalFiltered() {
+			return this.filtered.length;
+		},
 
-			filteredData() {
-				this.filtered = this.items;
-				
-				// filter by id
-				if (!isNull(this.filter.id.value)) {
-					this.filtered = this.filtered.filter((item: { id: string }) => {
-						return String(item.id)
+		filteredData() {
+			this.filtered = this.items;
+
+			// filter by id
+			if (!isNull(this.filter.id.value)) {
+				this.filtered = this.filtered.filter((item: { id: string }) => {
+					return String(item.id)
+						.toLowerCase()
+						.includes(this.filter.id.value.toLowerCase());
+				});
+			}
+
+			// filter by campaign name
+			if (!isNull(this.filter.name.value)) {
+				this.filtered = this.filtered.filter(
+					(item: { name: string }) => {
+						return item.name
 							.toLowerCase()
-							.includes(this.filter.id.value.toLowerCase());
-					});
-				}
+							.includes(this.filter.name.value.toLowerCase());
+					}
+				);
+			}
 
-				// filter by campaign name
-				if (!isNull(this.filter.name.value)) {
-					this.filtered = this.filtered.filter(
-						(item: { name: string }) => {
-							return item.name
-								.toLowerCase()
-								.includes(this.filter.name.value.toLowerCase());
-						}
-					);
-				}
-
-				// filter by size
-				/*if (!isNull(this.filter.size.value)) {
+			// filter by size
+			/*if (!isNull(this.filter.size.value)) {
 					this.filtered = this.filtered.filter(
 						(item: { size: string }) => {
 							return item.size
@@ -469,8 +472,8 @@
 					);
 				}*/
 
-				// filter by type
-				/*if (!isNull(this.filter.type.value)) {
+			// filter by type
+			/*if (!isNull(this.filter.type.value)) {
 					this.filtered = this.filtered.filter(
 						(item: { type: string }) => {
 							return item.type
@@ -480,8 +483,8 @@
 					);
 				}*/
 
-				// filter by line items
-				/*if (!isNull(this.filter.lineItems.value)) {
+			// filter by line items
+			/*if (!isNull(this.filter.lineItems.value)) {
 					this.filtered = this.filtered.filter(
 						(item: { lineItems: string }) => {
 							return item.lineItems.toString()
@@ -491,8 +494,8 @@
 					);
 				}*/
 
-				// filter by thumbail
-				/*if (!isNull(this.filter.thumbail.value)) {
+			// filter by thumbail
+			/*if (!isNull(this.filter.thumbail.value)) {
 					this.filtered = this.filtered.filter(
 						(item: { thumbail: string }) => {
 							return item.thumbail
@@ -502,49 +505,49 @@
 					);
 				}*/
 
-				this.sorteredData();
-				return this.filtered;
-			},
+			this.sorteredData();
+			return this.filtered;
 		},
+	},
 
-		methods: {
-			sorteredData() {
-				this.filtered = orderBy(
-					this.filtered,
-					["name"],
-					[this.filter.name.order]
-				);
+	methods: {
+		sorteredData() {
+			this.filtered = orderBy(
+				this.filtered,
+				["name"],
+				[this.filter.name.order]
+			);
 
-				this.filtered = orderBy(
-					this.filtered,
-					["id"],
-					[this.filter.id.order]
-				);
-			},
-			getColor(active: Boolean) {
-				return active ? "green--text" : "red--text";
-			},
-			getActiveText(active: Boolean) {
-				return active ? "Active" : "Inactive";
-			},
-			updatePaginate(data: Number) {
-				this.$emit("update-paginate", data);
-			},
-			removeFilterName() {
-				this.filter.name.value = "";
-			},
-			removeFilterSize() {
-				this.filter.size.value = "";
-			},
-			removeFilterType() {
-				this.filter.type.value = "";
-			},
-			removeFilterLineItems() {
-				this.filter.lineItems.value = "";
-			},
-			removeFilterThumbail() {
-				this.filter.thumbail.value = "";
-			},
+			this.filtered = orderBy(
+				this.filtered,
+				["id"],
+				[this.filter.id.order]
+			);
 		},
-	});
+		getColor(active: Boolean) {
+			return active ? "green--text" : "red--text";
+		},
+		getActiveText(active: Boolean) {
+			return active ? "Active" : "Inactive";
+		},
+		updatePaginate(data: Number) {
+			this.$emit("update-paginate", data);
+		},
+		removeFilterName() {
+			this.filter.name.value = "";
+		},
+		removeFilterSize() {
+			this.filter.size.value = "";
+		},
+		removeFilterType() {
+			this.filter.type.value = "";
+		},
+		removeFilterLineItems() {
+			this.filter.lineItems.value = "";
+		},
+		removeFilterThumbail() {
+			this.filter.thumbail.value = "";
+		},
+	},
+});
 </script>

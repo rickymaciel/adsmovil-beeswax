@@ -2,7 +2,7 @@
 	<v-container class="my-0">
 		<Alertize></Alertize>
 		<v-layout column>
-			<v-form
+			<v-form 
 				ref="form"
 				justify="center"
 				align="center"
@@ -12,6 +12,7 @@
 				<v-container>
 					<v-row no-gutters>
 						<!-- Advertiser Name -->
+						<!--
 						<v-col cols="12" sm="12" md="6">
 							<v-card
 								elevation="0"
@@ -20,25 +21,47 @@
 								tile
 								color="rgb(0, 0, 0, 0.0)"
 							>
+
 								<v-text-field
 									v-model="name"
-									:rules="[
+										:rules="[
+											getRules.isRequired,
+											getRules.isMinLength,
+											getRules.isMaxLength,
+										]"
+										:hint="$t('advertisers.fields.name')"
+										ref="name"
+										:placeholder="$t('advertisers.fields.name')"
+										:label="$t('advertisers.fields.name')+'*'"
+										class="label-fixed"
+										counter="255"
+								></v-text-field>
+							</v-card>
+						</v-col>
+						-->
+						<!-- Advertiser Name New Field -->
+
+						<v-col cols="12" sm="12" md="6" lg="6">
+							<CardTextField
+								v-model="name"
+								:rules="[
 										getRules.isRequired,
 										getRules.isMinLength,
 										getRules.isMaxLength,
 									]"
-									:hint="$t('advertisers.fields.name')"
-									ref="name"
-									:placeholder="$t('advertisers.fields.name')"
-									:label="$t('advertisers.fields.name')+'*'"
-									class="label-fixed"
-									counter="255"
-								></v-text-field>
-							</v-card>
+								:hint="$t('advertisers.fields.name')"
+								:reference="name"
+								:placeholder="$t('advertisers.fields.name')"
+								:label="$t('advertisers.fields.name')"
+								:counter="255"
+								:required="true"
+								:error_messages="getFail('name')"
+							></CardTextField>
 						</v-col>
-
+						
 						<!-- Advertiser Category -->
-						<v-col cols="12" sm="12" md="6">
+						<!--
+						<v-col cols="12" sm="12" md="6" lg="6">
 							<v-card
 								elevation="0"
 								class="pa-2"
@@ -63,10 +86,36 @@
 								></v-autocomplete>
 							</v-card>
 						</v-col>
+						-->
+						<v-col cols="12" sm="12" md="6" lg="6">
+							<CardAutocomplete
+								v-model="category_id"
+								:rules="[
+									getRules.isRequired,
+									getRules.isNumber,
+								]"
+								:items="getCategories"
+								item_text="name"
+								item_value="id"
+								reference="category_id"
+								:hint="$t('advertisers.fields.category')"
+								:label="$t('advertisers.fields.category')"
+								:placeholder="$t('advertisers.fields.category')"
+								:chips="true"
+								:deletable_chips="true"
+								:multiple="false"
+								:small_chips="true"
+								:dense="false"
+								:required="true"
+								:error_messages="getFail('category_id')"
+							></CardAutocomplete>
+						</v-col>
+
 					</v-row>
 
 					<v-row no-gutters>
 						<!-- Advertiser Domain -->
+						<!--
 						<v-col cols="12" sm="12" md="6">
 							<v-card
 								elevation="0"
@@ -81,8 +130,7 @@
 									v-model="show_tooltip_domain"
 									right
 								>
-									<!-- getRules.isDomain, -->
-									<template v-slot:activator="{}">
+									<template v-slot:activator="{}">			
 										<v-text-field
 											v-model="domain"
 											ref="domain"
@@ -105,9 +153,28 @@
 									</span>
 								</v-tooltip>
 							</v-card>
-						</v-col>
+							</v-col>
+							-->
+
+							<v-col cols="12" sm="12" md="6" lg="6">
+								<CardTextFieldToolTip
+									v-model="domain"
+									:rules="[
+										getRules.isRequired,
+										getRules.isDomain,
+									]"
+									:hint="$t('advertisers.fields.domain')"
+									:reference="domain"
+									:placeholder="$t('advertisers.fields.domain')"
+									:label="$t('advertisers.fields.domain')"
+									:required="true"
+									:error_messages="getFail('domain')"
+									:tooltip_message="$t('advertisers.labels.domainTooltip')"
+								></CardTextFieldToolTip>
+							</v-col>
 
 						<!-- Advertiser App Bundle -->
+						<!--
 						<v-col cols="12" sm="12" md="6">
 							<v-card
 								elevation="0"
@@ -123,6 +190,8 @@
 									right
 								>
 									<template v-slot:activator="{}">
+
+								
 										<v-text-field
 											v-model="app_bundle"
 											ref="app_bundle"
@@ -136,12 +205,25 @@
 												toggleTooltipAppBundle()
 											"
 										></v-text-field>
+									
 									</template>
 									<span>
 										{{ $t("advertisers.labels.appBundleTooltip") }}
 									</span>
 								</v-tooltip>
 							</v-card>
+						</v-col>
+						-->
+
+						<v-col cols="12" sm="12" md="6" lg="6">
+							<CardTextFieldToolTip
+								v-model="app_bundle"
+								:hint="$t('advertisers.fields.appBundle')"
+								:reference="app_bundle"
+								:placeholder="$t('advertisers.fields.appBundle')"
+								:label="$t('advertisers.fields.appBundle')"
+								:tooltip_message="$t('advertisers.labels.appBundleTooltip')"
+							></CardTextFieldToolTip>
 						</v-col>
 
 						<!-- Status -->
@@ -166,6 +248,7 @@
 							</v-card>
 						</v-col>
 					</v-row>
+
 					<v-divider class="ma-4"></v-divider>
 					<v-row no-gutters align="center" justify="center">
 						<v-col cols="12" sm="12" md="8" lg="9">
@@ -228,6 +311,7 @@
 	import CardTextField from "../../../../components/Content/CardTextField.vue";
 	import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
 	import CardSwitch from "../../../../components/Content/CardSwitch.vue";
+	import CardTextFieldToolTip from "../../../../components/Content/CardTextFieldToolTip.vue";
 	import {
 		isRequired,
 		isNumber,
@@ -235,6 +319,7 @@
 		isMinLength,
 		isMaxLength,
 	} from "../../../../services/rule-services";
+	import { getError } from "../../../../utils/resolveObjectArray";
 
 	export default Vue.extend({
 		name: "AdvertiserCreate",
@@ -244,6 +329,7 @@
 			CardTextField,
 			CardAutocomplete,
 			CardSwitch,
+			CardTextFieldToolTip,
 		},
 		data: () => ({
 			title: "Create",
@@ -281,8 +367,15 @@
 					isMaxLength,
 				};
 			},
+			getFails() {
+				return this.$store.state.proccess.errors;
+			},
 		},
 		methods: {
+			getFail(index: any) {
+				return getError(this.getFails, index);
+			},
+
 			setNotification(notification: Notification) {
 				return this.$store.dispatch(
 					"proccess/setNotification",

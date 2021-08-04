@@ -24,6 +24,7 @@
 				:dense="false"
 				:multiple="true"
 				:small_chips="true"
+				:predicates="predicates"
 				@focus="getComboData('inventory_source')"
 				@sync="syncData('inventory_source', $event)"
 				@clear="clearHandler('inventory_source')"
@@ -57,6 +58,7 @@
 				:dense="false"
 				:multiple="true"
 				:small_chips="true"
+				:predicates="predicates"
 				@focus="getComboData('auction_type')"
 				@sync="syncData('auction_type', $event)"
 				@clear="clearHandler('auction_type')"
@@ -66,234 +68,240 @@
 	</v-list>
 </template>
 <script lang="ts">
-	import Vue from "vue";
-	import CardTextField from "../../../../components/Content/CardTextField.vue";
-	import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
-	import CardSwitch from "../../../../components/Content/CardSwitch.vue";
-	import TermList from "./termList.vue";
-	import TermListUnique from "./termListUnique.vue";
-	import TargetingTabItem from "./targetingTabItem.vue";
-	import TargetingTabItemUnique from "./targetingTabItemUnique.vue";
-	import TargetingTabItemSplit from "./targetingTabItemSplit.vue";
-	import TabItem from "./tab_items/TabItem.vue";
-	import { isEmpty, debounce } from "lodash";
+import Vue from "vue";
+import CardTextField from "../../../../components/Content/CardTextField.vue";
+import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
+import CardSwitch from "../../../../components/Content/CardSwitch.vue";
+import TermList from "./termList.vue";
+import TermListUnique from "./termListUnique.vue";
+import TargetingTabItem from "./targetingTabItem.vue";
+import TargetingTabItemUnique from "./targetingTabItemUnique.vue";
+import TargetingTabItemSplit from "./targetingTabItemSplit.vue";
+import TabItem from "./tab_items/TabItem.vue";
+import { isEmpty, debounce } from "lodash";
 
-	export default Vue.extend({
-		name: "Exchange",
-		props: {
-			exchange: {
-				type: Object,
-				default: function () {},
-			},
-			data_variables: {
-				type: Object,
-				default: function () {
-					return {};
-				},
+export default Vue.extend({
+	name: "Exchange",
+	props: {
+		exchange: {
+			type: Object,
+			default: function () {},
+		},
+		data_variables: {
+			type: Object,
+			default: function () {
+				return {};
 			},
 		},
-		components: {
-			CardTextField,
-			CardAutocomplete,
-			CardSwitch,
-			TermList,
-			TermListUnique,
-			TargetingTabItem,
-			TargetingTabItemUnique,
-			TargetingTabItemSplit,
-			TabItem,
+		predicates: {
+			type: Object,
+			default: function () {
+				return {};
+			},
 		},
-		data: () => ({
-			tab: "exchange",
-			inventorySourceTerm: null,
-			auctionTypeSourceTerm: null,
-		}),
-		async created() {},
-		async mounted() {},
-		computed: {},
-		methods: {
-			setLoading(_loading: Boolean) {
-				this.$store.state.proccess.loading_field = _loading;
-			},
-			getDisplayNameByID(key: string, id: any) {
-				let displayName = "";
+	},
+	components: {
+		CardTextField,
+		CardAutocomplete,
+		CardSwitch,
+		TermList,
+		TermListUnique,
+		TargetingTabItem,
+		TargetingTabItemUnique,
+		TargetingTabItemSplit,
+		TabItem,
+	},
+	data: () => ({
+		tab: "exchange",
+		inventorySourceTerm: null,
+		auctionTypeSourceTerm: null,
+	}),
+	async created() {},
+	async mounted() {},
+	computed: {},
+	methods: {
+		setLoading(_loading: Boolean) {
+			this.$store.state.proccess.loading_field = _loading;
+		},
+		getDisplayNameByID(key: string, id: any) {
+			let displayName = "";
 
-				const _data = this.data_variables[key].find(
-					(app: any) => app.id === id
-				);
-				if (_data) {
-					displayName = `${_data.value} (${id})`;
-				}
+			const _data = this.data_variables[key].find(
+				(app: any) => app.id === id
+			);
+			if (_data) {
+				displayName = `${_data.value} (${id})`;
+			}
 
-				return displayName;
-			},
-			async getComboData(key: string) {
-				try {
-					let params = {};
+			return displayName;
+		},
+		async getComboData(key: string) {
+			try {
+				let params = {};
 
-					if (isEmpty(this.data_variables[key])) {
-						switch (key) {
-							case "inventory_source":
-								params = {
-									key: "external_id",
-									value: "name",
-								};
+				if (isEmpty(this.data_variables[key])) {
+					switch (key) {
+						case "inventory_source":
+							params = {
+								key: "external_id",
+								value: "name",
+							};
 
-								break;
+							break;
 
-							case "auction_type":
-								params = {
-									key: "extra",
-									value: "description",
-								};
+						case "auction_type":
+							params = {
+								key: "extra",
+								value: "description",
+							};
 
-								break;
-						}
-
-						this.setLoading(true);
-
-						this.$emit("update-data-var", {
-							tab: this.tab,
-							key: key,
-							params: params,
-							data: await this.dispatchAppSiteByKey(key, params),
-						});
-
-						this.setLoading(false);
+							break;
 					}
-				} catch (error) {
-					console.error("getComboData", { key, error });
+
+					this.setLoading(true);
+
+					this.$emit("update-data-var", {
+						tab: this.tab,
+						key: key,
+						params: params,
+						data: await this.dispatchAppSiteByKey(key, params),
+					});
+
 					this.setLoading(false);
 				}
-			},
-			async updateValues(key: string, items: Array<string>) {
-				this.$emit("update-item-unique", {
+			} catch (error) {
+				console.error("getComboData", { key, error });
+				this.setLoading(false);
+			}
+		},
+		async updateValues(key: string, items: Array<string>) {
+			this.$emit("update-item-unique", {
+				tab: this.tab,
+				key: key,
+				items: items,
+			});
+		},
+		adComma(key: any) {
+			this.$emit("add-comma", {
+				tab: this.tab,
+				key: key,
+			});
+		},
+		async dispatchSearchByTerm(params: any) {
+			return this.$store.dispatch("targeting/getSearchByTerm", params);
+		},
+		async dispatchAppSiteByKey(key: String, object?: any) {
+			return this.$store.dispatch("targeting/getAppSitesByKey", {
+				key: key,
+				object: object,
+			});
+		},
+		async getAppNameByAtribute(params: {
+			term: String;
+			by_attribute: String;
+		}) {
+			return this.$store.dispatch(
+				"targeting/getAppNameByAtribute",
+				params
+			);
+		},
+		async getSitesByAtribute(params: {
+			term: String;
+			by_attribute: String;
+		}) {
+			return this.$store.dispatch("targeting/getSitesByAtribute", params);
+		},
+
+		clearHandler(key: any) {
+			this.$emit("clear-app-site", { tab: this.tab, key: key });
+		},
+
+		syncData(key: String, term: String) {
+			switch (key) {
+				case "inventory_source":
+					this.inventorySourceTerm = term;
+
+					break;
+
+				case "auction_type":
+					this.auctionTypeSourceTerm = term;
+
+					break;
+			}
+		},
+
+		removeHandler(key: any, value: any, is_unique: Boolean = false) {
+			this.$emit(is_unique ? "remove-item-unique" : "remove-item", {
+				tab: this.tab,
+				key: key,
+				value: value,
+				is_unique: is_unique,
+			});
+		},
+
+		async updateWatchByKey(
+			key: String,
+			val: Array<any>,
+			old: Array<any>,
+			is_unique: Boolean = false
+		) {
+			if (val.length > old.length) {
+				const item = val.filter(function (o: any) {
+					return !old.includes(o);
+				});
+				this.$emit(is_unique ? "add-item-unique" : "add-item", {
 					tab: this.tab,
 					key: key,
-					items: items,
+					value: item[0],
 				});
-			},
-			adComma(key: any) {
-				this.$emit("add-comma", {
-					tab: this.tab,
-					key: key,
+			}
+			if (val.length < old.length) {
+				const item = old.filter(function (o: any) {
+					return !val.includes(o);
 				});
-			},
-			async dispatchSearchByTerm(params: any) {
-				return this.$store.dispatch("targeting/getSearchByTerm", params);
-			},
-			async dispatchAppSiteByKey(key: String, object?: any) {
-				return this.$store.dispatch("targeting/getAppSitesByKey", {
-					key: key,
-					object: object,
-				});
-			},
-			async getAppNameByAtribute(params: {
-				term: String;
-				by_attribute: String;
-			}) {
-				return this.$store.dispatch(
-					"targeting/getAppNameByAtribute",
-					params
-				);
-			},
-			async getSitesByAtribute(params: {
-				term: String;
-				by_attribute: String;
-			}) {
-				return this.$store.dispatch("targeting/getSitesByAtribute", params);
-			},
-
-			clearHandler(key: any) {
-				this.$emit("clear-app-site", { tab: this.tab, key: key });
-			},
-
-			syncData(key: String, term: String) {
-				switch (key) {
-					case "inventory_source":
-						this.inventorySourceTerm = term;
-
-						break;
-
-					case "auction_type":
-						this.auctionTypeSourceTerm = term;
-
-						break;
-				}
-			},
-
-			removeHandler(key: any, value: any, is_unique: Boolean = false) {
 				this.$emit(is_unique ? "remove-item-unique" : "remove-item", {
 					tab: this.tab,
 					key: key,
-					value: value,
-					is_unique: is_unique,
+					value: item[0],
 				});
-			},
+			}
+		},
+	},
 
-			async updateWatchByKey(
-				key: String,
-				val: Array<any>,
-				old: Array<any>,
-				is_unique: Boolean = false
-			) {
-				if (val.length > old.length) {
-					const item = val.filter(function (o: any) {
-						return !old.includes(o);
-					});
-					this.$emit(is_unique ? "add-item-unique" : "add-item", {
-						tab: this.tab,
-						key: key,
-						value: item[0],
-					});
-				}
-				if (val.length < old.length) {
-					const item = old.filter(function (o: any) {
-						return !val.includes(o);
-					});
-					this.$emit(is_unique ? "remove-item-unique" : "remove-item", {
-						tab: this.tab,
-						key: key,
-						value: item[0],
-					});
-				}
-			},
+	watch: {
+		async "exchange.inventory_source.value"(
+			val: Array<any>,
+			old: Array<any>
+		) {
+			await this.updateWatchByKey("inventory_source", val, old, true);
+		},
+		async "exchange.auction_type.value"(val: Array<any>, old: Array<any>) {
+			await this.updateWatchByKey("auction_type", val, old, true);
 		},
 
-		watch: {
-			async "exchange.inventory_source.value"(
-				val: Array<any>,
-				old: Array<any>
-			) {
-				await this.updateWatchByKey("inventory_source", val, old, true);
-			},
-			async "exchange.auction_type.value"(val: Array<any>, old: Array<any>) {
-				await this.updateWatchByKey("auction_type", val, old, true);
-			},
+		// inventorySourceTerm: debounce(async function (
+		// 	val: String,
+		// 	old: String
+		// ) {
+		// 	if (val.length < 3) return;
+		// 	this.setLoading(true);
+		// 	this.$emit("update-data-var", {
+		// 		tab: this.tab,
+		// 		key: "inventory_source",
+		// 		data: await this.dispatchSearchByTerm({
+		// 			term: val,
+		// 			key: "inventory_source",
+		// 			by_attribute: this.exchange.inventory_source.by_attribute,
+		// 			object: {
+		// 				key: "internal_id",
+		// 				value: "name",
+		// 			},
+		// 		}),
+		// 	});
 
-			// inventorySourceTerm: debounce(async function (
-			// 	val: String,
-			// 	old: String
-			// ) {
-			// 	if (val.length < 3) return;
-			// 	this.setLoading(true);
-			// 	this.$emit("update-data-var", {
-			// 		tab: this.tab,
-			// 		key: "inventory_source",
-			// 		data: await this.dispatchSearchByTerm({
-			// 			term: val,
-			// 			key: "inventory_source",
-			// 			by_attribute: this.exchange.inventory_source.by_attribute,
-			// 			object: {
-			// 				key: "internal_id",
-			// 				value: "name",
-			// 			},
-			// 		}),
-			// 	});
-
-			// 	this.setLoading(false);
-			// },
-			// 500),
-		},
-	});
+		// 	this.setLoading(false);
+		// },
+		// 500),
+	},
+});
 </script>

@@ -382,11 +382,11 @@ export default new Vuex.Store({
                         return await Promise.reject(error)
                     }
                 },
-                async list({ commit }, filters) {
+                async list({ commit }, params) {
                     try {
-                        const response = await AdvertiserService.list(filters);
+                        const response = await AdvertiserService.list(params);
                         commit('SET_ADVERTISERS_LIST', resolveList(response))
-                        return await Promise.resolve(response)
+                        return await Promise.resolve(resolveList(response))
                     } catch (error) {
                         catchError(this, error);
                         return await Promise.reject(error)
@@ -608,7 +608,7 @@ export default new Vuex.Store({
                     try {
                         const response = await CustomListService.budgetTypes()
                         commit('SET_BUDGET_TYPES', resolveList(response))
-                        return await Promise.resolve(response)
+                        return await Promise.resolve(resolveList(response))
                     } catch (error) {
                         catchError(this, error);
                         return await Promise.reject(error)
@@ -618,7 +618,7 @@ export default new Vuex.Store({
                     try {
                         const response = await CustomListService.campaignPacing()
                         commit('SET_CAMPAIGNS_PACING', resolveList(response))
-                        return await Promise.resolve(response)
+                        return await Promise.resolve(resolveList(response))
                     } catch (error) {
                         catchError(this, error);
                         return await Promise.reject(error)
@@ -628,7 +628,7 @@ export default new Vuex.Store({
                     try {
                         const response = await CustomListService.optimizationStrategies()
                         commit('SET_OPTIMIZATION_STRATEGIES', resolveList(response))
-                        return await Promise.resolve(response)
+                        return await Promise.resolve(resolveList(response))
                     } catch (error) {
                         catchError(this, error);
                         return await Promise.reject(error)
@@ -638,7 +638,7 @@ export default new Vuex.Store({
                     try {
                         const response = await CustomListService.kpiCampaigns()
                         commit('SET_KPI_CAMPAIGNS', resolveList(response))
-                        return await Promise.resolve(response)
+                        return await Promise.resolve(resolveList(response))
                     } catch (error) {
                         catchError(this, error);
                         return await Promise.reject(error)
@@ -648,7 +648,7 @@ export default new Vuex.Store({
                     try {
                         const response = await CustomListService.strategies()
                         commit('SET_STRATEGIES', resolveList(response))
-                        return await Promise.resolve(response)
+                        return await Promise.resolve(resolveList(response))
                     } catch (error) {
                         catchError(this, error);
                         return await Promise.reject(error)
@@ -658,7 +658,7 @@ export default new Vuex.Store({
                     try {
                         const response = await CustomListService.unitTimes()
                         commit('SET_UNIT_TIMES', resolveList(response))
-                        return await Promise.resolve(response)
+                        return await Promise.resolve(resolveList(response))
                     } catch (error) {
                         catchError(this, error);
                         return await Promise.reject(error)
@@ -668,7 +668,7 @@ export default new Vuex.Store({
                     try {
                         const response = await CustomListService.CreativeWeightingMethods()
                         commit('SET_CREATIVE_WEIGHTING_METHODS', resolveList(response))
-                        return await Promise.resolve(response)
+                        return await Promise.resolve(resolveList(response))
                     } catch (error) {
                         catchError(this, error);
                         return await Promise.reject(error)
@@ -1053,7 +1053,7 @@ export default new Vuex.Store({
                         const response = await CampaignService.list(params?.filters, params?.options)
                         const values = resolveList(response);
                         commit('SET_RESULT_LIST', values)
-                        return await Promise.resolve(resolveList(values))
+                        return await Promise.resolve(values)
                     } catch (error) {
                         catchError(this, error);
                         return await Promise.reject(error)
@@ -1062,7 +1062,7 @@ export default new Vuex.Store({
                 async getById({ commit }, id: number) {
                     try {
                         const response = await CampaignService.show(id);
-                        commit('SET_CAMPAIGN', response);
+                        //commit('SET_CAMPAIGN', response);
                         return await Promise.resolve(response)
                     } catch (error) {
                         catchError(this, error, { to: "" });
@@ -1717,6 +1717,16 @@ export default new Vuex.Store({
                         return await Promise.resolve(response)
                     } catch (error) {
                         catchError(this, error);
+                        return await Promise.reject(error)
+                    }
+                },
+
+                async getTargetingPredicates({ commit }) {
+                    try {
+                        const response = await TargetingService.getTargetingPredicates()
+                        return await Promise.resolve(resolveList(response))
+                    } catch (error) {
+                        CatcherError(this.dispatch, error);
                         return await Promise.reject(error)
                     }
                 },

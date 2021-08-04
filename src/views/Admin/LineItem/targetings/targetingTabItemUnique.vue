@@ -41,6 +41,7 @@
 			<!-- include -->
 			<v-col class="pe-lg-16 pa-0" cols="12" sm="12" md="6" lg="6">
 				<TermListUnique
+					:predicates="predicates"
 					:appLists="appLists"
 					:targeting_terms="targeting_key_data.targeting_terms"
 					@remove-item-unique="removeHandler"
@@ -50,90 +51,96 @@
 	</v-container>
 </template>
 <script lang="ts">
-	import Vue from "vue";
-	import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
-	import TermListUnique from "./termListUnique.vue";
+import Vue from "vue";
+import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
+import TermListUnique from "./termListUnique.vue";
 
-	export default Vue.extend({
-		name: "TargetingTabItemUnique",
-		props: {
-			targeting_key_data: {
-				type: Object,
-				default: function () {
-					return {};
-				},
-			},
-			appLists: {
-				type: Array,
-				default: function () {
-					return [];
-				},
-			},
-			attributeList: {
-				type: Array,
-				default: function () {
-					return [];
-				},
-			},
-			hint: {
-				type: String,
-				default: "Hint",
-			},
-			reference: {
-				type: String,
-				default: "reference",
-			},
-			placeholder: {
-				type: String,
-				default: "Placeholder",
-			},
-			label: {
-				type: String,
-				default: "Label",
-			},
-			item_text: {
-				type: String,
-				default: "value",
-			},
-			item_value: {
-				type: String,
-				default: "id",
-			},
-			search_input_sync: {
-				default: null,
-			},
-			persistent_hint: {
-				type: Boolean,
-				default: false,
-			},
-			colapse_selection: {
-				type: Boolean,
-				default: false,
+export default Vue.extend({
+	name: "TargetingTabItemUnique",
+	props: {
+		targeting_key_data: {
+			type: Object,
+			default: function () {
+				return {};
 			},
 		},
-		components: {
-			CardAutocomplete,
-			TermListUnique,
-		},
-		data: () => ({}),
-		async created() {},
-		async mounted() {},
-		computed: {},
-		methods: {
-			removeHandler(value: any) {
-				this.$emit("remove-item", value);
-			},
-			clearHandler() {
-				this.$emit("clear");
-			},
-			focusHandler() {
-				this.$emit("focus");
-			},
-			syncHandler(data: any) {
-				this.$emit("sync", data);
+		appLists: {
+			type: Array,
+			default: function () {
+				return [];
 			},
 		},
+		attributeList: {
+			type: Array,
+			default: function () {
+				return [];
+			},
+		},
+		hint: {
+			type: String,
+			default: "Hint",
+		},
+		reference: {
+			type: String,
+			default: "reference",
+		},
+		placeholder: {
+			type: String,
+			default: "Placeholder",
+		},
+		label: {
+			type: String,
+			default: "Label",
+		},
+		item_text: {
+			type: String,
+			default: "value",
+		},
+		item_value: {
+			type: String,
+			default: "id",
+		},
+		search_input_sync: {
+			default: null,
+		},
+		persistent_hint: {
+			type: Boolean,
+			default: false,
+		},
+		colapse_selection: {
+			type: Boolean,
+			default: false,
+		},
+		predicates: {
+			type: Object,
+			default: function () {
+				return {};
+			},
+		},
+	},
+	components: {
+		CardAutocomplete,
+		TermListUnique,
+	},
+	data: () => ({}),
+	async created() {},
+	async mounted() {},
+	computed: {},
+	methods: {
+		removeHandler(value: any) {
+			this.$emit("remove-item", value);
+		},
+		clearHandler() {
+			this.$emit("clear");
+		},
+		focusHandler() {
+			this.$emit("focus");
+		},
+		syncHandler(data: any) {
+			this.$emit("sync", data);
+		},
+	},
 
-		watch: {},
-	});
+	watch: {},
+});
 </script>
