@@ -5,13 +5,6 @@
 		align="center"
 		class="grey lighten-3 py-4 my-4"
 	>
-		<!-- <v-card>
-			<v-card-title>creative_attributes: </v-card-title>
-			<v-card-text>
-				{{ creative.creative_attributes || "Not selected" }}
-			</v-card-text>
-		</v-card> -->
-
 		<v-form
 			ref="form"
 			justify="start"
@@ -171,7 +164,7 @@
 							placeholder="Select Creative Template"
 							label="Template"
 							@input="updateTemplate"
-							@click="fetchCreativeTemplates"
+							@focus="fetchCreativeTemplates"
 							:required="true"
 							:error_messages="getError('creative_template_id')"
 						></CardAutocomplete>
@@ -198,7 +191,9 @@
 							label="Width x Height"
 							@input="selectedWidthHeight"
 							@click="fetchCreativeSizes"
-							:error_messages="getError('creative_attributes.size_id')"
+							:error_messages="
+								getError('creative_attributes.size_id')
+							"
 						></CardAutocomplete>
 					</v-col>
 
@@ -250,8 +245,7 @@
 						<CardAutocomplete
 							v-model="creative.creative_advertiser.advertiser_id"
 							:model="creative.creative_advertiser.advertiser_id"
-							
-							:items="getAdvertisers"
+							:items="resources.advertisers"
 							item_text="name"
 							item_value="id"
 							hint="Select Advertiser"
@@ -259,9 +253,11 @@
 							placeholder="Select Advertiser"
 							label="Advertiser"
 							@input="selectedAdvertiser"
-							@click="fetchCreativeAdvertisers"
+							@focus="fetchCreativeAdvertisers"
 							:required="true"
-							:error_messages="getError('creative_advertiser.advertiser_id')"
+							:error_messages="
+								getError('creative_advertiser.advertiser_id')
+							"
 						></CardAutocomplete>
 					</v-col>
 
@@ -281,7 +277,9 @@
 							placeholder="Domain"
 							label="Domain"
 							:required="true"
-							:error_messages="getError('creative_advertiser.domain')"
+							:error_messages="
+								getError('creative_advertiser.domain')
+							"
 						></CardTextField>
 					</v-col>
 
@@ -306,7 +304,9 @@
 							label="Category"
 							:required="true"
 							@click="fetchAdvertiserCategories"
-							:error_messages="getError('creative_advertiser.category_id')"
+							:error_messages="
+								getError('creative_advertiser.category_id')
+							"
 						></CardAutocomplete>
 					</v-col>
 
@@ -326,7 +326,9 @@
 							placeholder="App Bundle"
 							label="App Bundle"
 							:required="true"
-							:error_messages="getError('creative_advertiser.app_bundle')"
+							:error_messages="
+								getError('creative_advertiser.app_bundle')
+							"
 						></CardTextField>
 					</v-col>
 
@@ -407,14 +409,28 @@
 								creative.creative_ad_content.primary_asset_id
 							"
 							:rules="primary_asset_id_rules"
-							:items="getAssets"
+							:items="resources.primary_assets"
 							item_text="value"
 							item_value="id"
-							hint="Select Primary Asset"
+							:hint="`Select Primary Asset ${
+								!creative.creative_advertiser.advertiser_id
+									? '(advertiser required)'
+									: ''
+							}`"
+							:persistent_hint="
+								!creative.creative_advertiser.advertiser_id
+							"
 							reference="primary_asset_id"
-							placeholder="Select Primary Asset"
+							:placeholder="`Select Primary Asset ${
+								!creative.creative_advertiser.advertiser_id
+									? '(advertiser required)'
+									: ''
+							}`"
+							:hide_no_data="
+								!creative.creative_advertiser.advertiser_id
+							"
 							label="Primary Asset"
-							@click="fetchAssets"
+							@focus="fetchAssets('primary_asset_id')"
 							:error_messages="
 								getError('creative_ad_content.primary_asset_id')
 							"
@@ -438,14 +454,14 @@
 								creative.creative_ad_content.secondary_asset_id
 							"
 							:rules="secondary_asset_id_rules"
-							:items="getAssets"
+							:items="resources.secondary_assets"
 							item_text="value"
 							item_value="id"
 							hint="Select Secondary Asset"
 							reference="secondary_asset_id"
 							placeholder="Select Secondary Asset"
 							label="Secondary Asset"
-							@click="fetchAssets"
+							@focus="fetchAssets('secondary_asset_id')"
 							:error_messages="
 								getError(
 									'creative_ad_content.secondary_asset_id'
@@ -548,7 +564,9 @@
 							reference="title"
 							placeholder="Title"
 							label="Title"
-							:error_messages="getError('creative_ad_content.title')"
+							:error_messages="
+								getError('creative_ad_content.title')
+							"
 						></CardTextField>
 					</v-col>
 
@@ -1038,14 +1056,14 @@
 								creative.creative_exchange_options.thumbnail_id
 							"
 							:rules="thumbnail_id_rules"
-							:items="getAssets"
+							:items="resources.thumbnail_assets"
 							item_text="value"
 							item_value="id"
 							hint="Thumbnail"
 							reference="thumbnail_id"
 							placeholder="Thumbnail"
 							label="Thumbnail"
-							@click="fetchAssets"
+							@focus="fetchAssets('thumbnail_id')"
 							:error_messages="
 								getError(
 									'creative_exchange_options.thumbnail_id'
@@ -1253,7 +1271,7 @@
 							@delete-item="deleteVastEvent"
 						></VastEvent>
 					</v-col>
- 
+
 					<!-- DividerForm: Vast Events -->
 					<v-col
 						class="pe-lg-16 pa-0"
@@ -1365,906 +1383,903 @@
 </template>
 
 <script lang="ts">
-	import Vue from "vue";
-	import {
-		isRequired,
-		isNumber,
-		isDomain,
-		isMinLength,
-		isMaxLength,
-		isAfterToday,
-		isAfterCompare,
-		isValidUrl,
-		isFileMaxSize,
-		isUploaded,
-		isMustValidated,
-	} from "../../../../services/rule-services";
-	import DatePicker from "../../../../components/Content/DatePicker.vue";
-	import DividerForm from "../../../../components/Content/DividerForm.vue";
-	import CardTextField from "../../../../components/Content/CardTextField.vue";
-	import CardTextarea from "../../../../components/Content/CardTextarea.vue";
-	import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
-	import CardSwitch from "../../../../components/Content/CardSwitch.vue";
-	import ArrayListItem from "../../../../components/Content/ArrayListItem.vue";
-	import VastEvent from "../../../../components/Content/VastEvent.vue";
-	import ProgressEvent from "../../../../components/Content/ProgressEvent.vue";
-	import { find, isEmpty, isNull, isObject, isUndefined } from "lodash";
-	import {
-		hasFieldByTemplateId,
-		parseDataCreativeHtml5,
-		parseDataCreativeIframeTag,
-		parseDataCreativeImage,
-		parseDataCreativeJsTag,
-		parseDataCreativeMraidTag,
-		parseDataCreativeVastInline,
-	} from "../../../../utils/fields";
-	import { getError } from "../../../../utils/resolveObjectArray";
+import Vue from "vue";
+import {
+	isRequired,
+	isNumber,
+	isDomain,
+	isMinLength,
+	isMaxLength,
+	isAfterToday,
+	isAfterCompare,
+	isValidUrl,
+	isFileMaxSize,
+	isUploaded,
+	isMustValidated,
+} from "../../../../services/rule-services";
+import DatePicker from "../../../../components/Content/DatePicker.vue";
+import DividerForm from "../../../../components/Content/DividerForm.vue";
+import CardTextField from "../../../../components/Content/CardTextField.vue";
+import CardTextarea from "../../../../components/Content/CardTextarea.vue";
+import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
+import CardSwitch from "../../../../components/Content/CardSwitch.vue";
+import ArrayListItem from "../../../../components/Content/ArrayListItem.vue";
+import VastEvent from "../../../../components/Content/VastEvent.vue";
+import ProgressEvent from "../../../../components/Content/ProgressEvent.vue";
+import { find, isEmpty, isNull, isObject, isUndefined } from "lodash";
+import {
+	hasFieldByTemplateId,
+	parseDataCreativeHtml5,
+	parseDataCreativeIframeTag,
+	parseDataCreativeImage,
+	parseDataCreativeJsTag,
+	parseDataCreativeMraidTag,
+	parseDataCreativeVastInline,
+} from "../../../../utils/fields";
+import { getError } from "../../../../utils/resolveObjectArray";
 
-	export default Vue.extend({
-		name: "CreativeOverview",
-		props: {
-			creative: {
-				type: Object,
-				default: function () {
-					return {};
+export default Vue.extend({
+	name: "CreativeOverview",
+	props: {
+		creative: {
+			type: Object,
+			default: function () {
+				return {};
+			},
+		},
+		resources: {
+			type: Object,
+			required: true,
+		},
+		message_pixel: {
+			type: String,
+			default: "",
+		},
+		message_script: {
+			type: String,
+			default: "",
+		},
+		message_click_tracker: {
+			type: String,
+			default: "",
+		},
+		tag_validated: {
+			type: Boolean,
+			default: false,
+		},
+	},
+	components: {
+		DatePicker,
+		DividerForm,
+		CardTextField,
+		CardTextarea,
+		CardAutocomplete,
+		CardSwitch,
+		ArrayListItem,
+		VastEvent,
+		ProgressEvent,
+	},
+	data: () => ({
+		valid: true,
+		name_rules: [], // name
+		start_date_rules: [], // start_date
+		end_date_rules: [], // end_date
+		creative_type_id_rules: [], // creative_type_id
+		creative_template_id_rules: [], // creative_template_id
+		primary_asset_id_rules: [], // primary_asset_id
+		secondary_asset_id_rules: [], // secondary_asset_id_rules
+		size_id_rules: [], // size_id => width & height
+		advertiser_id_rules: [], // advertiser_id
+		domain_rules: [], // domain
+		category_id_rules: [], // category_id
+		app_bundle_rules: [], // app_bundle
+		budget_type_id_rules: [], // budget_type_id
+		tag_rules: [], // tag
+		creative_rule_id_rules: [], // creative_rule_id
+		mime_type_id_rules: [], // mime_type_id
+		expandable_type_id_rules: [], // expandable_type_id
+		expandable_directions_rules: [], // expandable_direction_id
+		click_url_rules: [], // click_url
+		vendors_rules: [], // vendors
+		landing_page_url_rules: [], // landing_page_url
+		addons_rules: [], // addons
+		pixels_rules: [], // pixel => pixels
+		scripts_rules: [], // script => scripts
+		click_trackers_rules: [], // script => scripts
+		asset_rules: [], // asset
+		in_banner_video_id_rules: [], // in_banner_video_id
+		thumbnail_id_rules: [], // thumbnail_id
+		companion_size_id_rules: [],
+		video_duration_rules: [],
+		skip_offset_rules: [],
+		title_rules: [],
+		companion_html_rules: [],
+	}),
+	created() {},
+	mounted() {
+		setTimeout(async () => {
+			await this.loadResources();
+		}, 1000);
+	},
+	computed: {
+		/**
+		 * Getters
+		 */
+		getToday() {
+			return this.moment().format("YYYY-MM-DD HH:mm:ss");
+		},
+		getMinDate() {
+			return this.moment(this.creative.start_date).format(
+				"YYYY-MM-DD HH:mm:ss"
+			);
+		},
+		getRules() {
+			return {
+				isRequired,
+				isNumber,
+				isDomain,
+				isMinLength,
+				isMaxLength,
+				isAfterToday,
+				isAfterCompare,
+				isValidUrl,
+				isFileMaxSize,
+				isUploaded,
+			};
+		},
+		getID() {
+			return this.creative.id;
+		},
+		hasID() {
+			return (
+				!isUndefined(this.getID) &&
+				!isNull(this.getID) &&
+				this.getID > 0
+			);
+		},
+
+		getErrors() {
+			return this.$store.state.proccess.errors;
+		},
+
+		getCreative() {
+			return this.$store.state.creative.creative;
+		},
+		getCreativeSizes() {
+			return this.$store.state.creative.creative_sizes;
+		},
+		getCreativeTemplates() {
+			return this.$store.state.creative.creative_templates;
+		},
+		getResponseTemplates() {
+			return this.$store.state.creative.responseTemplates;
+		},
+		getBudgetTypes() {
+			return this.$store.state.custom_list.budget_types;
+		},
+		getCreativeTypes() {
+			return this.$store.state.creative.creative_types;
+		},
+		getAdvertiserCategories() {
+			return this.$store.state.creative.advertiser_categories;
+		},
+		getCreativeRules() {
+			return this.$store.state.creative.creative_rules;
+		},
+		getMimeTypes() {
+			return this.$store.state.creative.mime_types;
+		},
+		getExpandableTypes() {
+			return this.$store.state.creative.expandable_types;
+		},
+		getExpandableDirections() {
+			return this.$store.state.creative.expandable_directions;
+		},
+		getVendors() {
+			return this.$store.state.creative.vendors;
+		},
+		getAddons() {
+			return this.$store.state.creative.addons;
+		},
+		getAsset() {
+			return this.$store.state.creative.asset;
+		},
+		getInBannerVideos() {
+			return this.$store.state.creative.in_banner_videos;
+		},
+		getPreviewImage() {
+			if (!this.creative.file)
+				return "https://i.stack.imgur.com/y9DpT.jpg";
+			return URL.createObjectURL(this.creative.file);
+		},
+		getAssetsData() {
+			return [
+				{
+					key: 1,
+					value: "New",
 				},
-			},
-			message_pixel: {
-				type: String,
-				default: "",
-			},
-			message_script: {
-				type: String,
-				default: "",
-			},
-			message_click_tracker: {
-				type: String,
-				default: "",
-			},
-			tag_validated: {
-				type: Boolean,
-				default: false,
-			},
+				{
+					key: 2,
+					value: "Existing",
+				},
+			];
 		},
-		components: {
-			DatePicker,
-			DividerForm,
-			CardTextField,
-			CardTextarea,
-			CardAutocomplete,
-			CardSwitch,
-			ArrayListItem,
-			VastEvent,
-			ProgressEvent,
+	},
+	methods: {
+		getError(index: any) {
+			return getError(this.getErrors, index);
 		},
-		data: () => ({
-			valid: true,
-			name_rules: [], // name
-			start_date_rules: [], // start_date
-			end_date_rules: [], // end_date
-			creative_type_id_rules: [], // creative_type_id
-			creative_template_id_rules: [], // creative_template_id
-			primary_asset_id_rules: [], // primary_asset_id
-			secondary_asset_id_rules: [], // secondary_asset_id_rules
-			size_id_rules: [], // size_id => width & height
-			advertiser_id_rules: [], // advertiser_id
-			domain_rules: [], // domain
-			category_id_rules: [], // category_id
-			app_bundle_rules: [], // app_bundle
-			budget_type_id_rules: [], // budget_type_id
-			tag_rules: [], // tag
-			creative_rule_id_rules: [], // creative_rule_id
-			mime_type_id_rules: [], // mime_type_id
-			expandable_type_id_rules: [], // expandable_type_id
-			expandable_directions_rules: [], // expandable_direction_id
-			click_url_rules: [], // click_url
-			vendors_rules: [], // vendors
-			landing_page_url_rules: [], // landing_page_url
-			addons_rules: [], // addons
-			pixels_rules: [], // pixel => pixels
-			scripts_rules: [], // script => scripts
-			click_trackers_rules: [], // script => scripts
-			asset_rules: [], // asset
-			in_banner_video_id_rules: [], // in_banner_video_id
-			thumbnail_id_rules: [], // thumbnail_id
-			companion_size_id_rules: [],
-			video_duration_rules: [],
-			skip_offset_rules: [],
-			title_rules: [],
-			companion_html_rules: [],
-		}),
-		created() {},
-		mounted() {
-			setTimeout(async () => {
-				await this.loadResources();
-			}, 1000);
-		},
-		computed: {
-			/**
-			 * Getters
-			 */
-			getToday() {
-				return this.moment().format("YYYY-MM-DD HH:mm:ss");
-			},
-			getMinDate() {
-				return this.moment(this.creative.start_date).format(
-					"YYYY-MM-DD HH:mm:ss"
-				);
-			},
-			getRules() {
-				return {
-					isRequired,
-					isNumber,
-					isDomain,
-					isMinLength,
-					isMaxLength,
-					isAfterToday,
-					isAfterCompare,
-					isValidUrl,
-					isFileMaxSize,
-					isUploaded,
-				};
-			},
-			getID() {
-				return this.creative.id;
-			},
-			hasID() {
-				return (
-					!isUndefined(this.getID) &&
-					!isNull(this.getID) &&
-					this.getID > 0
-				);
-			},
 
-			getErrors() {
-				return this.$store.state.proccess.errors;
-			},
-
-			getCreative() {
-				return this.$store.state.creative.creative;
-			},
-			getCreativeSizes() {
-				return this.$store.state.creative.creative_sizes;
-			},
-			getCreativeTemplates() {
-				return this.$store.state.creative.creative_templates;
-			},
-			getResponseTemplates() {
-				return this.$store.state.creative.responseTemplates;
-			},
-			getAdvertisers() {
-				return this.$store.state.advertiser.advertisers_list;
-			},
-			getBudgetTypes() {
-				return this.$store.state.custom_list.budget_types;
-			},
-			getCreativeTypes() {
-				return this.$store.state.creative.creative_types;
-			},
-			getAdvertiserCategories() {
-				return this.$store.state.creative.advertiser_categories;
-			},
-			getCreativeRules() {
-				return this.$store.state.creative.creative_rules;
-			},
-			getMimeTypes() {
-				return this.$store.state.creative.mime_types;
-			},
-			getExpandableTypes() {
-				return this.$store.state.creative.expandable_types;
-			},
-			getExpandableDirections() {
-				return this.$store.state.creative.expandable_directions;
-			},
-			getVendors() {
-				return this.$store.state.creative.vendors;
-			},
-			getAddons() {
-				return this.$store.state.creative.addons;
-			},
-			getAssets() {
-				return this.$store.state.creative.assets;
-			},
-			getAsset() {
-				return this.$store.state.creative.asset;
-			},
-			getInBannerVideos() {
-				return this.$store.state.creative.in_banner_videos;
-			},
-			getPreviewImage() {
-				if (!this.creative.file)
-					return "https://i.stack.imgur.com/y9DpT.jpg";
-				return URL.createObjectURL(this.creative.file);
-			},
-			getAssetsData() {
-				return [
-					{
-						key: 1,
-						value: "New",
-					},
-					{
-						key: 2,
-						value: "Existing",
-					},
-				];
-			},
-		},
-		methods: {
-			getError(index: any) {
-				return getError(this.getErrors, index);
-			},
-
-			async loadResources() {
-				if (this.hasID) {
-					this.$emit("fetch-creative-sizes");
-
-					if (this.creative.creative_template_id) {
-						this.$emit("fetch-creative-templates");
-					}
-
-					if (this.creative.creative_advertiser.category_id) {
-						this.$emit("fetch-advertiser-categories");
-					}
-
-					if (this.creative.creative_ad_content.creative_rule_id) {
-						this.$emit("fetch-creative-rules");
-					}
-
-					if (this.creative.creative_advertiser.advertiser_id) {
-						this.$emit("fetch-creative-advertisers");
-					}
-
-					if (this.creative.creative_attributes.mime_type_id) {
-						this.$emit("fetch-mime-types");
-					}
-
-					if (this.creative.creative_attributes.expandable_type_id) {
-						this.$emit("fetch-expandable-types");
-					}
-
-					if (this.creative.creative_attributes.expandable_directions) {
-						this.$emit("fetch-expandable-directions");
-					}
-
-					if (this.creative.creative_exchange_options.vendors) {
-						this.$emit("fetch-vendors");
-					}
-
-					if (this.creative.creative_addon_settings.addons) {
-						this.$emit("fetch-addons");
-					}
-
-					if (
-						this.creative.creative_ad_content.primary_asset_id ||
-						this.creative.creative_ad_content.secondary_asset_id
-					) {
-						this.$emit("fetch-assets");
-					}
-
-					if (this.creative.creative_attributes.in_banner_video_id) {
-						this.$emit("fetch-banner-videos");
-					}
-				}
-			},
-
-			showFieldByTemplateId(input: string) {
-				return hasFieldByTemplateId(
-					this.creative.creative_template_id,
-					input
-				);
-			},
-
-			async validate() {
-				return await this.$refs.form.validate();
-			},
-
-			async fetchCreativeTemplates(e: any) {
-				if (!isEmpty(this.getResponseTemplates)) return;
-				this.$emit("fetch-creative-templates");
-			},
-
-			async fetchCreativeSizes(e: any) {
-				if (!isEmpty(this.getCreativeSizes)) return;
+		async loadResources() {
+			if (this.hasID) {
 				this.$emit("fetch-creative-sizes");
-			},
 
-			async fetchAdvertiserCategories(e: any) {
-				if (!isEmpty(this.getAdvertiserCategories)) return;
-				this.$emit("fetch-advertiser-categories");
-			},
-
-			async fetchCreativeRules(e: any) {
-				if (!isEmpty(this.getCreativeRules)) return;
-				this.$emit("fetch-creative-rules");
-			},
-
-			async fetchCreativeAdvertisers(e: any) {
-				if (!isEmpty(this.getAdvertisers)) return;
-				this.$emit("fetch-creative-advertisers");
-			},
-
-			async fetchMimeTypes(e: any) {
-				if (!isEmpty(this.getMimeTypes)) return;
-				this.$emit("fetch-mime-types");
-			},
-
-			async fetchExpandableTypes(e: any) {
-				if (!isEmpty(this.getExpandableTypes)) return;
-				this.$emit("fetch-expandable-types");
-			},
-
-			async fetchExpandableDirections(e: any) {
-				if (!isEmpty(this.getExpandableDirections)) return;
-				this.$emit("fetch-expandable-directions");
-			},
-
-			async fetchVendors(e: any) {
-				if (!isEmpty(this.getVendors)) return;
-				this.$emit("fetch-vendors");
-			},
-
-			async fetchAddons(e: any) {
-				if (!isEmpty(this.getAddons)) return;
-				this.$emit("fetch-addons");
-			},
-
-			async fetchAssets(e: any) {
-				if (!isEmpty(this.getAssets)) return;
-				this.$emit("fetch-assets");
-			},
-
-			async fetchBannerVideos(e: any) {
-				if (!isEmpty(this.getInBannerVideos)) return;
-				this.$emit("fetch-banner-videos");
-			},
-
-			async updateTemplate(params: any) {
-				const response = await this.getCreativeTypeByTemplateId();
-				if (!response) return;
-				this.$emit("update-creative-type", response);
-			},
-
-			async addDateValidations() {
-				// dates
-				if (this.creative.start_date instanceof Date) {
-					this.start_date_rules = [
-						this.getRules.isRequired,
-						this.getRules.isAfterToday,
-					];
-					this.end_date_rules = [
-						this.getRules.isRequired,
-						this.getRules.isAfterCompare(
-							this.creative.end_date,
-							this.creative.start_date
-						),
-					];
+				if (this.creative.creative_template_id) {
+					this.$emit("fetch-creative-templates");
 				}
-			},
 
-			async addCommonsValidations() {
-				this.creative_template_id_rules = [this.getRules.isRequired];
-				this.name_rules = [
-					this.getRules.isRequired,
-					this.getRules.isMinLength,
-					this.getRules.isMaxLength,
-				];
-				this.advertiser_id_rules = [this.getRules.isRequired];
-				this.domain_rules = [
-					this.getRules.isRequired,
-					this.getRules.isDomain,
-				];
-				this.category_id_rules = [this.getRules.isRequired];
-				this.budget_type_id_rules = [this.getRules.isRequired];
-				this.app_bundle_rules = [this.getRules.isRequired];
-			},
-
-			async addImageValidations() {
-				this.asset_rules = [];
-				// creative_ad_content
-				if (this.creative.budget_type_id === 1) {
-					this.asset_rules = [
-						this.getRules.isRequired,
-						this.getRules.isFileMaxSize,
-						this.getRules.isUploaded,
-					];
+				if (this.creative.creative_advertiser.category_id) {
+					this.$emit("fetch-advertiser-categories");
 				}
-				if (this.creative.budget_type_id === 2) {
-					this.primary_asset_id_rules = [];
+
+				if (this.creative.creative_ad_content.creative_rule_id) {
+					this.$emit("fetch-creative-rules");
 				}
-				this.click_url_rules = [
+
+				if (this.creative.creative_advertiser.advertiser_id) {
+					this.$emit("fetch-creative-advertisers");
+				}
+
+				if (this.creative.creative_attributes.mime_type_id) {
+					this.$emit("fetch-mime-types");
+				}
+
+				if (this.creative.creative_attributes.expandable_type_id) {
+					this.$emit("fetch-expandable-types");
+				}
+
+				if (this.creative.creative_attributes.expandable_directions) {
+					this.$emit("fetch-expandable-directions");
+				}
+
+				if (this.creative.creative_exchange_options.vendors) {
+					this.$emit("fetch-vendors");
+				}
+
+				if (this.creative.creative_addon_settings.addons) {
+					this.$emit("fetch-addons");
+				}
+
+				if (
+					this.creative.creative_ad_content.primary_asset_id ||
+					this.creative.creative_ad_content.secondary_asset_id
+				) {
+					this.$emit("fetch-assets", {
+						advertiser_id:
+							this.creative.creative_advertiser.advertiser_id,
+					});
+				}
+
+				if (this.creative.creative_attributes.in_banner_video_id) {
+					this.$emit("fetch-banner-videos");
+				}
+			}
+		},
+
+		showFieldByTemplateId(input: string) {
+			return hasFieldByTemplateId(
+				this.creative.creative_template_id,
+				input
+			);
+		},
+
+		async validate() {
+			return await this.$refs.form.validate();
+		},
+
+		async fetchCreativeTemplates(e: any) {
+			if (!isEmpty(this.getResponseTemplates)) return;
+			this.$emit("fetch-creative-templates");
+		},
+
+		async fetchCreativeSizes(e: any) {
+			if (!isEmpty(this.getCreativeSizes)) return;
+			this.$emit("fetch-creative-sizes");
+		},
+
+		async fetchAdvertiserCategories(e: any) {
+			if (!isEmpty(this.getAdvertiserCategories)) return;
+			this.$emit("fetch-advertiser-categories");
+		},
+
+		async fetchCreativeRules(e: any) {
+			if (!isEmpty(this.getCreativeRules)) return;
+			this.$emit("fetch-creative-rules");
+		},
+
+		async fetchCreativeAdvertisers(e: any) {
+			if (!isEmpty(this.getAdvertisers)) return;
+			this.$emit("fetch-creative-advertisers");
+		},
+
+		async fetchMimeTypes(e: any) {
+			if (!isEmpty(this.getMimeTypes)) return;
+			this.$emit("fetch-mime-types");
+		},
+
+		async fetchExpandableTypes(e: any) {
+			if (!isEmpty(this.getExpandableTypes)) return;
+			this.$emit("fetch-expandable-types");
+		},
+
+		async fetchExpandableDirections(e: any) {
+			if (!isEmpty(this.getExpandableDirections)) return;
+			this.$emit("fetch-expandable-directions");
+		},
+
+		async fetchVendors(e: any) {
+			if (!isEmpty(this.getVendors)) return;
+			this.$emit("fetch-vendors");
+		},
+
+		async fetchAddons(e: any) {
+			if (!isEmpty(this.getAddons)) return;
+			this.$emit("fetch-addons");
+		},
+
+		async fetchAssets(key: string) {
+			this.$emit("fetch-assets", key);
+		},
+
+		async fetchBannerVideos(e: any) {
+			if (!isEmpty(this.getInBannerVideos)) return;
+			this.$emit("fetch-banner-videos");
+		},
+
+		async updateTemplate(params: any) {
+			const response = await this.getCreativeTypeByTemplateId();
+			if (!response) return;
+			this.$emit("update-creative-type", response);
+		},
+
+		async addDateValidations() {
+			// dates
+			if (this.creative.start_date instanceof Date) {
+				this.start_date_rules = [
 					this.getRules.isRequired,
-					this.getRules.isValidUrl,
+					this.getRules.isAfterToday,
+				];
+				this.end_date_rules = [
+					this.getRules.isRequired,
+					this.getRules.isAfterCompare(
+						this.creative.end_date,
+						this.creative.start_date
+					),
+				];
+			}
+		},
+
+		async addCommonsValidations() {
+			this.creative_template_id_rules = [this.getRules.isRequired];
+			this.name_rules = [
+				this.getRules.isRequired,
+				this.getRules.isMinLength,
+				this.getRules.isMaxLength,
+			];
+			this.advertiser_id_rules = [this.getRules.isRequired];
+			this.domain_rules = [
+				this.getRules.isRequired,
+				this.getRules.isDomain,
+			];
+			this.category_id_rules = [this.getRules.isRequired];
+			this.budget_type_id_rules = [this.getRules.isRequired];
+			this.app_bundle_rules = [this.getRules.isRequired];
+		},
+
+		async addImageValidations() {
+			this.asset_rules = [];
+			// creative_ad_content
+			if (this.creative.budget_type_id === 1) {
+				this.asset_rules = [
+					this.getRules.isRequired,
+					this.getRules.isFileMaxSize,
+					this.getRules.isUploaded,
+				];
+			}
+			if (this.creative.budget_type_id === 2) {
+				this.primary_asset_id_rules = [];
+			}
+			this.click_url_rules = [
+				this.getRules.isRequired,
+				this.getRules.isValidUrl,
+			];
+
+			this.thumbnail_id_rules = [];
+
+			this.mime_type_id_rules = [];
+
+			// creative_exchange_options
+			this.vendors_rules = [];
+			this.landing_page_url_rules = [this.getRules.isValidUrl];
+
+			// creative_addon_settings
+			this.addons_rules = [];
+			this.pixels_rules = [];
+			this.scripts_rules = [];
+		},
+
+		async addTagValidations() {
+			this.tag_rules = [
+				this.getRules.isRequired,
+				isMustValidated(this.tag_validated),
+			];
+		},
+
+		async addJsTagValidations() {
+			await this.addDateValidations();
+
+			// creative_ad_content
+
+			await this.addTagValidations();
+
+			this.creative_rule_id_rules = [
+				this.getRules.isRequired,
+				this.getRules.isNumber,
+			];
+
+			// creative_attributes
+			this.size_id_rules = []; // validar width & height
+			this.mime_type_id_rules = [this.getRules.isNumber]; // (jpeg,gif,png,javascript)
+			this.expandable_type_id_rules = [this.getRules.isNumber];
+			this.expandable_directions_rules = []; // validar multiple number
+			this.in_banner_video_id = [this.getRules.isNumber];
+
+			// creative_exchange_options
+			this.vendors_rules = [];
+			this.landing_page_url_rules = [this.getRules.isValidUrl];
+			this.thumbnail_id_rules = [this.getRules.isNumber];
+
+			// creative_addon_settings
+			this.addons_rules = [];
+			this.pixels_rules = [];
+			this.scripts_rules = [];
+		},
+
+		async addIframeTagValidations() {
+			await this.addDateValidations();
+
+			// creative_ad_content
+
+			await this.addTagValidations();
+
+			this.creative_rule_id_rules = [
+				this.getRules.isRequired,
+				this.getRules.isNumber,
+			];
+
+			// creative_attributes
+			this.size_id_rules = []; // validar width & height
+			this.mime_type_id_rules = [this.getRules.isNumber]; // (jpeg,gif,png,javascript)
+			this.expandable_type_id_rules = [this.getRules.isNumber];
+			this.expandable_directions_rules = []; // validar multiple number
+			this.in_banner_video_id = [this.getRules.isNumber];
+
+			// creative_exchange_options
+			this.vendors_rules = [];
+			this.landing_page_url_rules = [this.getRules.isValidUrl];
+			this.thumbnail_id_rules = [this.getRules.isNumber];
+
+			// creative_addon_settings
+			this.addons_rules = [];
+			this.pixels_rules = [];
+			this.scripts_rules = [];
+		},
+
+		async addMraidTagValidations() {
+			await this.addDateValidations();
+
+			// creative_ad_content
+
+			await this.addTagValidations();
+
+			this.creative_rule_id_rules = [
+				this.getRules.isRequired,
+				this.getRules.isNumber,
+			];
+
+			// creative_attributes
+			this.size_id_rules = []; // validar width & height
+			this.mime_type_id_rules = [this.getRules.isNumber]; // (jpeg,gif,png,javascript)
+			this.expandable_type_id_rules = [this.getRules.isNumber];
+			this.expandable_directions_rules = []; // validar multiple number
+			this.in_banner_video_id = [this.getRules.isNumber];
+
+			// creative_exchange_options
+			this.vendors_rules = [];
+			this.landing_page_url_rules = [this.getRules.isValidUrl];
+			this.thumbnail_id_rules = [this.getRules.isNumber];
+
+			// creative_addon_settings
+			this.addons_rules = [];
+			this.pixels_rules = [];
+			this.scripts_rules = [];
+		},
+
+		async addVastInlineValidations() {
+			await this.addDateValidations();
+
+			// creative_ad_content
+			this.tag_rules = []; // check ins
+
+			this.companion_html_rules = !this.creative.creative_ad_content
+				.secondary_asset_id
+				? [this.getRules.isRequired]
+				: [];
+
+			this.companion_size_id_rules = this.creative.creative_ad_content
+				.companion_html
+				? [this.getRules.isRequired]
+				: [];
+
+			// creative_attributes
+			this.size_id_rules = []; // validar width & height
+			this.mime_type_id_rules = [this.getRules.isNumber]; // (jpeg,gif,png,javascript)
+			this.expandable_type_id_rules = [this.getRules.isNumber];
+			this.expandable_directions_rules = []; // validar multiple number
+			this.in_banner_video_id = [this.getRules.isNumber];
+
+			// creative_exchange_options
+			this.vendors_rules = [];
+			this.landing_page_url_rules = [this.getRules.isValidUrl];
+			this.thumbnail_id_rules = [this.getRules.isNumber];
+
+			// creative_addon_settings
+			this.addons_rules = [];
+			this.pixels_rules = [];
+			this.scripts_rules = [];
+		},
+
+		async addHtml5Validations() {
+			await this.addDateValidations();
+
+			// creative_ad_content
+
+			await this.addTagValidations();
+
+			this.creative_rule_id_rules = [
+				this.getRules.isRequired,
+				this.getRules.isNumber,
+			];
+
+			// creative_attributes
+			this.size_id_rules = []; // validar width & height
+			this.mime_type_id_rules = [
+				this.getRules.isRequired,
+				this.getRules.isNumber,
+			]; // (jpeg,gif,png,javascript)
+			this.expandable_type_id_rules = [this.getRules.isNumber];
+			this.expandable_directions_rules = []; // validar multiple number
+			this.in_banner_video_id = [this.getRules.isNumber];
+
+			// creative_exchange_options
+			this.vendors_rules = [];
+			this.landing_page_url_rules = [this.getRules.isValidUrl];
+			this.thumbnail_id_rules = [this.getRules.isNumber];
+
+			// creative_addon_settings
+			this.addons_rules = [];
+			this.pixels_rules = [];
+			this.scripts_rules = [];
+		},
+
+		async getCreativeTypeByTemplateId() {
+			return await this.$store.dispatch(
+				"creative/getCreativeTypeByTemplateId",
+				{
+					creativeTypes: this.getResponseTemplates,
+					creative_template_id: this.creative.creative_template_id,
+				}
+			);
+		},
+
+		/**
+		 * Actions
+		 * handleCancel
+		 */
+		handleCancel() {
+			this.$router.push({ name: "CreativesIndex" });
+		},
+
+		/**
+		 * Store
+		 * Submit Creative
+		 */
+		async submitCreative(_continue: boolean = false) {
+			const templateSelected = await this.getCreativeTypeByTemplateId();
+
+			if (!templateSelected) return;
+
+			switch (templateSelected.name) {
+				case "Image template": //1
+					await this.addImageValidations();
+
+					const creative_image = parseDataCreativeImage(
+						this.creative
+					);
+
+					if (!(await this.validate())) return;
+
+					this.$emit("create-creative-image", {
+						continue: _continue,
+						creative: creative_image,
+					});
+
+					break;
+
+				case "VAST InLine": //3
+					await this.addVastInlineValidations();
+
+					const creative_vast_inline = parseDataCreativeVastInline(
+						this.creative
+					);
+
+					if (!(await this.validate())) return;
+
+					this.$emit("create-creative-vast-inline", {
+						continue: _continue,
+						creative: creative_vast_inline,
+					});
+					break;
+
+				case "JS Tag": // 4
+					await this.addJsTagValidations();
+
+					const creative_js_tag = parseDataCreativeJsTag(
+						this.creative
+					);
+
+					if (!(await this.validate())) return;
+
+					this.$emit("create-creative-jstag", {
+						continue: _continue,
+						creative: creative_js_tag,
+					});
+
+					break;
+
+				case "iFrame Tag": // 5
+					await this.addIframeTagValidations();
+
+					const creative_iframe_tag = parseDataCreativeIframeTag(
+						this.creative
+					);
+
+					if (!(await this.validate())) return;
+
+					this.$emit("create-creative-iframetag", {
+						continue: _continue,
+						creative: creative_iframe_tag,
+					});
+					break;
+
+				case "VAST and VPAID Wrapper": // 6
+					break;
+
+				case "MRAID Tag": // 13
+					await this.addMraidTagValidations();
+
+					const creative_mraid_tag = parseDataCreativeMraidTag(
+						this.creative
+					);
+
+					if (!(await this.validate())) return;
+
+					this.$emit("create-creative-mraidtag", {
+						continue: _continue,
+						creative: creative_mraid_tag,
+					});
+					break;
+
+				case "Native Image App Install": // 14
+					break;
+
+				case "Native Video App Install": // 15
+					break;
+
+				case "Native Image Content": // 16
+					break;
+
+				case "Native Video Content": // 17
+					break;
+
+				case "Native Video App Install (VAST/VPAID Wrapper)": // 18
+					break;
+
+				case "Native Video Content (VAST/VPAID Wrapper)": // 19
+					break;
+
+				case "VAST Wrapper with MOAT Viewability": // 20
+					break;
+
+				case "HTML5 Creative": // 21
+					await this.addHtml5Validations();
+
+					const creative_html5 = parseDataCreativeHtml5(
+						this.creative
+					);
+
+					if (!(await this.validate())) return;
+
+					this.$emit("create-creative-html5", {
+						continue: _continue,
+						creative: creative_html5,
+					});
+					break;
+
+				case "App Promo Icon": // 22
+					break;
+
+				default:
+					break;
+			}
+
+			this.pushErrors();
+		},
+
+		pushErrors() {
+			setTimeout(() => {
+				this.primary_asset_id_rules = [
+					!isUndefined(
+						this.getError("creative_ad_content.primary_asset_id")
+					)
+						? this.getError(
+								"creative_ad_content.primary_asset_id"
+						  )[0]
+						: "",
 				];
 
-				this.thumbnail_id_rules = [];
-
-				this.mime_type_id_rules = [];
-
-				// creative_exchange_options
-				this.vendors_rules = [];
-				this.landing_page_url_rules = [this.getRules.isValidUrl];
-
-				// creative_addon_settings
-				this.addons_rules = [];
-				this.pixels_rules = [];
-				this.scripts_rules = [];
-			},
-
-			async addTagValidations() {
-				this.tag_rules = [
-					this.getRules.isRequired,
-					isMustValidated(this.tag_validated),
-				];
-			},
-
-			async addJsTagValidations() {
-				await this.addDateValidations();
-
-				// creative_ad_content
-
-				await this.addTagValidations();
-
-				this.creative_rule_id_rules = [
-					this.getRules.isRequired,
-					this.getRules.isNumber,
+				this.thumbnail_id_rules = [
+					!isUndefined(
+						this.getError("creative_exchange_options.thumbnail_id")
+					)
+						? this.getError(
+								"creative_exchange_options.thumbnail_id"
+						  )[0]
+						: "",
 				];
 
-				// creative_attributes
-				this.size_id_rules = []; // validar width & height
-				this.mime_type_id_rules = [this.getRules.isNumber]; // (jpeg,gif,png,javascript)
-				this.expandable_type_id_rules = [this.getRules.isNumber];
-				this.expandable_directions_rules = []; // validar multiple number
-				this.in_banner_video_id = [this.getRules.isNumber];
-
-				// creative_exchange_options
-				this.vendors_rules = [];
-				this.landing_page_url_rules = [this.getRules.isValidUrl];
-				this.thumbnail_id_rules = [this.getRules.isNumber];
-
-				// creative_addon_settings
-				this.addons_rules = [];
-				this.pixels_rules = [];
-				this.scripts_rules = [];
-			},
-
-			async addIframeTagValidations() {
-				await this.addDateValidations();
-
-				// creative_ad_content
-
-				await this.addTagValidations();
-
-				this.creative_rule_id_rules = [
-					this.getRules.isRequired,
-					this.getRules.isNumber,
-				];
-
-				// creative_attributes
-				this.size_id_rules = []; // validar width & height
-				this.mime_type_id_rules = [this.getRules.isNumber]; // (jpeg,gif,png,javascript)
-				this.expandable_type_id_rules = [this.getRules.isNumber];
-				this.expandable_directions_rules = []; // validar multiple number
-				this.in_banner_video_id = [this.getRules.isNumber];
-
-				// creative_exchange_options
-				this.vendors_rules = [];
-				this.landing_page_url_rules = [this.getRules.isValidUrl];
-				this.thumbnail_id_rules = [this.getRules.isNumber];
-
-				// creative_addon_settings
-				this.addons_rules = [];
-				this.pixels_rules = [];
-				this.scripts_rules = [];
-			},
-
-			async addMraidTagValidations() {
-				await this.addDateValidations();
-
-				// creative_ad_content
-
-				await this.addTagValidations();
-
-				this.creative_rule_id_rules = [
-					this.getRules.isRequired,
-					this.getRules.isNumber,
-				];
-
-				// creative_attributes
-				this.size_id_rules = []; // validar width & height
-				this.mime_type_id_rules = [this.getRules.isNumber]; // (jpeg,gif,png,javascript)
-				this.expandable_type_id_rules = [this.getRules.isNumber];
-				this.expandable_directions_rules = []; // validar multiple number
-				this.in_banner_video_id = [this.getRules.isNumber];
-
-				// creative_exchange_options
-				this.vendors_rules = [];
-				this.landing_page_url_rules = [this.getRules.isValidUrl];
-				this.thumbnail_id_rules = [this.getRules.isNumber];
-
-				// creative_addon_settings
-				this.addons_rules = [];
-				this.pixels_rules = [];
-				this.scripts_rules = [];
-			},
-
-			async addVastInlineValidations() {
-				await this.addDateValidations();
-
-				// creative_ad_content
-				this.tag_rules = []; // check ins
-
-				this.companion_html_rules = !this.creative.creative_ad_content
-					.secondary_asset_id
-					? [this.getRules.isRequired]
-					: [];
-
-				this.companion_size_id_rules = this.creative.creative_ad_content
-					.companion_html
-					? [this.getRules.isRequired]
-					: [];
-
-				// creative_attributes
-				this.size_id_rules = []; // validar width & height
-				this.mime_type_id_rules = [this.getRules.isNumber]; // (jpeg,gif,png,javascript)
-				this.expandable_type_id_rules = [this.getRules.isNumber];
-				this.expandable_directions_rules = []; // validar multiple number
-				this.in_banner_video_id = [this.getRules.isNumber];
-
-				// creative_exchange_options
-				this.vendors_rules = [];
-				this.landing_page_url_rules = [this.getRules.isValidUrl];
-				this.thumbnail_id_rules = [this.getRules.isNumber];
-
-				// creative_addon_settings
-				this.addons_rules = [];
-				this.pixels_rules = [];
-				this.scripts_rules = [];
-			},
-
-			async addHtml5Validations() {
-				await this.addDateValidations();
-
-				// creative_ad_content
-
-				await this.addTagValidations();
-
-				this.creative_rule_id_rules = [
-					this.getRules.isRequired,
-					this.getRules.isNumber,
-				];
-
-				// creative_attributes
-				this.size_id_rules = []; // validar width & height
 				this.mime_type_id_rules = [
 					this.getRules.isRequired,
 					this.getRules.isNumber,
-				]; // (jpeg,gif,png,javascript)
-				this.expandable_type_id_rules = [this.getRules.isNumber];
-				this.expandable_directions_rules = []; // validar multiple number
-				this.in_banner_video_id = [this.getRules.isNumber];
-
-				// creative_exchange_options
-				this.vendors_rules = [];
-				this.landing_page_url_rules = [this.getRules.isValidUrl];
-				this.thumbnail_id_rules = [this.getRules.isNumber];
-
-				// creative_addon_settings
-				this.addons_rules = [];
-				this.pixels_rules = [];
-				this.scripts_rules = [];
-			},
-
-			async getCreativeTypeByTemplateId() {
-				return await this.$store.dispatch(
-					"creative/getCreativeTypeByTemplateId",
-					{
-						creativeTypes: this.getResponseTemplates,
-						creative_template_id: this.creative.creative_template_id,
-					}
-				);
-			},
-
-			/**
-			 * Actions
-			 * handleCancel
-			 */
-			handleCancel() {
-				this.$router.push({ name: "CreativesIndex" });
-			},
-
-			/**
-			 * Store
-			 * Submit Creative
-			 */
-			async submitCreative(_continue: boolean = false) {
-				const templateSelected = await this.getCreativeTypeByTemplateId();
-
-				if (!templateSelected) return;
-
-				switch (templateSelected.name) {
-					case "Image template": //1
-						await this.addImageValidations();
-
-						const creative_image = parseDataCreativeImage(
-							this.creative
-						);
-
-						if (!(await this.validate())) return;
-
-						this.$emit("create-creative-image", {
-							continue: _continue,
-							creative: creative_image,
-						});
-
-						break;
-
-					case "VAST InLine": //3
-						await this.addVastInlineValidations();
-
-						const creative_vast_inline = parseDataCreativeVastInline(
-							this.creative
-						);
-
-						if (!(await this.validate())) return;
-
-						this.$emit("create-creative-vast-inline", {
-							continue: _continue,
-							creative: creative_vast_inline,
-						});
-						break;
-
-					case "JS Tag": // 4
-						await this.addJsTagValidations();
-
-						const creative_js_tag = parseDataCreativeJsTag(
-							this.creative
-						);
-
-						if (!(await this.validate())) return;
-
-						this.$emit("create-creative-jstag", {
-							continue: _continue,
-							creative: creative_js_tag,
-						});
-
-						break;
-
-					case "iFrame Tag": // 5
-						await this.addIframeTagValidations();
-
-						const creative_iframe_tag = parseDataCreativeIframeTag(
-							this.creative
-						);
-
-						if (!(await this.validate())) return;
-
-						this.$emit("create-creative-iframetag", {
-							continue: _continue,
-							creative: creative_iframe_tag,
-						});
-						break;
-
-					case "VAST and VPAID Wrapper": // 6
-						break;
-
-					case "MRAID Tag": // 13
-						await this.addMraidTagValidations();
-
-						const creative_mraid_tag = parseDataCreativeMraidTag(
-							this.creative
-						);
-
-						if (!(await this.validate())) return;
-
-						this.$emit("create-creative-mraidtag", {
-							continue: _continue,
-							creative: creative_mraid_tag,
-						});
-						break;
-
-					case "Native Image App Install": // 14
-						break;
-
-					case "Native Video App Install": // 15
-						break;
-
-					case "Native Image Content": // 16
-						break;
-
-					case "Native Video Content": // 17
-						break;
-
-					case "Native Video App Install (VAST/VPAID Wrapper)": // 18
-						break;
-
-					case "Native Video Content (VAST/VPAID Wrapper)": // 19
-						break;
-
-					case "VAST Wrapper with MOAT Viewability": // 20
-						break;
-
-					case "HTML5 Creative": // 21
-						await this.addHtml5Validations();
-
-						const creative_html5 = parseDataCreativeHtml5(
-							this.creative
-						);
-
-						if (!(await this.validate())) return;
-
-						this.$emit("create-creative-html5", {
-							continue: _continue,
-							creative: creative_html5,
-						});
-						break;
-
-					case "App Promo Icon": // 22
-						break;
-
-					default:
-						console.log("default", {
-							validate: await this.validate(),
-						});
-						break;
-				}
-
-				this.pushErrors();
-			},
-
-			pushErrors() {
-				setTimeout(() => {
-					this.primary_asset_id_rules = [
-						!isUndefined(
-							this.getError("creative_ad_content.primary_asset_id")
-						)
-							? this.getError(
-									"creative_ad_content.primary_asset_id"
-							  )[0]
-							: "",
-					];
-
-					this.thumbnail_id_rules = [
-						!isUndefined(
-							this.getError("creative_exchange_options.thumbnail_id")
-						)
-							? this.getError(
-									"creative_exchange_options.thumbnail_id"
-							  )[0]
-							: "",
-					];
-
-					this.mime_type_id_rules = [
-						this.getRules.isRequired,
-						this.getRules.isNumber,
-						!isUndefined(
-							this.getError("creative_attributes.mime_type_id")
-						)
-							? this.getError("creative_attributes.mime_type_id")[0]
-							: "",
-					];
-				}, 2000);
-			},
-
-			/**
-			 * Actions
-			 * handleSubmit
-			 */
-			async handleSubmit() {
-				try {
-					await this.addCommonsValidations();
-
-					await this.validate();
-					
-					await this.submitCreative(false);
-				} catch (error) {
-					console.error("handleSubmit", { error: error });
-				}
-			},
-
-			/**
-			 * Actions
-			 * handleSubmitContinue
-			 */
-			async handleSubmitContinue() {
-				try {
-					await this.addCommonsValidations();
-
-					await this.validate();
-
-					await this.submitCreative(true);
-				} catch (error) {
-					console.error("handleSubmitContinue", { error: error });
-				}
-			},
-
-			hasProperty(data: any, attribute: any) {
-				if (!isObject(data)) return false;
-				return data.hasOwnProperty(attribute);
-			},
-
-			selectedWidthHeight(size_id: number) {
-				const selectedSize = find(this.getCreativeSizes, function (s) {
-					return s.id === size_id;
-				});
-				if (selectedSize) {
-					this.$emit("selected-size", selectedSize);
-				}
-			},
-
-			selectedAdvertiser(params: any) {
-				const selectedAdvertiser = find(this.getAdvertisers, function (a) {
-					return a.id === params;
-				});
-
-				if (!selectedAdvertiser) return;
-
-				this.$emit("selected-creative-advertiser", {
-					advertiser_id: selectedAdvertiser.id,
-					domain: selectedAdvertiser.domain,
-					app_bundle: selectedAdvertiser.app_bundle,
-					category_id: selectedAdvertiser.category_id,
-				});
-			},
-
-			addNewPixel(item: any) {
-				this.$emit("add-new-pixel", item);
-			},
-
-			addNewScript(item: any) {
-				this.$emit("add-new-script", item);
-			},
-
-			addNewClickTracker(item: any) {
-				this.$emit("add-new-click-tracker", item);
-			},
-
-			deletePixel(item: any) {
-				this.$emit("delete-pixel", item);
-			},
-
-			deleteScript(item: any) {
-				this.$emit("delete-script", item);
-			},
-
-			deleteclickTracker(item: any) {
-				this.$emit("delete-click-tracker", item);
-			},
-
-			addRowVastEvent() {
-				this.$emit("add-row-vast-event", {
-					event: "",
-					url: "",
-				});
-			},
-
-			addRowProgressEvent() {
-				this.$emit("add-row-progress-event", {
-					event: "",
-					url: "",
-				});
-			},
-
-			deleteVastEvent(item: any) {
-				this.$emit("delete-row-vast-event", item);
-			},
-
-			deleteProgressEvent(item: any) {
-				this.$emit("delete-row-progress-event", item);
-			},
-
-			async clickUpload() {
-				let formData = new FormData();
-				formData.append(
-					"advertiser_id",
-					this.creative.creative_advertiser.advertiser_id
-				);
-				formData.append("file", this.creative.file);
-				this.$emit("create-asset", formData);
-			},
-
-			async validateTag() {
-				return this.$emit("validate-tag");
-			},
+					!isUndefined(
+						this.getError("creative_attributes.mime_type_id")
+					)
+						? this.getError("creative_attributes.mime_type_id")[0]
+						: "",
+				];
+			}, 2000);
 		},
-	});
+
+		/**
+		 * Actions
+		 * handleSubmit
+		 */
+		async handleSubmit() {
+			try {
+				await this.addCommonsValidations();
+
+				await this.validate();
+
+				await this.submitCreative(false);
+			} catch (error) {
+				console.error("handleSubmit", { error: error });
+			}
+		},
+
+		/**
+		 * Actions
+		 * handleSubmitContinue
+		 */
+		async handleSubmitContinue() {
+			try {
+				await this.addCommonsValidations();
+
+				await this.validate();
+
+				await this.submitCreative(true);
+			} catch (error) {
+				console.error("handleSubmitContinue", { error: error });
+			}
+		},
+
+		hasProperty(data: any, attribute: any) {
+			if (!isObject(data)) return false;
+			return data.hasOwnProperty(attribute);
+		},
+
+		selectedWidthHeight(size_id: number) {
+			const selectedSize = find(this.getCreativeSizes, function (s) {
+				return s.id === size_id;
+			});
+			if (selectedSize) {
+				this.$emit("selected-size", selectedSize);
+			}
+		},
+
+		selectedAdvertiser(params: any) {
+			const selectedAdvertiser = find(this.getAdvertisers, function (a) {
+				return a.id === params;
+			});
+
+			if (!selectedAdvertiser) return;
+
+			this.$emit("selected-creative-advertiser", {
+				advertiser_id: selectedAdvertiser.id,
+				domain: selectedAdvertiser.domain,
+				app_bundle: selectedAdvertiser.app_bundle,
+				category_id: selectedAdvertiser.category_id,
+			});
+		},
+
+		addNewPixel(item: any) {
+			this.$emit("add-new-pixel", item);
+		},
+
+		addNewScript(item: any) {
+			this.$emit("add-new-script", item);
+		},
+
+		addNewClickTracker(item: any) {
+			this.$emit("add-new-click-tracker", item);
+		},
+
+		deletePixel(item: any) {
+			this.$emit("delete-pixel", item);
+		},
+
+		deleteScript(item: any) {
+			this.$emit("delete-script", item);
+		},
+
+		deleteclickTracker(item: any) {
+			this.$emit("delete-click-tracker", item);
+		},
+
+		addRowVastEvent() {
+			this.$emit("add-row-vast-event", {
+				event: "",
+				url: "",
+			});
+		},
+
+		addRowProgressEvent() {
+			this.$emit("add-row-progress-event", {
+				event: "",
+				url: "",
+			});
+		},
+
+		deleteVastEvent(item: any) {
+			this.$emit("delete-row-vast-event", item);
+		},
+
+		deleteProgressEvent(item: any) {
+			this.$emit("delete-row-progress-event", item);
+		},
+
+		async clickUpload() {
+			let formData = new FormData();
+			formData.append(
+				"advertiser_id",
+				this.creative.creative_advertiser.advertiser_id
+			);
+			formData.append("file", this.creative.file);
+			this.$emit("create-asset", formData);
+		},
+
+		async validateTag() {
+			return this.$emit("validate-tag");
+		},
+	},
+});
 </script>

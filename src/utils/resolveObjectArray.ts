@@ -146,7 +146,48 @@ export function mappingTargetingKeys(response: Array<any>): Array<any> {
 
     const g = groupBy(res, 'targeting_module.extra');
 
-    console.log('mappingTargetingKeys', { res, g });
-
     return res;
+}
+
+export function findByParam(_array: Array<any>, attribute: string | number, term: any): any {
+    return _array.find(type => type[attribute] === term);
+}
+
+export async function getAssetTypeMatchedByKey() {
+    return {
+        primary_asset_id: {
+            "Image template": "creative_asset",
+            "HTML5 Creative": "html_asset",
+            "VAST InLine": "video_asset",
+        },
+        secondary_asset_id: {
+            "VAST InLine": "creative_asset, html_asset",
+        },
+        thumbnail_id: {
+            "HTML5 Creative": "creative_asset",
+        }
+    };
+}
+
+export async function getAssetTypeID(params: { advertiser_id: any; creative_templates: any; creative_template_id: any; key: any; asset_types: any; }) {
+
+    const creative_type = findByParam(params.creative_templates, "id", params.creative_template_id);
+
+    const assetTypeMatched = await getAssetTypeMatchedByKey();
+    if(!assetTypeMatched) return;
+
+    const configTemplate = assetTypeMatched[params.key];
+    if(!configTemplate) return;
+
+    const assetTypeValue = configTemplate[creative_type.value];
+    if(!assetTypeValue) return;
+
+    return findByParam(params.asset_types, "extra", assetTypeValue)?.id;
+}
+
+export async function getAssetFilters(params: { advertiser_id: any; creative_templates: any[]; creative_template_id: any; key: string | number; asset_types: any[]; }) {
+    return {
+        asset_type_id: await getAssetTypeID(params),
+        advertiser_id: params.advertiser_id,
+    }
 }

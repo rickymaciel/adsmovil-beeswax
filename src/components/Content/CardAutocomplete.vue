@@ -28,7 +28,7 @@
 			:search-input.sync="searchInputSync"
 			:disabled="disabled"
 			:validate-on-blur="false"
-			hide-no-data
+			:hide-no-data="hide_no_data"
 			:loading="isLoading"
 			:error-messages="error_messages"
 			@click="clickEvent"
@@ -184,6 +184,10 @@ export default {
 		show_id: {
 			type: Boolean,
 			default: false,
+		},
+		hide_no_data: {
+			type: Boolean,
+			default: true,
 		},
 		error_messages: {
 			type: Array,
