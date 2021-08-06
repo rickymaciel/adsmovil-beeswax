@@ -551,30 +551,64 @@
 						></CardTextField>
 					</v-col>
 
-					<!-- Expected* -->
+					<!-- Calculated eCPM -->
 					<v-col
-						v-if="showExpectedLabel"
+						v-if="showCalculatedECPM"
 						cols="12"
 						sm="12"
 						md="6"
 						lg="2"
 					>
 						<CardTextField
-							v-model.number="campaign.cpm_bid"
-							v-numeric
-							:rules="getRules.cpm_bid"
-							:hint="getExpectedLabel"
-							ref="cpm_bid"
-							:label="getExpectedLabel"
-							:placeholder="getExpectedLabel"
-							:required="true"
-							:valueText="getExpectedValue"
-							:error_messages="getFail('cpm_bid')"
+							hint="eCPM"
+							label="eCPM"
+							placeholder="eCPM"
 							type="number"
+							v-model.number="calculated_ecpm"
+							:disabled="true"
+							class="disabled"
 						></CardTextField>
 					</v-col>
 
-					<!-- Target eCPCV* -->
+					<!-- Calculated eCPC -->
+					<v-col
+						v-if="showCalculatedECPC"
+						cols="12"
+						sm="12"
+						md="6"
+						lg="2"
+					>
+						<CardTextField
+							hint="eCPC"
+							label="eCPC"
+							placeholder="eCPC"
+							type="number"
+							v-model.number="calculated_ecpc"
+							:disabled="true"
+							class="disabled"
+						></CardTextField>
+					</v-col>
+
+					<!-- Calculated eCPCV -->
+					<v-col
+						v-if="showCalculatedECPCV"
+						cols="12"
+						sm="12"
+						md="6"
+						lg="2"
+					>
+						<CardTextField
+							hint="eCPCV"
+							label="eCPCV"
+							placeholder="eCPCV"
+							type="number"
+							v-model.number="calculated_ecpcv"
+							:disabled="true"
+							class="disabled"
+						></CardTextField>
+					</v-col>
+
+					<!-- Target eCPC* -->
 					<v-col
 						v-if="show_target_ecpc"
 						cols="12"
@@ -586,10 +620,10 @@
 							v-model.number="campaign.target_ecpc"
 							v-numeric
 							:rules="getRules.target_ecpc"
-							hint="Target eCPCV"
+							hint="Target eCPC"
 							ref="target_ecpc"
-							label="Target eCPCV"
-							placeholder="Target eCPCV"
+							label="Target eCPC"
+							placeholder="Target eCPC"
 							:required="true"
 							:error_messages="getFail('target_ecpc')"
 							type="number"
@@ -968,6 +1002,14 @@ export default Vue.extend({
 		show_target_ctr: false,
 		show_target_vcr: false,
 		show_field_cpm: false,
+
+		// Expected Calculated Values can show?
+		showCalculatedECPM: false,
+		calculated_ecpm: undefined,
+		showCalculatedECPC: false,
+		calculated_ecpc: undefined,
+		showCalculatedECPCV: false,
+		calculated_ecpcv: undefined
 	}),
 	created() {},
 	mounted() {
@@ -1189,108 +1231,6 @@ export default Vue.extend({
 			);
 		},
 
-		showExpectedLabel() {
-			this.setTargets();
-
-			/**
-			 * is automatic_allocation === 1
-			 * is budget type === spend
-			 * is BY_CAMPAIGN
-			 */
-
-			if (
-				!this.isAutomaticAllocation &&
-				!this.isBudgetTypeSpend &&
-				!this.isOptimizationStrategyByType(BY_CAMPAIGN) &&
-				(!this.isValidNumber(this.campaign.budget) ||
-					!this.isValidNumber(this.campaign.kpi_objective))
-			) {
-				this.expected_show = false;
-				this.expected_label = "";
-				return false;
-			}
-
-			/**
-			 * Check selected data
-			 */
-
-			if (this.campaign.strategy_id === null) {
-				this.expected_show = false;
-				this.expected_label = "";
-				return false;
-			} else {
-				/**
-				 * is OPTIMIZED_CPM
-				 */
-				if (
-					this.isStrategyByType(OPTIMIZED_CPM) &&
-					this.isBudgetTypeSpend &&
-					this.isAutomaticAllocation &&
-					this.isOptimizationStrategyByType(BY_CAMPAIGN)
-				) {
-					this.expected_show = true;
-					this.setTargets(false, false, false, true);
-
-					this.expected_label = "eCPM";
-					let value =
-						this.campaign.budget /
-						(this.campaign.kpi_objective / 1000);
-					if (!isNaN(value) && value !== Infinity) {
-						this.expected_value = value.toFixed(2);
-					} else {
-						this.expected_value = undefined;
-					}
-				}
-
-				/**
-				 * is OPTIMIZED_CPC
-				 */
-				if (
-					this.isStrategyByType(OPTIMIZED_CPC) &&
-					this.isBudgetTypeSpend &&
-					this.isAutomaticAllocation &&
-					this.isOptimizationStrategyByType(BY_CAMPAIGN)
-				) {
-					this.expected_show = true;
-					this.setTargets(true, true, false, true);
-
-					this.expected_label = "eCPC";
-					let value =
-						this.campaign.budget / this.campaign.kpi_objective;
-					if (!isNaN(value) && value !== Infinity) {
-						this.expected_value = value.toFixed(2);
-					} else {
-						this.expected_value = undefined;
-					}
-				}
-
-				/**
-				 * is OPTIMIZED_VCR
-				 */
-				if (
-					this.isStrategyByType(OPTIMIZED_VCR) &&
-					this.isBudgetTypeSpend &&
-					this.isAutomaticAllocation &&
-					this.isOptimizationStrategyByType(BY_CAMPAIGN)
-				) {
-					this.expected_show = true;
-					this.setTargets(false, false, true, true);
-
-					this.expected_label = "eCPCV";
-					let value =
-						this.campaign.budget / this.campaign.kpi_objective;
-
-					if (!isNaN(value) && value !== Infinity) {
-						this.expected_value = value.toFixed(2);
-					} else {
-						this.expected_value = undefined;
-					}
-				}
-			}
-
-			return this.expected_show;
-		},
-
 		getExpectedValue() {
 			return this.expected_value;
 		},
@@ -1436,7 +1376,6 @@ export default Vue.extend({
 		async validate() {
 			let form = this.$refs.form;
 			const valid = await form.validate();
-			console.log("valid", valid);
 			return await valid;
 		},
 		handleCancel() {
@@ -1446,7 +1385,6 @@ export default Vue.extend({
 		async handleSubmit() {
 			try {
 				if (!(await this.validate())) return;
-				console.log("this.isEdit", this.isEdit);
 				const emit = this.isEdit
 					? "update-campaign"
 					: "create-campaign";
@@ -1543,6 +1481,124 @@ export default Vue.extend({
 			const duration = this.moment.duration(end.diff(start));
 			return Math.ceil(duration.asDays());
 		},
+
+		showExpectedLabel() {
+			this.setTargets();
+			this.campaign.cpm_bid = undefined;
+			// 	Initialized labels
+			this.showCalculatedECPM = false;
+			this.calculated_ecpm = undefined;
+			this.showCalculatedECPC = false;
+			this.calculated_ecpc = undefined;
+			this.showCalculatedECPCV = false;
+			this.calculated_ecpcv = undefined;
+
+			/**
+			 * is automatic_allocation === 1
+			 * is budget type === spend
+			 * is BY_CAMPAIGN
+			 */
+
+			if (
+				!this.isAutomaticAllocation &&
+				!this.isBudgetTypeSpend &&
+				!this.isOptimizationStrategyByType(BY_CAMPAIGN) &&
+				(!this.isValidNumber(this.campaign.budget) ||
+					!this.isValidNumber(this.campaign.kpi_objective))
+			) {
+				this.expected_show = false;
+				this.expected_label = "";
+				return false;
+			}
+
+			/**
+			 * Check selected data
+			 */
+
+			if (this.campaign.strategy_id === null) {
+				return false;
+			} else {
+				/**
+				 * is OPTIMIZED_CPM
+				 */
+				if (
+					this.isStrategyByType(OPTIMIZED_CPM) &&
+					this.isBudgetTypeSpend &&
+					this.isAutomaticAllocation &&
+					this.isOptimizationStrategyByType(BY_CAMPAIGN)
+				) {
+					this.showCalculatedECPM = true;
+					
+					this.expected_show = true;
+					this.setTargets(false, false, false, true);
+
+					this.expected_label = "eCPM";
+					let value =
+						this.campaign.budget /
+						(this.campaign.kpi_objective / 1000);
+					if (!isNaN(value) && value !== Infinity) {
+						this.expected_value = value.toFixed(2);
+					} else {
+						this.expected_value = undefined;
+					}
+					this.calculated_ecpm = this.expected_value;
+				}
+
+				/**
+				 * is OPTIMIZED_CPC
+				 */
+				if (
+					this.isStrategyByType(OPTIMIZED_CPC) &&
+					this.isBudgetTypeSpend &&
+					this.isAutomaticAllocation &&
+					this.isOptimizationStrategyByType(BY_CAMPAIGN)
+				) {
+					this.showCalculatedECPC = true;
+
+					this.expected_show = true;
+					this.setTargets(true, true, false, true);
+
+					this.expected_label = "eCPC";
+					let value =
+						this.campaign.budget / this.campaign.kpi_objective;
+					if (!isNaN(value) && value !== Infinity) {
+						this.expected_value = value.toFixed(2);
+					} else {
+						this.expected_value = undefined;
+					}
+					this.calculated_ecpc = this.expected_value;
+				}
+
+				/**
+				 * is OPTIMIZED_VCR
+				 */
+				if (
+					this.isStrategyByType(OPTIMIZED_VCR) &&
+					this.isBudgetTypeSpend &&
+					this.isAutomaticAllocation &&
+					this.isOptimizationStrategyByType(BY_CAMPAIGN)
+				) {
+					this.showCalculatedECPCV = true;
+
+					this.expected_show = true;
+					this.setTargets(false, false, true, true);
+
+					this.expected_label = "eCPCV";
+					let value =
+						this.campaign.budget / this.campaign.kpi_objective;
+
+					if (!isNaN(value) && value !== Infinity) {
+						this.expected_value = value.toFixed(2);
+					} else {
+						this.expected_value = undefined;
+					}
+					this.calculated_ecpcv = this.expected_value;
+				}
+			}
+
+			return this.expected_show;
+		},
+
 	},
 	watch: {
 		"campaign.start_date"(val, old) {
@@ -1551,6 +1607,14 @@ export default Vue.extend({
 
 		"campaign.end_date"(val, old) {
 			this.getCalculateDuration();
+		},
+		
+		"campaign.strategy_id"(val, old) {
+			this.showExpectedLabel();
+		},
+
+		"campaign.campaign_pacing_id"(val, old) {
+			this.campaign.daily_budget = undefined;
 		},
 	},
 });

@@ -536,6 +536,8 @@ export interface CreativeList {
 
 export interface CreativeFilters {
   external_id?: number,
+  advertiser_id?: number,
+  asset_type_id?: number,
   alternative_id?: number,
   name?: string,
   model_type_id?: number,
