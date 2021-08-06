@@ -2,7 +2,8 @@ import axios from 'axios'
 import { GetMessage, GetErrors } from './handlers/HandlerError'
 import { success, error } from './handlers/HandlerResponse'
 
-axios.defaults.baseURL = 'https://dsp-api-testing.adsmovil.com'
+//axios.defaults.baseURL = 'https://dsp-api-testing.adsmovil.com'
+axios.defaults.baseURL = 'https://dsp-sandbox.adsmovil.com'
 
 // Add a request interceptor
 axios.interceptors.request.use(function (config) {

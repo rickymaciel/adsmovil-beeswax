@@ -97,6 +97,7 @@ export default Vue.extend({
 	},
 	mounted() {},
 	beforeDestroy() {
+		console.log("beforeDestroy");
 		this.$store.state.creative.creative = null;
 		this.init_creative = initCreative();
 	},
@@ -594,6 +595,7 @@ export default Vue.extend({
 		},
 
 		selectedCreativeAdvertiser(creative_advertiser: any) {
+			console.log("selectedCreativeAdvertiser", creative_advertiser);
 			this.init_creative.creative_advertiser = creative_advertiser;
 			this.init_creative.creative_ad_content.primary_asset_id = null;
 			this.init_creative.creative_ad_content.secondary_asset_id = null;

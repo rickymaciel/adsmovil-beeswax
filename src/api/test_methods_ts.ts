@@ -14,14 +14,14 @@ import { account, forgot, initialize, login, logout, permissions, profile, reset
 //import { create, update } from '@/api/creatives/video/VastInlineApi'
 //import { create, update } from '@/api/creatives/video/VastWrapper'
 //import { all, paginated, list } from '@/api/creatives/CreativeApi'
-import { create, update, show, all, paginated, list } from '@/api/creatives/AddonApi'
-//import { all, paginated, list } from '@/api/creatives/AssetApi'
+//import { create, update, show, all, paginated, list } from '@/api/creatives/AddonApi'
+import { all, paginated, list } from '@/api/creatives/AssetApi'
 //import { create, deleted } from '@/api/creatives/AssociateApi'
 //import { all, paginated, list, show } from '@/api/targeting/KeyApi'
 //import { create, all, paginated, list, show, update } from '@/api/targeting/TargetingApi'
 import { UserInit } from '@/interfaces/user'
 //import { check } from './creatives/TagApi'
-//import { adPositions } from '@/api/inventory/InventoryApi'
+//import { adPositions, appInventory, interstitialTypes, inventorySources, dealIdList, placementId, siteId, publisherId } from '@/api/inventory/InventoryApi'
 //import { domainList } from '@/api/domain/DomainApi'
 //import { creativeSize } from '@/api/ad_size/AdSizeApi'
 //import { countries, lat_long, locationTypes, regions } from '@/api/geo/GeoApi'
@@ -1274,10 +1274,143 @@ const test_change_status_campaing = {
     })
   }
 }*/
+
+/*
+const test_inventory_app = {
+  
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const auction = 'auction_type'
+      const environment = 'environment_types'
+      const interstitial_flags = 'interstitial'
+      const videos_apis = 'video_api'
+      //const data_inventory = await appInventory(auction, value)
+      //const data_inventory = await appInventory(environment, value)
+      //const data_inventory = await appInventory(interstitial_flags, value)
+      const data_inventory = await appInventory(videos_apis, value)
+      console.log('INVENTORY APP', data_inventory)
+
+      return data_inventory
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+*/
+/*
+const test_interstitial_types = {
+  
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_inventory = await interstitialTypes(value)
+      console.log('INTERSTITIAL_TYPES', data_inventory)
+
+      return data_inventory
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+*/
+/*
+const test_inventorySources = {
+  
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_inventory = await inventorySources(value)
+      console.log('INVENTORY_SOURCES', data_inventory)
+
+      return data_inventory
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+*/
+/*
+const test_dealIdList = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_inventory = await dealIdList(value)
+      console.log('INVENTORY_DEAL_ID_LIST', data_inventory)
+      return data_inventory
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+*/
+/*
+const test_placementId = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_inventory = await placementId(value)
+      console.log('INVENTORY_PLACEMENTID', data_inventory)
+      return data_inventory
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+*/
+/*
+const test_publisherId = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_inventory = await placementId(value)
+      console.log('INVENTORY_PUBLISHER_ID', data_inventory)
+      return data_inventory
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+*/
+/*
+const test_siteId = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_inventory = await siteId(value)
+      console.log('INVENTORY_SITE_ID', data_inventory)
+      return data_inventory
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+*/
 /* -------- END INVENTORY -------- */
 
 /* -------- BEGIN BID -------- */
-/*const test_bid_shading = {
+/* const test_bid_shading = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
@@ -2577,7 +2710,7 @@ const test_delete_association = {
     })
   }
 }
-
+*/
 const test_get_creatives_assets = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
@@ -2597,10 +2730,11 @@ const test_get_creatives_assets = {
       return null
     })
   }
-}*/
+}
 /* -------- END CREATIVES -------- */
 
 /* -------- BEGIN CREATIVES ADDONS -------- */
+/*
 const test_create_addons = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
@@ -2686,10 +2820,13 @@ const test_get_addons = {
     })
   }
 }
+*/
 /* -------- END CREATIVES ADDONS -------- */
 
 /* -------- BEGIN TARGETING -------- */
-/*const test_targeting_predicates = {
+
+/* 
+const test_targeting_predicates = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
@@ -2925,4 +3062,4 @@ const test_targeting = {
 }*/
 /* -------- END CONTENT -------- */
 
-export default test_update_addons
+export default test_get_creatives_assets 
