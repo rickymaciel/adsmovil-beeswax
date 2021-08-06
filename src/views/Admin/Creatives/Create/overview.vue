@@ -1501,6 +1501,10 @@ export default Vue.extend({
 			await this.loadResources();
 		}, 1000);
 	},
+	beforeDestroy() {
+		console.log("overview::beforeDestroy");
+		this.$store.state.creative.creative = null;
+	},
 	computed: {
 		/**
 		 * Getters
@@ -1698,7 +1702,7 @@ export default Vue.extend({
 		},
 
 		async fetchCreativeAdvertisers(e: any) {
-			if (!isEmpty(this.getAdvertisers)) return;
+			if (!isEmpty(this.resources.advertisers)) return;
 			this.$emit("fetch-creative-advertisers");
 		},
 
@@ -2207,9 +2211,12 @@ export default Vue.extend({
 		},
 
 		selectedAdvertiser(params: any) {
-			const selectedAdvertiser = find(this.getAdvertisers, function (a) {
-				return a.id === params;
-			});
+			const selectedAdvertiser = find(
+				this.resources.advertisers,
+				function (a) {
+					return a.id === params;
+				}
+			);
 
 			if (!selectedAdvertiser) return;
 

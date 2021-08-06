@@ -10,8 +10,9 @@ import moment from 'moment-timezone';
 
 moment.locale('es');
 
-// import test_api from './api/test_methods_ts'
-// test_api.data()
+//Esto para hacer los test
+//import test_api from './api/test_methods_ts'
+//test_api.data()
 
 Vue.config.productionTip = false
 

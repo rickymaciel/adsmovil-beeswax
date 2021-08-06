@@ -11,9 +11,9 @@ export async function list (token: string) {
 
     const shadings = [] as any
 
-    if (response.success) {
+    if (response.success) { 
       let data = response.content
-
+      
       if (Object.keys(data).length > 0) {
         Object.keys(data).forEach(function (key) {
           const shading = {

@@ -72,6 +72,9 @@ const SITE_ROUTE = 'api/list/site_id'
 const SITE_LIST_ROUTE = 'api/list/custom_lists/site_id'
 const AUCTION_TYPE_ROUTE = 'api/list/auction_types'
 const INVENTORY_SOURCE_ROUTE = 'api/list/inventory_sources'
+const INTERSTITIAL_FLAGS = '/api/list/interstitial_flags'
+const INTESTITIAL_TYPES = 'api/list/interstitial_types'
+const INVENTORY_VIDEO_APIS = 'api/list/video_apis'
 const TARGETING_ROUTE = 'api/targeting_expressions'
 const TARGETING_PREDICATE_ROUTE = 'api/list/targeting_predicates'
 const TARGETING_KEY_ROUTE = 'api/targeting_keys'
@@ -138,7 +141,7 @@ module.exports = {
         CONTENT_CATEGORY_ROUTE,
         CONTENT_LENGUAGE_ROUTE
     },
-    CREATIVES: {
+    CREATIVES: { 
         CREATIVE_ROUTE,
         CREATIVE_METHOD_ROUTE,
         CREATIVE_TYPE_ROUTE,
@@ -184,7 +187,17 @@ module.exports = {
         LOCATION_TYPE_ROUTE
     },
     INVENTORY: {
-        AD_POSITION_ROUTE
+        AD_POSITION_ROUTE,
+        AUCTION_TYPE_ROUTE,
+        ENVIROMENT_TYPE_ROUTE,
+        INVENTORY_SOURCE_ROUTE,
+        INTERSTITIAL_FLAGS,
+        INTESTITIAL_TYPES,
+        INVENTORY_VIDEO_APIS,
+        DEAL_ID_LIST_ROUTE,
+        PLACEMENT_ROUTE,
+        PUBLISER_ID_LIST_ROUTE,
+        SITE_LIST_ROUTE
     },
     KPI: {
         CAMPAING_KPI_ROUTE
