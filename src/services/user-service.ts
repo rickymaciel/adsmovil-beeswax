@@ -167,6 +167,18 @@ class UserService {
         }
     }
 
+    async setAccount(account_id: number) {
+        try {
+            const response = await AxiosPatch(`${USERS_ROUTE}/set_account/${account_id}`,{});
+            return Promise.resolve(GetData(response));
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }        
+    } 
 }
 
 function getFilters(filters: UserFilters): string {

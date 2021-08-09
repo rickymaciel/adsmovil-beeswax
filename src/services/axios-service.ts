@@ -9,14 +9,35 @@ import { ValidateToken } from '@/services/jwt-service'
 // const api_gero = 'http://dsp-api.localhost.com';
 const api_production = 'https://dsp-platform.adsmovil.com';
 const api_develop = 'https://dsp-sandbox.adsmovil.com';
+const api_local = 'http://dsp-sandbox.localhost.com';
 
-const front_production = 'https://adsmovil-beeswax.herokuapp.com'
-// const front_develop = 'https://dev-adsmovil.herokuapp.com/'
+const front_production = 'https://adsmovil-beeswax.herokuapp.com';
+const front_develop = 'https://dev-adsmovil.herokuapp.com';
+const front_localhost = 'http://localhost:8080';
+//const front_local = 'http://dsp-frontend.localhost.com';
 
-axios.defaults.baseURL = location.origin === front_production ? api_production : api_develop
+let baseUrl = "";
 
+switch (location.origin) {
+    case front_production:
+        baseUrl = api_production;
+        break;
+    case front_develop:
+        baseUrl = api_develop;
+        break;
+
+    case front_localhost:
+        baseUrl = api_develop;
+        break;
+
+    default:
+        baseUrl = api_local;
+}
+
+axios.defaults.baseURL = baseUrl; //location.origin === front_production ? api_production : api_develop
 
 console.log('AxiosService', {
+    location: location,
     origin: location.origin,
     is_production: location.origin === front_production,
     baseURL: axios.defaults.baseURL
@@ -42,7 +63,7 @@ if (token && token.startsWith('Bearer ')) {
         axios.defaults.headers.common.Authorization = tokenValid
         localStorage.setItem('token', tokenValid)
     }
-    
+
     axios.defaults.headers.common.Authorization = token
 }
 

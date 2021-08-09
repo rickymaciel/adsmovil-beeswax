@@ -1088,6 +1088,15 @@ export default new Vuex.Store({
                         catchError(this, error);
                         return await Promise.reject(error);
                     }
+                },
+                async setAccount({ }, account_id: number) {
+                    try {
+                        const response = await UserService.setAccount(account_id);
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        catchError(this, error);
+                        return await Promise.reject(error)
+                    }
                 }
             }
         },
