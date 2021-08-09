@@ -12,7 +12,7 @@ const api_develop = 'https://dsp-sandbox.adsmovil.com';
 const api_local = 'http://dsp-sandbox.localhost.com';
 
 const front_production = 'https://adsmovil-beeswax.herokuapp.com';
-const front_develop = 'https://dev-adsmovil.herokuapp.com/';
+const front_develop = 'https://dev-adsmovil.herokuapp.com';
 //const front_local = 'http://dsp-frontend.localhost.com';
 
 let baseUrl = "";
@@ -25,13 +25,13 @@ switch (location.origin) {
         baseUrl = api_develop;
         break;
     default:
-        //baseUrl = api_develop;
         baseUrl = api_local;
 }
 
 axios.defaults.baseURL = baseUrl; //location.origin === front_production ? api_production : api_develop
 
 console.log('AxiosService', {
+    location: location,
     origin: location.origin,
     is_production: location.origin === front_production,
     baseURL: axios.defaults.baseURL
