@@ -34,13 +34,11 @@
 						offset-y="22"
 					>
 						<v-btn icon medium>
-							<img
-								src="@/assets/icons/notifications_icon.png"
-								alt="Notifications"
-							/> </v-btn
-					></v-badge>
+							<img src="@/assets/icons/notifications_icon.png" alt="Notifications"/> 
+						</v-btn>
+					</v-badge>
 
-					<v-menu offset-y max-width="200" :rounded="true">
+					<v-menu offset-y max-width="300" :rounded="true">
 						<template v-slot:activator="{ on, attrs }">
 							<v-list flat color="transparent">
 								<v-list-item
@@ -100,7 +98,7 @@
 							<v-list-item two-line>
 								<v-list-item-content>
 									<v-list-item-title class="text-h6">
-										Account
+										Active account
 									</v-list-item-title>
 									<v-list-item-subtitle>
 										{{ getProfile.account.name }}
@@ -108,9 +106,9 @@
 								</v-list-item-content>
 							</v-list-item>
 
-							<v-divider></v-divider>
+							<v-divider v-if="false"></v-divider>
 
-							<v-list-item two-line>
+							<v-list-item v-if="false" two-line>
 								<v-list-item-content>
 									<v-list-item-title class="text-h6">
 										Roles
@@ -127,20 +125,19 @@
 								</v-list-item-content>
 							</v-list-item>
 
-							<v-divider></v-divider>
+							<v-divider v-if="otherAccounts.length > 0"></v-divider>
 
-							<v-list-item two-line>
+							<v-list-item v-if="otherAccounts.length > 0" two-line>
 								<v-list-item-content>
 									<v-list-item-title class="text-h6">
-										Accounts
+										Other accounts
 									</v-list-item-title>
 									<v-list-item-subtitle>
-										<v-card-text
-											class="pa-0 ma-0"
-											v-for="account in getProfile.accounts"
-											:key="account.id"
-										>
-											{{ account.name }}
+										<v-card-text 
+											class="pa-0 ma-0" 
+											v-for="account in otherAccounts" 
+											:key="account.id">										
+											<a link @click="dispatchChangeAccount(account.id)">{{ account.name }}</a>
 										</v-card-text>
 									</v-list-item-subtitle>
 								</v-list-item-content>
@@ -279,6 +276,16 @@
 				return this.$route.path;
 			},
 
+			otherAccounts() {
+				const profile = this.$store.state.profile.profile;
+				if(profile) {
+					return profile.accounts.filter(account => account.id != profile.account_id);
+				}
+				else {
+					return [];
+				}
+			},
+
 			getProfile() {
 				return this.$store.state.profile.profile;
 			},
@@ -325,9 +332,15 @@
 			async dispatchLogout() {
 				await this.signOff();
 			},
+			async dispatchChangeAccount(account_id) {
+				await this.setAccount(account_id);
+				await this.fetchProfile();
+				window.location.href = "/";
+			},
 			...mapActions({
 				signOff: "auth/signOff",
 				fetchProfile: "profile/fetchProfile",
+				setAccount: "user/setAccount",
 			}),
 		},
 	};
