@@ -21,62 +21,71 @@
 				/>
 			</v-btn>
 			<v-icon left v-if="item.icon" :color="color"> mdi-account </v-icon>
+
 			{{ item.tab }}
+
+			<strong v-if="hasData(item.count)" class="grey--secondary ms-auto">
+				{{ item.count }}
+			</strong>
 		</v-tab>
 	</v-tabs>
 </template>
 
 <script lang="ts">
-	import Vue from "vue";
+import { isUndefined } from "lodash";
+import Vue from "vue";
 
-	export default Vue.extend({
-		name: "createTabs",
-		props: {
-			items: {
-				type: Array,
-				default: function () {
-					return [];
-				},
-			},
-			current_tab: {
-				type: Number,
-				default: 0,
-			},
-			vertical: {
-				type: Boolean,
-				default: false,
-			},
-			custom_class: {
-				type: String,
-				default: "v-tab--targeting",
-			},
-			slider_size: {
-				type: Number, 
-				default: 4,
-			},
-			color: {
-				type: String,
-				default: "secondary",
+export default Vue.extend({
+	name: "createTabs",
+	props: {
+		items: {
+			type: Array,
+			default: function () {
+				return [];
 			},
 		},
-		components: {},
-		data: () => ({}),
-		created() {},
-		async mounted() {},
-		computed: {
-			currentTab: {
-				set(val) {
-					this.$emit("update-selected-tab-index", val);
-				},
-				get() {
-					return this.current_tab;
-				},
+		current_tab: {
+			type: Number,
+			default: 0,
+		},
+		vertical: {
+			type: Boolean,
+			default: false,
+		},
+		custom_class: {
+			type: String,
+			default: "v-tab--targeting",
+		},
+		slider_size: {
+			type: Number,
+			default: 4,
+		},
+		color: {
+			type: String,
+			default: "secondary",
+		},
+	},
+	components: {},
+	data: () => ({}),
+	created() {},
+	async mounted() {},
+	computed: {
+		currentTab: {
+			set(val) {
+				this.$emit("update-selected-tab-index", val);
+			},
+			get() {
+				return this.current_tab;
 			},
 		},
-		methods: {
-			getUrl(item: { src: String }) {
-				return item.src;
-			},
+	},
+	methods: {
+		getUrl(item: { src: String }) {
+			return item.src;
 		},
-	});
+		hasData(data: any) {
+			return !isUndefined(data);
+		},
+	},
+});
 </script>

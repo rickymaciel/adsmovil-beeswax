@@ -66,7 +66,7 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
-import CardSwitch from "../../../../components/Content/CardSwitch.vue";
+import CardSwitch from "../../../../../components/Content/CardSwitch.vue";
 
 export default Vue.extend({
 	name: "TermListUnique",

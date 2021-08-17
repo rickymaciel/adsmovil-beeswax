@@ -4,6 +4,7 @@ import { GetMessage, GetErrors } from '@/api/handlers/HandlerError'
 import { AxiosPost, AxiosGet, AxiosPatch } from '@/api/AxiosService'
 import {
   Asset,
+  AssetDataCreate,
   AssetFilters,
   AssetOptions,
   AssetPaginated,
@@ -13,6 +14,28 @@ import {
 } from '@/interfaces/creativeAsset'
 
 const ROUTES = require('../routes').CREATIVES
+
+/* Se implementa directamente en el service */
+export async function createAsset (asset: AssetDataCreate, token: string) {
+  try {
+    const response = await AxiosPost(ROUTES.CREATIVE_ASSETS_ROUTE, asset, token)
+
+    if (response.success) {
+      const data = response.content
+
+      const item = parseData(data)
+
+      return success('', item)
+    }
+
+    console.log('ERROR: ', response)
+
+    return error(response.message, response.errors)
+  } catch (err) {
+    console.log('EXCEPTION: ', err)
+    return error(GetMessage(err), GetErrors(err))
+  }
+}
 
 export async function all (token: string, filters?: AssetFilters, options?: AssetOptions) {
   try {

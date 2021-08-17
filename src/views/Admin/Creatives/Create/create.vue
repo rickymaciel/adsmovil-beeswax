@@ -45,10 +45,6 @@
 					@validate-tag="validateTag"
 					@selected-size="selectedSize"
 				></Overview>
-				<AssociatedLineForm
-					v-if="hasID"
-					:creative="getCreative"
-				></AssociatedLineForm>
 			</v-container>
 		</v-layout>
 	</v-layout>
@@ -91,15 +87,13 @@ export default Vue.extend({
 		},
 	}),
 	async created() {
-		this.init_creative = initCreative();
+		await this.refreshData();
 		//this.init_creative = await getCreativeData();
 		this.resources.asset_types = await this.dispatchAssetTypes();
 	},
 	mounted() {},
-	beforeDestroy() {
-		console.log("beforeDestroy");
-		this.$store.state.creative.creative = null;
-		this.init_creative = initCreative();
+	async beforeDestroy() {
+		await this.refreshData();
 	},
 	computed: {
 		getResponseTemplates() {
@@ -137,6 +131,10 @@ export default Vue.extend({
 		},
 	},
 	methods: {
+		async refreshData() {
+			this.init_creative = initCreative();
+			this.$store.state.creative.creative = null;
+		},
 		updateCreativeType(data: { creative_type_id: number }) {
 			this.init_creative.creative_type_id = data.creative_type_id;
 			this.init_creative.creative_ad_content.primary_asset_id = null;
@@ -595,7 +593,6 @@ export default Vue.extend({
 		},
 
 		selectedCreativeAdvertiser(creative_advertiser: any) {
-			console.log("selectedCreativeAdvertiser", creative_advertiser);
 			this.init_creative.creative_advertiser = creative_advertiser;
 			this.init_creative.creative_ad_content.primary_asset_id = null;
 			this.init_creative.creative_ad_content.secondary_asset_id = null;
@@ -673,6 +670,13 @@ export default Vue.extend({
 		 */
 		async dispatchCreative(params: { continue: boolean; creative: any }) {
 			return this.$store.dispatch("creative/CreateNewCreative", params);
+		},
+
+		/**
+		 * Dispatch Update
+		 */
+		async dispatchUpdate(params: { continue: boolean; creative: any }) {
+			return this.$store.dispatch("creative/UpdateCreative", params);
 		},
 
 		/**

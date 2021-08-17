@@ -67,7 +67,7 @@
 <script lang="ts">
 import CreateTabs from "../Create/createTabs.vue";
 import Overview from "../Create/overview.vue";
-import NavTargeting from "../targetings/targetingNav.vue";
+import NavTargeting from "../targetings/tab_contents/targetingNav.vue";
 import Vue from "vue";
 import {
 	AdvertiserFilters,

@@ -24,7 +24,7 @@
 						></v-progress-linear>
 					</slot>
 				</template>
-				<template #label>
+				<template v-if="!withoutLabel" #label>
 					{{ label }}
 					<span class="red--text" v-if="required">
 						<strong>*</strong>
@@ -211,6 +211,7 @@ export default {
 				return [];
 			},
 		},
+		withoutLabel: { type: Boolean, default: false },
 	},
 	data() {
 		return {

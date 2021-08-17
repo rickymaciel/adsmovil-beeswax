@@ -1,7 +1,7 @@
 import { success, error } from '@/api/handlers/HandlerResponse'
 import { GetMessage, GetErrors } from '@/api/handlers/HandlerError'
 import { AxiosGet } from '@/api/AxiosService'
-import { forEach } from 'lodash'
+import { forEach, isEmpty } from 'lodash'
 import {
   Browsers,
   BrowserVersion,
@@ -14,24 +14,10 @@ import {
 const ROUTES = require('../routes').PLATFORM
 
 export async function platforms (key: string, token: string) {
-  let url = ''
+  
+  let url = getURL(key);
 
-  switch (key) {
-  case 'carrier':
-    url = ROUTES.PLATFORM_CARRIER_ROUTE
-    break
-  case 'device_type':
-    url = ROUTES.PLATFORM_DEVICE_TYPE_ROUTE
-    break
-  case 'device_make':
-    url = ROUTES.PLATFORM_DEVICE_MAKE_ROUTE
-    break
-  case 'operating_system':
-    url = ROUTES.PLATFORM_OPERATING_SYSTEM_ROUTE
-    break
-  default:
-    return error(`The key "${key}" is invalid`, [])
-  }
+  if (isEmpty(url)) return error(`The key "${key}" is invalid`, [])
 
   try {
     const response = await AxiosGet(url, token)
@@ -226,4 +212,29 @@ export async function operatingSystemVersion (token: string) {
     console.log('EXCEPTION: ', err)
     return error(GetMessage(err), GetErrors(err))
   }
+}
+
+function getURL(key: string): string {
+  let url = ''
+
+  switch (key) {
+    case 'carrier':
+      url = ROUTES.PLATFORM_CARRIER_ROUTE
+      break
+    case 'device_type':
+      url = ROUTES.PLATFORM_DEVICE_TYPE_ROUTE
+      break
+    case 'device_make':
+      url = ROUTES.PLATFORM_DEVICE_MAKE_ROUTE
+      break
+    case 'operating_system':
+      url = ROUTES.PLATFORM_OPERATING_SYSTEM_ROUTE
+      break
+    case 'bandwidth':
+      url = ROUTES.PLATFORM_BANDWITDH
+      break
+    default:
+      url = ''
+  }
+  return url;
 }

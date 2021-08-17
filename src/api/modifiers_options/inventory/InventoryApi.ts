@@ -13,7 +13,7 @@ import {  AdPosition,
         } 
 from '@/interfaces/inventory'
 
-const ROUTES = require('../routes').INVENTORY
+const ROUTES = require('../../routes').INVENTORY
 
 export async function adPositions (token: string) {
   try {
@@ -46,6 +46,14 @@ export async function adPositions (token: string) {
   }
 }
 
+/**
+ * 
+ * Incluye 
+ * -- Auction_Type
+ * -- Environment_Type
+ * -- Interstitial
+ * -- Video_API
+ */
 export async function appInventory (key: string, token: string) {
 
   let url = ''
@@ -213,6 +221,10 @@ export async function dealIdList (token: string) {
   }
 }
 
+/**
+ * 
+ * Falta información 
+ */
 export async function placementId (token: string) {
 
   try {
@@ -244,6 +256,10 @@ export async function placementId (token: string) {
 
 }
 
+/**
+ * 
+ * Falta información 
+ */
 export async function publisherId (token: string) {
 
   try {
@@ -275,6 +291,10 @@ export async function publisherId (token: string) {
 
 }
 
+/**
+ * 
+ * Falta información 
+ */
 export async function siteId (token: string) {
 
   try {

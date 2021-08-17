@@ -13,6 +13,7 @@ const api_local = 'http://dsp-sandbox.localhost.com';
 
 const front_production = 'https://adsmovil-beeswax.herokuapp.com';
 const front_develop = 'https://dev-adsmovil.herokuapp.com';
+const front_localhost = 'http://localhost:8080';
 //const front_local = 'http://dsp-frontend.localhost.com';
 
 let baseUrl = "";
@@ -24,6 +25,11 @@ switch (location.origin) {
     case front_develop:
         baseUrl = api_develop;
         break;
+
+    case front_localhost:
+        baseUrl = api_develop;
+        break;
+
     default:
         baseUrl = api_local;
 }

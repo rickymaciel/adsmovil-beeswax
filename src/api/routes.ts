@@ -83,6 +83,7 @@ const TARGETING_MODULE_ROUTE = 'api/list/targeting_modules'
 const ENVIROMENT_TYPE_ROUTE = 'api/list/environment_types'
 const ENVIROMENT_TPFRAME_ROUTE = 'api/list/topframes'
 const ENVIROMENT_VIDEO_ROUTE = 'api/list/video_apis'
+const PLATFORM_BANDWITDH = 'api/list/bandwidths'
 const PLATFORM_BROWSER_ROUTE = 'api/list/browsers'
 const PLATFORM_BROWSER_VERSION_ROUTE = 'api/list/browser_versions'
 const PLATFORM_CARRIER_ROUTE = 'api/list/carriers'
@@ -94,6 +95,15 @@ const PLATFORM_OPERATING_SYSTEM_ROUTE = 'api/list/operating_systems'
 const PLATFORM_OPERATING_SYSTEM_VERSION_ROUTE = 'api/list/operating_system_versions'
 const CONTENT_CATEGORY_ROUTE = 'api/list/content_categories'
 const CONTENT_LENGUAGE_ROUTE = 'api/list/languages'
+const CONTENT_RATINGS_ROUTE = 'api/list/content_ratings'
+const NATIVE_NATIVE_LAYOUT_ROUTE = 'api/list/native_layouts'
+const VIDEO_COMPANION_REQUIRED = 'api/list/companion_support'
+const VIDEO_PLAYBACK_METHOD = 'api/list/video_playback_methods'
+const VIDEO_START_DELAY = 'api/list/video_start_delays'
+const VIDEO_PLAYER_SIZE = 'api/list/video_player_sizes'
+const VIDEO_PLACEMENT_TYPE = 'api/list/video_placement_types'
+const SEGMENTS_ROUTE = '/api/segments'
+const SEGMENTS_CATEGORY_ROUTE = 'api/segment_categories'
 
 module.exports = {
     ADVERTISER: {
@@ -139,7 +149,8 @@ module.exports = {
     },
     CONTENT: {
         CONTENT_CATEGORY_ROUTE,
-        CONTENT_LENGUAGE_ROUTE
+        CONTENT_LENGUAGE_ROUTE,
+        CONTENT_RATINGS_ROUTE
     },
     CREATIVES: { 
         CREATIVE_ROUTE,
@@ -227,7 +238,8 @@ module.exports = {
         PLATFORM_DEVICE_MODEL_ROUTE,
         PLATFORM_DEVICE_SCREEN_SIZE_ROUTE,
         PLATFORM_OPERATING_SYSTEM_ROUTE,
-        PLATFORM_OPERATING_SYSTEM_VERSION_ROUTE
+        PLATFORM_OPERATING_SYSTEM_VERSION_ROUTE,
+        PLATFORM_BANDWITDH
     },
     STRATEGIES: {
         STRATEGY_ROUTE,
@@ -249,5 +261,23 @@ module.exports = {
     USER: {
         USER_ROUTE,
         EMAIL_RESEND_ROUTE
+    },
+    MOBILE_APP: {
+        APP_BUNDLE_LIST_ROUTE,
+        APP_ID_ROUTE
+    },
+    NATIVE: {
+        NATIVE_NATIVE_LAYOUT_ROUTE
+    },
+    VIDEO: {
+        VIDEO_COMPANION_REQUIRED,
+        VIDEO_PLAYBACK_METHOD,
+        VIDEO_START_DELAY,
+        VIDEO_PLAYER_SIZE,
+        VIDEO_PLACEMENT_TYPE
+    },
+    SEGMENTS: {
+        SEGMENTS_ROUTE,
+        SEGMENTS_CATEGORY_ROUTE
     }
 }

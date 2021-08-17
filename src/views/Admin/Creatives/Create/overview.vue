@@ -1319,6 +1319,19 @@
 					</v-col> -->
 				</v-row>
 
+				<AssociatedLineForm
+					v-if="hasID"
+					:creative="getCreative"
+				></AssociatedLineForm>
+
+				<v-layout column class="pb-5 pl-5 pr-5">
+					<AssociationTable
+						v-if="hasID"
+						:creative="getCreative"
+						@delete-all-selected="setDeleteAll"
+					></AssociationTable>
+				</v-layout>
+
 				<v-divider class="my-4"></v-divider>
 
 				<!-- Actions -->
@@ -1417,6 +1430,8 @@ import {
 	parseDataCreativeVastInline,
 } from "../../../../utils/fields";
 import { getError } from "../../../../utils/resolveObjectArray";
+import AssociatedLineForm from "./associatedLineForm.vue";
+import AssociationTable from "./../Associations/AssociationTable.vue";
 
 export default Vue.extend({
 	name: "CreativeOverview",
@@ -1458,6 +1473,8 @@ export default Vue.extend({
 		ArrayListItem,
 		VastEvent,
 		ProgressEvent,
+		AssociatedLineForm,
+		AssociationTable,
 	},
 	data: () => ({
 		valid: true,
@@ -1494,15 +1511,17 @@ export default Vue.extend({
 		skip_offset_rules: [],
 		title_rules: [],
 		companion_html_rules: [],
+		delete_all_performe: false,
 	}),
 	created() {},
 	mounted() {
+		console.log("--- Creative::Overview::Mounted", this.creative);
+
 		setTimeout(async () => {
 			await this.loadResources();
 		}, 1000);
 	},
 	beforeDestroy() {
-		console.log("overview::beforeDestroy");
 		this.$store.state.creative.creative = null;
 	},
 	computed: {
@@ -1607,6 +1626,10 @@ export default Vue.extend({
 					value: "Existing",
 				},
 			];
+		},
+
+		isEdit() {
+			return !isNaN(Number(this.getCreative?.id));
 		},
 	},
 	methods: {
@@ -2012,7 +2035,12 @@ export default Vue.extend({
 					);
 
 					if (!(await this.validate())) return;
-
+					if (this.isEdit) {
+						console.log(
+							"--- Lanzar evento Editar::create-creative-image"
+						);
+						break;
+					}
 					this.$emit("create-creative-image", {
 						continue: _continue,
 						creative: creative_image,
@@ -2028,7 +2056,12 @@ export default Vue.extend({
 					);
 
 					if (!(await this.validate())) return;
-
+					if (this.isEdit) {
+						console.log(
+							"--- Lanzar evento Editar::create-creative-vast-inline"
+						);
+						break;
+					}
 					this.$emit("create-creative-vast-inline", {
 						continue: _continue,
 						creative: creative_vast_inline,
@@ -2043,7 +2076,12 @@ export default Vue.extend({
 					);
 
 					if (!(await this.validate())) return;
-
+					if (this.isEdit) {
+						console.log(
+							"--- Lanzar evento Editar::create-creative-jstag"
+						);
+						break;
+					}
 					this.$emit("create-creative-jstag", {
 						continue: _continue,
 						creative: creative_js_tag,
@@ -2059,7 +2097,12 @@ export default Vue.extend({
 					);
 
 					if (!(await this.validate())) return;
-
+					if (this.isEdit) {
+						console.log(
+							"--- Lanzar evento Editar::create-creative-iframetag"
+						);
+						break;
+					}
 					this.$emit("create-creative-iframetag", {
 						continue: _continue,
 						creative: creative_iframe_tag,
@@ -2077,7 +2120,12 @@ export default Vue.extend({
 					);
 
 					if (!(await this.validate())) return;
-
+					if (this.isEdit) {
+						console.log(
+							"--- Lanzar evento Editar::create-creative-mraidtag"
+						);
+						break;
+					}
 					this.$emit("create-creative-mraidtag", {
 						continue: _continue,
 						creative: creative_mraid_tag,
@@ -2113,7 +2161,12 @@ export default Vue.extend({
 					);
 
 					if (!(await this.validate())) return;
-
+					if (this.isEdit) {
+						console.log(
+							"--- Lanzar evento Editar::create-creative-html5"
+						);
+						break;
+					}
 					this.$emit("create-creative-html5", {
 						continue: _continue,
 						creative: creative_html5,
@@ -2286,6 +2339,14 @@ export default Vue.extend({
 
 		async validateTag() {
 			return this.$emit("validate-tag");
+		},
+
+		setDeleteAll(value: any) {
+			if (!isNull(value)) {
+				this.delete_all_performe = true;
+			} else {
+				this.delete_all_performe = false;
+			}
 		},
 	},
 });

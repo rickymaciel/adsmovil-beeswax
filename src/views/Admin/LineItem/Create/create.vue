@@ -48,6 +48,7 @@
 								<v-row>
 									<v-col cols="12" lg="2" md="3">
 										<NavTargeting
+											:targeting="targeting"
 											:current_tab="currentTabTargeting"
 											@update-selected-tab-index="
 												updateSelectedTabTargetingIndex
@@ -61,7 +62,7 @@
 											justify="between"
 											align="center"
 											color="transparent"
-											elevation="2"
+											elevation="0"
 											tile
 											flat
 										>
@@ -97,8 +98,25 @@
 											<Environment
 												v-if="currentTabTargeting === 2"
 												:predicates="getPredicateIds"
+												:data_variables="
+													data_variables.environment
+												"
 												:environment="
 													targeting.environment
+												"
+												@add-item="addItem"
+												@add-item-unique="addItemUnique"
+												@remove-item="removeItem"
+												@remove-item-unique="
+													removeItemUnique
+												"
+												@clear-app-site="clearHandler"
+												@update-data-var="
+													updateDataVariables
+												"
+												@add-comma="addCommaHandler"
+												@update-item-unique="
+													updateItemUnique
 												"
 											></Environment>
 
@@ -147,6 +165,44 @@
 													updateItemUnique
 												"
 											></Geo>
+
+											<Platform
+												v-if="currentTabTargeting === 5"
+												:predicates="getPredicateIds"
+												:data_variables="
+													data_variables.platform
+												"
+												:platform="targeting.platform"
+												@add-item="addItem"
+												@add-item-unique="addItemUnique"
+												@remove-item="removeItem"
+												@remove-item-unique="
+													removeItemUnique
+												"
+												@clear-app-site="clearHandler"
+												@update-data-var="
+													updateDataVariables
+												"
+												@add-comma="addCommaHandler"
+												@update-item-unique="
+													updateItemUnique
+												"
+											></Platform>
+
+											<Time
+												v-if="currentTabTargeting === 6"
+												:predicates="getPredicateIds"
+												:data_variables="
+													data_variables.time
+												"
+												:time="targeting.time"
+												@update-selected-checked="
+													updateSelectedChecked
+												"
+												@update-selected-predicate="
+													updateSelectedPredicate
+												"
+											></Time>
 										</v-card>
 									</v-col>
 								</v-row>
@@ -187,6 +243,9 @@
 													rounded
 													color="secondary"
 													class="ma-2 px-8"
+													@click="
+														handleTargetingSubmit
+													"
 												>
 													{{ $t("save") }}
 												</v-btn>
@@ -220,6 +279,7 @@
 								@line-item-activate="handleActivate"
 								@cancel="handleCancel"
 								:line_item="line_item"
+								:entities="getAssociatedCreatives"
 							></AssociatedCreativesForm>
 						</v-layout>
 					</v-tab-item>
@@ -232,7 +292,7 @@
 <script lang="ts">
 import CreateTabs from "./createTabs.vue";
 import Overview from "./overview.vue";
-import NavTargeting from "../targetings/targetingNav.vue";
+import NavTargeting from "../targetings/tab_contents/targetingNav.vue";
 import Vue from "vue";
 import {
 	AdvertiserFilters,
@@ -250,6 +310,8 @@ import {
 	initTargeting,
 	initDataVariables,
 	getTargetingIDByValue,
+	initHardCoreLineItem,
+	getLineItemResources,
 } from "../../../../utils/initData";
 import Alertize from "../../../../components/Alertize.vue";
 import {
@@ -268,12 +330,14 @@ import AppSite from "../targetings/appSite.vue";
 import Content from "../targetings/content.vue";
 import Environment from "../targetings/environment.vue";
 import Geo from "../targetings/geo.vue";
+import Platform from "../targetings/platform.vue";
 import Exchange from "../targetings/exchange.vue";
+import Time from "../targetings/time.vue";
 import { prepareTargetingDataCreate } from "../../../../utils/resolveObjectArray";
 import AssociatedCreativesForm from "../creatives/associatedCreatives.vue";
 
 // Configs Optimization Strategy
-const OPTIMIZATION_BY_LINE = "By Line";
+// const OPTIMIZATION_BY_LINE = "By Line";
 const OPTIMIZATION_BY_CAMPAIGN = "By Campaign";
 
 // Configs Bid Strategy
@@ -294,8 +358,8 @@ const LINE_ITEM_TYPE_VIDEO = "Video";
 
 // Configs Line Pacing
 const LINE_PACING_DAILY = "Daily";
-const LINE_PACING_ASAP = "ASAP";
-const LINE_PACING_LIFETIME = "Lifetime";
+// const LINE_PACING_ASAP = "ASAP";
+// const LINE_PACING_LIFETIME = "Lifetime";
 
 // Configs Targeting Predicates
 const EXCLUDED = "None";
@@ -315,6 +379,8 @@ export default Vue.extend({
 		Environment,
 		Geo,
 		Exchange,
+		Time,
+		Platform,
 		AssociatedCreativesForm,
 	},
 	data: () => ({
@@ -329,6 +395,7 @@ export default Vue.extend({
 		targeting_predicates: [],
 
 		// Line Item Data
+		//line_item: initHardCoreLineItem(),
 		line_item: initLineItem(),
 
 		// Targeting Data
@@ -336,100 +403,7 @@ export default Vue.extend({
 
 		targeting_expressions: null,
 
-		resources: {
-			campaigns: [],
-			advertisers: [],
-			line_item_types: [],
-			creative_weighting_methods: [],
-			budget_types: [],
-			bid_strategies: [],
-			strategies: [],
-			strategies_filtered: [],
-			bidding_shadings: [],
-			campaigns_pacing: [],
-			optimization_strategies: [],
-			unit_times: [],
-			line_pacings: [],
-			selected_campaign: null,
-			budget_display: "Total",
-			fields: {
-				budget: {
-					required: true,
-					show: true,
-					disabled: false,
-				},
-				budget_type_id: {
-					required: true,
-					show: true,
-					disabled: false,
-				},
-				fix_cpm: {
-					required: false,
-					show: false,
-					disabled: false,
-				},
-				bid_shading_id: {
-					required: false,
-					show: false,
-					disabled: false,
-				},
-				bid_strategy_id: {
-					required: true,
-					show: true,
-					disabled: false,
-				},
-				strategy_id: {
-					required: false,
-					show: false,
-					disabled: false,
-				},
-				line_pacing_id: {
-					required: true,
-					show: false,
-					disabled: true,
-				},
-				daily_budget: {
-					required: false,
-					show: false,
-					disabled: true,
-				},
-				cpm_bid: {
-					required: false,
-					show: false,
-					disabled: true,
-				},
-				target_ecpm: {
-					required: false,
-					show: false,
-					disabled: false,
-				},
-				target_ecpc: {
-					required: false,
-					show: false,
-					disabled: true,
-				},
-				target_ctr: {
-					required: false,
-					show: false,
-					disabled: false,
-				},
-				target_ecpcv: {
-					required: false,
-					show: false,
-					disabled: false,
-				},
-				target_cpcv: {
-					required: false,
-					show: false,
-					disabled: false,
-				},
-				target_vcr: {
-					required: false,
-					show: false,
-					disabled: false,
-				},
-			},
-		},
+		resources: getLineItemResources(),
 	}),
 	created() {
 		this.items = [];
@@ -445,19 +419,37 @@ export default Vue.extend({
 	},
 	mounted() {},
 	computed: {
+		getLineItem() {
+			return this.line_item;
+		},
 		getItems() {
 			this.updateItems;
 			return this.items;
 		},
 		updateItems() {
 			this.items = [
-				{ key: 0, tab: "Overview", disabled: false },
-				{ key: 1, tab: "Targeting", disabled: !this.isCreatedLineItem },
-				{ key: 2, tab: "Modifiers / Models", disabled: true },
+				{
+					key: 0,
+					tab: "Overview",
+					disabled: false,
+				},
+				{
+					key: 1,
+					tab: "Targeting",
+					//disabled: false,
+					disabled: !this.isCreatedLineItem,
+				},
+				{
+					key: 2,
+					tab: "Modifiers / Models",
+					//disabled: false,
+					disabled: !this.isCreatedLineItem,
+				},
 				{
 					key: 3,
 					tab: "Creatives",
-					disabled: !this.hasTargetingExpressions,
+					//disabled: false,// TODO comentar esto
+					disabled: !this.isCreatedLineItem,
 				},
 			];
 		},
@@ -998,6 +990,7 @@ export default Vue.extend({
 		},
 
 		async addFrecuencyCaps() {
+			if (this.line_item.frequency_caps.length >= 3) return;
 			this.line_item.frequency_caps.push({
 				impressions: undefined,
 				every_time: undefined,
@@ -1380,7 +1373,7 @@ export default Vue.extend({
 			}
 
 			/**
-			 * targeting.{tab}.{app_bundle_list}.value
+			 * targeting.{tab}.{key}.value
 			 */
 
 			if (!this.targeting[params.tab][params.key].value) return;
@@ -1405,7 +1398,7 @@ export default Vue.extend({
 			if (isArray(this.targeting[params.tab][params.key].value)) {
 				const _index = this.targeting[params.tab][
 					params.key
-				].value.findIndex((v: Number) => v === params.value);
+				].value.findIndex((v: any) => v == params.value);
 
 				if (_index > -1) {
 					this.targeting[params.tab][params.key].value.splice(
@@ -1475,6 +1468,42 @@ export default Vue.extend({
 		}) {
 			this.targeting[params.tab][params.key].value =
 				this.targeting[params.tab][params.key].value.concat(",");
+		},
+
+		/**
+		 * Update Selected Number Range
+		 */
+		updateSelectedChecked(params: { tab: any; key: any; value: any }) {
+			const finded = find(
+				this.targeting[params.tab][params.key].targeting_terms,
+				{
+					value: params.value,
+				}
+			);
+
+			if (!isEmpty(finded)) {
+				this.targeting[params.tab][params.key].targeting_terms = filter(
+					this.targeting[params.tab][params.key].targeting_terms,
+					function (s) {
+						return s.value !== params.value;
+					}
+				);
+			} else {
+				this.targeting[params.tab][params.key].targeting_terms.push({
+					value: params.value,
+					targeting_key_id:
+						this.targeting[params.tab][params.key].targeting_key_id,
+					targeting_predicate_id: this.getPredicateIds.INCLUDED,
+				});
+			}
+		},
+
+		updateSelectedPredicate(params: { tab: any; key: any; value: any }) {
+			this.targeting[params.tab][params.key].targeting_terms.forEach(
+				(t: { targeting_predicate_id: any }) => {
+					t.targeting_predicate_id = params.value;
+				}
+			);
 		},
 	},
 	watch: {

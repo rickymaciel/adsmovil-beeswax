@@ -8,3 +8,17 @@
         caret-color: $secondary !important;
     }
 }
+
+.success--text {
+    .v-input__control {
+        color: $success !important;
+        caret-color: $success !important;
+    }
+}
+
+.danger--text {
+    .v-input__control {
+        color: $error !important;
+        caret-color: $error !important;
+    }
+}

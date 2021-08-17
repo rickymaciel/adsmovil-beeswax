@@ -116,8 +116,6 @@ class LineItemService {
 
             const url = getURL(filter, option)
 
-            console.log('LineItemService::all', { filters: params.filters, options: params.options, url: url, filter: filter, option: option });
-
             const response = await AxiosGet(`${LINE_ITEM_ROUTE}/${url}`);
             return Promise.resolve(GetData(response));
         } catch (error) {

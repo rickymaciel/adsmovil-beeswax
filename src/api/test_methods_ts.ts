@@ -15,13 +15,13 @@ import { account, forgot, initialize, login, logout, permissions, profile, reset
 //import { create, update } from '@/api/creatives/video/VastWrapper'
 //import { all, paginated, list } from '@/api/creatives/CreativeApi'
 //import { create, update, show, all, paginated, list } from '@/api/creatives/AddonApi'
-import { all, paginated, list } from '@/api/creatives/AssetApi'
+import { all, paginated, list, createAsset } from '@/api/creatives/AssetApi'
 //import { create, deleted } from '@/api/creatives/AssociateApi'
 //import { all, paginated, list, show } from '@/api/targeting/KeyApi'
 //import { create, all, paginated, list, show, update } from '@/api/targeting/TargetingApi'
 import { UserInit } from '@/interfaces/user'
 //import { check } from './creatives/TagApi'
-//import { adPositions, appInventory, interstitialTypes, inventorySources, dealIdList, placementId, siteId, publisherId } from '@/api/inventory/InventoryApi'
+//import { adPositions, appInventory, interstitialTypes, inventorySources, dealIdList, placementId, siteId, publisherId } from '@/api/modifiers_options/inventory/InventoryApi'
 //import { domainList } from '@/api/domain/DomainApi'
 //import { creativeSize } from '@/api/ad_size/AdSizeApi'
 //import { countries, lat_long, locationTypes, regions } from '@/api/geo/GeoApi'
@@ -56,8 +56,11 @@ import { UserInit } from '@/interfaces/user'
 //import { list } from '@/api/targeting/LocationTypeApi'
 //import { list } from '@/api/targeting/ModuleApi'
 //import { enviroments } from '@/api/enviroment/EnviromentApi'
-//import { browsers, browserVersions, deviceModels, deviceScreenSize, operatingSystemVersion, platforms } from '@/api/platform/PlatformApi'
-//import { contents } from '@/api/content/ContentApi'
+import { browsers, browserVersions, deviceModels, deviceScreenSize, operatingSystemVersion, platforms } from '@/api/platform/PlatformApi'
+import { contents } from '@/api/content/ContentApi'
+import { mobileApp } from '@/api/modifiers_options/mobile_app/mobileAppAPI'
+import { nativeLayoutsList } from '@/api/modifiers_options/native/nativeAPI'
+import { videoList } from '@/api/modifiers_options/video/videoAPI'
 
 /* -------- BEGIN AUTH -------- */
 const test_login = {
@@ -1607,6 +1610,7 @@ const test_change_status_line_items = {
 /* -------- END LINE ITEMS -------- */
 
 /* -------- BEGIN CREATIVES -------- */
+
 /*const test_creative_method = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
@@ -2711,26 +2715,7 @@ const test_delete_association = {
   }
 }
 */
-const test_get_creatives_assets = {
-  data: function () {
-    const promise = new Promise<any>((resolve, reject) => {
-      const token = test_login.data()
-      resolve(token)
-    }).then(async value => {
-      // const data_creatives = await all(value,{}, { sort: 'name', order: 'asc' })
-      // const data_creatives = await paginated(value, { page: 1, limit: 15 }, { name: 'banner' }, { sort: 'name', order: 'asc' })
-      const data_creatives = await list(value, {}, { sort: 'name', order: 'asc' })
-      // const data_creatives = await show(59, value)
 
-      console.log('CRATIVES ASSETS', data_creatives)
-
-      return data_creatives
-    }).catch(error => {
-      console.log('EXCEPTION: ', error)
-      return null
-    })
-  }
-}
 /* -------- END CREATIVES -------- */
 
 /* -------- BEGIN CREATIVES ADDONS -------- */
@@ -2822,6 +2807,54 @@ const test_get_addons = {
 }
 */
 /* -------- END CREATIVES ADDONS -------- */
+
+/* -------- BEGIN CREATIVES ASSET ----------*/
+
+const test_get_creatives_assets = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      // const data_creatives = await all(value,{}, { sort: 'name', order: 'asc' })
+      // const data_creatives = await paginated(value, { page: 1, limit: 15 }, { name: 'banner' }, { sort: 'name', order: 'asc' })
+      const data_creatives = await list(value, {}, { sort: 'name', order: 'asc' })
+      // const data_creatives = await show(59, value)
+
+      console.log('CRATIVES ASSETS', data_creatives)
+
+      return data_creatives
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_create_asset = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+
+      const asset = {
+        advertiser_id: 9,
+      }
+
+      const data_asset = await createAsset(asset, value)
+
+      console.log('CREATE ASSET', data_asset)
+
+      return data_asset
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return false
+    })
+  }
+}
+
+/* -------- END CREATIVES ASSET ----------*/
 
 /* -------- BEGIN TARGETING -------- */
 
@@ -3018,7 +3051,7 @@ const test_targeting = {
 /* -------- END ENVIROMENT -------- */
 
 /* -------- BEGIN PLATFORM -------- */
-/*const test_platform = {
+const test_platform = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
@@ -3028,8 +3061,8 @@ const test_targeting = {
       // const data_platform = await browserVersions(value)
       // const data_platform = await deviceModels(value)
       // const data_platform = await deviceScreenSize(value)
-      const data_platform = await operatingSystemVersion(value)
-      // const data_platform = await platforms('operating_system', value)
+      //const data_platform = await operatingSystemVersion(value)
+      const data_platform = await platforms('bandwidth', value)
 
       console.log('PLATFORM', data_platform)
 
@@ -3039,27 +3072,112 @@ const test_targeting = {
       return null
     })
   }
-}*/
+}
 /* -------- END PLATFORM -------- */
 
 /* -------- BEGIN CONTENT -------- */
-/*const test_content = {
+const test_content = {
   data: function () {
     const promise = new Promise<any>((resolve, reject) => {
       const token = test_login.data()
       resolve(token)
     }).then(async value => {
-      const data_content = await contents('language', value)
+      //const data_content_language = await contents('language', value)
+      //const data_content_content_category = await contents('content_category', value)
+      const data_content_content_ratings = await contents('content_ratings', value)
+      console.log('CONTENT', data_content_content_ratings)
 
-      console.log('CONTENT', data_content)
-
-      return data_content
+      return data_content_content_ratings
     }).catch(error => {
       console.log('EXCEPTION: ', error)
       return null
     })
   }
-}*/
+}
 /* -------- END CONTENT -------- */
 
-export default test_get_creatives_assets 
+/* -------- BEGIN MOBILE_APP ------- */
+
+const test_app_bundle_list = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_mobile_app = await mobileApp('app_bundle_list', value)
+      console.log('MOBILE_APP', data_mobile_app)
+
+      return data_mobile_app
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+const test_app_id_list = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_mobile_app = await mobileApp('app_id_list', value)
+      console.log('MOBILE_APP', data_mobile_app)
+
+      return data_mobile_app
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+/* -------- END MOBILE_APP --------- */
+
+/* -------- BEGIN NATIVE --------- */
+
+const test_native_layouts_list = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+      const data_native = await nativeLayoutsList(value)
+      console.log('NATIVE_LAYOUTS', data_native)
+
+      return data_native
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+
+/* -------- END NATIVE --------- */
+
+/* -------- BEGIN VIDEO --------- */
+const test_video_list = {
+  data: function () {
+    const promise = new Promise<any>((resolve, reject) => {
+      const token = test_login.data()
+      resolve(token)
+    }).then(async value => {
+
+      //const data_companion_required = await videoList('companion_required', value)
+      //const data_playback_method = await videoList('playback_method', value)
+      //const data_start_delay = await videoList('start_delay', value)
+      //const data_player_size = await videoList('player_size', value)
+      const data_video_placement_type = await videoList('video_placement_type', value)
+
+      console.log('VIDEO', data_video_placement_type)
+
+      return data_video_placement_type
+    }).catch(error => {
+      console.log('EXCEPTION: ', error)
+      return null
+    })
+  }
+}
+/* -------- END VIDEO --------- */
+
+export default test_platform

@@ -305,7 +305,14 @@
 				await this.$store.dispatch(
 					"creative/associateLineItem",
 					await this.prepareAssociationDataCreate()
-				);
+				).then( (result) => {
+					this.$refs.form.reset();
+				},
+				(error) => {
+					console.error("-- associateLineItem::error", error);
+				}).catch( (error) => {
+					console.error("handleAction:associateLineItem:catch", error);
+				});
 			},
 			async prepareAssociationDataCreate() {
 				return {

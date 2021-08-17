@@ -78,14 +78,15 @@ export function prepareTargetingDataCreate(targeting: any) {
 
     var targeting_terms: Array<Term> = [];
     const keys = Object.keys(targeting);
+    console.log('prepareTargetingDataCreate', {keys});
 
     keys.forEach((key) => {
-        if (key === 'app_site') {
 
             var t = targeting[key];
+            console.log('prepareTargetingDataCreate', {t});
 
-            Object.keys(t).forEach(appSiteKey => {
-                const term = t[appSiteKey];
+            Object.keys(t).forEach(tab => {
+                const term = t[tab];
                 if (!isEmpty(term.targeting_terms)) {
                     if (isArray(term.targeting_terms[0].value)) {
                         term.targeting_terms[0].value.forEach((v: any) => {
@@ -102,31 +103,6 @@ export function prepareTargetingDataCreate(targeting: any) {
                     }
                 }
             });
-        }
-
-        if (key === 'geo') {
-
-            var t = targeting[key];
-
-            Object.keys(t).forEach(geoKey => {
-                const term = t[geoKey];
-                if (!isEmpty(term.targeting_terms)) {
-                    if (isArray(term.targeting_terms[0].value)) {
-                        term.targeting_terms[0].value.forEach((v: any) => {
-                            targeting_terms.push({
-                                value: v,
-                                targeting_key_id: term.targeting_terms[0].targeting_key_id,
-                                targeting_predicate_id: term.targeting_terms[0].targeting_predicate_id
-                            } as Term);
-                        });
-                    } else {
-                        term.targeting_terms.forEach((targeting_term: Term) => {
-                            targeting_terms.push(targeting_term);
-                        });
-                    }
-                }
-            });
-        }
     });
 
     return targeting_terms

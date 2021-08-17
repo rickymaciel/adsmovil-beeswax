@@ -1,24 +1,16 @@
 import { success, error } from '@/api/handlers/HandlerResponse'
 import { GetMessage, GetErrors } from '@/api/handlers/HandlerError'
 import { AxiosGet } from '@/api/AxiosService'
-import { forEach } from 'lodash'
+import { forEach, isEmpty } from 'lodash'
 import { Content } from '@/interfaces/content'
 
 const ROUTES = require('../routes').CONTENT
 
 export async function contents (key: string, token: string) {
-  let url = ''
 
-  switch (key) {
-  case 'content_category':
-    url = ROUTES.CONTENT_CATEGORY_ROUTE
-    break
-  case 'language':
-    url = ROUTES.CONTENT_LENGUAGE_ROUTE
-    break
-  default:
-    return error(`The key "${key}" is invalid`, [])
-  }
+  let url = getURL(key);
+
+  if(isEmpty(url)) return error(`The key "${key}" is invalid`, [])
 
   try {
     const response = await AxiosGet(url, token)
@@ -49,4 +41,23 @@ export async function contents (key: string, token: string) {
     console.log('EXCEPTION: ', err)
     return error(GetMessage(err), GetErrors(err))
   }
+}
+
+function getURL(key: string): string {
+  let url = ''
+
+  switch (key) {
+    case 'content_category':
+      url = ROUTES.CONTENT_CATEGORY_ROUTE
+      break
+    case 'language':
+      url = ROUTES.CONTENT_LENGUAGE_ROUTE
+      break
+    case 'content_ratings':
+      url = ROUTES.CONTENT_RATINGS_ROUTE
+      break
+    default:
+      return ''
+  }
+  return url;
 }

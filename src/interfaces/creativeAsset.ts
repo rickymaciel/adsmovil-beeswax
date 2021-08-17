@@ -27,6 +27,10 @@ export interface Asset {
   advertiser: Advertiser
 }
 
+export interface AssetDataCreate {
+  advertiser_id: number,
+}
+
 export interface Metadata {
   width: number,
   height: number,

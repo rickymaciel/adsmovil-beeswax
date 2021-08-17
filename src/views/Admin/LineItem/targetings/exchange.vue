@@ -4,15 +4,15 @@
 		<v-list-item>
 			<TabItem
 				:appLists="data_variables.inventory_source"
-				:attributeList="data_variables.inventory_source_attributes"
+				:predicates="predicates"
+				:attributeList="data_variables.inventory_source"
 				item_text="value"
 				item_value="id"
-				hint="Filter Inventory Source"
+				hint="Inventory Source"
 				reference="inventory_source"
-				placeholder="Filter Inventory Source"
+				placeholder="Select Inventory Source"
 				label="Inventory Source"
 				:targeting_key_data="exchange.inventory_source"
-				:search_input_sync="inventorySourceTerm"
 				:persistent_hint="true"
 				:colapse_selection="true"
 				:filterable="false"
@@ -24,9 +24,7 @@
 				:dense="false"
 				:multiple="true"
 				:small_chips="true"
-				:predicates="predicates"
 				@focus="getComboData('inventory_source')"
-				@sync="syncData('inventory_source', $event)"
 				@clear="clearHandler('inventory_source')"
 				@remove-item="removeHandler('inventory_source', $event, true)"
 			></TabItem>
@@ -69,16 +67,8 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
-import CardTextField from "../../../../components/Content/CardTextField.vue";
-import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
-import CardSwitch from "../../../../components/Content/CardSwitch.vue";
-import TermList from "./termList.vue";
-import TermListUnique from "./termListUnique.vue";
-import TargetingTabItem from "./targetingTabItem.vue";
-import TargetingTabItemUnique from "./targetingTabItemUnique.vue";
-import TargetingTabItemSplit from "./targetingTabItemSplit.vue";
 import TabItem from "./tab_items/TabItem.vue";
-import { isEmpty, debounce } from "lodash";
+import { isEmpty } from "lodash";
 
 export default Vue.extend({
 	name: "Exchange",
@@ -101,14 +91,6 @@ export default Vue.extend({
 		},
 	},
 	components: {
-		CardTextField,
-		CardAutocomplete,
-		CardSwitch,
-		TermList,
-		TermListUnique,
-		TargetingTabItem,
-		TargetingTabItemUnique,
-		TargetingTabItemSplit,
 		TabItem,
 	},
 	data: () => ({
@@ -123,18 +105,7 @@ export default Vue.extend({
 		setLoading(_loading: Boolean) {
 			this.$store.state.proccess.loading_field = _loading;
 		},
-		getDisplayNameByID(key: string, id: any) {
-			let displayName = "";
 
-			const _data = this.data_variables[key].find(
-				(app: any) => app.id === id
-			);
-			if (_data) {
-				displayName = `${_data.value} (${id})`;
-			}
-
-			return displayName;
-		},
 		async getComboData(key: string) {
 			try {
 				let params = {};
@@ -164,7 +135,7 @@ export default Vue.extend({
 						tab: this.tab,
 						key: key,
 						params: params,
-						data: await this.dispatchAppSiteByKey(key, params),
+						data: await this.dispatchTargetingKey(key, params),
 					});
 
 					this.setLoading(false);
@@ -174,24 +145,11 @@ export default Vue.extend({
 				this.setLoading(false);
 			}
 		},
-		async updateValues(key: string, items: Array<string>) {
-			this.$emit("update-item-unique", {
-				tab: this.tab,
-				key: key,
-				items: items,
-			});
-		},
-		adComma(key: any) {
-			this.$emit("add-comma", {
-				tab: this.tab,
-				key: key,
-			});
-		},
-		async dispatchSearchByTerm(params: any) {
-			return this.$store.dispatch("targeting/getSearchByTerm", params);
-		},
-		async dispatchAppSiteByKey(key: String, object?: any) {
-			return this.$store.dispatch("targeting/getAppSitesByKey", {
+		// async dispatchSearchByTerm(params: any) {
+		// 	return this.$store.dispatch("targeting/getSearchByTerm", params);
+		// },
+		async dispatchTargetingKey(key: String, object?: any) {
+			return this.$store.dispatch("targeting/getTargetingKey", {
 				key: key,
 				object: object,
 			});

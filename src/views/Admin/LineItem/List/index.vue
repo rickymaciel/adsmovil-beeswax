@@ -53,8 +53,8 @@
 			} as LineItemPaginated,
 			filters: {} as LineItemFilters,
 			options: {
-				sort: "",
-				order: "asc"
+				sort: "id",
+				order: "desc"
 			} as LineItemOptions,
 		}),
 		created() {},
@@ -75,7 +75,7 @@
 				) {
 					return [];
 				}
-				return result.data.sort(function(a,b){return b.id-a.id});
+				return result.data;
 			},
 			prepareTableHeaders() {
 				return [
@@ -186,7 +186,7 @@
 						budget: entity?.budget ? Number(entity?.budget) : undefined,
 						start_date: entity?.start_date ? this.moment(entity?.start_date).format("YYYY-MM-DD HH:mm:ss") : undefined,
 						end_date: entity?.end_date ? this.moment(entity.end_date).format("YYYY-MM-DD HH:mm:ss") : undefined,
-						assosiated_creatives: entity?.assosiated_creatives ? Number(entity?.assosiated_creatives) : undefined, // TODO REFACTORIZAR
+						assosiated_creatives: entity?.assosiated_creatives ? Number(entity?.assosiated_creatives) : undefined,
 						active: entity?.active ? true : false,
 						budget_remaining: entity?.budget_remaining ? Number(entity?.budget_remaining) : undefined,
 						winning:  entity?.winning ? Number(entity?.winning) : undefined,

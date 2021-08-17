@@ -17,6 +17,7 @@
 			validate-on-blur
 			:true-value="true_value"
 			:false-value="false_value"
+			:disabled="disabled"
 		>
 			<template v-slot:label>
 				<span :class="{ 'mx-2': !inset }">{{ label }}</span>
@@ -26,52 +27,56 @@
 </template>
 
 <script lang="ts">
-	export default {
-		name: "CardSwitch",
-		model: {
-			prop: "model_data",
-			event: "change",
+export default {
+	name: "CardSwitch",
+	model: {
+		prop: "model_data",
+		event: "change",
+	},
+	props: {
+		model_data: {},
+		label: {
+			type: String,
+			default: "",
 		},
-		props: {
-			model_data: {},
-			label: {
-				type: String,
-				default: "",
+		customClass: {
+			type: String,
+			default: "v-input--reverse--column",
+		},
+		color: {
+			type: String,
+			default: "success",
+		},
+		inset: {
+			type: Boolean,
+			default: true,
+		},
+		true_value: {
+			default: true,
+		},
+		false_value: {
+			default: false,
+		},
+		disabled: {
+			type: Boolean,
+			default: false,
+		},
+	},
+	data: function () {
+		return {};
+	},
+	mounted() {},
+	computed: {
+		modelData: {
+			set(val: any) {
+				this.$emit("change", val);
 			},
-			customClass: {
-				type: String,
-				default: "v-input--reverse--column",
-			},
-			color: {
-				type: String,
-				default: "success",
-			},
-			inset: {
-				type: Boolean,
-				default: true,
-			},
-			true_value: {
-				default: true,
-			},
-			false_value: {
-				default: false,
+			get() {
+				return this.model_data;
 			},
 		},
-		data: function () {
-			return {};
-		},
-		mounted() {},
-		computed: {
-			modelData: {
-				set(val: any) {
-					this.$emit("change", val);
-				},
-				get() {
-					return this.model_data;
-				},
-			},
-		},
-		methods: {},
-		watch: {},
-	};
+	},
+	methods: {},
+	watch: {},
+};
 </script>

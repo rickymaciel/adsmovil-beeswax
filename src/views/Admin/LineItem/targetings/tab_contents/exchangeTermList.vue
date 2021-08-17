@@ -55,45 +55,45 @@
 	</v-list>
 </template>
 <script lang="ts">
-	import Vue from "vue";
-	import CardSwitch from "../../../../components/Content/CardSwitch.vue";
+import Vue from "vue";
+import CardSwitch from "../../../../../components/Content/CardSwitch.vue";
 
-	export default Vue.extend({
-		name: "ExchangeTermList",
-		props: {
-			targeting_terms: {
-				type: Array,
-				default: function () {
-					return [];
-				},
-			},
-			appLists: {
-				type: Array,
-				default: function () {
-					return [];
-				},
+export default Vue.extend({
+	name: "ExchangeTermList",
+	props: {
+		targeting_terms: {
+			type: Array,
+			default: function () {
+				return [];
 			},
 		},
-		components: { CardSwitch },
-		data: () => ({}),
-		async created() {},
-		async mounted() {},
-		computed: {},
-		methods: {
-			getDisplayNameByID(id: any) {
-				let displayName = "";
-
-				const app = this.appLists.find((app: any) => app.id == id);
-				if (app) {
-					displayName = `${app.value} (${id})`;
-				}
-
-				return displayName;
-			},
-
-			removeHandler(value: any) {
-				this.$emit("remove-item", value);
+		appLists: {
+			type: Array,
+			default: function () {
+				return [];
 			},
 		},
-	});
+	},
+	components: { CardSwitch },
+	data: () => ({}),
+	async created() {},
+	async mounted() {},
+	computed: {},
+	methods: {
+		getDisplayNameByID(id: any) {
+			let displayName = "";
+
+			const app = this.appLists.find((app: any) => app.id == id);
+			if (app) {
+				displayName = `${app.value} (${id})`;
+			}
+
+			return displayName;
+		},
+
+		removeHandler(value: any) {
+			this.$emit("remove-item", value);
+		},
+	},
+});
 </script>

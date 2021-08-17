@@ -205,7 +205,7 @@ function parseData (data): Addon {
     type: data.type.type,
     description: data.type.description,
     extra: data.type.extra,
-  } as Type
+  } as Type 
 
   const advertiser = {
     id: data.advertiser.id,

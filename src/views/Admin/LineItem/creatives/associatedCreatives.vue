@@ -106,14 +106,16 @@
 						</v-card>
 					</v-col>
 
-					<!-- Activate -->
-					<v-col
-						v-if="associated_creative"
-						cols="12"
-						sm="12"
-						md="12"
-						lg="12"
-					>
+					<v-layout column class="pb-5 pl-5 pr-5">
+						<AssociationTable
+							:headers="prepareTableHeaders"
+							:line_item="getLineItem"
+							@delete-all-selected="setDeleteAll"
+						></AssociationTable>
+					</v-layout>
+
+					<!-- Actions -->
+					<v-col cols="12" sm="12" md="12" lg="12">
 						<v-card
 							elevation="0"
 							class="pt-8"
@@ -127,6 +129,7 @@
 									color="secondary"
 									class="ma-2 px-8"
 									@click="handleActivate"
+									:disabled="!associated_creative"
 								>
 									{{ $t("save") }}
 								</v-btn>
@@ -161,8 +164,11 @@ import CardTextField from "../../../../components/Content/CardTextField.vue";
 import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
 import { SortingOption } from "../../../../interfaces/paginated";
 import { AssociationDataCreate } from "../../../../interfaces/creativeAssociation";
+import AssociationTable from "./AssociationTable.vue";
+import { isNull, isUndefined } from "lodash";
 
 const DATE_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
+//const DATE_FORMAT = "DD-MM-YYYY";
 
 export default Vue.extend({
 	name: "AssociatedCreativesForm",
@@ -173,44 +179,40 @@ export default Vue.extend({
 				return {};
 			},
 		},
+		entities: {
+			type: Array,
+			default: function () {
+				return [];
+			},
+		},
 	},
 	components: {
 		CardTextField,
 		DatePicker,
 		DividerForm,
 		CardAutocomplete,
+		AssociationTable,
 	},
 	data: () => ({
 		valid: true,
 		filters: {},
 		options: {
-			sort: "",
-			order: "asc",
+			sort: "id",
+			order: "desc",
 		} as SortingOption,
 		association: {} as AssociationDataCreate,
 		creative_id_rules: [],
 		start_date_rules: [],
 		end_date_rules: [],
 		creativeSelected: undefined,
+		delete_all_performe: false,
 		associated_creative: false,
 	}),
-	created() {
-		// if (isNull(this.line_item?.id) || isUndefined(this.line_item?.id)) {
-		// 	this.line_item = this.getLineItem;
-		// 	console.log("--- Line Item Restored:", this.line_item);
-		// } else {
-		// 	console.log("--- Line Item Received:", this.line_item);
-		// }
-		this.association.line_item_id = this.line_item.id;
-
-		console.log("--- Line Item Received created:", this.line_item);
-	},
+	created() {},
 	async mounted() {
-		console.log("--- Line Item Received mounted:", this.line_item);
 		this.setLoading(true);
+		await this.dispatchShowLineItem(this.getLineItem?.id);
 		await this.dispatchCreatives();
-		// TODO TEST AFTER REMOVE
-		//await this.dispatchShowLineItem(2);
 		this.setLoading(false);
 	},
 	computed: {
@@ -228,8 +230,8 @@ export default Vue.extend({
 		},
 
 		getMinDate() {
-			if (this.creativeSelected?.start_date) {
-				return this.moment(this.creativeSelected?.start_date).format(
+			if (this.getLineItem?.start_date) {
+				return this.moment(this.getLineItem?.start_date).format(
 					DATE_TIME_FORMAT
 				);
 			}
@@ -245,34 +247,117 @@ export default Vue.extend({
 		},
 
 		getLineItem() {
-			console.log("--- getLineItem", this.line_item);
 			return this.line_item;
+		},
+
+		getEntities(): any[] {
+			if (
+				!isNull(this.getLineItem?.creative_associations) &&
+				!isUndefined(this.getLineItem?.creative_associations)
+			) {
+				return this.getLineItem.creative_associations;
+			}
+			return this.entities;
+		},
+
+		prepareTableHeaders() {
+			return [
+				{
+					text: "Id",
+					align: "center",
+					sortable: false,
+					filterable: false,
+					value: "id",
+				},
+				{
+					text: "Thumbnail",
+					align: "center",
+					sortable: false,
+					filterable: false,
+					value: "thumbnail",
+				},
+				{
+					text: "Creative Id",
+					align: "center",
+					sortable: false,
+					filterable: false,
+					value: "creative_id",
+				},
+				{
+					text: "Creative Name",
+					align: "start",
+					sortable: false,
+					filterable: false,
+					value: "creative_name",
+				},
+				{
+					text: "Size",
+					align: "start",
+					sortable: false,
+					filterable: false,
+					value: "size",
+				},
+				{
+					text: "Start Date",
+					align: "center",
+					sortable: false,
+					filterable: false,
+					value: "start_date",
+				},
+				{
+					text: "End Date",
+					align: "center",
+					sortable: false,
+					filterable: false,
+					value: "end_date",
+				},
+				{
+					text: "",
+					align: "center",
+					sortable: false,
+					value: "actions",
+					width: "5%",
+				},
+			];
 		},
 	},
 	methods: {
 		async dispatchCreatives() {
-			return this.$store.dispatch("creative/list");
+			return this.$store.dispatch("creative/list", {
+				filters: {
+					creative_type_id: this.getLineItem?.line_item_type_id,
+					advertiser_id: this.getLineItem?.advertiser_id,
+					active: true,
+				},
+				options: {
+					sort: "name",
+					order: "asc",
+				},
+			});
 		},
 
 		async dispatchShowLineItem(id: any) {
-			console.log("--- dispatchShowLineItem(id)", id);
-			return await this.$store.dispatch("line_item/show", id, {
+			return await this.$store.dispatch("line_item/getDataById", id, {
 				root: true,
 			});
 		},
 
 		async handleChangeCreative(id) {
-			this.setLoading(true);
+			if (!isNull(id)) {
+				this.setLoading(true);
+				this.creativeSelected = undefined;
+				await this.$store
+					.dispatch("creative/show", id, {
+						root: true,
+					})
+					.then((result: any) => {
+						this.creativeSelected = result;
+					});
+				this.setLoading(false);
+				return this.creativeSelected;
+			}
 			this.creativeSelected = undefined;
-			await this.$store
-				.dispatch("creative/show", id, {
-					root: true,
-				})
-				.then((result: any) => {
-					this.creativeSelected = result;
-				});
-			this.setLoading(false);
-			return this.creativeSelected;
+			return {};
 		},
 
 		async validate() {
@@ -320,12 +405,27 @@ export default Vue.extend({
 			}
 		},
 
+		/**
+		 * Activate Line Item
+		 * No tocar
+		 */
 		async handleActivate() {
 			this.$emit("line-item-activate");
 		},
 
+		/**
+		 * Cancel
+		 * No tocar
+		 */
 		async handleCancel() {
 			this.$emit("cancel");
+		},
+
+		// Que hace? Preguntar a Saul
+		async handleSave() {
+			if (this.delete_all_performe) {
+				await this.deleteAllAssociations();
+			}
 		},
 
 		async setLoading(_loading: Boolean) {
@@ -333,17 +433,64 @@ export default Vue.extend({
 		},
 
 		async associateCreative() {
-			await this.$store.dispatch(
-				"creative/associateLineItem",
-				await this.parsedData()
-			);
+			await this.$store
+				.dispatch("creative/associateLineItem", await this.parsedData())
+				.then(
+					(result) => {
+						this.$refs.form.reset();
+						this.dispatchShowLineItem(this.line_item?.id);
+					},
+					(error) => {
+						console.error("-- associateCreative::error", error);
+					}
+				)
+				.catch((error) => {
+					console.error(
+						"handleAction:associateCreative:catch",
+						error
+					);
+				});
+		},
+
+		async deleteAllAssociations() {
+			await this.setLoading(true);
+			this.getEntities.forEach((element) => {
+				this.deleteAssociation(element.id);
+			});
+			this.dispatchShowLineItem(this.getLineItem?.id);
+			await this.setLoading(false);
+		},
+
+		async deleteAssociation(id: number) {
+			if (isNull(id) || isUndefined(id)) {
+				return false;
+			}
+			try {
+				await this.$store
+					.dispatch("creative/associateLineItemDelete", id)
+					.then(
+						(result) => {
+							console.log("-- deleteAssociation::success");
+						},
+						(error) => {
+							console.error("-- deleteAssociation::error", error);
+						}
+					)
+					.catch((error) => {
+						console.error(
+							"handleAction:deleteAssociation:catch",
+							error
+						);
+					});
+			} catch (error) {
+				console.error("deleteAssociation", { error: error });
+			}
 		},
 
 		async parsedData() {
 			return {
 				creative_id: this.creativeSelected.id,
 				line_item_id: this.line_item.id,
-				//line_item_id: 50, // TODO REMOVER (VALUE TO TEST CASE)
 				start_date: this.moment(
 					String(this.association.start_date)
 				).format(DATE_TIME_FORMAT),
@@ -351,6 +498,14 @@ export default Vue.extend({
 					DATE_TIME_FORMAT
 				),
 			} as AssociationDataCreate;
+		},
+
+		setDeleteAll(value: any) {
+			if (!isNull(value)) {
+				this.delete_all_performe = true;
+			} else {
+				this.delete_all_performe = false;
+			}
 		},
 	},
 });

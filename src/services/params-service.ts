@@ -4,7 +4,6 @@ class ParamService {
 
     async getParams(paginated?: {}, filters?: {}, options?: {}) {
         var params = {};
-        console.log('getParams', paginated, filters, options);
         if (
             isObject(paginated) &&
             Object.entries(paginated).length
@@ -17,7 +16,7 @@ class ParamService {
         if (isObject(options) && Object.entries(options).length) {
             params["options"] = options;
         } else {
-            params["options"] = { sort: "id", order: "asc"};
+            params["options"] = { sort: "id", order: "desc" };
         }
         return params;
     }

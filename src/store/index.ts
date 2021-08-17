@@ -19,7 +19,6 @@ import CustomListExchangeService from "@/services/custom-list-exchange-service";
 import LineItemService from "@/services/line-item-service";
 import CreativeService from "@/services/creative-service";
 import TargetingService from "@/services/targeting-service";
-
 import { Credential } from "@/interfaces/credential";
 import {
     Advertiser,
@@ -1402,7 +1401,7 @@ export default new Vuex.Store({
                         commit("SET_LINE_ITEM", response);
                         return await Promise.resolve(response);
                     } catch (error) {
-                        catchError(this, error, { to: "lineItemList" });
+                        catchError(this, error, { to: "LineItemList" });
                         return await Promise.reject(error);
                     }
                 },
@@ -1484,44 +1483,26 @@ export default new Vuex.Store({
                         CatcherError(this.dispatch, error, { to: "" });
                         return await Promise.reject(error);
                     }
-                }
-            }
-        },
-        line_item_type: {
-            namespaced: true,
-            state: () => ({
-                line_item_type_list: []
-            }),
-            mutations: {
-                SET_TYPE_LIST(state, _types: [] = []) {
-                    state.line_item_type_list = _types;
-                }
-            },
-            getters: {},
-            actions: {
-                async list({ commit }, payload: { filters: any; options: any }) {
+                },
+
+                async getDataById({ commit }, id: number) {
                     try {
-                        const response = [
-                            {
-                                id: 1,
-                                name: "Line Item Type 1"
-                            },
-                            {
-                                id: 2,
-                                name: "Line Item Type 2"
-                            },
-                            {
-                                id: 3,
-                                name: "Line Item Type 3"
-                            }
-                        ];
-                        commit("SET_TYPE_LIST", response);
+                        let response = await LineItemService.show(id);
+                        /* if (response?.campaign?.id) {
+                            const aux_campaign = await CampaignService.show(
+                                response?.campaign?.id
+                            );
+                            response.campaign = aux_campaign;
+                        } */
+                        commit("SET_LINE_ITEM", response);
                         return await Promise.resolve(response);
                     } catch (error) {
-                        catchError(this, error);
+                        catchError(this, error, { to: "" });
+                        //this.dispatch("proccess/setLoading", false, { root: true });
+                        console.error(error);
                         return await Promise.reject(error);
                     }
-                }
+                },
             }
         },
         creative: {
@@ -1819,6 +1800,27 @@ export default new Vuex.Store({
                         return await Promise.reject(error);
                     }
                 },
+
+                async UpdateCreative(
+                    { commit },
+                    params: { continue: Boolean; creative: any }
+                ) {
+                    try {
+                        const response = await CreativeService.UpdateCreative(
+                            params.creative
+                        );
+                        commit("SET_CREATIVE", response);
+                        notificationService.notifySuccess(this, {
+                            btn_text: params.continue ? i18n.t("continue") : i18n.t("close"),
+                            to: params.continue ? "" : "CreativesIndex"
+                        } as Notification);
+                        return await Promise.resolve(response);
+                    } catch (error) {
+                        catchError(this, error);
+                        return await Promise.reject(error);
+                    }
+                },
+
                 async validateTag({ commit }, tag: TagCheck) {
                     try {
                         const response = await CreativeService.validateTag(tag);
@@ -1829,28 +1831,69 @@ export default new Vuex.Store({
                         return await Promise.reject(error);
                     }
                 },
-                async associateLineItem(
-                    { commit },
-                    association: AssociationDataCreate
-                ) {
+
+                async associateLineItem({ commit }, association: AssociationDataCreate) {
                     try {
-                        const response = await CreativeService.associateLineItem(
-                            association
+                        const response = await CreativeService.associateLineItem(association)
+                        commit('PUSH_LINE_ASSOCIATION', response)
+                        CreateNotification(
+                            this.dispatch,
+                            {
+                                type: MessageTypes.SUCCESS,
+                                title: i18n.t('title-success'),
+                                message: i18n.t('success'),
+                                btn_text: i18n.t('continue'),
+                                to: ""
+                            } as Notification
                         );
-                        commit("PUSH_LINE_ASSOCIATION", response);
-                        CreateNotification(this.dispatch, {
-                            type: MessageTypes.SUCCESS,
-                            title: i18n.t("title-success"),
-                            message: i18n.t("success"),
-                            btn_text: i18n.t("continue"),
-                            to: ""
-                        } as Notification);
                         return await Promise.resolve(response);
                     } catch (error) {
                         catchError(this, error);
                         return await Promise.reject(error);
                     }
                 },
+
+                async associateLineItemDelete({ commit }, id: number) {
+                    try {
+                        const response = await CreativeService.associateLineItemDelete(id);
+                        CreateNotification(
+                            this.dispatch,
+                            {
+                                type: MessageTypes.SUCCESS,
+                                title: i18n.t('title-success'),
+                                message: i18n.t('success'),
+                                btn_text: i18n.t('continue'),
+                                to: ""
+                            } as Notification
+                        );
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        CatcherError(this.dispatch, error, { to: "" });
+                        return await Promise.reject(error)
+                    }
+                },
+
+                async associateLineItemUpdate({ commit }, association: AssociationDataCreate) {
+                    try {
+                        const response = await CreativeService.associateLineItemUpdate(association);
+                        //commit('PUSH_LINE_ASSOCIATION', response)
+                        CreateNotification(
+                            this.dispatch,
+                            {
+                                type: MessageTypes.SUCCESS,
+                                title: i18n.t('title-success'),
+                                message: i18n.t('success'),
+                                btn_text: i18n.t('continue'),
+                                to: ""
+                            } as Notification
+                        );
+                        return await Promise.resolve(response)
+                    } catch (error) {
+                        catchError(this, error);
+                        return await Promise.reject(error)
+                    }
+                },
+
                 async paginated({ commit }, params) {
                     try {
                         const response = await CreativeService.paginated(
@@ -1866,7 +1909,7 @@ export default new Vuex.Store({
                     }
                 },
 
-                async list({ commit }) {
+                async list({ commit }, params) {
                     try {
                         const response = await CreativeService.list();
                         if (isArray(response)) {
@@ -1883,12 +1926,14 @@ export default new Vuex.Store({
 
                 async show({ commit }, id: number) {
                     try {
+                        console.log("--- show(id)::service", id);
                         const response = await CreativeService.show(id);
-                        commit("SET_CREATIVE", response);
-                        return await Promise.resolve(response);
+                        console.log("--- Response::service", response);
+                        commit('SET_CREATIVE', response);
+                        return await Promise.resolve(response)
                     } catch (error) {
-                        CatcherError(this.dispatch, error, { to: "" });
-                        return await Promise.reject(error);
+                        CatcherError(this.dispatch, error, { to: "CreativesIndex" });
+                        return await Promise.reject(error)
                     }
                 }
             }
@@ -1914,12 +1959,12 @@ export default new Vuex.Store({
                         return await Promise.reject(error);
                     }
                 },
-                async getAppSitesByKey(
+                async getTargetingKey(
                     { commit },
                     params: { key: String; object?: { key: String; value: String } }
                 ) {
                     try {
-                        const response = await TargetingService.getAppSitesByKey(
+                        const response = await TargetingService.getTargetingKey(
                             params.key
                         );
                         return await Promise.resolve(

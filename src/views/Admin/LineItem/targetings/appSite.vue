@@ -2,7 +2,7 @@
 	<v-list>
 		<!-- app_bundle_list -->
 		<v-list-item>
-			<TargetingTabItem
+			<TabItem
 				:appLists="data_variables.app_bundle_list"
 				:predicates="predicates"
 				item_text="value"
@@ -12,17 +12,28 @@
 				placeholder="Select App Bundle List"
 				label="App Bundle List"
 				:targeting_key_data="app_site.app_bundle_list"
+				:persistent_hint="true"
+				:colapse_selection="true"
+				:filterable="false"
+				:searchable="true"
+				:unique="false"
+				:chips="true"
+				:clearable="true"
+				:deletable_chips="true"
+				:dense="false"
+				:multiple="true"
+				:small_chips="true"
 				@focus="getComboData('app_bundle_list')"
 				@clear="clearHandler('app_bundle_list')"
 				@remove-item="removeHandler('app_bundle_list', $event)"
-			></TargetingTabItem>
+			></TabItem>
 		</v-list-item>
 
 		<v-divider></v-divider>
 
 		<!-- app_id_list -->
 		<v-list-item>
-			<TargetingTabItem
+			<TabItem
 				:appLists="data_variables.app_id_list"
 				:predicates="predicates"
 				item_text="value"
@@ -32,15 +43,28 @@
 				placeholder="Select App ID List"
 				label="App ID List"
 				:targeting_key_data="app_site.app_id_list"
+				:persistent_hint="true"
+				:colapse_selection="true"
+				:filterable="false"
+				:searchable="true"
+				:unique="false"
+				:chips="true"
+				:clearable="true"
+				:deletable_chips="true"
+				:dense="false"
+				:multiple="true"
+				:small_chips="true"
 				@focus="getComboData('app_id_list')"
 				@clear="clearHandler('app_id_list')"
 				@remove-item="removeHandler('app_id_list', $event)"
-			></TargetingTabItem>
+			></TabItem>
 		</v-list-item>
+
+		<v-divider></v-divider>
 
 		<!-- app_name -->
 		<v-list-item>
-			<TargetingTabItemUnique
+			<TabItem
 				:appLists="data_variables.app_name"
 				:predicates="predicates"
 				:attributeList="data_variables.app_name_attributes"
@@ -48,19 +72,26 @@
 				item_value="id"
 				hint="Search from the 100,000 most commonly seen values"
 				reference="app_name"
-				placeholder="Select App Name"
+				placeholder="Find App Name"
 				label="App Name"
 				:targeting_key_data="app_site.app_name"
 				:search_input_sync="appNameTerm"
 				:persistent_hint="true"
 				:colapse_selection="true"
+				:filterable="true"
+				:searchable="true"
+				:unique="true"
+				:chips="true"
+				:clearable="true"
+				:deletable_chips="true"
+				:dense="false"
+				:multiple="true"
+				:small_chips="true"
 				@sync="syncData('app_name', $event)"
 				@clear="clearHandler('app_name')"
 				@remove-item="removeHandler('app_name', $event, true)"
-			></TargetingTabItemUnique>
+			></TabItem>
 		</v-list-item>
-
-		<v-divider></v-divider>
 
 		<!-- deal_id el usuario puede cargar los id separados por coma.-->
 		<v-list-item>
@@ -82,9 +113,9 @@
 
 		<!-- deal_id_list -->
 		<v-list-item>
-			<TargetingTabItem
-				:predicates="predicates"
+			<TabItem
 				:appLists="data_variables.deal_id_list"
+				:predicates="predicates"
 				item_text="value"
 				item_value="id"
 				hint="Deal Id List"
@@ -92,19 +123,30 @@
 				placeholder="Select Deal Id List"
 				label="Deal Id List"
 				:targeting_key_data="app_site.deal_id_list"
+				:persistent_hint="true"
+				:colapse_selection="true"
+				:filterable="false"
+				:searchable="true"
+				:unique="false"
+				:chips="true"
+				:clearable="true"
+				:deletable_chips="true"
+				:dense="false"
+				:multiple="true"
+				:small_chips="true"
 				@focus="getComboData('deal_id_list')"
 				@clear="clearHandler('deal_id_list')"
 				@remove-item="removeHandler('deal_id_list', $event)"
-			></TargetingTabItem>
+			></TabItem>
 		</v-list-item>
 
 		<v-divider></v-divider>
 
 		<!-- domain_list -->
 		<v-list-item>
-			<TargetingTabItem
-				:predicates="predicates"
+			<TabItem
 				:appLists="data_variables.domain_list"
+				:predicates="predicates"
 				item_text="value"
 				item_value="id"
 				hint="Domain List"
@@ -112,30 +154,54 @@
 				placeholder="Select Domain List"
 				label="Domain List"
 				:targeting_key_data="app_site.domain_list"
+				:persistent_hint="true"
+				:colapse_selection="true"
+				:filterable="false"
+				:searchable="true"
+				:unique="false"
+				:chips="true"
+				:clearable="true"
+				:deletable_chips="true"
+				:dense="false"
+				:multiple="true"
+				:small_chips="true"
 				@focus="getComboData('domain_list')"
 				@clear="clearHandler('domain_list')"
 				@remove-item="removeHandler('domain_list', $event)"
-			></TargetingTabItem>
+			></TabItem>
 		</v-list-item>
 
 		<v-divider></v-divider>
 
 		<!-- placement_id Esta lista permitira el filtro por Placement ID, Site ID, Site Name -->
 		<v-list-item>
-			<TargetingTabItem
-				:predicates="predicates"
+			<TabItem
 				:appLists="data_variables.placement_id"
+				:attributeList="data_variables.placement_id_attributes"
+				:predicates="predicates"
 				item_text="value"
 				item_value="id"
-				hint="Placement Id"
+				hint="Search from the 100,000 most commonly seen values"
 				reference="placement_id"
-				placeholder="Select Placement Id"
+				placeholder="Find Placement Id"
 				label="Placement Id"
 				:targeting_key_data="app_site.placement_id"
-				@focus="getComboData('placement_id')"
+				:persistent_hint="true"
+				:colapse_selection="true"
+				:filterable="true"
+				:searchable="true"
+				:unique="true"
+				:chips="true"
+				:clearable="true"
+				:deletable_chips="true"
+				:dense="false"
+				:multiple="true"
+				:small_chips="true"
+				:search_input_sync="placementIdTerm"
+				@sync="syncData('placement_id', $event)"
 				@clear="clearHandler('placement_id')"
-				@remove-item="removeHandler('placement_id', $event)"
-			></TargetingTabItem>
+				@remove-item="removeHandler('placement_id', $event, true)"
+			></TabItem>
 		</v-list-item>
 
 		<v-divider></v-divider>
@@ -160,9 +226,9 @@
 
 		<!-- publisher_id_list -->
 		<v-list-item>
-			<TargetingTabItem
-				:predicates="predicates"
+			<TabItem
 				:appLists="data_variables.publisher_id_list"
+				:predicates="predicates"
 				item_text="value"
 				item_value="id"
 				hint="Publisher ID List"
@@ -170,43 +236,63 @@
 				placeholder="Select Publisher ID List"
 				label="Publisher ID List"
 				:targeting_key_data="app_site.publisher_id_list"
+				:persistent_hint="true"
+				:colapse_selection="true"
+				:filterable="false"
+				:searchable="true"
+				:unique="false"
+				:chips="true"
+				:clearable="true"
+				:deletable_chips="true"
+				:dense="false"
+				:multiple="true"
+				:small_chips="true"
 				@focus="getComboData('publisher_id_list')"
 				@clear="clearHandler('publisher_id_list')"
 				@remove-item="removeHandler('publisher_id_list', $event)"
-			></TargetingTabItem>
+			></TabItem>
 		</v-list-item>
 
 		<v-divider></v-divider>
 
 		<!-- site -->
 		<v-list-item>
-			<TargetingTabItemUnique
-				:predicates="predicates"
+			<TabItem
 				:appLists="data_variables.site"
 				:attributeList="data_variables.site_attributes"
+				:predicates="predicates"
 				item_text="value"
 				item_value="id"
 				hint="Search from the 100,000 most commonly seen values"
 				reference="site"
-				placeholder="Select Site ID"
+				placeholder="Find Site ID"
 				label="Site ID"
 				:targeting_key_data="app_site.site"
-				:search_input_sync="siteTerm"
 				:persistent_hint="true"
 				:colapse_selection="true"
+				:filterable="true"
+				:searchable="true"
+				:unique="true"
+				:chips="true"
+				:clearable="true"
+				:deletable_chips="true"
+				:dense="false"
+				:multiple="true"
+				:small_chips="true"
+				:search_input_sync="siteTerm"
 				@sync="syncData('site', $event)"
 				@clear="clearHandler('site')"
 				@remove-item="removeHandler('site', $event, true)"
-			></TargetingTabItemUnique>
+			></TabItem>
 		</v-list-item>
 
 		<v-divider></v-divider>
 
 		<!-- site_list -->
 		<v-list-item>
-			<TargetingTabItem
-				:predicates="predicates"
+			<TabItem
 				:appLists="data_variables.site_list"
+				:predicates="predicates"
 				item_text="value"
 				item_value="id"
 				hint="Site ID List"
@@ -214,25 +300,31 @@
 				placeholder="Select Site ID List"
 				label="Site ID List"
 				:targeting_key_data="app_site.site_list"
+				:persistent_hint="true"
+				:colapse_selection="true"
+				:filterable="false"
+				:searchable="true"
+				:unique="false"
+				:chips="true"
+				:clearable="true"
+				:deletable_chips="true"
+				:dense="false"
+				:multiple="true"
+				:small_chips="true"
 				@focus="getComboData('site_list')"
 				@clear="clearHandler('site_list')"
 				@remove-item="removeHandler('site_list', $event)"
-			></TargetingTabItem>
+			></TabItem>
 		</v-list-item>
 	</v-list>
 </template>
 <script lang="ts">
 import Vue from "vue";
-import CardTextField from "../../../../components/Content/CardTextField.vue";
-import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
-import CardSwitch from "../../../../components/Content/CardSwitch.vue";
-import TermList from "./termList.vue";
-import TermListUnique from "./termListUnique.vue";
-import TargetingTabItem from "./targetingTabItem.vue";
-import TargetingTabItemUnique from "./targetingTabItemUnique.vue";
-import TargetingTabItemSplit from "./targetingTabItemSplit.vue";
+import TargetingTabItemSplit from "./tab_contents/targetingTabItemSplit.vue";
 
-import { debounce, isString, isArray, isEmpty } from "lodash";
+import TabItem from "./tab_items/TabItem.vue";
+
+import { debounce, isString, isArray, isEmpty, truncate } from "lodash";
 
 export default Vue.extend({
 	name: "AppSite",
@@ -255,19 +347,14 @@ export default Vue.extend({
 		},
 	},
 	components: {
-		CardTextField,
-		CardAutocomplete,
-		CardSwitch,
-		TermList,
-		TermListUnique,
-		TargetingTabItem,
-		TargetingTabItemUnique,
 		TargetingTabItemSplit,
+		TabItem,
 	},
 	data: () => ({
 		tab: "app_site",
 		appNameTerm: null,
 		siteTerm: null,
+		placementIdTerm: null,
 	}),
 	async created() {},
 	async mounted() {},
@@ -303,7 +390,7 @@ export default Vue.extend({
 					this.$emit("update-data-var", {
 						tab: this.tab,
 						key: key,
-						data: await this.dispatchAppSiteByKey(key),
+						data: await this.dispatchTargetingKey(key),
 					});
 					this.setLoading(false);
 				}
@@ -325,8 +412,8 @@ export default Vue.extend({
 				key: key,
 			});
 		},
-		async dispatchAppSiteByKey(key: String, object?: any) {
-			return this.$store.dispatch("targeting/getAppSitesByKey", {
+		async dispatchTargetingKey(key: String, object?: any) {
+			return this.$store.dispatch("targeting/getTargetingKey", {
 				key: key,
 				object: object,
 			});
@@ -355,11 +442,14 @@ export default Vue.extend({
 			switch (key) {
 				case "app_name":
 					this.appNameTerm = term;
-
 					break;
+
 				case "site":
 					this.siteTerm = term;
+					break;
 
+				case "placement_id":
+					this.placementIdTerm = term;
 					break;
 			}
 		},
@@ -422,7 +512,7 @@ export default Vue.extend({
 			await this.updateWatchByKey("domain_list", val, old);
 		},
 		async "app_site.placement_id.value"(val: Array<any>, old: Array<any>) {
-			await this.updateWatchByKey("placement_id", val, old);
+			await this.updateWatchByKey("placement_id", val, old, true);
 		},
 		async "app_site.publisher_id_list.value"(
 			val: Array<any>,
@@ -461,6 +551,21 @@ export default Vue.extend({
 				data: await this.getSitesByAtribute({
 					term: val,
 					by_attribute: this.app_site.site.by_attribute,
+				}),
+			});
+
+			this.setLoading(false);
+		}, 500),
+
+		placementIdTerm: debounce(async function (val: String, old: String) {
+			if (val.length < 3) return;
+			this.setLoading(true);
+			this.$emit("update-data-var", {
+				tab: this.tab,
+				key: "placement_id",
+				data: await this.getSitesByAtribute({
+					term: val,
+					by_attribute: this.app_site.placement_id.by_attribute,
 				}),
 			});
 
