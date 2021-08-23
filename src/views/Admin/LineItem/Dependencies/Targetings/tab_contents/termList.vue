@@ -1,23 +1,12 @@
 <template>
-	<v-list
-		align="start"
-		self="start"
-		items="start"
-		justify="start"
-		dense
-		flat
-		rounded
-	>
+	<v-list>
 		<v-list-item
-			align="start"
-			self="start"
-			items="start"
-			justify="start"
 			dense
+			class="my-0"
 			v-for="(targeting_term, index) in targeting_terms"
 			:key="index"
 		>
-			<v-list-item-action>
+			<v-list-item-action class="my-0">
 				<CardSwitch
 					v-model="targeting_term.targeting_predicate_id"
 					customClass=""
@@ -43,33 +32,38 @@
 			<v-list-item-content class="ma-0 pa-2">
 				<v-flex>
 					<v-chip
-						class="me-2 mb-2"
-						color="secondary"
 						close
 						outlined
 						pill
-						v-for="(value, index) in targeting_term.value"
-						:key="index"
-						@click:close="removeHandler(value)"
+						class="me-2 mb-2"
+						color="secondary"
+						@click:close="removeHandler(targeting_term.value)"
 					>
-						<template v-if="use_display_name">
-							{{ getDisplayNameByID(value) }}
-						</template>
-						<template v-else>
-							{{ value }}
-						</template>
+						{{ getDisplayNameByID(targeting_term.value) }}
 					</v-chip>
 				</v-flex>
 			</v-list-item-content>
+
+			<!-- <v-list-item-action>
+				<v-btn
+					icon
+					elevation="0"
+					raised
+					small
+					@click="removeHandler(targeting_term.value)"
+				>
+					<v-icon color="grey"> mdi-close </v-icon>
+				</v-btn>
+			</v-list-item-action> -->
 		</v-list-item>
 	</v-list>
 </template>
 <script lang="ts">
 import Vue from "vue";
-import CardSwitch from "../../../../../components/Content/CardSwitch.vue";
+import CardSwitch from "../../../../../../components/Content/CardSwitch.vue";
 
 export default Vue.extend({
-	name: "TermListUnique",
+	name: "TermList",
 	props: {
 		targeting_terms: {
 			type: Array,
@@ -82,10 +76,6 @@ export default Vue.extend({
 			default: function () {
 				return [];
 			},
-		},
-		use_display_name: {
-			type: Boolean,
-			default: true,
 		},
 		predicates: {
 			type: Object,
@@ -112,7 +102,7 @@ export default Vue.extend({
 		},
 
 		removeHandler(value: any) {
-			this.$emit("remove-item-unique", value);
+			this.$emit("remove-item", value);
 		},
 	},
 });

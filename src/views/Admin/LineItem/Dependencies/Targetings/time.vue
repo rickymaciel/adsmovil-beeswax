@@ -130,7 +130,7 @@
 
 <script lang="ts">
 import { filter, find, isEmpty } from "lodash";
-import CardSwitch from "../../../../components/Content/CardSwitch.vue";
+import CardSwitch from "../../../../../components/Content/CardSwitch.vue";
 import Vue from "vue";
 
 export default Vue.extend({

@@ -2,7 +2,7 @@
 	<v-container>
 		<v-row dense>
 			<!-- value -->
-			<v-col cols="12" sm="12" md="4" lg="4">
+			<v-col cols="12" sm="12" md="6" lg="6">
 				<CardAutocomplete
 					v-model="targeting_key_data.value"
 					:items="appLists"
@@ -19,44 +19,31 @@
 					:dense="false"
 					:required="false"
 					:clearable="true"
-					:persistent_hint="persistent_hint"
-					:colapse_selection="colapse_selection"
-					:search_input_sync="search_input_sync"
+					:colapse_selection="true"
 					@focus="focusHandler"
 					@clear="clearHandler"
-					@sync="syncHandler"
 				></CardAutocomplete>
-			</v-col>
-
-			<!-- by_attribute -->
-			<v-col cols="12" sm="12" md="2" lg="2">
-				<v-select
-					v-model="targeting_key_data.by_attribute"
-					:items="attributeList"
-					label=""
-					class="label-fixed"
-				></v-select>
 			</v-col>
 
 			<!-- include -->
 			<v-col class="pe-lg-16 pa-0" cols="12" sm="12" md="6" lg="6">
-				<TermListUnique
-					:predicates="predicates"
+				<TermList
 					:appLists="appLists"
 					:targeting_terms="targeting_key_data.targeting_terms"
-					@remove-item-unique="removeHandler"
-				></TermListUnique>
+					:predicates="predicates"
+					@remove-item="removeHandler"
+				></TermList>
 			</v-col>
 		</v-row>
 	</v-container>
 </template>
 <script lang="ts">
 import Vue from "vue";
-import CardAutocomplete from "../../../../../components/Content/CardAutocomplete.vue";
-import TermListUnique from "./termListUnique.vue";
+import CardAutocomplete from "../../../../../../components/Content/CardAutocomplete.vue";
+import TermList from "./termList.vue";
 
 export default Vue.extend({
-	name: "TargetingTabItemUnique",
+	name: "TargetingTabItem",
 	props: {
 		targeting_key_data: {
 			type: Object,
@@ -65,12 +52,6 @@ export default Vue.extend({
 			},
 		},
 		appLists: {
-			type: Array,
-			default: function () {
-				return [];
-			},
-		},
-		attributeList: {
 			type: Array,
 			default: function () {
 				return [];
@@ -100,17 +81,6 @@ export default Vue.extend({
 			type: String,
 			default: "id",
 		},
-		search_input_sync: {
-			default: null,
-		},
-		persistent_hint: {
-			type: Boolean,
-			default: false,
-		},
-		colapse_selection: {
-			type: Boolean,
-			default: false,
-		},
 		predicates: {
 			type: Object,
 			default: function () {
@@ -120,7 +90,7 @@ export default Vue.extend({
 	},
 	components: {
 		CardAutocomplete,
-		TermListUnique,
+		TermList,
 	},
 	data: () => ({}),
 	async created() {},
@@ -135,9 +105,6 @@ export default Vue.extend({
 		},
 		focusHandler() {
 			this.$emit("focus");
-		},
-		syncHandler(data: any) {
-			this.$emit("sync", data);
 		},
 	},
 

@@ -69,7 +69,7 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
-import CardAutocomplete from "../../../../../components/Content/CardAutocomplete.vue";
+import CardAutocomplete from "../../../../../../components/Content/CardAutocomplete.vue";
 import TermList from "../tab_contents/termList.vue";
 import TermListUnique from "../tab_contents/termListUnique.vue";
 

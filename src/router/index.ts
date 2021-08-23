@@ -258,7 +258,7 @@ const routes: Array<RouteConfig> = [
                             breadcrumb: "Modifiers List"
                         },
                     },
-                    /*{
+                    {
                         path: 'create',
                         name: 'ModifiersCreate',
                         component: () => import('@/views/Admin/Modifiers/Create/create.vue'),
@@ -275,7 +275,7 @@ const routes: Array<RouteConfig> = [
                             requiresAuth: true,
                             breadcrumb: "Edit Modifier"
                         },
-                    }*/
+                    }
                 ]
             },
             {

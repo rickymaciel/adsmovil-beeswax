@@ -11,7 +11,7 @@
 	</v-card>
 </template>
 <script lang="ts">
-import CreateTabs from "../../Create/createTabs.vue";
+import CreateTabs from "../../../Create/createTabs.vue";
 import Vue from "vue";
 import { isEmpty, size } from "lodash";
 

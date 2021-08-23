@@ -8,7 +8,6 @@
 			hide-default-footer
 			:mobile-breakpoint="null"
 		>
-
 			<!-- ID -->
 			<template v-slot:[`header.id`]="{ header }">
 				<v-menu :close-on-content-click="false">
@@ -99,7 +98,7 @@
 				<v-card-actions>
 					<v-img
 						v-if="item.thumbnail"
-						style="borderRadius: 5px"
+						style="borderradius: 5px"
 						:lazy-src="item.thumbnail"
 						max-height="45"
 						max-width="45"
@@ -107,7 +106,7 @@
 					></v-img>
 					<v-img
 						v-else
-						style="borderRadius: 5px"
+						style="borderradius: 5px"
 						lazy-src="https://picsum.photos/id/11/10/6"
 						max-height="45"
 						max-width="45"
@@ -322,7 +321,7 @@
 			</template>
 
 			<!-- ACTIONS -->
-			<template v-slot:[`header.actions`]="{ header }">
+			<template v-slot:[`header.actions`]="{}">
 				<v-container fluid class="delete-all-container">
 					<div class="delete-all-box">
 						<p class="delete-all-label">Delete all</p>
@@ -336,9 +335,8 @@
 				</v-container>
 			</template>
 
-				
 			<template v-slot:[`item.start_date`]="{ item }">
-				<p v-if="!item.edited">{{item.start_date}}</p>
+				<p v-if="!item.edited">{{ item.start_date }}</p>
 				<DatePicker
 					v-if="item.edited"
 					v-model="item.new_start_date"
@@ -350,7 +348,7 @@
 			</template>
 
 			<template v-slot:[`item.end_date`]="{ item }">
-				<p v-if="!item.edited">{{item.end_date}}</p>
+				<p v-if="!item.edited">{{ item.end_date }}</p>
 				<DatePicker
 					v-if="item.edited"
 					v-model="item.new_end_date"
@@ -434,302 +432,323 @@
 					</v-btn>
 				</v-card-actions>
 			</template>
-
 		</v-data-table>
-
 	</section>
 </template>
 
 <script lang="ts">
-	import DatePicker from "../../../../components/Content/DatePicker.vue";
-	import {
-		isNull,
-		isUndefined,
-	} from "lodash";
-	import Vue from "vue";
-	import {
-		isRequired,
-		isNumber,
-		isAfterToday,
-		isAfterCompare,
-	} from "../../../../services/rule-services";
-	const DATE_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
-	const DATE_FORMAT = "DD-MM-YYYY";
+import DatePicker from "../../../../../components/Content/DatePicker.vue";
+import { isNull, isUndefined } from "lodash";
+import Vue from "vue";
+import {
+	isRequired,
+	isNumber,
+	isAfterToday,
+	isAfterCompare,
+} from "../../../../../services/rule-services";
+const DATE_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
+const DATE_FORMAT = "DD-MM-YYYY";
 
-	export default Vue.extend({
-		name: "AssociationTable",
-		props: {
-			headers: {
-				type: Array,
-				default: [],
-			},
-			/* items: {
+export default Vue.extend({
+	name: "AssociationTable",
+	props: {
+		headers: {
+			type: Array,
+			default: [],
+		},
+		/* items: {
 				type: Array,
 				default: [],
 			}, */
-			line_item: {
-				type: Object,
-				default: function () {
-					return {};
-				},
+		line_item: {
+			type: Object,
+			default: function () {
+				return {};
 			},
 		},
-		components: {
-			DatePicker,
-		},
-		data: () => ({
-			filter: {
-				id: {
-					value: "",
-					order: "asc",
-				},
-				thumbnail: {
-					value: "",
-					order: "asc",
-				},
-				creative_id: {
-					value: "",
-					order: "asc",
-				},
-				creative_name: {
-					value: "",
-					order: "asc",
-				},
-				size: {
-					value: "",
-					order: "asc",
-				},
-				start_date: {
-					value: "",
-					order: "asc",
-				},
-				end_date: {
-					value: "",
-					order: "asc",
-				},
+	},
+	components: {
+		DatePicker,
+	},
+	data: () => ({
+		filter: {
+			id: {
+				value: "",
+				order: "asc",
 			},
-			start_date_rules: [],
-			end_date_rules: [],
-			delete_all_selected: null,
-			all_selected: []
-		}),
+			thumbnail: {
+				value: "",
+				order: "asc",
+			},
+			creative_id: {
+				value: "",
+				order: "asc",
+			},
+			creative_name: {
+				value: "",
+				order: "asc",
+			},
+			size: {
+				value: "",
+				order: "asc",
+			},
+			start_date: {
+				value: "",
+				order: "asc",
+			},
+			end_date: {
+				value: "",
+				order: "asc",
+			},
+		},
+		start_date_rules: [],
+		end_date_rules: [],
+		delete_all_selected: null,
+		all_selected: [],
+	}),
 
-		created() {},
+	created() {},
 
-		mounted() {},
+	mounted() {},
 
-		computed: {
-			getRules() {
+	computed: {
+		getRules() {
+			return {
+				isRequired,
+				isNumber,
+				isAfterToday,
+				isAfterCompare,
+			};
+		},
+
+		getToday() {
+			return this.moment().format(DATE_TIME_FORMAT);
+		},
+
+		getMinDate() {
+			if (this.getLineItem?.start_date) {
+				return this.moment(this.getLineItem?.start_date).format(
+					DATE_TIME_FORMAT
+				);
+			}
+			return undefined;
+		},
+
+		currentPage: {
+			set(val) {
+				this.$emit("update-current-page", val);
+			},
+			get() {
+				return this.current_page;
+			},
+		},
+
+		getRecords() {
+			if (
+				!isNull(this.getLineItem?.creative_associations) &&
+				!isUndefined(this.getLineItem?.creative_associations)
+			) {
+				return this.getLineItem.creative_associations;
+			}
+			return this.entities;
+		},
+
+		getLineItem() {
+			let result = this.$store.state.line_item.lineItem;
+			if (!isNull(result) && !isUndefined(result)) {
+				return result;
+			}
+			return this.line_item;
+		},
+
+		prepareTableContent() {
+			const entities = this.getRecords;
+
+			if (isUndefined(entities) || isNull(entities)) return [];
+
+			return entities.map((entity: any) => {
 				return {
-					isRequired,
-					isNumber,
-					isAfterToday,
-					isAfterCompare,
+					id: entity?.id,
+					thumbnail: entity?.thumbnail,
+					creative_id: entity?.creative_id
+						? Number(entity?.creative_id)
+						: undefined,
+					creative_name: entity?.creative_name,
+					size: entity?.size ? entity.size : undefined,
+					start_date: entity?.start_date
+						? this.moment(entity?.start_date).format(DATE_FORMAT)
+						: undefined,
+					end_date: entity?.end_date
+						? this.moment(entity.end_date).format(DATE_FORMAT)
+						: undefined,
+					line_item_id: entity?.line_item_id
+						? Number(entity?.line_item_id)
+						: undefined,
+					active: entity?.active ? true : false,
+					edited: false,
+					new_start_date: undefined,
+					new_end_date: undefined,
+					valid: true,
 				};
-			},
+			});
+		},
+	},
 
-			getToday() {
-				return this.moment().format(DATE_TIME_FORMAT);
-			},
-
-			getMinDate() {
-				if (this.getLineItem?.start_date) {
-					return this.moment(this.getLineItem?.start_date).format(
-						DATE_TIME_FORMAT
-					);
-				}
-				return undefined;
-			},
-
-			currentPage: {
-				set(val) {
-					this.$emit("update-current-page", val);
-				},
-				get() {
-					return this.current_page;
-				},
-			},
-
-			getRecords(){
-				if( !isNull(this.getLineItem?.creative_associations) && !isUndefined(this.getLineItem?.creative_associations) ){
-					return this.getLineItem.creative_associations;
-				}
-				return this.entities;
-			},
-
-			getLineItem() {
-				let result = this.$store.state.line_item.lineItem;
-				if ( !isNull(result) && !isUndefined(result) ) {
-					return result;
-				}
-				return this.line_item;
-			},
-
-			prepareTableContent() {
-				const entities = this.getRecords;
-
-				if ( isUndefined(entities) || isNull(entities) ) return [];
-
-				return entities.map((entity: any) => {
-					return {
-						id: entity?.id,
-						thumbnail: entity?.thumbnail,
-						creative_id: entity?.creative_id ? Number(entity?.creative_id) : undefined,
-						creative_name: entity?.creative_name,
-						size: entity?.size ? entity.size : undefined,
-						start_date: entity?.start_date ? this.moment(entity?.start_date).format(DATE_FORMAT) : undefined,
-						end_date: entity?.end_date ? this.moment(entity.end_date).format(DATE_FORMAT) : undefined,
-						line_item_id: entity?.line_item_id ? Number(entity?.line_item_id) : undefined,
-						active: entity?.active ? true : false,
-						edited: false,
-						new_start_date: undefined,
-						new_end_date: undefined,
-						valid: true,
-					}
-				});
-			},
+	methods: {
+		async validate() {
+			return await this.$refs.form.validate();
 		},
 
-		methods: {
-			async validate() {
-				return await this.$refs.form.validate();
-			},
+		async addValidations() {
+			this.start_date_rules = [
+				this.getRules.isRequired,
+				this.getRules.isAfterToday,
+			];
+			this.end_date_rules = [
+				this.getRules.isRequired,
+				this.getRules.isAfterCompare(
+					this.getLineItem.end_date,
+					this.getLineItem.start_date
+				),
+			];
+		},
 
-			async addValidations() {
-				this.start_date_rules = [
-					this.getRules.isRequired,
-					this.getRules.isAfterToday,
-				];
-				this.end_date_rules = [
-					this.getRules.isRequired,
-					this.getRules.isAfterCompare(
-						this.getLineItem.end_date,
-						this.getLineItem.start_date
-					),
-				];
-			},
+		getColor(active: Boolean) {
+			return active ? "green--text" : "red--text";
+		},
 
-			getColor(active: Boolean) {
-				return active ? "green--text" : "red--text";
-			},
+		getActiveText(active: Boolean) {
+			return active ? "Active" : "Inactive";
+		},
 
-			getActiveText(active: Boolean) {
-				return active ? "Active" : "Inactive";
-			},
+		async deleteAssociation(id: number) {
+			if (isNull(id) || isUndefined(id)) {
+				return false;
+			}
+			try {
+				await this.setLoading(true);
+				await this.$store
+					.dispatch("creative/associateLineItemDelete", id)
+					.then(
+						(result) => {
+							this.dispatchShowLineItem(this.getLineItem?.id);
+						},
+						(error) => {
+							console.error("-- deleteAssociation::error", error);
+						}
+					)
+					.catch((error) => {
+						console.error(
+							"handleAction:deleteAssociation:catch",
+							error
+						);
+					});
+				await this.setLoading(false);
+			} catch (error) {
+				console.error("deleteAssociation", { error: error });
+				await this.setLoading(false);
+			}
+		},
 
-			async deleteAssociation(id: number) {
-				if ( isNull(id) || isUndefined(id) ) {return false;}
-				try {
-					await this.setLoading(true);
-					await this.$store.dispatch(
-						"creative/associateLineItemDelete",
-						id
-					).then( (result) => {
-						this.dispatchShowLineItem(this.getLineItem?.id);
+		async handleEnableEdit(record: any) {
+			record.edited = true;
+			return record;
+		},
+
+		async handleConfirmEdit(record: any) {
+			//await this.addValidations();
+			//if (!(await this.validate())) return;
+
+			(record.start_date = this.moment(
+				String(record.new_start_date)
+			).format(DATE_TIME_FORMAT)),
+				(record.end_date = this.moment(
+					String(record.new_end_date)
+				).format(DATE_TIME_FORMAT)),
+				(record.new_start_date = this.moment(
+					String(record.new_start_date)
+				).format(DATE_TIME_FORMAT)),
+				(record.new_end_date = this.moment(
+					String(record.new_end_date)
+				).format(DATE_TIME_FORMAT)),
+				await this.setLoading(true);
+			await this.updateAssociate(record);
+			await this.setLoading(false);
+			return record;
+		},
+
+		async handleCancelEdit(record: any) {
+			record.edited = false;
+			record.start_date = this.moment(record.new_start_date).format(
+				DATE_FORMAT
+			);
+			record.end_date = this.moment(record.new_end_date).format(
+				DATE_FORMAT
+			);
+			record.new_start_date = undefined;
+			record.new_end_date = undefined;
+			return record;
+		},
+
+		async setLoading(_loading: Boolean) {
+			this.$store.state.proccess.loading = _loading;
+		},
+
+		async dispatchShowLineItem(id: any) {
+			return await this.$store.dispatch("line_item/show", id, {
+				root: true,
+			});
+		},
+
+		async updateAssociate(record: any) {
+			await this.$store
+				.dispatch("creative/associateLineItemUpdate", record)
+				.then(
+					(result) => {
+						(record.start_date = this.moment(
+							record.new_start_date
+						).format(DATE_FORMAT)),
+							(record.end_date = this.moment(
+								record.new_end_date
+							).format(DATE_FORMAT)),
+							(record.edited = false);
 					},
 					(error) => {
-						console.error("-- deleteAssociation::error", error);
-					}).catch( (error) => {
-						console.error("handleAction:deleteAssociation:catch", error);
-					});
-					await this.setLoading(false);
-				} catch (error) {
-					console.error("deleteAssociation", { error: error });
-					await this.setLoading(false);
-				}
-			},
-
-			async handleEnableEdit(record: any) {
-				record.edited = true;
-				return record;
-			},
-
-			async handleConfirmEdit(record: any) {
-				//await this.addValidations();
-				//if (!(await this.validate())) return;
-
-				record.start_date = this.moment(
-					String(record.new_start_date)
-				).format(DATE_TIME_FORMAT),
-				record.end_date = this.moment(
-					String(record.new_end_date)
-				).format(DATE_TIME_FORMAT),
-				
-				record.new_start_date = this.moment(
-					String(record.new_start_date)
-				).format(DATE_TIME_FORMAT),
-				record.new_end_date = this.moment(String(record.new_end_date)).format(
-					DATE_TIME_FORMAT
-				),
-
-				await this.setLoading(true);
-				await this.updateAssociate(record);
-				await this.setLoading(false);
-				return record;
-			},
-
-			async handleCancelEdit(record: any) {
-				record.edited = false;
-				record.start_date = this.moment(record.new_start_date).format(DATE_FORMAT);
-				record.end_date = this.moment(record.new_end_date).format(DATE_FORMAT);
-				record.new_start_date = undefined;
-				record.new_end_date = undefined;
-				return record;
-			},
-
-			async setLoading(_loading: Boolean) {
-				this.$store.state.proccess.loading = _loading;
-			},
-
-			async dispatchShowLineItem(id: any) {
-				return await this.$store.dispatch("line_item/show", id, {
-					root: true,
-				});
-			},
-
-			async updateAssociate(record: any) {
-				await this.$store.dispatch(
-					"creative/associateLineItemUpdate",
-					record
-				).then( (result) => {
-					record.start_date = this.moment(record.new_start_date).format(DATE_FORMAT),
-					record.end_date = this.moment(record.new_end_date).format(DATE_FORMAT),
-					record.edited = false;
-				},
-				(error) => {
-					console.error("-- updateAssociate::error", error);
-				}).catch( (error) => {
+						console.error("-- updateAssociate::error", error);
+					}
+				)
+				.catch((error) => {
 					console.error("handleAction:updateAssociate:catch", error);
 				});
-			},
 		},
+	},
 
-		watch: {
-			delete_all_selected(val, old){
-				this.$emit("delete-all-selected", val);
-			}
-		}
-	});
+	watch: {
+		delete_all_selected(val, old) {
+			this.$emit("delete-all-selected", val);
+		},
+	},
+});
 </script>
 
 <style scoped>
-	.delete-all-container{
-		padding-right: 0px; 
-		padding-left: 0px;
-	}
-	
-	.delete-all-box{
-		padding-top: 5px;
-	}
-		
-	.delete-all-label{
-		float: left;
-		padding-top: 5px;
-	}
-		
-	.delete-all-option{
-		padding: 0px;
-		margin: 0px;
-		float: right;
-	}
+.delete-all-container {
+	padding-right: 0px;
+	padding-left: 0px;
+}
+
+.delete-all-box {
+	padding-top: 5px;
+}
+
+.delete-all-label {
+	float: left;
+	padding-top: 5px;
+}
+
+.delete-all-option {
+	padding: 0px;
+	margin: 0px;
+	float: right;
+}
 </style>

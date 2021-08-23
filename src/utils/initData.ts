@@ -247,7 +247,7 @@ export function initHardCoreLineItem(): any {
 
 /**
  * Line Item Resources
- * @returns 
+ * @returns
  */
 export function getLineItemResources() {
     return {
@@ -303,6 +303,11 @@ export function getLineItemResources() {
                 disabled: true,
             },
             daily_budget: {
+                required: false,
+                show: false,
+                disabled: true,
+            },
+			daily_budget_suggested: {
                 required: false,
                 show: false,
                 disabled: true,
@@ -433,7 +438,7 @@ export function getDataVariables() {
 
 /**
  * Creative
- * @returns 
+ * @returns
  */
 export function initCreative() {
     return {
@@ -491,7 +496,7 @@ export function initCreative() {
 
 /**
  * Campaign
- * @returns 
+ * @returns
  */
 export function initCampaign(): CampaignDataCreate {
     return {
@@ -503,7 +508,7 @@ export function initCampaign(): CampaignDataCreate {
 
 /**
  * Targeting
- * @returns 
+ * @returns
  */
 export function initTargeting(targeting_predicate_id: Number = 0): any {
     return {
@@ -733,7 +738,7 @@ export function initTargeting(targeting_predicate_id: Number = 0): any {
 
 /**
  * Targeting keys
- * @returns 
+ * @returns
  */
 export function getTargetingIDByValue() {
     return {
@@ -791,7 +796,7 @@ export function getTargetingIDByValue() {
 
 /**
  * Line Item
- * @returns 
+ * @returns
  */
 export function initLineItem(): any {
     return {
@@ -829,8 +834,8 @@ export function initLineItem(): any {
 
 /**
  * Creative
- * @param creative 
- * @returns 
+ * @param creative
+ * @returns
  */
 export function initAssociationCreative(creative: Creative): AssociationDataCreate {
     return {

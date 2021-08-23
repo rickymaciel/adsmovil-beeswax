@@ -177,7 +177,6 @@
 				this.$store.state.proccess.loading = _loading;
 			},
 			async getPaginated() {
-				console.log("--- Advertiser::getPaginated");
 				this.setLoading(true);
 				await this.$store.dispatch(
 					"advertiser/paginated",

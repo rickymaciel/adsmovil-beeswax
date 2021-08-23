@@ -307,9 +307,9 @@ class CreativeService {
      * @param params
      * @returns
      */
-     async UpdateCreative(params: any) {
+     async UpdateCreative(creative: any) {
         try {
-            const response = await AxiosPatch(`${CREATIVES}`, params);
+            const response = await AxiosPatch(`${CREATIVES}/${creative.id}`, creative);
             return Promise.resolve(GetData(response));
         } catch (error) {
             console.error("CreativeService::CreateUpdateCreative", { error: error });

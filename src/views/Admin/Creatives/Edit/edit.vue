@@ -44,6 +44,7 @@
 					@delete-row-progress-event="deleteRowProgressEvent"
 					@validate-tag="validateTag"
 					@selected-size="selectedSize"
+					@update-creative="updateCreative"
 				></Overview>
 			</v-container>
 		</v-layout>
@@ -385,6 +386,22 @@ export default Vue.extend({
 			}
 		},
 
+		/**
+		 * Create Creative Image
+		 */
+		async updateCreative(params: {
+			continue: boolean;
+			creative: any;
+		}) {
+			await this.setLoadingField(true);
+			try {
+				await this.dispatchCreative(params);
+			} catch (error) {
+				console.error("updateCreative", { error: error });
+			}
+			await this.setLoadingField(false);
+		},
+
 		findIndexByData(data: Array<any>, item: any) {
 			return data.findIndex(item);
 		},
@@ -679,6 +696,13 @@ export default Vue.extend({
 		 */
 		async dispatchCreative(params: { continue: boolean; creative: any }) {
 			return this.$store.dispatch("creative/CreateNewCreative", params);
+		},
+
+		/**
+		 * Dispatch Update
+		 */
+		async dispatchUpdate(params: { continue: boolean; creative: any }) {
+			return this.$store.dispatch("creative/UpdateCreative", params);
 		},
 
 		/**

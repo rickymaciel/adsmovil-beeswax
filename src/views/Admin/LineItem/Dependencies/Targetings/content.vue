@@ -86,23 +86,23 @@
 	</v-list>
 </template>
 <script lang="ts">
-	import Vue from "vue";
-	import CardTextField from "../../../../components/Content/CardTextField.vue";
-	import CardSwitch from "../../../../components/Content/CardSwitch.vue";
+import Vue from "vue";
+import CardTextField from "../../../../../components/Content/CardTextField.vue";
+import CardSwitch from "../../../../../components/Content/CardSwitch.vue";
 
-	export default Vue.extend({
-		name: "Content",
-		props: {
-			content: {
-				type: Object,
-				default: function () {},
-			},
+export default Vue.extend({
+	name: "Content",
+	props: {
+		content: {
+			type: Object,
+			default: function () {},
 		},
-		components: { CardTextField, CardSwitch },
-		data: () => ({}),
-		created() {},
-		async mounted() {},
-		computed: {},
-		methods: {},
-	});
+	},
+	components: { CardTextField, CardSwitch },
+	data: () => ({}),
+	created() {},
+	async mounted() {},
+	computed: {},
+	methods: {},
+});
 </script>

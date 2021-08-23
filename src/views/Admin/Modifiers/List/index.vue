@@ -4,6 +4,7 @@
 			<Buttons
 				:limit="paginated.limit"
 				@selected-limit="selectedLimit"
+				@download-list="handleDownload"
 				to="/admin/modifiers/create"
 			></Buttons>
 		</v-layout>
@@ -21,8 +22,8 @@
 				:filters="filters"
 				:options="options"
 				:limit="paginated.limit"
-				@selected-option="selectedOption"
 				@update-paginate="updatePaginate"
+				@selected-option="selectedOption"
 			></TableList>
 		</v-layout>
 	</v-container>
@@ -47,15 +48,15 @@
 		props: {},
 		components: { TableList, Buttons },
 		data: () => ({
-			title: "List",
+			title: "Modifiers List",
 			paginated: {
 					page: 1,
 					limit: 25,
 				} as Paginated,
 				filters: {},
 				options: {
-					sort: "",
-					order: "asc",
+					sort: "id",
+					order: "desc",
 				} as SortingOption,
 		}),
 		created() {},
@@ -99,7 +100,7 @@
 					},
 					{
 						text: "Update Date",
-						align: "start",
+						align: "center",
 						sortable: true,
 						filterable: true,
 						value: "updateDate",
@@ -113,7 +114,7 @@
 					},
 					{
 						text: "Advertiser ID",
-						align: "start",
+						align: "center",
 						sortable: true,
 						filterable: true,
 						value: "advertiserId",
@@ -136,18 +137,18 @@
 			},
 			prepareTableContent() {
 				const modifiers = this.getModifiers;
-
+				
 				if (isUndefined(modifiers) || isNull(modifiers)) return [];
 
-				return modifiers.map((modifier: Modifier) => {
+				return modifiers.map((modifier: any) => {
 					return {
 						id: modifier.id,
 						name: modifier.name,
 						//updateDate: modifier.updateDate.format("dd/MM/YYYY HH:mm:ss"),
 						updateDate: this.toFormatDate(modifier.updated_at),
-						typeName: modifier.type.type,
-						advertiserId: modifier.advertiser.id,
-						active: modifier.active,
+						typeName: modifier.modifier_type_name,
+						advertiserId: modifier.advertiser_id,
+						active: modifier.active ? true : false,
 					};
 				});
 			},
@@ -177,6 +178,13 @@
 				// tengamos la cadena de formato para fechas y/o Horas establecidas como parámetro global
 				return this.moment(d).format("YYYY-MM-DD HH:mm:ss");
 			},
+			updatePaginate(data: any) {
+				this.paginated.page = data;
+			},
+			setFilter(params: { key: string | number; value: any }) {
+				this.filters = {};
+				this.filters[params.key] = typeof params.value !== "undefined" ? params.value : "";
+			},
 			async selectedOption(params: {
 				option: SortingOption;
 				filter: string;
@@ -187,9 +195,6 @@
 					filters: this.filters,
 					option: params.option,
 				});
-			},
-			updatePaginate(data: any) {
-				this.paginated.page = data;
 			},
 			async selectedLimit(limit: number) {
 				this.paginated.limit = limit;
@@ -205,6 +210,19 @@
 				this.updatePaginate(1);
 				await this.getPaginated();
 			},
+			async handleDownload() {
+				this.setLoading(true);
+				await this.$store.dispatch(
+					'modifier/download',
+					await ParamService.getParams(
+						this.paginated,
+						this.filters,
+						this.option
+					),
+					{root: true}					
+				);
+				this.setLoading(false);
+			}
 		},
 		watch: {
 			"paginated.page"(val, old) {

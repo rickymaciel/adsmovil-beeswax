@@ -12,36 +12,32 @@
 					customClass=""
 					reference="targeting_predicate_id"
 					:inset="false"
-					:true_value="predicates.INCLUDED"
-					:false_value="predicates.EXCLUDED"
+					:true_value="1823"
+					:false_value="1824"
 					:label="
-						targeting_term.targeting_predicate_id ===
-						predicates.INCLUDED
+						targeting_term.targeting_predicate_id === 1823
 							? 'Include'
 							: 'Exclude'
 					"
 					:color="
-						targeting_term.targeting_predicate_id ===
-						predicates.INCLUDED
+						targeting_term.targeting_predicate_id === 1823
 							? 'success'
 							: 'red'
 					"
 				></CardSwitch>
 			</v-list-item-action>
 
-			<v-list-item-content class="ma-0 pa-2">
-				<v-flex>
-					<v-chip
-						close
-						outlined
-						pill
-						class="me-2 mb-2"
-						color="secondary"
-						@click:close="removeHandler(targeting_term.value)"
-					>
-						{{ getDisplayNameByID(targeting_term.value) }}
-					</v-chip>
-				</v-flex>
+			<v-list-item-content class="my-0">
+				<v-chip
+					label
+					outlined
+					close
+					class="ma-0"
+					color="secondary"
+					@click:close="removeHandler(targeting_term.value)"
+				>
+					{{ getDisplayNameByID(targeting_term.value) }}
+				</v-chip>
 			</v-list-item-content>
 
 			<!-- <v-list-item-action>
@@ -60,10 +56,10 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
-import CardSwitch from "../../../../../components/Content/CardSwitch.vue";
+import CardSwitch from "../../../../../../components/Content/CardSwitch.vue";
 
 export default Vue.extend({
-	name: "TermList",
+	name: "ExchangeTermList",
 	props: {
 		targeting_terms: {
 			type: Array,
@@ -75,12 +71,6 @@ export default Vue.extend({
 			type: Array,
 			default: function () {
 				return [];
-			},
-		},
-		predicates: {
-			type: Object,
-			default: function () {
-				return {};
 			},
 		},
 	},
@@ -98,7 +88,7 @@ export default Vue.extend({
 				displayName = `${app.value} (${id})`;
 			}
 
-			return displayName || id;
+			return displayName;
 		},
 
 		removeHandler(value: any) {

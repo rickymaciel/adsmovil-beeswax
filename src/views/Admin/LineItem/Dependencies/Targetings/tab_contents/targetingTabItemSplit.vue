@@ -3,58 +3,44 @@
 		<v-row dense>
 			<!-- value -->
 			<v-col cols="12" sm="12" md="6" lg="6">
-				<CardAutocomplete
+				<CardTextField
 					v-model="targeting_key_data.value"
-					:items="appLists"
-					:item_text="item_text"
-					:item_value="item_value"
 					:hint="hint"
 					:reference="reference"
 					:placeholder="placeholder"
 					:label="label"
-					:chips="false"
-					:deletable_chips="true"
-					:multiple="true"
-					:small_chips="false"
-					:dense="false"
 					:required="false"
-					:clearable="true"
-					:colapse_selection="true"
-					@focus="focusHandler"
-					@clear="clearHandler"
-				></CardAutocomplete>
+					:persistent_hint="persistent_hint"
+					@blur="blurHandler"
+					@enter="enterHandler"
+				></CardTextField>
 			</v-col>
 
 			<!-- include -->
 			<v-col class="pe-lg-16 pa-0" cols="12" sm="12" md="6" lg="6">
-				<TermList
-					:appLists="appLists"
-					:targeting_terms="targeting_key_data.targeting_terms"
+				<TermListUnique
 					:predicates="predicates"
-					@remove-item="removeHandler"
-				></TermList>
+					:targeting_terms="targeting_key_data.targeting_terms"
+					:use_display_name="false"
+					@remove-item-unique="removeHandler"
+				></TermListUnique>
 			</v-col>
 		</v-row>
 	</v-container>
 </template>
 <script lang="ts">
+import { isString } from "lodash";
 import Vue from "vue";
-import CardAutocomplete from "../../../../../components/Content/CardAutocomplete.vue";
-import TermList from "./termList.vue";
+import CardTextField from "../../../../../../components/Content/CardTextField.vue";
+import TermListUnique from "./termListUnique.vue";
 
 export default Vue.extend({
-	name: "TargetingTabItem",
+	name: "TargetingTabItemSplit",
 	props: {
 		targeting_key_data: {
 			type: Object,
 			default: function () {
 				return {};
-			},
-		},
-		appLists: {
-			type: Array,
-			default: function () {
-				return [];
 			},
 		},
 		hint: {
@@ -73,13 +59,9 @@ export default Vue.extend({
 			type: String,
 			default: "Label",
 		},
-		item_text: {
-			type: String,
-			default: "value",
-		},
-		item_value: {
-			type: String,
-			default: "id",
+		persistent_hint: {
+			type: Boolean,
+			default: false,
 		},
 		predicates: {
 			type: Object,
@@ -89,8 +71,8 @@ export default Vue.extend({
 		},
 	},
 	components: {
-		CardAutocomplete,
-		TermList,
+		CardTextField,
+		TermListUnique,
 	},
 	data: () => ({}),
 	async created() {},
@@ -105,6 +87,19 @@ export default Vue.extend({
 		},
 		focusHandler() {
 			this.$emit("focus");
+		},
+		blurHandler(data: string) {
+			var items: Array<string> = [];
+
+			if (isString(data)) {
+				items = data.split(",");
+			}
+
+			this.$emit("blur", items);
+		},
+
+		enterHandler(e: any) {
+			this.$emit("enter", e);
 		},
 	},
 

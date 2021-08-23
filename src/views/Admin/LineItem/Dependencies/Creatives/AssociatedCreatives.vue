@@ -157,13 +157,13 @@ import {
 	isNumber,
 	isAfterToday,
 	isAfterCompare,
-} from "../../../../services/rule-services";
-import DatePicker from "../../../../components/Content/DatePicker.vue";
-import DividerForm from "../../../../components/Content/DividerForm.vue";
-import CardTextField from "../../../../components/Content/CardTextField.vue";
-import CardAutocomplete from "../../../../components/Content/CardAutocomplete.vue";
-import { SortingOption } from "../../../../interfaces/paginated";
-import { AssociationDataCreate } from "../../../../interfaces/creativeAssociation";
+} from "../../../../../services/rule-services";
+import DatePicker from "../../../../../components/Content/DatePicker.vue";
+import DividerForm from "../../../../../components/Content/DividerForm.vue";
+import CardTextField from "../../../../../components/Content/CardTextField.vue";
+import CardAutocomplete from "../../../../../components/Content/CardAutocomplete.vue";
+import { SortingOption } from "../../../../../interfaces/paginated";
+import { AssociationDataCreate } from "../../../../../interfaces/creativeAssociation";
 import AssociationTable from "./AssociationTable.vue";
 import { isNull, isUndefined } from "lodash";
 

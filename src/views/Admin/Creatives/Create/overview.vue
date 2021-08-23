@@ -1515,8 +1515,6 @@ export default Vue.extend({
 	}),
 	created() {},
 	mounted() {
-		console.log("--- Creative::Overview::Mounted", this.creative);
-
 		setTimeout(async () => {
 			await this.loadResources();
 		}, 1000);
@@ -2035,10 +2033,11 @@ export default Vue.extend({
 					);
 
 					if (!(await this.validate())) return;
-					if (this.isEdit) {
-						console.log(
-							"--- Lanzar evento Editar::create-creative-image"
-						);
+					if ( this.isEdit ) {
+						this.$emit("update-creative", {
+							continue: _continue,
+							creative: creative_image,
+						});
 						break;
 					}
 					this.$emit("create-creative-image", {
@@ -2057,9 +2056,10 @@ export default Vue.extend({
 
 					if (!(await this.validate())) return;
 					if (this.isEdit) {
-						console.log(
-							"--- Lanzar evento Editar::create-creative-vast-inline"
-						);
+						this.$emit("update-creative", {
+							continue: _continue,
+							creative: creative_vast_inline,
+						});
 						break;
 					}
 					this.$emit("create-creative-vast-inline", {
@@ -2077,9 +2077,10 @@ export default Vue.extend({
 
 					if (!(await this.validate())) return;
 					if (this.isEdit) {
-						console.log(
-							"--- Lanzar evento Editar::create-creative-jstag"
-						);
+						this.$emit("update-creative", {
+							continue: _continue,
+							creative: creative_js_tag,
+						});
 						break;
 					}
 					this.$emit("create-creative-jstag", {
@@ -2098,9 +2099,10 @@ export default Vue.extend({
 
 					if (!(await this.validate())) return;
 					if (this.isEdit) {
-						console.log(
-							"--- Lanzar evento Editar::create-creative-iframetag"
-						);
+						this.$emit("update-creative", {
+							continue: _continue,
+							creative: creative_iframe_tag,
+						});
 						break;
 					}
 					this.$emit("create-creative-iframetag", {
@@ -2121,9 +2123,10 @@ export default Vue.extend({
 
 					if (!(await this.validate())) return;
 					if (this.isEdit) {
-						console.log(
-							"--- Lanzar evento Editar::create-creative-mraidtag"
-						);
+						this.$emit("update-creative", {
+							continue: _continue,
+							creative: creative_mraid_tag,
+						});
 						break;
 					}
 					this.$emit("create-creative-mraidtag", {
@@ -2162,9 +2165,10 @@ export default Vue.extend({
 
 					if (!(await this.validate())) return;
 					if (this.isEdit) {
-						console.log(
-							"--- Lanzar evento Editar::create-creative-html5"
-						);
+						this.$emit("update-creative", {
+							continue: _continue,
+							creative: creative_html5,
+						});
 						break;
 					}
 					this.$emit("create-creative-html5", {
