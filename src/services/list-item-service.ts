@@ -38,7 +38,6 @@ class ListItemService {
 
     async delete(id) {
         try {
-            console.log('url',LIST_ITEM_ROUTE+'/'+id);
             const response = await AxiosDelete(LIST_ITEM_ROUTE+'/'+id);
             return Promise.resolve(true);    
         } 
@@ -54,11 +53,9 @@ class ListItemService {
     async upload(listItem: any) {
         try {
             const response = await AxiosPost(LIST_ITEM_UPLOAD, listItem)
-            console.log('ListItemService:upload: ', { response: response })
             if (response.status < 200 && response.status > 300) {
                 return null
             }
-
             return response.data.response
         } catch (error) {
             return Promise.reject({

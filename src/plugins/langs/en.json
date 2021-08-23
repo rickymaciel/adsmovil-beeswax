@@ -165,6 +165,9 @@
             "items": "Associated items",
             "radius": "Default radius in Km"
         },
+        "raiz": {
+            "title": "Tools"
+        },
         "list": {
             "title": "Lists"
         },

@@ -18,9 +18,8 @@
 				:total="Number(getResultPaginate.total)"
 				:headers="prepareTableHeaders"
 				:items="prepareTableContent"
-				:filters_init="filters"
-				:options="options"
-				:limit="paginated.limit"
+				:option="options"
+				:filters="filters"
 				@selected-option="selectedOption"
 				@update-paginate="updatePaginate"
 			></TableList>
@@ -34,10 +33,7 @@ import Buttons from "../../Commons/Buttons.vue";
 import Vue from "vue";
 import { isNull, isUndefined } from "lodash";
 import ParamService from "../../../../services/params-service";
-import {
-	CreativeFilters,
-	CreativeOptions,
-} from "../../../../interfaces/creative";
+import { CreativeFilters } from "../../../../interfaces/creative";
 import { Paginated, SortingOption } from "../../../../interfaces/paginated";
 
 export default Vue.extend({
@@ -45,41 +41,31 @@ export default Vue.extend({
 	props: {},
 	components: { TableList, Buttons },
 	data: () => ({
-		title: "Creatives List",
+		title: "Creative List",
 		paginated: { page: 1, limit: 25 } as Paginated,
 		filters: {},
 		options: {
-			sort: "",
-			order: "asc",
+			sort: "id",
+			order: "desc",
 		} as SortingOption,
 	}),
 	created() {},
 	async mounted() {
-		this.setLoading(true);
 		await this.getPaginated();
-		this.setLoading(false);
 	},
 	computed: {
 		getResultPaginate(): any {
 			return this.$store.state.creative.result_paginate;
 		},
-		getEntities(): any[] {
+		getData(): any[] {
 			const result: any = this.getResultPaginate;
-			if (
-				isUndefined(result) ||
-				isNull(result) ||
-				isUndefined(result.data) ||
-				isNull(result.data)
-			) {
-				return [];
-			}
-			return result.data;
+			return this.hasData(result) ? result.data : [];
 		},
 		prepareTableHeaders() {
 			return [
 				{
 					text: "Id",
-					align: "center",
+					align: "start",
 					sortable: false,
 					api_sortable: true,
 					filterable: true,
@@ -95,11 +81,11 @@ export default Vue.extend({
 				},
 				{
 					text: "Size",
-					align: "center",
+					align: "start",
 					sortable: false,
 					api_sortable: true,
 					filterable: true,
-					value: "size",
+					value: "creative_size_name",
 				},
 				{
 					text: "Type",
@@ -107,19 +93,19 @@ export default Vue.extend({
 					sortable: false,
 					api_sortable: true,
 					filterable: true,
-					value: "type",
+					value: "creative_type_name",
 				},
 				{
 					text: "Line Items",
-					align: "center",
+					align: "start",
 					sortable: false,
 					api_sortable: true,
 					filterable: true,
-					value: "lineItems",
+					value: "line_associations",
 				},
 				{
 					text: "Thumbail",
-					align: "center",
+					align: "start",
 					sortable: false,
 					api_sortable: true,
 					filterable: false,
@@ -127,7 +113,7 @@ export default Vue.extend({
 				},
 				{
 					text: "Active",
-					align: "center",
+					align: "start",
 					sortable: false,
 					api_sortable: true,
 					filterable: true,
@@ -135,7 +121,7 @@ export default Vue.extend({
 				},
 				{
 					text: "",
-					align: "center",
+					align: "start",
 					sortable: false,
 					api_sortable: true,
 					value: "actions",
@@ -144,7 +130,7 @@ export default Vue.extend({
 			];
 		},
 		prepareTableContent() {
-			const entities = this.getEntities;
+			const entities = this.getData;
 
 			if (isUndefined(entities) || isNull(entities)) return [];
 
@@ -152,9 +138,9 @@ export default Vue.extend({
 				return {
 					id: entity?.id,
 					name: entity?.name,
-					size: entity?.creative_size_name,
-					type: entity?.type?.description,
-					lineItems: entity?.line_associations?.length,
+					creative_size_name: entity?.creative_size_name,
+					creative_type_name: entity?.type?.description,
+					line_associations: entity?.line_associations?.length,
 					thumbail: entity?.creative_thumbnail_url,
 					active: entity?.active,
 				};
@@ -165,7 +151,14 @@ export default Vue.extend({
 		setLoading(_loading: Boolean) {
 			this.$store.state.proccess.loading = _loading;
 		},
-
+		hasData(result: { data: any }): Boolean {
+			return (
+				!isUndefined(result) &&
+				!isNull(result) &&
+				!isUndefined(result.data) &&
+				!isNull(result.data)
+			);
+		},
 		async getPaginated() {
 			this.setLoading(true);
 			await this.$store.dispatch(
@@ -174,49 +167,43 @@ export default Vue.extend({
 					this.paginated,
 					this.filters,
 					this.options
-				),
-				{
-					root: true,
-				}
+				)
 			);
 			this.setLoading(false);
 		},
-
 		updatePaginate(data: any) {
 			this.paginated.page = data;
 		},
-
-		async selectedLimit(limit: number) {
-			this.paginated.limit = limit;
-			this.updatePaginate(1);
-			await this.getPaginated();
-		},
-
-		async updateParams(params: {
-			filters: CreativeFilters;
-			options: CreativeOptions;
-		}) {
-			this.filters = params.filters;
-			this.options = params.options;
-			this.updatePaginate(1);
-			await this.getPaginated();
-		},
-
-		setFilter(params: { key: string | number; value: any }) {
+		async setFilter(params: { key: string | number; value: any }) {
 			this.filters = {};
-			this.filters[params.key] = params.value || "";
+			this.filters[params.key] = !isUndefined(params.value)
+				? params.value
+				: "";
 		},
-
-		async selectedOption(params: {
-			option: SortingOption;
-			filter: string;
-		}) {
-			this.setFilter({ key: params.option.sort, value: params.filter });
+		async selectedOption(params: { option: SortingOption; filter: any }) {
+			await this.setFilter({
+				key: params.option.sort,
+				value: params.filter,
+			});
 			this.updatePaginate(1);
 			await this.updateParams({
 				filters: this.filters,
 				option: params.option,
 			});
+		},
+		async selectedLimit(limit: number) {
+			this.paginated.limit = limit;
+			this.updatePaginate(1);
+			await this.getPaginated();
+		},
+		async updateParams(params: {
+			filters: CreativeFilters;
+			option: SortingOption;
+		}) {
+			this.filters = params.filters;
+			this.options = params.option;
+			this.updatePaginate(1);
+			await this.getPaginated();
 		},
 	},
 	watch: {

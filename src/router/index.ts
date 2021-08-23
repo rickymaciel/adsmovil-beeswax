@@ -71,7 +71,7 @@ const routes: Array<RouteConfig> = [
         children: [
             {
                 path: 'password/forgot',
-                name: 'ForgotPassword',                
+                name: 'ForgotPassword',
                 component: () => import('@/views/ForgotPassword/forgot.vue'),
             },
             {
@@ -199,7 +199,7 @@ const routes: Array<RouteConfig> = [
                 component: () => import('@/views/Admin/CustomList/index.vue'),
                 meta: {
                     requiresAuth: true,
-                    breadcrumb: i18n.t("customList.list.title")
+                    breadcrumb: i18n.t("customList.raiz.title")
                 },
                 children: [
                     {
@@ -258,7 +258,7 @@ const routes: Array<RouteConfig> = [
                             breadcrumb: "Modifiers List"
                         },
                     },
-                    /*{
+                    {
                         path: 'create',
                         name: 'ModifiersCreate',
                         component: () => import('@/views/Admin/Modifiers/Create/create.vue'),
@@ -275,7 +275,7 @@ const routes: Array<RouteConfig> = [
                             requiresAuth: true,
                             breadcrumb: "Edit Modifier"
                         },
-                    }*/
+                    }
                 ]
             },
             {
@@ -331,7 +331,7 @@ const routes: Array<RouteConfig> = [
                 component: () => import('@/views/Admin/LineItem/index.vue'),
                 meta: {
                     requiresAuth: true,
-                    breadcrumb: "Line Item List"
+                    breadcrumb: "Line Items"
                 },
                 children: [
                     {
@@ -340,7 +340,7 @@ const routes: Array<RouteConfig> = [
                         component: () => import('@/views/Admin/LineItem/List/index.vue'),
                         meta: {
                             requiresAuth: true,
-                            breadcrumb: "Line Item List"
+                            breadcrumb: "Line Items List"
                         },
                     },
                     {
@@ -390,6 +390,15 @@ const routes: Array<RouteConfig> = [
                             breadcrumb: "Create New Creative"
                         },
                     },
+                    {
+                        path: 'edit/:id',
+                        name: 'CreativeEdit',
+                        component: () => import('@/views/Admin/Creatives/Edit/edit.vue'),
+                        meta: {
+                            requiresAuth: true,
+                            breadcrumb: "Edit Creative"
+                        },
+                    }
                 ]
             },
         ]

@@ -20,14 +20,16 @@
         ],
         "types": [
             "node",
-            "webpack-env",
             "jest",
             "vuetify"
         ],
         "paths": {
             "@/*": [
                 "src/*"
-            ]
+            ],
+            "@/views/*": [
+                "src/views/*"
+            ],
         },
         "lib": [
             "esnext",

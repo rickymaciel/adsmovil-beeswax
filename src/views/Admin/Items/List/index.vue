@@ -111,7 +111,7 @@
 				) {
 					return [];
 				}
-				return result.data.sort(function(a,b){return b.id-a.id});
+				return result.data;
 				//return this.getResultPaginate.data;
 			},
 			prepareTableHeaders() {

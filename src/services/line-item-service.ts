@@ -116,8 +116,6 @@ class LineItemService {
 
             const url = getURL(filter, option)
 
-            console.log('LineItemService::all', { filters: params.filters, options: params.options, url: url, filter: filter, option: option });
-
             const response = await AxiosGet(`${LINE_ITEM_ROUTE}/${url}`);
             return Promise.resolve(GetData(response));
         } catch (error) {
@@ -150,7 +148,7 @@ function getFilters(filters: LineItemFilters): string {
     const name = (isUndefined(filters.name) || isNull(filters.name)) ? '' : filters.name
     const advertiser_name = (isUndefined(filters.advertiser?.name) || isNull(filters.advertiser?.name)) ? '' : filters.advertiser?.name
     const advertiser_id = (isUndefined(filters.advertiser_id) || isNull(filters.advertiser_id)) ? '' : filters.advertiser_id
-    const active = (isUndefined(filters.active) || isNull(filters.active)) ? '' : filters.active
+    const active = (isUndefined(filters.active) || isNull(filters.active)) ? '' : filters.active ? 1 : 0
     const budget = (isUndefined(filters.budget) || isNull(filters.budget)) ? '' : filters.budget
     const daily_budget = (isUndefined(filters.daily_budget) || isNull(filters.daily_budget)) ? '' : filters.daily_budget
     const start_date = (isUndefined(filters.start_date) || isNull(filters.start_date)) ? '' : filters.start_date

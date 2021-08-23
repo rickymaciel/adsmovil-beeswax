@@ -143,77 +143,211 @@ export async function getCreativeData() {
  */
 export function initHardCoreLineItem(): any {
     return {
-        id: 36,
-        name: "Line",
-        alternative_id: null,
-        start_date: "2021-07-23 01:00:00",
-        end_date: "2021-07-24 23:59:59",
-        budget: 20,
-        daily_budget: 20,
-        fix_cpm: null,
-        cpm_bid: 10,
-        target_ecpc: null,
-        target_ctr: null,
-        target_vcr: null,
-        active: false,
-        external_id: 4853,
-        spend: 0,
-        created_by: 2,
-        updated_by: 2,
-        deleted_by: null,
-        created_at: "2021-07-23T18:02:26.000000Z",
-        updated_at: "2021-07-23T18:02:27.000000Z",
-        deleted_at: null,
-        account_id: 1,
-        advertiser_id: 1,
-        campaign_id: 83,
-        line_item_type_id: 21,
-        budget_type_id: 1,
-        strategy_id: 9,
-        bid_strategy_id: 25,
-        line_pacing_id: 13,
-        bid_shading_id: 18,
-        creative_method_id: 26,
-        budget_remaining: 20,
-        frequency_caps: [],
-        budget_type: {
-            id: 1,
-            description: "Spend",
+	id: 24,
+	name: "Line Item Final",
+	alternative_id: null,
+	start_date: "2021-08-09 00:00:00",
+	end_date: "2021-08-11 23:59:59",
+	budget: 2000,
+	daily_budget: null,
+	fix_cpm: 1,
+	cpm_bid: null,
+	target_ecpc: null,
+	target_ctr: null,
+	target_vcr: null,
+	active: true,
+	external_id: 98,
+	spend: 0,
+	created_by: 2,
+	updated_by: 2,
+	deleted_by: null,
+	created_at: "2021-08-06T14:15:16.000000Z",
+	updated_at: "2021-08-06T14:16:31.000000Z",
+	deleted_at: null,
+	account_id: 1,
+	advertiser_id: 18,
+	campaign_id: 89,
+	line_item_type_id: 21,
+	budget_type_id: 2,
+	strategy_id: null,
+	bid_strategy_id: 24,
+	line_pacing_id: 12,
+	bid_shading_id: 18,
+	creative_method_id: 26,
+	budget_remaining: 2000,
+	frequency_caps: [
+		{
+			id: 165,
+			impressions: 200,
+			duration: 120,
+			every_time: 2,
+			created_by: null,
+			updated_by: null,
+			deleted_by: null,
+			created_at: "2021-08-06T14:15:16.000000Z",
+			updated_at: "2021-08-06T14:15:16.000000Z",
+			deleted_at: null,
+			unit_time_id: 3,
+			campaign_id: null,
+			line_item_id: 24,
+		},
+	],
+	budget_type: {
+		id: 2,
+		description: "Impressions",
+	},
+	line_item_type: {
+		id: 21,
+		description: "Banner",
+	},
+	advertiser: {
+		id: 18,
+		name: "Advertiser Final",
+	},
+	campaign: {
+		id: 89,
+		name: "Campaing final",
+		budget_remaining: 0,
+	},
+	bid_strategy: {
+		id: 24,
+		description: "Fix",
+	},
+	strategy: null,
+	line_pacing: {
+		id: 12,
+		description: "ASAP",
+	},
+	bid_shading: {
+		id: 18,
+		description: "Normal",
+	},
+	creative_method: {
+		id: 26,
+		description: "RANDOM",
+	},
+	creative_associations: [
+		{
+			id: 9,
+			external_id: 12,
+			creative_id: 38,
+			line_item_id: 24,
+			start_date: "2021-08-10 00:00:00",
+			end_date: "2021-08-11 23:59:59",
+			active: true,
+			created_by: 2,
+			updated_by: 2,
+			deleted_by: null,
+			created_at: "2021-08-06T14:16:27.000000Z",
+			updated_at: "2021-08-06T14:16:27.000000Z",
+		},
+	],
+}
+}
+
+/**
+ * Line Item Resources
+ * @returns
+ */
+export function getLineItemResources() {
+    return {
+        campaigns: [],
+        advertisers: [],
+        line_item_types: [],
+        creative_weighting_methods: [],
+        budget_types: [],
+        bid_strategies: [],
+        strategies: [],
+        strategies_filtered: [],
+        bidding_shadings: [],
+        campaigns_pacing: [],
+        optimization_strategies: [],
+        unit_times: [],
+        line_pacings: [],
+        selected_campaign: null,
+        budget_display: "Total",
+        fields: {
+            budget: {
+                required: true,
+                show: true,
+                disabled: false,
+            },
+            budget_type_id: {
+                required: true,
+                show: true,
+                disabled: false,
+            },
+            fix_cpm: {
+                required: false,
+                show: false,
+                disabled: false,
+            },
+            bid_shading_id: {
+                required: false,
+                show: false,
+                disabled: false,
+            },
+            bid_strategy_id: {
+                required: true,
+                show: true,
+                disabled: false,
+            },
+            strategy_id: {
+                required: false,
+                show: false,
+                disabled: false,
+            },
+            line_pacing_id: {
+                required: true,
+                show: false,
+                disabled: true,
+            },
+            daily_budget: {
+                required: false,
+                show: false,
+                disabled: true,
+            },
+			daily_budget_suggested: {
+                required: false,
+                show: false,
+                disabled: true,
+            },
+            cpm_bid: {
+                required: false,
+                show: false,
+                disabled: true,
+            },
+            target_ecpm: {
+                required: false,
+                show: false,
+                disabled: false,
+            },
+            target_ecpc: {
+                required: false,
+                show: false,
+                disabled: true,
+            },
+            target_ctr: {
+                required: false,
+                show: false,
+                disabled: false,
+            },
+            target_ecpcv: {
+                required: false,
+                show: false,
+                disabled: false,
+            },
+            target_cpcv: {
+                required: false,
+                show: false,
+                disabled: false,
+            },
+            target_vcr: {
+                required: false,
+                show: false,
+                disabled: false,
+            },
         },
-        line_item_type: {
-            id: 21,
-            description: "Banner",
-        },
-        advertiser: {
-            id: 1,
-            name: "New Advertiser X",
-        },
-        campaign: {
-            id: 83,
-            name: "Campa\u00f1010",
-            budget_remaining: 0,
-        },
-        bid_strategy: {
-            id: 25,
-            description: "Automated",
-        },
-        strategy: {
-            id: 9,
-            description: "Optimized CPM",
-        },
-        line_pacing: {
-            id: 13,
-            description: "Daily",
-        },
-        bid_shading: {
-            id: 18,
-            description: "Normal",
-        },
-        creative_method: {
-            id: 26,
-            description: "RANDOM",
-        },
-        creative_associations: [],
     }
 }
 
@@ -234,6 +368,7 @@ export function initDataVariables() {
             site_list: [],
             app_name_attributes: getDataVariables().app_name,
             site_attributes: getDataVariables().site,
+            placement_id_attributes: getDataVariables().site
         },
         geo: {
             city: [],
@@ -245,6 +380,25 @@ export function initDataVariables() {
         exchange: {
             inventory_source: [],
             auction_type: [],
+        },
+        environment: {
+            environment_type: [],
+            topframe: [],
+            video_api: [],
+        },
+        platform: {
+            browser: [],
+            browser_version: [],
+            carrier: [],
+            device_type: [],
+            device_make: [],
+            device_model: [],
+            device_screen_size: [],
+            operating_system: [],
+            operating_system_version: [],
+        },
+        time: {
+            user_time_of_week: [],
         },
     }
 }
@@ -284,7 +438,7 @@ export function getDataVariables() {
 
 /**
  * Creative
- * @returns 
+ * @returns
  */
 export function initCreative() {
     return {
@@ -342,7 +496,7 @@ export function initCreative() {
 
 /**
  * Campaign
- * @returns 
+ * @returns
  */
 export function initCampaign(): CampaignDataCreate {
     return {
@@ -354,7 +508,7 @@ export function initCampaign(): CampaignDataCreate {
 
 /**
  * Targeting
- * @returns 
+ * @returns
  */
 export function initTargeting(targeting_predicate_id: Number = 0): any {
     return {
@@ -397,6 +551,7 @@ export function initTargeting(targeting_predicate_id: Number = 0): any {
                 targeting_predicate_id: targeting_predicate_id,
             },
             placement_id: {
+                by_attribute: "placement_id",
                 value: [],
                 targeting_terms: [],
                 targeting_key_id: undefined,
@@ -434,37 +589,35 @@ export function initTargeting(targeting_predicate_id: Number = 0): any {
                 targeting_predicate_id: targeting_predicate_id,
             },
         },
-        content: {
-            content_category: {
+        geo: {
+            country: {
                 value: [],
                 targeting_terms: [],
-                targeting_key_id: null,
+                targeting_key_id: 12,
                 targeting_predicate_id: targeting_predicate_id,
             },
-            language: {
+            city: {
                 value: [],
                 targeting_terms: [],
-                targeting_key_id: null,
+                targeting_key_id: 13,
                 targeting_predicate_id: targeting_predicate_id,
             },
-        },
-        environment: {
-            environment_type: {
+            lat_long_list: {
                 value: [],
                 targeting_terms: [],
-                targeting_key_id: null,
+                targeting_key_id: 14,
                 targeting_predicate_id: targeting_predicate_id,
             },
-            topframe: {
+            location_type: {
                 value: [],
                 targeting_terms: [],
-                targeting_key_id: null,
+                targeting_key_id: 15,
                 targeting_predicate_id: targeting_predicate_id,
             },
-            video_api: {
+            region: {
                 value: [],
                 targeting_terms: [],
-                targeting_key_id: null,
+                targeting_key_id: 16,
                 targeting_predicate_id: targeting_predicate_id,
             },
         },
@@ -472,45 +625,111 @@ export function initTargeting(targeting_predicate_id: Number = 0): any {
             auction_type: {
                 value: [],
                 targeting_terms: [],
-                targeting_key_id: null,
+                targeting_key_id: 17,
                 targeting_predicate_id: targeting_predicate_id,
             },
             inventory_source: {
                 value: [],
                 targeting_terms: [],
-                targeting_key_id: null,
+                targeting_key_id: 18,
                 targeting_predicate_id: targeting_predicate_id,
             },
         },
-        geo: {
-            country: {
+        environment: {
+            environment_type: {
                 value: [],
                 targeting_terms: [],
-                targeting_key_id: null,
+                targeting_key_id: 19,
                 targeting_predicate_id: targeting_predicate_id,
             },
-            city: {
+            topframe: {
                 value: [],
                 targeting_terms: [],
-                targeting_key_id: null,
+                targeting_key_id: 20,
                 targeting_predicate_id: targeting_predicate_id,
             },
-            lat_long_list: {
+            video_api: {
                 value: [],
                 targeting_terms: [],
-                targeting_key_id: null,
+                targeting_key_id: 21,
                 targeting_predicate_id: targeting_predicate_id,
             },
-            location_type: {
+        },
+        platform: {
+            browser: {
                 value: [],
                 targeting_terms: [],
-                targeting_key_id: null,
+                targeting_key_id: 22,
                 targeting_predicate_id: targeting_predicate_id,
             },
-            region: {
+            browser_version: {
                 value: [],
                 targeting_terms: [],
-                targeting_key_id: null,
+                targeting_key_id: 23,
+                targeting_predicate_id: targeting_predicate_id,
+            },
+            carrier: {
+                value: [],
+                targeting_terms: [],
+                targeting_key_id: 24,
+                targeting_predicate_id: targeting_predicate_id,
+            },
+            device_type: {
+                value: [],
+                targeting_terms: [],
+                targeting_key_id: 25,
+                targeting_predicate_id: targeting_predicate_id,
+            },
+            device_make: {
+                value: [],
+                targeting_terms: [],
+                targeting_key_id: 26,
+                targeting_predicate_id: targeting_predicate_id,
+            },
+            device_model: {
+                value: [],
+                targeting_terms: [],
+                targeting_key_id: 27,
+                targeting_predicate_id: targeting_predicate_id,
+            },
+            device_screen_size: {
+                value: [],
+                targeting_terms: [],
+                targeting_key_id: 28,
+                targeting_predicate_id: targeting_predicate_id,
+            },
+            operating_system: {
+                value: [],
+                targeting_terms: [],
+                targeting_key_id: 29,
+                targeting_predicate_id: targeting_predicate_id,
+            },
+            operating_system_version: {
+                value: [],
+                targeting_terms: [],
+                targeting_key_id: 30,
+                targeting_predicate_id: targeting_predicate_id,
+            },
+        },
+        content: {
+            content_category: {
+                value: [],
+                targeting_terms: [],
+                targeting_key_id: 32,
+                targeting_predicate_id: targeting_predicate_id,
+            },
+            language: {
+                value: [],
+                targeting_terms: [],
+                targeting_key_id: 33,
+                targeting_predicate_id: targeting_predicate_id,
+            },
+        },
+        time: {
+            user_time_of_week: {
+                value: [],
+                targeting_terms: [],
+                targeting_key_id: 31,
                 targeting_predicate_id: targeting_predicate_id,
             },
         },
@@ -519,7 +738,7 @@ export function initTargeting(targeting_predicate_id: Number = 0): any {
 
 /**
  * Targeting keys
- * @returns 
+ * @returns
  */
 export function getTargetingIDByValue() {
     return {
@@ -549,15 +768,35 @@ export function getTargetingIDByValue() {
 
         // exchange
         exchange: {
-            inventory_source: 13,
             auction_type: 17,
+            inventory_source: 18,
+        },
+
+        // environment
+        environment: {
+            environment_type: 19,
+            topframe: 20,
+            video_api: 21,
+        },
+
+        // platform
+        platform: {
+            browser: 22,
+            browser_version: 23,
+            carrier: 24,
+            device_type: 25,
+            device_make: 26,
+            device_model: 27,
+            device_screen_size: 28,
+            operating_system: 29,
+            operating_system_version: 30,
         },
     };
 }
 
 /**
  * Line Item
- * @returns 
+ * @returns
  */
 export function initLineItem(): any {
     return {
@@ -595,8 +834,8 @@ export function initLineItem(): any {
 
 /**
  * Creative
- * @param creative 
- * @returns 
+ * @param creative
+ * @returns
  */
 export function initAssociationCreative(creative: Creative): AssociationDataCreate {
     return {

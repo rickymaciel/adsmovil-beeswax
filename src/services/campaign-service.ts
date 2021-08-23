@@ -85,7 +85,6 @@ class CampaignService {
                 option += getOptions(params.options, 'download', params.paginated)
             }
 
-            console.log('option', option, params);
             const url = getURL(filter, option)
             
             await AxiosDownload(CAMPAIGN_ROUTE + url, 'campaigns-export.csv')
@@ -144,8 +143,6 @@ class CampaignService {
  * timezone_name
  */
 function getFilters(filters: CampaingFilters): string {
-
-    console.log('filters', filters);
     let filter = ''
 
     const id = !!filters.id ? filters.id : '';

@@ -55,8 +55,8 @@
 				} as Paginated,
 				filters: {},
 				option: {
-					sort: "",
-					order: "asc",
+					sort: "id",
+					order: "desc",
 				} as SortingOption,
 			};
 		},

@@ -169,7 +169,7 @@
 			headers: [],
 			filters: {},
 			paginated: { page: 1, limit: 10 } as Paginated,
-			option: { sort: "", order: "asc" } as SortingOption,			
+			option: { sort: "id", order: "desc" } as SortingOption,			
 			current_file: undefined,
 			upload_progress: 0,
 			filename: undefined,

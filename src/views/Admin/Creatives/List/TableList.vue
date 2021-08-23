@@ -34,9 +34,9 @@
 			</template>
 
 			<!-- SIZE -->
-			<template v-slot:[`header.size`]="{ header }">
+			<template v-slot:[`header.creative_size_name`]="{ header }">
 				<Filterable
-					field_name="size"
+					field_name="creative_size_name"
 					type="text"
 					:filters="filters"
 					:header="header"
@@ -46,9 +46,9 @@
 			</template>
 
 			<!-- TYPE -->
-			<template v-slot:[`header.type`]="{ header }">
+			<template v-slot:[`header.creative_type_name`]="{ header }">
 				<Filterable
-					field_name="type"
+					field_name="creative_type_name"
 					type="text"
 					:filters="filters"
 					:header="header"
@@ -58,19 +58,19 @@
 			</template>
 
 			<!-- LINE ITEMS -->
-			<template v-slot:[`header.lineItems`]="{ header }">
+			<!-- <template v-slot:[`header.line_associations`]="{ header }">
 				<Filterable
-					field_name="lineItems"
+					field_name="line_associations"
 					type="number"
 					:filters="filters"
 					:header="header"
 					:option="option"
 					@selected-option="selectedOption"
 				></Filterable>
-			</template>
+			</template> -->
 
 			<!-- THUMBAILS -->
-			<template v-slot:[`header.thumbail`]="{ header }">
+			<!-- <template v-slot:[`header.thumbail`]="{ header }">
 				<Filterable
 					field_name="thumbail"
 					type="text"
@@ -79,7 +79,7 @@
 					:option="option"
 					@selected-option="selectedOption"
 				></Filterable>
-			</template>
+			</template> -->
 
 			<!-- active -->
 			<template v-slot:[`header.active`]="{ header }">
@@ -152,7 +152,7 @@
 						text
 						icon
 						:to="{
-							name: 'CreativesCreate',
+							name: 'CreativeEdit',
 							params: { id: item.id },
 						}"
 					>

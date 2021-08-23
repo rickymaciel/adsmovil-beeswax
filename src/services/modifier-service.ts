@@ -5,14 +5,14 @@ import {
     ModifierOptions,
     ModifierPaginated,
 } from '@/interfaces/modifier'
-import { AxiosGet, AxiosPost, AxiosPatch, GetData, GetErrors, GetMessage } from '@/services/axios-service'
+import { AxiosGet, AxiosPost, AxiosPatch, GetData, GetErrors, GetMessage, AxiosDownload } from '@/services/axios-service'
 import { isEmpty, isUndefined } from 'lodash'
 
 export const MODIFIER_ROUTE = '/api/modifiers'
 
 class ModifierService {
 
-    async paginated(paginated?: ModifierPaginated, filters?: ModifierFilters, options?: ModifierOptions ) {
+    async paginated(paginated: ModifierPaginated, filters?: ModifierFilters, options?: ModifierOptions ) {
         try {
             let filter = ''
             let option = ''
@@ -28,6 +28,36 @@ class ModifierService {
             const url = getURL(filter, option)
             const response = await AxiosGet(MODIFIER_ROUTE + url)
             return Promise.resolve(GetData(response));
+            /* let data: any[] = [];
+            for (let i = 0; i < 50; i++) {
+                const element = {
+                    id: Math.floor((Math.random() * (100-1))+1),
+                    updated_at: new Date(),
+                    advertiser_id: Math.floor((Math.random() * (100-1))+1),
+                    advertiser_name: "Advertiser ".concat(Math.floor((Math.random() * (100-1))+1).toString()),
+                    alternative_id: Math.floor((Math.random() * (100-1))+1),
+                    modifier_type_id: Math.floor((Math.random() * (100-1))+1),
+                    modifier_type_name: "Modifier type ".concat(Math.floor((Math.random() * (100-1))+1).toString()),
+                    name: "Test modifier ".concat(Math.floor((Math.random() * (100-1))+1).toString()),
+                    terms: [
+                        {
+                            module_id: Math.floor((Math.random() * (100-1))+1),
+                            key: "country",
+                            value: "USA",
+                            modifier: Math.floor((Math.random() * (100-1))+1),
+                            matching_type_id: Math.floor((Math.random() * (100-1))+1)
+                        }
+                    ],
+                    active: Math.floor((Math.random() * (2-0))+0)
+                };
+                data.push(element);
+            }
+            return Promise.resolve({
+                data: data.slice((paginated.page - 1 ) * paginated.limit,(paginated.limit * paginated.page)),
+                per_page: paginated?.limit,
+                total: data.length,
+                current_page: paginated.page,
+            }); */
         } catch (error) {
             return Promise.reject({
                 success: false,
@@ -102,6 +132,33 @@ class ModifierService {
         }
     }
 
+    async download(params: { paginated?: ModifierPaginated, filters?: ModifierFilters, options?: ModifierOptions }) {
+        try {
+            let filter = ''
+            let option = ''
+
+            if (!isUndefined(params.filters)) {
+                filter = getFilters(params.filters)
+            }
+
+            if (!isUndefined(params.options)) {
+                option += getOptions(params.options, 'download', params.paginated)
+            }
+
+            const url = getURL(filter, option)
+            
+            await AxiosDownload(MODIFIER_ROUTE + url, 'modifiers-export.csv')
+            
+            return Promise.resolve({});
+
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
 }
 
 function getFilters(filters: ModifierFilters): string {

@@ -576,8 +576,8 @@
 				type: Object,
 				default: function () {
 					return {
-						sort: "",
-						order: "asc",
+						sort: "id",
+						order: "desc",
 					} as LineItemOptions;
 				},
 			},

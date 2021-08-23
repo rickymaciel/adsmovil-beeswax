@@ -4,11 +4,7 @@ import { mappingTargetingKeys } from "@/utils/resolveObjectArray";
 import { isEmpty } from "lodash";
 import { AxiosGet, AxiosPost, GetData, GetErrors, GetMessage } from "./axios-service";
 
-const ROUTES = require('../api/routes').APP_SITE
-const ROUTES_CUSTOM_LIST = require('../api/routes').CUSTOM_LIST
-const ROUTES_TARGETING = require('../api/routes').TARGETING
-const ROUTES_GEO = require('../api/routes').GEO
-const ROUTES_EXCHANGE = require('../api/routes').EXCHANGE
+const { APP_SITE, CUSTOM_LIST, TARGETING, GEO, EXCHANGE, ENVIROMENT, PLATFORM } = require('../api/routes');
 
 class TargetingService {
 
@@ -19,7 +15,7 @@ class TargetingService {
                 message: 'Targeting empty',
                 errors: []
             });
-            const response = await AxiosPost(ROUTES_TARGETING.TARGETING_ROUTE, targeting)
+            const response = await AxiosPost(TARGETING.TARGETING_ROUTE, targeting)
             return Promise.resolve(GetData(response) as Array<Targeting>);
 
         } catch (error) {
@@ -33,11 +29,11 @@ class TargetingService {
 
     /**
      * getTargetingKeys
-     * @returns 
+     * @returns
      */
     async getTargetingKeys() {
         try {
-            const response = await AxiosGet(`${ROUTES_TARGETING.TARGETING_KEY_ROUTE}?mode=all`);
+            const response = await AxiosGet(`${TARGETING.TARGETING_KEY_ROUTE}?mode=all`);
             const data = GetData(response);
             const targeting_keys = mappingTargetingKeys(data)
             return Promise.resolve(targeting_keys as Array<any>);
@@ -52,11 +48,30 @@ class TargetingService {
     }
 
     /**
-     * getAppSitesByKey
-     * @param key 
-     * @returns 
+     * getTargetingKeys
+     * @returns
      */
-    async getAppSitesByKey(key: String) {
+    async getTargetingsByID(id: number) {
+        try {
+            const response = await AxiosGet(`${TARGETING.TARGETING_ROUTE}/${id}`);
+            const data = GetData(response);
+            return Promise.resolve(GetData(response));
+
+        } catch (error) {
+            return Promise.reject({
+                success: false,
+                message: GetMessage(error),
+                errors: GetErrors(error)
+            });
+        }
+    }
+
+    /**
+     * getTargetingKey
+     * @param key
+     * @returns
+     */
+    async getTargetingKey(key: String) {
         try {
             const response = await AxiosGet(await this.getUrlByKey(key))
             return Promise.resolve(GetData(response) as Array<AppSite>);
@@ -72,13 +87,13 @@ class TargetingService {
 
     /**
      * getAppNameByAtribute
-     * @param term 
-     * @param by_attribute 
-     * @returns 
+     * @param term
+     * @param by_attribute
+     * @returns
      */
     async getAppNameByAtribute(term: String, by_attribute: String) {
         try {
-            const url = ROUTES.APP_NAME_ROUTE + '?term=' + term + '&by_attribute=' + by_attribute;
+            const url = APP_SITE.APP_NAME_ROUTE + '?term=' + term + '&by_attribute=' + by_attribute;
             const response = await AxiosGet(url)
             return Promise.resolve(GetData(response) as Array<AppName>);
 
@@ -92,8 +107,8 @@ class TargetingService {
     }
     /**
      * getSearchByTerm
-     * @param params 
-     * @returns 
+     * @param params
+     * @returns
      */
     async getSearchByTerm(params: { key: any; term: any; object?: { key: String; value: String; } | undefined; by_attribute?: any; }) {
         try {
@@ -119,13 +134,13 @@ class TargetingService {
 
     /**
      * getSitesByAtribute
-     * @param term 
-     * @param by_attribute 
-     * @returns 
+     * @param term
+     * @param by_attribute
+     * @returns
      */
     async getSitesByAtribute(term: String, by_attribute: String) {
         try {
-            const url = ROUTES.SITE_ROUTE + '?term=' + term + '&by_attribute=' + by_attribute;
+            const url = APP_SITE.SITE_ROUTE + '?term=' + term + '&by_attribute=' + by_attribute;
             const response = await AxiosGet(url)
             return Promise.resolve(GetData(response) as Array<Site>);
 
@@ -137,10 +152,10 @@ class TargetingService {
             });
         }
     }
-    
+
     async getTargetingPredicates() {
         try {
-            const response = await AxiosGet(ROUTES_TARGETING.TARGETING_PREDICATE_ROUTE)
+            const response = await AxiosGet(TARGETING.TARGETING_PREDICATE_ROUTE)
             return Promise.resolve(GetData(response));
 
         } catch (error) {
@@ -161,65 +176,119 @@ class TargetingService {
              * app_site
              */
             case 'app_bundle_list':
-                url = ROUTES.APP_BUNDLE_LIST_ROUTE
+                url = APP_SITE.APP_BUNDLE_LIST_ROUTE
                 break
             case 'app_id_list':
-                url = ROUTES.APP_ID_ROUTE
+                url = APP_SITE.APP_ID_ROUTE
                 break
             case 'deal_id':
-                url = ROUTES_CUSTOM_LIST.CUSTOM_LIST_EXCHANGE_ROUTE
+                url = CUSTOM_LIST.CUSTOM_LIST_EXCHANGE_ROUTE
                 //url = ROUTES.DEAL_ID_ROUTE
                 break
             case 'deal_id_list':
-                url = ROUTES.DEAL_ID_LIST_ROUTE
+                url = APP_SITE.DEAL_ID_LIST_ROUTE
                 break
             case 'domain_list':
-                url = ROUTES.DOMAIN_ROUTE
+                url = APP_SITE.DOMAIN_ROUTE
                 break
             case 'placement_id':
-                url = ROUTES.PLACEMENT_ROUTE
+                url = APP_SITE.PLACEMENT_ROUTE
                 break
             case 'placement_list':
-                url = ROUTES.PLACEMENT_ROUTE
+                url = APP_SITE.PLACEMENT_ROUTE
                 break
             case 'publisher_id':
-                url = ROUTES.PUBLISER_ID_ROUTE
+                url = APP_SITE.PUBLISER_ID_ROUTE
                 break
             case 'publisher_id_list':
-                url = ROUTES.PUBLISER_ID_LIST_ROUTE
+                url = APP_SITE.PUBLISER_ID_LIST_ROUTE
                 break
             case 'site_list':
-                url = ROUTES.SITE_LIST_ROUTE
+                url = APP_SITE.SITE_LIST_ROUTE
                 break
 
             /**
              * geo
              */
             case 'city':
-                url = ROUTES_GEO.CITY_ROUTE
+                url = GEO.CITY_ROUTE
                 break
 
             case 'country':
-                url = ROUTES_GEO.COUNTRY_ROUTE
+                url = GEO.COUNTRY_ROUTE
                 break
 
             case 'region':
-                url = ROUTES_GEO.REGION_ROUTE
+                url = GEO.REGION_ROUTE
                 break
 
             case 'lat_long_list':
-                url = ROUTES_GEO.LAT_LONG_ROUTE
+                url = GEO.LAT_LONG_ROUTE
                 break
 
             /**
              * exchange
              */
             case 'inventory_source':
-                url = ROUTES_EXCHANGE.INVENTORY_SOURCE_ROUTE
+                url = EXCHANGE.INVENTORY_SOURCE_ROUTE
                 break
 
             case 'auction_type':
-                url = ROUTES_EXCHANGE.AUCTION_TYPE_ROUTE
+                url = EXCHANGE.AUCTION_TYPE_ROUTE
+                break
+
+            /**
+             * environment
+             */
+            case 'environment_type':
+                url = ENVIROMENT.ENVIROMENT_TYPE_ROUTE
+                break
+
+            case 'topframe':
+                url = ENVIROMENT.ENVIROMENT_TPFRAME_ROUTE
+                break
+
+            case 'video_api':
+                url = ENVIROMENT.ENVIROMENT_VIDEO_ROUTE
+                break
+
+            /**
+             * platform
+             */
+            case 'browser':
+                url = PLATFORM.PLATFORM_BROWSER_ROUTE
+                break
+
+            case 'browser_version':
+                url = PLATFORM.PLATFORM_BROWSER_VERSION_ROUTE
+                break
+
+            case 'carrier':
+                url = PLATFORM.PLATFORM_CARRIER_ROUTE
+                break
+
+            case 'device_type':
+                url = PLATFORM.PLATFORM_DEVICE_TYPE_ROUTE
+                break
+
+            case 'device_make':
+                url = PLATFORM.PLATFORM_DEVICE_MAKE_ROUTE
+                break
+
+            case 'device_model':
+                url = PLATFORM.PLATFORM_DEVICE_MODEL_ROUTE
+                break
+
+            case 'device_screen_size':
+                url = PLATFORM.PLATFORM_DEVICE_SCREEN_SIZE_ROUTE
+                break
+
+            case 'operating_system':
+                url = PLATFORM.PLATFORM_OPERATING_SYSTEM_ROUTE
+                break
+
+            case 'operating_system_version':
+                url = PLATFORM.PLATFORM_OPERATING_SYSTEM_VERSION_ROUTE
                 break
         }
 
